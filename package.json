@@ -1,0 +1,258 @@
+{
+    "name": "vscode-azureresourcegroups",
+    "displayName": "Azure Resource Groups",
+    "description": "%azureResourceGroups.description%",
+    "version": "0.1.0-alpha",
+    "publisher": "ms-azuretools",
+    "icon": "resources/resourceGroup.png",
+    "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
+    "engines": {
+        "vscode": "^1.41.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Microsoft/vscode-azureresourcegroups"
+    },
+    "galleryBanner": {
+        "color": "#3a3d41",
+        "theme": "dark"
+    },
+    "homepage": "https://github.com/Microsoft/vscode-azureresourcegroups/blob/master/README.md",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "categories": [
+        "Azure"
+    ],
+    "keywords": [
+        "Azure",
+        "multi-root ready"
+    ],
+    "preview": true,
+    "activationEvents": [
+        "onCommand:azureResourceGroups.createResourceGroup",
+        "onCommand:azureResourceGroups.deleteResourceGroup",
+        "onCommand:azureResourceGroups.loadMore",
+        "onCommand:azureResourceGroups.openInPortal",
+        "onCommand:azureResourceGroups.refresh",
+        "onCommand:azureResourceGroups.revealResource",
+        "onCommand:azureResourceGroups.selectSubscriptions",
+        "onCommand:azureResourceGroups.viewProperties",
+        "onView:azureResourceGroups"
+    ],
+    "main": "./main.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "azureResourceGroups.createResourceGroup",
+                "title": "%azureResourceGroups.createResourceGroup%",
+                "category": "Azure Resource Groups",
+                "icon": {
+                    "light": "resources/light/add.svg",
+                    "dark": "resources/dark/add.svg"
+                }
+            },
+            {
+                "command": "azureResourceGroups.deleteResourceGroup",
+                "title": "%azureResourceGroups.deleteResourceGroup%",
+                "category": "Azure Resource Groups"
+            },
+            {
+                "command": "azureResourceGroups.loadMore",
+                "title": "%azureResourceGroups.loadMore%",
+                "category": "Azure Resource Groups"
+            },
+            {
+                "command": "azureResourceGroups.openInPortal",
+                "title": "%azureResourceGroups.openInPortal%",
+                "category": "Azure Resource Groups"
+            },
+            {
+                "command": "azureResourceGroups.refresh",
+                "title": "%azureResourceGroups.refresh%",
+                "category": "Azure Resource Groups",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
+            },
+            {
+                "command": "azureResourceGroups.revealResource",
+                "title": "%azureResourceGroups.revealResource%",
+                "category": "Azure Resource Groups"
+            },
+            {
+                "command": "azureResourceGroups.selectSubscriptions",
+                "title": "Select Subscriptions...",
+                "icon": {
+                    "light": "resources/light/filter.svg",
+                    "dark": "resources/dark/filter.svg"
+                }
+            },
+            {
+                "command": "azureResourceGroups.viewProperties",
+                "title": "%azureResourceGroups.viewProperties%",
+                "category": "Azure Resource Groups"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "azure",
+                    "title": "Azure",
+                    "icon": "resources/azure.svg"
+                }
+            ]
+        },
+        "views": {
+            "azure": [
+                {
+                    "id": "azureResourceGroups",
+                    "name": "Resource Groups"
+                }
+            ]
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "azureResourceGroups.createResourceGroup",
+                    "when": "view == azureResourceGroups",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "azureResourceGroups.refresh",
+                    "when": "view == azureResourceGroups",
+                    "group": "navigation@2"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "azureResourceGroups.selectSubscriptions",
+                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "group": "inline"
+                },
+                {
+                    "command": "azureResourceGroups.createResourceGroup",
+                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "group": "1@1"
+                },
+                {
+                    "command": "azureResourceGroups.openInPortal",
+                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "group": "9@1"
+                },
+                {
+                    "command": "azureResourceGroups.refresh",
+                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "group": "9@2"
+                },
+                {
+                    "command": "azureResourceGroups.deleteResourceGroup",
+                    "when": "view == azureResourceGroups && viewItem == azureResourceGroup",
+                    "group": "1@1"
+                },
+                {
+                    "command": "azureResourceGroups.viewProperties",
+                    "when": "view == azureResourceGroups && viewItem == azureResourceGroup",
+                    "group": "9@1"
+                },
+                {
+                    "command": "azureResourceGroups.openInPortal",
+                    "when": "view == azureResourceGroups && viewItem == azureResourceGroup",
+                    "group": "9@2"
+                },
+                {
+                    "command": "azureResourceGroups.refresh",
+                    "when": "view == azureResourceGroups && viewItem == azureResourceGroup",
+                    "group": "9@3"
+                },
+                {
+                    "command": "azureResourceGroups.viewProperties",
+                    "when": "view == azureResourceGroups && viewItem == azureResource",
+                    "group": "9@1"
+                },
+                {
+                    "command": "azureResourceGroups.openInPortal",
+                    "when": "view == azureResourceGroups && viewItem == azureResource",
+                    "group": "9@2"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "azureResourceGroups.selectSubscriptions",
+                    "when": "never"
+                },
+                {
+                    "command": "azureResourceGroups.refresh",
+                    "when": "never"
+                },
+                {
+                    "command": "azureResourceGroups.loadMore",
+                    "when": "never"
+                },
+                {
+                    "command": "azureResourceGroups.revealResource",
+                    "when": "never"
+                }
+            ]
+        },
+        "keybindings": [
+            {
+                "command": "workbench.view.extension.azure",
+                "key": "ctrl+shift+a",
+                "mac": "cmd+shift+a"
+            }
+        ],
+        "configuration": [
+            {
+                "title": "Azure Resource Groups",
+                "properties": {
+                    "azureResourceGroups.enableOutputTimestamps": {
+                        "type": "boolean",
+                        "description": "%azureResourceGroups.enableOutputTimestamps%",
+                        "default": true
+                    }
+                }
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run webpack-prod",
+        "build": "tsc -p ./",
+        "compile": "tsc -watch -p ./",
+        "package": "vsce package",
+        "listIcons": "gulp listIcons",
+        "lint": "tslint --project tsconfig.json -e src/*.d.ts -t verbose",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "pretest": "npm run webpack-prod",
+        "test": "gulp test",
+        "webpack": "npm run build && gulp webpack-dev",
+        "webpack-prod": "npm run build && gulp webpack-prod",
+        "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^8.0.1",
+        "@types/mocha": "^5.2.7",
+        "@types/node": "^10.0.0",
+        "gulp": "^4.0.2",
+        "mocha": "^5.2.0",
+        "mocha-junit-reporter": "^1.23.1",
+        "mocha-multi-reporters": "^1.1.7",
+        "ts-node": "^7.0.1",
+        "tslint": "^6.0.0",
+        "tslint-microsoft-contrib": "^6.2.0",
+        "typescript": "^3.7.5",
+        "vsce": "^1.71.0",
+        "vscode": "^1.1.36",
+        "vscode-azureextensiondev": "^0.2.3",
+        "webpack": "^4.39.3",
+        "webpack-cli": "^3.3.7"
+    },
+    "dependencies": {
+        "azure-arm-resource": "^3.0.0-preview",
+        "fs-extra": "^8.1.0",
+        "vscode-azureextensionui": "^0.29.7",
+        "vscode-nls": "^4.1.1"
+    },
+    "extensionDependencies": [
+        "ms-vscode.azure-account"
+    ]
+}
