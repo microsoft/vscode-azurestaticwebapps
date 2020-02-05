@@ -1,6 +1,6 @@
 # Azure Resource Groups for Visual Studio Code (Preview)
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-azureresourcegroups.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureresourcegroups) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-azureresourcegroups.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureresourcegroups) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-azureresourcegroups)](https://dev.azure.com/ms-azuretools/AzCode/_build/latest?definitionId=TODO)
+[![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-azureresourcegroups.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureresourcegroups) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-azureresourcegroups.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureresourcegroups) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-azureresourcegroups)](https://dev.azure.com/ms-azuretools/AzCode/_build/latest?definitionId=23)
 
 Manage Azure Resource Groups directly from VS Code.
 
