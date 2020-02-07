@@ -8,6 +8,7 @@ import { IActionContext, parseError } from 'vscode-azureextensionui';
 // tslint:disable-next-line: no-submodule-imports
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { ResourceTreeItem } from '../tree/ResourceTreeItem';
+import { viewProperties } from './viewProperties';
 
 export async function revealResource(context: IActionContext, node: ResourceTreeItem): Promise<void> {
     context.telemetry.properties.resourceType = node.data.type;
@@ -36,7 +37,10 @@ export async function revealResource(context: IActionContext, node: ResourceTree
         default:
     }
 
-    if (extensionName) {
+    let viewPropertiesInstead: boolean = false;
+    if (!extensionName) {
+        viewPropertiesInstead = true;
+    } else {
         const extensionId: string = `${publisher}.${extensionName}`;
         const extension: Extension<AzureExtensionApiProvider> | undefined = extensions.getExtension(extensionId);
         if (!extension) {
@@ -46,10 +50,14 @@ export async function revealResource(context: IActionContext, node: ResourceTree
                 const api: IRevealApi = extension.exports.getApi('*');
                 await api.revealTreeItem(node.fullId);
             } catch (error) {
-                // ignore
+                viewPropertiesInstead = true;
                 context.telemetry.properties.revealError = parseError(error).message;
             }
         }
+    }
+
+    if (viewPropertiesInstead) {
+        await viewProperties(context, node);
     }
 }
 
