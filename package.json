@@ -209,6 +209,21 @@
                         "type": "boolean",
                         "description": "%azureResourceGroups.enableOutputTimestamps%",
                         "default": true
+                    },
+                    "azureResourceGroups.deleteConfirmation": {
+                        "type": "string",
+                        "enum": [
+                            "InputBox",
+                            "WarningDialog",
+                            "QuickPick"
+                        ],
+                        "description": "%azureResourceGroups.deleteConfirmation%",
+                        "enumDescriptions": [
+                            "%azureResourceGroups.deleteConfirmation.InputBox%",
+                            "%azureResourceGroups.deleteConfirmation.WarningDialog%",
+                            "%azureResourceGroups.deleteConfirmation.QuickPick%"
+                        ],
+                        "default": "InputBox"
                     }
                 }
             }
