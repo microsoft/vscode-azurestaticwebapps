@@ -9,7 +9,6 @@
     "azureResourceGroups.revealResource": "Reveal Resource",
     "azureResourceGroups.viewProperties": "View Properties",
     "azureResourceGroups.deleteConfirmation": "The behavior to use when confirming delete of a resource group.",
-    "azureResourceGroups.deleteConfirmation.InputBox": "Prompts with an input box where you enter the resource group name.",
-    "azureResourceGroups.deleteConfirmation.WarningDialog": "Prompts with a warning dialog where you click a button.",
-    "azureResourceGroups.deleteConfirmation.QuickPick": "Prompts with a multi-select quick pick where you select the resource groups to delete."
+    "azureResourceGroups.deleteConfirmation.EnterName": "Prompts with an input box where you enter the resource group name to delete.",
+    "azureResourceGroups.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete."
 }

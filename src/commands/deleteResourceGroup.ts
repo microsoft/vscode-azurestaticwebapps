@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { window } from 'vscode';
-import { IActionContext, IAzureQuickPickItem, UserCancelledError } from 'vscode-azureextensionui';
+import { IActionContext, UserCancelledError } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { ResourceGroupTreeItem } from '../tree/ResourceGroupTreeItem';
 import { localize } from '../utils/localize';
@@ -22,17 +22,11 @@ export async function deleteResourceGroup(context: IActionContext, primaryNode?:
     }
 
     const deleteConfirmation: string | undefined = settingUtils.getWorkspaceSetting('deleteConfirmation');
-    if (deleteConfirmation === 'QuickPick') {
-        const selectGroups: string = localize('selectGroups', 'Select a resource group to confirm deletion.');
-        const picks: IAzureQuickPickItem<ResourceGroupTreeItem>[] = selectedNodes.map(n => { return { label: n.name, data: n }; });
-        selectedNodes = (await ext.ui.showQuickPick(picks, { placeHolder: selectGroups, canPickMany: true, suppressPersistence: true })).map(p => p.data);
-    }
-
     for (const node of selectedNodes) {
-        if (deleteConfirmation === 'WarningDialog') {
+        if (deleteConfirmation === 'ClickButton') {
             const areYouSureDelete: string = localize('areYouSureDelete', 'Are you sure you want to delete resource group "{0}" and all it\'s resources?', node.name);
             await ext.ui.showWarningMessage(areYouSureDelete, { modal: true }, { title: localize('delete', 'Delete') }); // no need to check result - cancel will throw error
-        } else if (deleteConfirmation !== 'QuickPick') {
+        } else {
             const enterToDelete: string = localize('enterToDelete', 'Enter "{0}" to delete this resource group and all it\'s resources.', node.name);
             function validateInput(val: string | undefined): string | undefined {
                 return val === node.name ? undefined : enterToDelete;

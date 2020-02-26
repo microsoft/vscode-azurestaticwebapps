@@ -213,17 +213,15 @@
                     "azureResourceGroups.deleteConfirmation": {
                         "type": "string",
                         "enum": [
-                            "InputBox",
-                            "WarningDialog",
-                            "QuickPick"
+                            "EnterName",
+                            "ClickButton"
                         ],
                         "description": "%azureResourceGroups.deleteConfirmation%",
                         "enumDescriptions": [
-                            "%azureResourceGroups.deleteConfirmation.InputBox%",
-                            "%azureResourceGroups.deleteConfirmation.WarningDialog%",
-                            "%azureResourceGroups.deleteConfirmation.QuickPick%"
+                            "%azureResourceGroups.deleteConfirmation.EnterName%",
+                            "%azureResourceGroups.deleteConfirmation.ClickButton%"
                         ],
-                        "default": "InputBox"
+                        "default": "EnterName"
                     }
                 }
             }
