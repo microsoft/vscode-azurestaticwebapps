@@ -49,6 +49,10 @@ export async function revealResource(context: IActionContext, node: ResourceTree
         if (!extension) {
             await commands.executeCommand('extension.open', extensionId);
         } else {
+            if (!extension.isActive) {
+                await extension.activate();
+            }
+
             try {
                 const api: IRevealApi = extension.exports.getApi('*');
                 await api.revealTreeItem(node.fullId);
