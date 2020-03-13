@@ -8,7 +8,7 @@ import { ext } from "../extensionVariables";
 
 export namespace settingUtils {
     /**
-     * Uses ext.prefix 'azureResourceGroups' unless otherwise specified
+     * Uses ext.prefix 'azureMarmelade' unless otherwise specified
      */
     export async function updateGlobalSetting<T = string>(section: string, value: T, prefix: string = ext.prefix): Promise<void> {
         const projectConfiguration: WorkspaceConfiguration = workspace.getConfiguration(prefix);
@@ -16,7 +16,7 @@ export namespace settingUtils {
     }
 
     /**
-     * Uses ext.prefix 'azureResourceGroups' unless otherwise specified
+     * Uses ext.prefix 'azureMarmelade' unless otherwise specified
      */
     export async function updateWorkspaceSetting<T = string>(section: string, value: T, fsPath: string, prefix: string = ext.prefix): Promise<void> {
         const projectConfiguration: WorkspaceConfiguration = workspace.getConfiguration(prefix, Uri.file(fsPath));
@@ -24,7 +24,7 @@ export namespace settingUtils {
     }
 
     /**
-     * Uses ext.prefix 'azureResourceGroups' unless otherwise specified
+     * Uses ext.prefix 'azureMarmelade' unless otherwise specified
      */
     export function getGlobalSetting<T>(key: string, prefix: string = ext.prefix): T | undefined {
         const projectConfiguration: WorkspaceConfiguration = workspace.getConfiguration(prefix);
@@ -33,7 +33,7 @@ export namespace settingUtils {
     }
 
     /**
-     * Uses ext.prefix 'azureResourceGroups' unless otherwise specified
+     * Uses ext.prefix 'azureMarmelade' unless otherwise specified
      */
     export function getWorkspaceSetting<T>(key: string, fsPath?: string, prefix: string = ext.prefix): T | undefined {
         const projectConfiguration: WorkspaceConfiguration = workspace.getConfiguration(prefix, fsPath ? Uri.file(fsPath) : undefined);
@@ -42,7 +42,7 @@ export namespace settingUtils {
 
     /**
      * Searches through all open folders and gets the current workspace setting (as long as there are no conflicts)
-     * Uses ext.prefix 'azureResourceGroups' unless otherwise specified
+     * Uses ext.prefix 'azureMarmelade' unless otherwise specified
      */
     export function getWorkspaceSettingFromAnyFolder(key: string, prefix: string = ext.prefix): string | undefined {
         if (workspace.workspaceFolders && workspace.workspaceFolders.length > 0) {

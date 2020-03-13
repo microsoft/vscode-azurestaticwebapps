@@ -6,17 +6,17 @@
 import { window } from 'vscode';
 import { IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { ResourceGroupTreeItem } from '../tree/ResourceGroupTreeItem';
+import { StaticSiteTreeItem } from '../tree/StaticSiteTreeItem';
 import { SubscriptionTreeItem } from '../tree/SubscriptionTreeItem';
 import { localize } from '../utils/localize';
 
-export async function createResourceGroup(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
+export async function createStaticWebApp(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 
-    const rgNode: ResourceGroupTreeItem = await node.createChild(context);
+    const ssNode: StaticSiteTreeItem = await node.createChild(context);
 
     // don't wait
-    window.showInformationMessage(localize('createdRg', 'Created resource group "{0}".', rgNode.name));
+    window.showInformationMessage(localize('createdRg', 'Created static site "{0}".', ssNode.name));
 }

@@ -13,7 +13,7 @@ export class ResourceTreeItem extends AzureTreeItem {
     public static contextValue: string = 'azureResource';
     public readonly contextValue: string = ResourceTreeItem.contextValue;
     public readonly data: ResourceModels.GenericResource;
-    public readonly commandId: string = 'azureResourceGroups.revealResource';
+    public readonly commandId: string = 'azureMarmelade.revealResource';
 
     constructor(parent: AzureParentTreeItem, resource: ResourceModels.GenericResource) {
         super(parent);

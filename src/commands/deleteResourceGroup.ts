@@ -6,19 +6,19 @@
 import { window } from 'vscode';
 import { IActionContext, UserCancelledError } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { ResourceGroupTreeItem } from '../tree/ResourceGroupTreeItem';
+import { StaticSiteTreeItem } from '../tree/StaticSiteTreeItem';
 import { localize } from '../utils/localize';
 import { settingUtils } from '../utils/settingUtils';
 
-export async function deleteResourceGroup(context: IActionContext, primaryNode?: ResourceGroupTreeItem, selectedNodes?: ResourceGroupTreeItem[]): Promise<void> {
+export async function deleteResourceGroup(context: IActionContext, primaryNode?: StaticSiteTreeItem, selectedNodes?: StaticSiteTreeItem[]): Promise<void> {
     if (!selectedNodes) {
         if (primaryNode) {
             selectedNodes = [primaryNode];
         } else {
-            selectedNodes = await ext.tree.showTreeItemPicker<ResourceGroupTreeItem>(ResourceGroupTreeItem.contextValue, { ...context, canPickMany: true, suppressCreatePick: true });
+            selectedNodes = await ext.tree.showTreeItemPicker<StaticSiteTreeItem>(StaticSiteTreeItem.contextValue, { ...context, canPickMany: true, suppressCreatePick: true });
         }
     } else {
-        selectedNodes = selectedNodes.filter(n => n instanceof ResourceGroupTreeItem);
+        selectedNodes = selectedNodes.filter(n => n instanceof StaticSiteTreeItem);
     }
 
     const deleteConfirmation: string | undefined = settingUtils.getWorkspaceSetting('deleteConfirmation');

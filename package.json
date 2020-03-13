@@ -1,7 +1,7 @@
 {
-    "name": "vscode-azureresourcegroups",
-    "displayName": "Azure Resource Groups",
-    "description": "%azureResourceGroups.description%",
+    "name": "vscode-azuremarmelade",
+    "displayName": "Azure Marmelade",
+    "description": "%azureMarmelade.description%",
     "version": "0.1.0-alpha",
     "publisher": "ms-azuretools",
     "icon": "resources/resourceGroup.png",
@@ -11,13 +11,13 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Microsoft/vscode-azureresourcegroups"
+        "url": "https://github.com/Microsoft/vscode-azureMarmelade"
     },
     "galleryBanner": {
         "color": "#3a3d41",
         "theme": "dark"
     },
-    "homepage": "https://github.com/Microsoft/vscode-azureresourcegroups/blob/master/README.md",
+    "homepage": "https://github.com/Microsoft/vscode-azureMarmelade/blob/master/README.md",
     "license": "SEE LICENSE IN LICENSE.md",
     "categories": [
         "Azure"
@@ -28,59 +28,59 @@
     ],
     "preview": true,
     "activationEvents": [
-        "onCommand:azureResourceGroups.createResourceGroup",
-        "onCommand:azureResourceGroups.deleteResourceGroup",
-        "onCommand:azureResourceGroups.loadMore",
-        "onCommand:azureResourceGroups.openInPortal",
-        "onCommand:azureResourceGroups.refresh",
-        "onCommand:azureResourceGroups.revealResource",
-        "onCommand:azureResourceGroups.selectSubscriptions",
-        "onCommand:azureResourceGroups.viewProperties",
-        "onView:azureResourceGroups"
+        "onCommand:azureMarmelade.createResourceGroup",
+        "onCommand:azureMarmelade.deleteResourceGroup",
+        "onCommand:azureMarmelade.loadMore",
+        "onCommand:azureMarmelade.openInPortal",
+        "onCommand:azureMarmelade.refresh",
+        "onCommand:azureMarmelade.revealResource",
+        "onCommand:azureMarmelade.selectSubscriptions",
+        "onCommand:azureMarmelade.viewProperties",
+        "onView:azureMarmelade"
     ],
     "main": "./main.js",
     "contributes": {
         "commands": [
             {
-                "command": "azureResourceGroups.createResourceGroup",
-                "title": "%azureResourceGroups.createResourceGroup%",
-                "category": "Azure Resource Groups",
+                "command": "azureMarmelade.createResourceGroup",
+                "title": "%azureMarmelade.createResourceGroup%",
+                "category": "Azure Marmelade",
                 "icon": {
                     "light": "resources/light/add.svg",
                     "dark": "resources/dark/add.svg"
                 }
             },
             {
-                "command": "azureResourceGroups.deleteResourceGroup",
-                "title": "%azureResourceGroups.deleteResourceGroup%",
-                "category": "Azure Resource Groups"
+                "command": "azureMarmelade.deleteResourceGroup",
+                "title": "%azureMarmelade.deleteResourceGroup%",
+                "category": "Azure Marmelade"
             },
             {
-                "command": "azureResourceGroups.loadMore",
-                "title": "%azureResourceGroups.loadMore%",
-                "category": "Azure Resource Groups"
+                "command": "azureMarmelade.loadMore",
+                "title": "%azureMarmelade.loadMore%",
+                "category": "Azure Marmelade"
             },
             {
-                "command": "azureResourceGroups.openInPortal",
-                "title": "%azureResourceGroups.openInPortal%",
-                "category": "Azure Resource Groups"
+                "command": "azureMarmelade.openInPortal",
+                "title": "%azureMarmelade.openInPortal%",
+                "category": "Azure Marmelade"
             },
             {
-                "command": "azureResourceGroups.refresh",
-                "title": "%azureResourceGroups.refresh%",
-                "category": "Azure Resource Groups",
+                "command": "azureMarmelade.refresh",
+                "title": "%azureMarmelade.refresh%",
+                "category": "Azure Marmelade",
                 "icon": {
                     "light": "resources/light/refresh.svg",
                     "dark": "resources/dark/refresh.svg"
                 }
             },
             {
-                "command": "azureResourceGroups.revealResource",
-                "title": "%azureResourceGroups.revealResource%",
-                "category": "Azure Resource Groups"
+                "command": "azureMarmelade.revealResource",
+                "title": "%azureMarmelade.revealResource%",
+                "category": "Azure Marmelade"
             },
             {
-                "command": "azureResourceGroups.selectSubscriptions",
+                "command": "azureMarmelade.selectSubscriptions",
                 "title": "Select Subscriptions...",
                 "icon": {
                     "light": "resources/light/filter.svg",
@@ -88,9 +88,9 @@
                 }
             },
             {
-                "command": "azureResourceGroups.viewProperties",
-                "title": "%azureResourceGroups.viewProperties%",
-                "category": "Azure Resource Groups"
+                "command": "azureMarmelade.viewProperties",
+                "title": "%azureMarmelade.viewProperties%",
+                "category": "Azure Marmelade"
             }
         ],
         "viewsContainers": {
@@ -105,91 +105,91 @@
         "views": {
             "azure": [
                 {
-                    "id": "azureResourceGroups",
-                    "name": "Resource Groups"
+                    "id": "azureMarmelade",
+                    "name": "Marmelade"
                 }
             ]
         },
         "menus": {
             "view/title": [
                 {
-                    "command": "azureResourceGroups.createResourceGroup",
-                    "when": "view == azureResourceGroups",
+                    "command": "azureMarmelade.createResourceGroup",
+                    "when": "view == azureMarmelade",
                     "group": "navigation@1"
                 },
                 {
-                    "command": "azureResourceGroups.refresh",
-                    "when": "view == azureResourceGroups",
+                    "command": "azureMarmelade.refresh",
+                    "when": "view == azureMarmelade",
                     "group": "navigation@2"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "azureResourceGroups.selectSubscriptions",
-                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "command": "azureMarmelade.selectSubscriptions",
+                    "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
                     "group": "inline"
                 },
                 {
-                    "command": "azureResourceGroups.createResourceGroup",
-                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "command": "azureMarmelade.createResourceGroup",
+                    "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
                     "group": "1@1"
                 },
                 {
-                    "command": "azureResourceGroups.openInPortal",
-                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "command": "azureMarmelade.openInPortal",
+                    "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
                     "group": "9@1"
                 },
                 {
-                    "command": "azureResourceGroups.refresh",
-                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "command": "azureMarmelade.refresh",
+                    "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
                     "group": "9@2"
                 },
                 {
-                    "command": "azureResourceGroups.deleteResourceGroup",
-                    "when": "view == azureResourceGroups && viewItem == azureResourceGroup",
+                    "command": "azureMarmelade.deleteResourceGroup",
+                    "when": "view == azureMarmelade && viewItem == azureResourceGroup",
                     "group": "1@1"
                 },
                 {
-                    "command": "azureResourceGroups.viewProperties",
-                    "when": "view == azureResourceGroups && viewItem == azureResourceGroup",
+                    "command": "azureMarmelade.viewProperties",
+                    "when": "view == azureMarmelade && viewItem == azureResourceGroup",
                     "group": "9@1"
                 },
                 {
-                    "command": "azureResourceGroups.openInPortal",
-                    "when": "view == azureResourceGroups && viewItem == azureResourceGroup",
+                    "command": "azureMarmelade.openInPortal",
+                    "when": "view == azureMarmelade && viewItem == azureResourceGroup",
                     "group": "9@2"
                 },
                 {
-                    "command": "azureResourceGroups.refresh",
-                    "when": "view == azureResourceGroups && viewItem == azureResourceGroup",
+                    "command": "azureMarmelade.refresh",
+                    "when": "view == azureMarmelade && viewItem == azureResourceGroup",
                     "group": "9@3"
                 },
                 {
-                    "command": "azureResourceGroups.viewProperties",
-                    "when": "view == azureResourceGroups && viewItem == azureResource",
+                    "command": "azureMarmelade.viewProperties",
+                    "when": "view == azureMarmelade && viewItem == azureResource",
                     "group": "9@1"
                 },
                 {
-                    "command": "azureResourceGroups.openInPortal",
-                    "when": "view == azureResourceGroups && viewItem == azureResource",
+                    "command": "azureMarmelade.openInPortal",
+                    "when": "view == azureMarmelade && viewItem == azureResource",
                     "group": "9@2"
                 }
             ],
             "commandPalette": [
                 {
-                    "command": "azureResourceGroups.selectSubscriptions",
+                    "command": "azureMarmelade.selectSubscriptions",
                     "when": "never"
                 },
                 {
-                    "command": "azureResourceGroups.refresh",
+                    "command": "azureMarmelade.refresh",
                     "when": "never"
                 },
                 {
-                    "command": "azureResourceGroups.loadMore",
+                    "command": "azureMarmelade.loadMore",
                     "when": "never"
                 },
                 {
-                    "command": "azureResourceGroups.revealResource",
+                    "command": "azureMarmelade.revealResource",
                     "when": "never"
                 }
             ]
@@ -203,23 +203,23 @@
         ],
         "configuration": [
             {
-                "title": "Azure Resource Groups",
+                "title": "Azure Marmelade",
                 "properties": {
-                    "azureResourceGroups.enableOutputTimestamps": {
+                    "azureMarmelade.enableOutputTimestamps": {
                         "type": "boolean",
-                        "description": "%azureResourceGroups.enableOutputTimestamps%",
+                        "description": "%azureMarmelade.enableOutputTimestamps%",
                         "default": true
                     },
-                    "azureResourceGroups.deleteConfirmation": {
+                    "azureMarmelade.deleteConfirmation": {
                         "type": "string",
                         "enum": [
                             "EnterName",
                             "ClickButton"
                         ],
-                        "description": "%azureResourceGroups.deleteConfirmation%",
+                        "description": "%azureMarmelade.deleteConfirmation%",
                         "enumDescriptions": [
-                            "%azureResourceGroups.deleteConfirmation.EnterName%",
-                            "%azureResourceGroups.deleteConfirmation.ClickButton%"
+                            "%azureMarmelade.deleteConfirmation.EnterName%",
+                            "%azureMarmelade.deleteConfirmation.ClickButton%"
                         ],
                         "default": "EnterName"
                     }
@@ -245,6 +245,7 @@
         "@types/fs-extra": "^8.0.1",
         "@types/mocha": "^5.2.7",
         "@types/node": "^10.0.0",
+        "@types/request": "^2.48.4",
         "gulp": "^4.0.2",
         "mocha": "^5.2.0",
         "mocha-junit-reporter": "^1.23.1",
@@ -262,10 +263,15 @@
     "dependencies": {
         "azure-arm-resource": "^3.0.0-preview",
         "fs-extra": "^8.1.0",
+        "ms-rest": "^2.5.3",
+        "request": "^2.88.2",
+        "request-promise": "^4.2.5",
+        "vscode-azureappservice": "^0.57.1",
         "vscode-azureextensionui": "^0.29.7",
         "vscode-nls": "^4.1.1"
     },
     "extensionDependencies": [
         "ms-vscode.azure-account"
-    ]
+    ],
+    "enableProposedApi": true
 }

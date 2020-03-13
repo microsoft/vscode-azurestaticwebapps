@@ -6,19 +6,19 @@
 import { commands } from 'vscode';
 import { AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { createResourceGroup } from './createResourceGroup';
+import { createStaticWebApp } from './createStaticWebApp';
 import { deleteResourceGroup } from './deleteResourceGroup';
 import { openInPortal } from './openInPortal';
 import { revealResource } from './revealResource';
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
-    registerCommand('azureResourceGroups.createResourceGroup', createResourceGroup);
-    registerCommand('azureResourceGroups.deleteResourceGroup', deleteResourceGroup);
-    registerCommand('azureResourceGroups.loadMore', async (context: IActionContext, node: AzureTreeItem) => await ext.tree.loadMore(node, context));
-    registerCommand('azureResourceGroups.openInPortal', openInPortal);
-    registerCommand('azureResourceGroups.refresh', async (_context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(node));
-    registerCommand('azureResourceGroups.revealResource', revealResource);
-    registerCommand('azureResourceGroups.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
-    registerCommand('azureResourceGroups.viewProperties', viewProperties);
+    registerCommand('azureMarmelade.createResourceGroup', createStaticWebApp);
+    registerCommand('azureMarmelade.deleteResourceGroup', deleteResourceGroup);
+    registerCommand('azureMarmelade.loadMore', async (context: IActionContext, node: AzureTreeItem) => await ext.tree.loadMore(node, context));
+    registerCommand('azureMarmelade.openInPortal', openInPortal);
+    registerCommand('azureMarmelade.refresh', async (_context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(node));
+    registerCommand('azureMarmelade.revealResource', revealResource);
+    registerCommand('azureMarmelade.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
+    registerCommand('azureMarmelade.viewProperties', viewProperties);
 }

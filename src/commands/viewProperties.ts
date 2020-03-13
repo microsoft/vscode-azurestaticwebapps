@@ -5,12 +5,12 @@
 
 import { IActionContext, openReadOnlyJson } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { ResourceGroupTreeItem } from '../tree/ResourceGroupTreeItem';
 import { ResourceTreeItem } from '../tree/ResourceTreeItem';
+import { StaticSiteTreeItem } from '../tree/StaticSiteTreeItem';
 
-export async function viewProperties(context: IActionContext, node?: ResourceGroupTreeItem | ResourceTreeItem): Promise<void> {
+export async function viewProperties(context: IActionContext, node?: StaticSiteTreeItem | ResourceTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ResourceGroupTreeItem>(ResourceGroupTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<StaticSiteTreeItem>(StaticSiteTreeItem.contextValue, context);
     }
 
     await openReadOnlyJson(node, node.data);

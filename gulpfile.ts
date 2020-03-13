@@ -25,30 +25,6 @@ function test() {
     return cp.spawn('node', ['./node_modules/vscode/bin/test'], { stdio: 'inherit', env });
 }
 
-async function listIcons() {
-    const rootPath: string = path.join(__dirname, 'resources', 'providers');
-    const subDirs: string[] = (await fse.readdir(rootPath)).filter(dir => dir.startsWith('microsoft.'));
-    // tslint:disable-next-line: no-constant-condition
-    while (true) {
-        const subDir: string | undefined = subDirs.pop();
-        if (!subDir) {
-            break;
-        } else {
-            const subDirPath: string = path.join(rootPath, subDir);
-            const paths: string[] = await fse.readdir(subDirPath);
-            for (const p of paths) {
-                const subPath: string = path.posix.join(subDir, p);
-                if (subPath.endsWith('.svg')) {
-                    console.log(`'${subPath.slice(0, -4)}',`);
-                } else {
-                    subDirs.push(subPath);
-                }
-            }
-        }
-    }
-}
-
 exports['webpack-dev'] = () => gulp_webpack('development');
 exports['webpack-prod'] = () => gulp_webpack('production');
 exports.test = gulp.series(gulp_installAzureAccount, test);
-exports.listIcons = listIcons;
