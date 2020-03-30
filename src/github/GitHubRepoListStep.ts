@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
-import { createRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from './connectToGitHub';
-import { IStaticSiteWizardContext } from './IStaticSiteWizardContext';
+import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from './connectToGitHub';
 
 export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
     public async prompt(context: IStaticSiteWizardContext): Promise<void> {
@@ -27,7 +27,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticSiteWizardC
     }
 
     private async getRepositories(context: IStaticSiteWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
-        const requestOptions: gitHubWebResource = await createRequestOptions(context, nonNullProp(context, 'orgData').repos_url);
+        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, nonNullProp(context, 'orgData').repos_url);
         return await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name');
     }
 }

@@ -28,22 +28,24 @@
     ],
     "preview": true,
     "activationEvents": [
-        "onCommand:azureMarmelade.createResourceGroup",
-        "onCommand:azureMarmelade.deleteResourceGroup",
+        "onCommand:azureMarmelade.createStaticSite",
+        "onCommand:azureMarmelade.deleteStaticSite",
         "onCommand:azureMarmelade.loadMore",
         "onCommand:azureMarmelade.openInPortal",
         "onCommand:azureMarmelade.refresh",
         "onCommand:azureMarmelade.revealResource",
         "onCommand:azureMarmelade.selectSubscriptions",
         "onCommand:azureMarmelade.viewProperties",
+        "onCommand:azureMarmelade.createNewProject",
+        "onCommand:azureMarmelade.createFunction",
         "onView:azureMarmelade"
     ],
     "main": "./main.js",
     "contributes": {
         "commands": [
             {
-                "command": "azureMarmelade.createResourceGroup",
-                "title": "%azureMarmelade.createResourceGroup%",
+                "command": "azureMarmelade.createStaticSite",
+                "title": "%azureMarmelade.createStaticSite%",
                 "category": "Azure Marmelade",
                 "icon": {
                     "light": "resources/light/add.svg",
@@ -51,8 +53,8 @@
                 }
             },
             {
-                "command": "azureMarmelade.deleteResourceGroup",
-                "title": "%azureMarmelade.deleteResourceGroup%",
+                "command": "azureMarmelade.deleteStaticSite",
+                "title": "%azureMarmelade.deleteStaticSite%",
                 "category": "Azure Marmelade"
             },
             {
@@ -91,6 +93,24 @@
                 "command": "azureMarmelade.viewProperties",
                 "title": "%azureMarmelade.viewProperties%",
                 "category": "Azure Marmelade"
+            },
+            {
+                "command": "azureMarmelade.createNewProject",
+                "title": "%azureMarmelade.createNewProject%",
+                "category": "Azure Marmelade",
+                "icon": {
+                    "light": "resources/light/CreateNewProject.svg",
+                    "dark": "resources/dark/CreateNewProject.svg"
+                }
+            },
+            {
+                "command": "azureMarmelade.createFunction",
+                "title": "%azureMarmelade.createFunction%",
+                "category": "Azure Marmelade",
+                "icon": {
+                    "light": "resources/light/AddFunction.svg",
+                    "dark": "resources/dark/AddFunction.svg"
+                }
             }
         ],
         "viewsContainers": {
@@ -113,14 +133,24 @@
         "menus": {
             "view/title": [
                 {
-                    "command": "azureMarmelade.createResourceGroup",
+                    "command": "azureMarmelade.createStaticSite",
                     "when": "view == azureMarmelade",
                     "group": "navigation@1"
                 },
                 {
-                    "command": "azureMarmelade.refresh",
+                    "command": "azureMarmelade.createNewProject",
                     "when": "view == azureMarmelade",
                     "group": "navigation@2"
+                },
+                {
+                    "command": "azureMarmelade.createFunction",
+                    "when": "view == azureMarmelade",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "azureMarmelade.refresh",
+                    "when": "view == azureMarmelade",
+                    "group": "navigation@4"
                 }
             ],
             "view/item/context": [
@@ -130,7 +160,7 @@
                     "group": "inline"
                 },
                 {
-                    "command": "azureMarmelade.createResourceGroup",
+                    "command": "azureMarmelade.createStaticSite",
                     "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
                     "group": "1@1"
                 },
@@ -145,23 +175,23 @@
                     "group": "9@2"
                 },
                 {
-                    "command": "azureMarmelade.deleteResourceGroup",
-                    "when": "view == azureMarmelade && viewItem == azureResourceGroup",
+                    "command": "azureMarmelade.deleteStaticSite",
+                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
                     "group": "1@1"
                 },
                 {
                     "command": "azureMarmelade.viewProperties",
-                    "when": "view == azureMarmelade && viewItem == azureResourceGroup",
+                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
                     "group": "9@1"
                 },
                 {
                     "command": "azureMarmelade.openInPortal",
-                    "when": "view == azureMarmelade && viewItem == azureResourceGroup",
+                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
                     "group": "9@2"
                 },
                 {
                     "command": "azureMarmelade.refresh",
-                    "when": "view == azureMarmelade && viewItem == azureResourceGroup",
+                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
                     "group": "9@3"
                 },
                 {

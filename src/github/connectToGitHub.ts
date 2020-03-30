@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TokenCredentials } from 'ms-rest';
+import { HttpMethods, TokenCredentials } from 'ms-rest';
 import { Response } from 'request';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { requestUtils } from '../utils/requestUtils';
-import { IStaticSiteWizardContext } from './IStaticSiteWizardContext';
 
 export type gitHubOrgData = { login: string; repos_url: string };
 export type gitHubRepoData = { name: string; repos_url: string; url: string; html_url: string };
@@ -99,12 +99,14 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
     }
 }
 
-export async function createRequestOptions(context: IStaticSiteWizardContext, url: string): Promise<gitHubWebResource> {
+export async function createGitHubRequestOptions(context: IGitHubAccessTokenContext, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
     if (!context.accessToken) {
         const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
+
         let sessions: readonly vscode.AuthenticationSession[] = await vscode.authentication.getSessions('github', scopes);
         if (sessions.length > 0) {
             context.accessToken = await sessions[0].getAccessToken();
+
         } else {
             await vscode.authentication.login('github', scopes);
             sessions = await vscode.authentication.getSessions('github', scopes);
@@ -112,7 +114,9 @@ export async function createRequestOptions(context: IStaticSiteWizardContext, ur
         }
     }
 
-    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(context.accessToken));
+    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(context.accessToken), method);
+    requestOptions.headers.Accept = 'application/vnd.github.v3+json';
     requestOptions.resolveWithFullResponse = true;
+
     return requestOptions;
 }

@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
+import { githubApiEndpoint } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
-import { createQuickPickFromJsons, createRequestOptions, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource } from './connectToGitHub';
-import { IStaticSiteWizardContext } from './IStaticSiteWizardContext';
+import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource } from './connectToGitHub';
 
 export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
     public async prompt(context: IStaticSiteWizardContext): Promise<void> {
@@ -26,10 +27,10 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticSiteWizardCo
     }
 
     private async getOrganizations(context: IStaticSiteWizardContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
-        let requestOptions: gitHubWebResource = await createRequestOptions(context, 'https://api.github.com/user');
+        let requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/user`);
         let quickPickItems: IAzureQuickPickItem<gitHubOrgData>[] = createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login');
 
-        requestOptions = await createRequestOptions(context, 'https://api.github.com/user/orgs');
+        requestOptions = await createGitHubRequestOptions(context, `${githubApiEndpoint}/user/orgs`);
         quickPickItems = quickPickItems.concat(createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login'));
 
         return quickPickItems;

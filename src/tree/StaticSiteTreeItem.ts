@@ -3,7 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureParentTreeItem, AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import * as vscode from 'vscode';
+import { AzureParentTreeItem, AzureTreeItem, DialogResponses, TreeItemIconPath } from "vscode-azureextensionui";
+import { ext } from "../extensionVariables";
+import { localize } from "../utils/localize";
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
 
@@ -56,7 +59,18 @@ export class StaticSiteTreeItem extends AzureTreeItem {
     }
 
     public async deleteTreeItemImpl(): Promise<void> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}/providers/Microsoft.Web/staticSites?api-version=2019-12-01-preview`, this.root, 'DELETE');
-        return await requestUtils.sendRequest(requestOptions);
+        const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete "{0}"?', this.name);
+        await ext.ui.showWarningMessage(confirmMessage, { modal: true }, DialogResponses.deleteResponse, DialogResponses.cancel);
+
+        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}?api-version=2019-12-01-preview`, this.root, 'DELETE');
+
+        const deleting: string = localize('Deleting', 'Deleting "{0}"...', this.name);
+        const deleteSucceeded: string = localize('DeleteSucceeded', 'Successfully deleted "{0}".', this.name);
+        await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
+            ext.outputChannel.appendLog(deleting);
+            await requestUtils.sendRequest(requestOptions);
+            vscode.window.showInformationMessage(deleteSucceeded);
+            ext.outputChannel.appendLog(deleteSucceeded);
+        });
     }
 }

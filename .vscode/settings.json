@@ -14,5 +14,9 @@
         "source.fixAll.tslint": true,
     },
     "tslint.ignoreDefinitionFiles": true,
-    "typescript.preferences.importModuleSpecifier": "relative"
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ]
 }

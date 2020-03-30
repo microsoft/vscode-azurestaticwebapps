@@ -1,6 +1,6 @@
 {
-    "azureMarmelade.createResourceGroup": "Create Resource Group...",
-    "azureMarmelade.deleteResourceGroup": "Delete...",
+    "azureMarmelade.createStaticSite": "Create Static Site...",
+    "azureMarmelade.deleteStaticSite": "Delete...",
     "azureMarmelade.description": "An Azure Marmelade extension for Visual Studio Code.",
     "azureMarmelade.enableOutputTimestamps": "Prepends each line displayed in the output channel with a timestamp.",
     "azureMarmelade.loadMore": "Load More",
@@ -10,5 +10,7 @@
     "azureMarmelade.viewProperties": "View Properties",
     "azureMarmelade.deleteConfirmation": "The behavior to use when confirming delete of a resource group.",
     "azureMarmelade.deleteConfirmation.EnterName": "Prompts with an input box where you enter the resource group name to delete.",
-    "azureMarmelade.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete."
+    "azureMarmelade.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete.",
+    "azureMarmelade.createNewProject": "Add API to your local project.",
+    "azureMarmelade.createFunction": "Add a GitHub endpoint for your local project."
 }

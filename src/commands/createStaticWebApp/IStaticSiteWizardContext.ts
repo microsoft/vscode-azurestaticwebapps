@@ -4,13 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureTreeItem, IResourceGroupWizardContext } from 'vscode-azureextensionui';
-import { gitHubBranchData, gitHubOrgData, gitHubRepoData } from './connectToGitHub';
+import { gitHubBranchData, gitHubOrgData, gitHubRepoData } from '../../github/connectToGitHub';
+import { IGitHubAccessTokenContext } from '../../IGitHubAccessTokenContext';
 
-export interface IStaticSiteWizardContext extends IResourceGroupWizardContext {
+export interface IStaticSiteWizardContext extends IResourceGroupWizardContext, IGitHubAccessTokenContext {
     newSiteName?: string;
+
     orgData?: gitHubOrgData;
     repoData?: gitHubRepoData;
     branchData?: gitHubBranchData;
     node?: AzureTreeItem;
-    accessToken?: string;
+
+    appLocation?: string;
+    apiLocation?: string;
+    appArtifactLocation?: string;
 }
