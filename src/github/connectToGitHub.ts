@@ -12,7 +12,7 @@ import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { requestUtils } from '../utils/requestUtils';
 
 export type gitHubOrgData = { login: string; repos_url: string };
-export type gitHubRepoData = { name: string; repos_url: string; url: string; html_url: string };
+export type gitHubRepoData = { name: string; repos_url: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
 export type gitHubBranchData = { name: string };
 export type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
 export type gitHubWebResource = requestUtils.Request & { nextLink?: string };
@@ -101,17 +101,7 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
 
 export async function createGitHubRequestOptions(context: IGitHubAccessTokenContext, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
     if (!context.accessToken) {
-        const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-
-        let sessions: readonly vscode.AuthenticationSession[] = await vscode.authentication.getSessions('github', scopes);
-        if (sessions.length > 0) {
-            context.accessToken = await sessions[0].getAccessToken();
-
-        } else {
-            await vscode.authentication.login('github', scopes);
-            sessions = await vscode.authentication.getSessions('github', scopes);
-            context.accessToken = await sessions[0].getAccessToken();
-        }
+        context.accessToken = await getGitHubAccessToken();
     }
 
     const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(context.accessToken), method);
@@ -119,4 +109,18 @@ export async function createGitHubRequestOptions(context: IGitHubAccessTokenCont
     requestOptions.resolveWithFullResponse = true;
 
     return requestOptions;
+}
+
+export async function getGitHubAccessToken(): Promise<string> {
+    const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
+
+    let sessions: readonly vscode.AuthenticationSession[] = await vscode.authentication.getSessions('github', scopes);
+    if (sessions.length > 0) {
+        return await sessions[0].getAccessToken();
+
+    } else {
+        await vscode.authentication.login('github', scopes);
+        sessions = await vscode.authentication.getSessions('github', scopes);
+        return await sessions[0].getAccessToken();
+    }
 }

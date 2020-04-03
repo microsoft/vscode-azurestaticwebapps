@@ -5,9 +5,11 @@
 
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
+import { repoBranchSetting } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
+import { getWorkspaceSetting } from '../utils/vsCodeConfig/settings';
 import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from './connectToGitHub';
 
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
@@ -23,6 +25,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticSiteWizar
     }
 
     public shouldPrompt(context: IStaticSiteWizardContext): boolean {
+        context.branchData = getWorkspaceSetting(repoBranchSetting);
         return !context.branchData;
     }
 

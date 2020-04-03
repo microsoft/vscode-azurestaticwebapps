@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
-import { githubApiEndpoint } from '../constants';
+import { githubApiEndpoint, gitHubOrgDataSetting } from '../constants';
 import { ext } from '../extensionVariables';
+import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { localize } from '../utils/localize';
+import { getWorkspaceSetting } from '../utils/vsCodeConfig/settings';
 import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource } from './connectToGitHub';
 
-export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
-    public async prompt(context: IStaticSiteWizardContext): Promise<void> {
+export class GitHubOrgListStep extends AzureWizardPromptStep<IGitHubAccessTokenContext> {
+    public async prompt(context: IGitHubAccessTokenContext): Promise<void> {
         const placeHolder: string = localize('chooseOrg', 'Choose organization.');
         let orgData: gitHubOrgData | undefined;
 
@@ -22,11 +23,12 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticSiteWizardCo
         context.orgData = orgData;
     }
 
-    public shouldPrompt(context: IStaticSiteWizardContext): boolean {
-        return !context.orgData;
+    public shouldPrompt(context: IGitHubAccessTokenContext): boolean {
+        context.orgData = getWorkspaceSetting(gitHubOrgDataSetting);
+        return !context.orgData?.login;
     }
 
-    private async getOrganizations(context: IStaticSiteWizardContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
+    private async getOrganizations(context: IGitHubAccessTokenContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
         let requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/user`);
         let quickPickItems: IAzureQuickPickItem<gitHubOrgData>[] = createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login');
 

@@ -9,7 +9,7 @@ import { StaticSiteTreeItem } from '../tree/StaticSiteTreeItem';
 
 export async function deleteStaticSite(context: IActionContext, node?: StaticSiteTreeItem): Promise<void> {
     if (!node) {
-        node = <StaticSiteTreeItem>await ext.tree.showTreeItemPicker(StaticSiteTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<StaticSiteTreeItem>(StaticSiteTreeItem.contextValue, context);
     }
 
     await node.deleteTreeItem(context);

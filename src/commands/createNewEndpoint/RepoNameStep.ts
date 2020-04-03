@@ -25,7 +25,7 @@ export class RepoNameStep extends AzureWizardPromptStep<INewEndpointWizardContex
 
         if (name === '.' || name === '..') {
             return localize('reserved', 'The repository "{0}" is reserved.', name);
-        } else if (!name.length) {
+        } else if (name.length < 1) {
             return localize('invalidLength', 'The name must be between at least 1 character.');
         } else {
             return undefined;

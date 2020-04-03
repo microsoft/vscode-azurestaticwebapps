@@ -1,10 +1,10 @@
 # Azure Marmelade for Visual Studio Code (Preview)
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-azureMarmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureMarmelade) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-azureMarmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureMarmelade) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-azureMarmelade)](https://dev.azure.com/ms-azuretools/AzCode/_build/latest?definitionId=23)
+[![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-marmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-marmelade) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-marmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-marmelade) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-marmelade)](https://dev.azure.com/ms-azuretools/AzCode/_build/latest?definitionId=23)
 
 Manage Azure Marmelade directly from VS Code.
 
-**Visit the [wiki](https://github.com/Microsoft/vscode-azureMarmelade/wiki) for additional information about the extension.**
+**Visit the [wiki](https://github.com/Microsoft/vscode-marmelade/wiki) for additional information about the extension.**
 
 > Sign up today for your free Azure account and receive 12 months of free popular services, $200 free credit and 25+ always free services 👉 [Start Free](https://azure.microsoft.com/free/open-source).
 

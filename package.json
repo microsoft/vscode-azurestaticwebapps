@@ -240,18 +240,54 @@
                         "description": "%azureMarmelade.enableOutputTimestamps%",
                         "default": true
                     },
-                    "azureMarmelade.deleteConfirmation": {
-                        "type": "string",
-                        "enum": [
-                            "EnterName",
-                            "ClickButton"
-                        ],
-                        "description": "%azureMarmelade.deleteConfirmation%",
-                        "enumDescriptions": [
-                            "%azureMarmelade.deleteConfirmation.EnterName%",
-                            "%azureMarmelade.deleteConfirmation.ClickButton%"
-                        ],
-                        "default": "EnterName"
+                    "azureMarmelade.gitHubUser": {
+                        "type": "object",
+                        "properties": {
+                            "login": {
+                                "type": "string",
+                                "description": "%azureMarmelade.gitHubUserLogin%"
+                            },
+                            "repos_url": {
+                                "type": "string",
+                                "description": "%azureMarmelade.gitHubUserReposUrl%"
+                            }
+                        },
+                        "description": "%azureMarmelade.gitHubUser%",
+                        "scope": "resource"
+                    },
+                    "azureMarmelade.repoData": {
+                        "type": "object",
+                        "description": "%azureMarmelade.repoData%",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "%azureMarmelade.repoDataName%"
+                            },
+                            "repos_url": {
+                                "type": "string",
+                                "description": "%azureMarmelade.repoDataReposUrl%"
+                            },
+                            "url": {
+                                "type": "string",
+                                "description": "%azureMarmelade.repoDataUrl%"
+                            },
+                            "html_url": {
+                                "type": "string",
+                                "description": "%azureMarmelade.repoDataHtmlUrl%"
+                            }
+                        },
+                        "scope": "resource"
+                    },
+                    "azureMarmelade.repoBranch": {
+                        "type": "object,",
+                        "description": "%azureMarmelade.repoBranch%",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "%azureMarmelade.repoBranchName%"
+                            }
+                        },
+                        "scope": "resource"
                     }
                 }
             }
@@ -276,6 +312,7 @@
         "@types/mocha": "^5.2.7",
         "@types/node": "^10.0.0",
         "@types/request": "^2.48.4",
+        "@types/request-promise": "4.1.38",
         "gulp": "^4.0.2",
         "mocha": "^5.2.0",
         "mocha-junit-reporter": "^1.23.1",
@@ -296,6 +333,7 @@
         "ms-rest": "^2.5.3",
         "request": "^2.88.2",
         "request-promise": "^4.2.5",
+        "simple-git": "^1.132.0",
         "vscode-azureappservice": "^0.57.1",
         "vscode-azureextensionui": "^0.29.7",
         "vscode-nls": "^4.1.1"

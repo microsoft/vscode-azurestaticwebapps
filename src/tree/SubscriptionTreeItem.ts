@@ -10,6 +10,7 @@ import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep'
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
 import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
+import { getGitHubAccessToken } from '../github/connectToGitHub';
 import { GitHubBranchListStep } from '../github/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../github/GitHubOrgListStep';
 import { GitHubRepoListStep } from '../github/GitHubRepoListStep';
@@ -81,8 +82,11 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         requestOptions.headers['Content-Type'] = 'application/json';
         // tslint:disable-next-line:no-any
         const requestBody: any = {};
+        // tslint:disable: no-unsafe-any
         requestBody.location = wizardContext.location?.name;
 
+        // get the token if we never did
+        wizardContext.accessToken = wizardContext.accessToken ? wizardContext.accessToken : await getGitHubAccessToken();
         const properties: {} = {
             repositoryUrl: wizardContext.repoData?.html_url,
             branch: wizardContext.branchData?.name,

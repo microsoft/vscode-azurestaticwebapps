@@ -4,7 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext } from 'vscode-azureextensionui';
+import { gitHubOrgData } from './github/connectToGitHub';
 
 export interface IGitHubAccessTokenContext extends IActionContext {
     accessToken?: string;
+    orgData?: gitHubOrgData;
 }
