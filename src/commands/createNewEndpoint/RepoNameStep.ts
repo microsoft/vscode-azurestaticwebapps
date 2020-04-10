@@ -3,16 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep } from 'vscode-azureextensionui';
+import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureextensionui';
+import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
+import { createGitHubRequestOptions, gitHubWebResource } from '../../github/connectToGitHub';
 import { localize } from '../../utils/localize';
+import { nonNullProp } from '../../utils/nonNull';
+import { requestUtils } from '../../utils/requestUtils';
 import { INewEndpointWizardContext } from './INewEndpointWizardContext';
 
 export class RepoNameStep extends AzureWizardPromptStep<INewEndpointWizardContext> {
     public async prompt(wizardContext: INewEndpointWizardContext): Promise<void> {
         wizardContext.newRepoName = (await ext.ui.showInputBox({
             prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository.'),
-            validateInput: async (value: string): Promise<string | undefined> => await this.validatePlanName(value)
+            validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value)
         })).trim();
     }
 
@@ -20,13 +24,32 @@ export class RepoNameStep extends AzureWizardPromptStep<INewEndpointWizardContex
         return !wizardContext.newRepoName;
     }
 
-    private async validatePlanName(name: string | undefined): Promise<string | undefined> {
+    protected async isRepoAvailable(context: INewEndpointWizardContext, name: string): Promise<boolean> {
+        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${nonNullProp(context, 'orgData').login}/${name}`);
+        try {
+            await requestUtils.sendRequest(requestOptions);
+        } catch (err) {
+            const parsedError: IParsedError = parseError(err);
+            // if the repo doesn't exist, it throws a 404 Not Found error
+            if (parsedError.message.includes('Not Found')) {
+                return true;
+            }
+
+            throw err;
+        }
+
+        return false;
+    }
+
+    private async validateRepoName(context: INewEndpointWizardContext, name: string | undefined): Promise<string | undefined> {
         name = name ? name.trim() : '';
 
         if (name === '.' || name === '..') {
             return localize('reserved', 'The repository "{0}" is reserved.', name);
         } else if (name.length < 1) {
             return localize('invalidLength', 'The name must be between at least 1 character.');
+        } else if (!await this.isRepoAvailable(context, name)) {
+            return localize('nameUnavailable', 'The repository "{0}" already exists on this account.', name);
         } else {
             return undefined;
         }

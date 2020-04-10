@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { HttpMethods, TokenCredentials } from 'ms-rest';
+// tslint:disable-next-line:no-implicit-dependencies
 import { Response } from 'request';
 import { isArray } from 'util';
 import * as vscode from 'vscode';

@@ -5,12 +5,12 @@
 
 import { ResourceManagementClient, ResourceModels } from 'azure-arm-resource';
 import { SiteNameStep } from 'vscode-azureappservice';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, IResourceGroupWizardContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase } from 'vscode-azureextensionui';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
+import { CreateStaticWebAppStep } from '../commands/createStaticWebApp/createStaticWebAppStep';
 import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
-import { getGitHubAccessToken } from '../github/connectToGitHub';
 import { GitHubBranchListStep } from '../github/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../github/GitHubOrgListStep';
 import { GitHubRepoListStep } from '../github/GitHubRepoListStep';
@@ -63,9 +63,9 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
         const wizardContext: IStaticSiteWizardContext = { ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
-        const promptSteps: AzureWizardPromptStep<IStaticSiteWizardContext>[] = [new SiteNameStep(), new ResourceGroupListStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
+        const promptSteps: AzureWizardPromptStep<IResourceGroupWizardContext>[] = [new SiteNameStep(), new ResourceGroupListStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
         LocationListStep.addStep(wizardContext, promptSteps);
-        const executeSteps: AzureWizardExecuteStep<IStaticSiteWizardContext>[] = [new ResourceGroupCreateStep()];
+        const executeSteps: AzureWizardExecuteStep<IStaticSiteWizardContext>[] = [new ResourceGroupCreateStep(), new CreateStaticWebAppStep()];
 
         const wizard: AzureWizard<IStaticSiteWizardContext> = new AzureWizard(wizardContext, {
             title,
@@ -75,36 +75,9 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         await wizard.prompt();
         await wizard.execute();
-
         const newSiteName: string = nonNullProp(wizardContext, 'newSiteName');
         context.showCreatingTreeItem(newSiteName);
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${nonNullProp(wizardContext, 'resourceGroup').id}/providers/Microsoft.Web/staticSites/${newSiteName}?api-version=2019-12-01-preview`, this.root, 'PUT');
-        requestOptions.headers['Content-Type'] = 'application/json';
-        // tslint:disable-next-line:no-any
-        const requestBody: any = {};
-        // tslint:disable: no-unsafe-any
-        requestBody.location = wizardContext.location?.name;
 
-        // get the token if we never did
-        wizardContext.accessToken = wizardContext.accessToken ? wizardContext.accessToken : await getGitHubAccessToken();
-        const properties: {} = {
-            repositoryUrl: wizardContext.repoData?.html_url,
-            branch: wizardContext.branchData?.name,
-            repositoryToken: wizardContext.accessToken,
-            buildProperties: {
-                appLocation: wizardContext.appLocation,
-                apiLocation: wizardContext.apiLocation,
-                appArtifactLocation: wizardContext.appArtifactLocation
-            }
-        };
-        requestBody.properties = properties;
-
-        const standard: string = 'Standard';
-        requestBody.sku = { Name: standard, Tier: standard };
-
-        requestOptions.body = JSON.stringify(requestBody);
-
-        const staticSite: StaticSite = <StaticSite>JSON.parse(await requestUtils.sendRequest(requestOptions));
-        return new StaticSiteTreeItem(this, staticSite);
+        return new StaticSiteTreeItem(this, nonNullProp(wizardContext, 'site'));
     }
 }

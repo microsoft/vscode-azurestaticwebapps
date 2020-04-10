@@ -36,7 +36,7 @@
         "onCommand:azureMarmelade.revealResource",
         "onCommand:azureMarmelade.selectSubscriptions",
         "onCommand:azureMarmelade.viewProperties",
-        "onCommand:azureMarmelade.createNewProject",
+        "onCommand:azureMarmelade.createNewApi",
         "onCommand:azureMarmelade.createFunction",
         "onView:azureMarmelade"
     ],
@@ -95,8 +95,8 @@
                 "category": "Azure Marmelade"
             },
             {
-                "command": "azureMarmelade.createNewProject",
-                "title": "%azureMarmelade.createNewProject%",
+                "command": "azureMarmelade.createNewApi",
+                "title": "%azureMarmelade.createNewApi%",
                 "category": "Azure Marmelade",
                 "icon": {
                     "light": "resources/light/CreateNewProject.svg",
@@ -138,7 +138,7 @@
                     "group": "navigation@1"
                 },
                 {
-                    "command": "azureMarmelade.createNewProject",
+                    "command": "azureMarmelade.createNewApi",
                     "when": "view == azureMarmelade",
                     "group": "navigation@2"
                 },
@@ -312,18 +312,18 @@
         "@types/mocha": "^5.2.7",
         "@types/node": "^10.0.0",
         "@types/request": "^2.48.4",
-        "@types/request-promise": "4.1.38",
+        "@types/request-promise": "4.1.46",
         "gulp": "^4.0.2",
         "mocha": "^5.2.0",
         "mocha-junit-reporter": "^1.23.1",
         "mocha-multi-reporters": "^1.1.7",
         "ts-node": "^7.0.1",
-        "tslint": "^6.0.0",
+        "tslint": "^6.1.1",
         "tslint-microsoft-contrib": "^6.2.0",
         "typescript": "^3.7.5",
         "vsce": "^1.71.0",
         "vscode": "^1.1.36",
-        "vscode-azureextensiondev": "^0.2.3",
+        "vscode-azureextensiondev": "^0.3.1",
         "webpack": "^4.39.3",
         "webpack-cli": "^3.3.7"
     },
@@ -331,11 +331,10 @@
         "azure-arm-resource": "^3.0.0-preview",
         "fs-extra": "^8.1.0",
         "ms-rest": "^2.5.3",
-        "request": "^2.88.2",
         "request-promise": "^4.2.5",
         "simple-git": "^1.132.0",
         "vscode-azureappservice": "^0.57.1",
-        "vscode-azureextensionui": "^0.29.7",
+        "vscode-azureextensionui": "^0.29.12",
         "vscode-nls": "^4.1.1"
     },
     "extensionDependencies": [

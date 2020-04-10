@@ -6,6 +6,7 @@
 import { commands } from 'vscode';
 import { AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
+import { createNewApi } from './createNewApi';
 import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
 import { createStaticSite } from './createStaticWebApp/createStaticSite';
 import { deleteStaticSite } from './deleteStaticSite';
@@ -23,4 +24,5 @@ export function registerCommands(): void {
     registerCommand('azureMarmelade.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('azureMarmelade.viewProperties', viewProperties);
     registerCommand('azureMarmelade.createFunction', createNewEndpoint);
+    registerCommand('azureMarmelade.createNewApi', createNewApi);
 }
