@@ -6,7 +6,7 @@
 import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, gitHubWebResource } from '../../github/connectToGitHub';
+import { createGitHubRequestOptions, gitHubWebResource } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { requestUtils } from '../../utils/requestUtils';

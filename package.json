@@ -239,55 +239,6 @@
                         "type": "boolean",
                         "description": "%azureMarmelade.enableOutputTimestamps%",
                         "default": true
-                    },
-                    "azureMarmelade.gitHubUser": {
-                        "type": "object",
-                        "properties": {
-                            "login": {
-                                "type": "string",
-                                "description": "%azureMarmelade.gitHubUserLogin%"
-                            },
-                            "repos_url": {
-                                "type": "string",
-                                "description": "%azureMarmelade.gitHubUserReposUrl%"
-                            }
-                        },
-                        "description": "%azureMarmelade.gitHubUser%",
-                        "scope": "resource"
-                    },
-                    "azureMarmelade.repoData": {
-                        "type": "object",
-                        "description": "%azureMarmelade.repoData%",
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "description": "%azureMarmelade.repoDataName%"
-                            },
-                            "repos_url": {
-                                "type": "string",
-                                "description": "%azureMarmelade.repoDataReposUrl%"
-                            },
-                            "url": {
-                                "type": "string",
-                                "description": "%azureMarmelade.repoDataUrl%"
-                            },
-                            "html_url": {
-                                "type": "string",
-                                "description": "%azureMarmelade.repoDataHtmlUrl%"
-                            }
-                        },
-                        "scope": "resource"
-                    },
-                    "azureMarmelade.repoBranch": {
-                        "type": "object,",
-                        "description": "%azureMarmelade.repoBranch%",
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "description": "%azureMarmelade.repoBranchName%"
-                            }
-                        },
-                        "scope": "resource"
                     }
                 }
             }

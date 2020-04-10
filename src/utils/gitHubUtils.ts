@@ -6,11 +6,13 @@
 import { HttpMethods, TokenCredentials } from 'ms-rest';
 // tslint:disable-next-line:no-implicit-dependencies
 import { Response } from 'request';
+// tslint:disable-next-line:no-submodule-imports
+import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
-import { requestUtils } from '../utils/requestUtils';
+import { requestUtils } from './requestUtils';
 
 export type gitHubOrgData = { login: string; repos_url: string };
 export type gitHubRepoData = { name: string; repos_url: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
@@ -34,7 +36,7 @@ export async function getGitHubJsonResponse<T>(requestOptions: gitHubWebResource
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
- * @param description Optional property of JSON that will be used as QuickPicks description
+ * @param description Optional property of JSOsN that will be used as QuickPicks description
  * @param data Optional property of JSON that will be used as QuickPicks data saved as a NameValue pair
  */
 export function createQuickPickFromJsons<T>(jsons: T[], label: string): IAzureQuickPickItem<T>[] {
@@ -124,4 +126,24 @@ export async function getGitHubAccessToken(): Promise<string> {
         sessions = await vscode.authentication.getSessions('github', scopes);
         return await sessions[0].getAccessToken();
     }
+}
+
+export async function pushRepoToRemote(fsPath: string, remoteUrl: string, branch: string): Promise<void> {
+    const localGit: git.SimpleGit = git(fsPath);
+    await localGit.push(remoteUrl, branch);
+}
+
+export async function tryGetRemote(fsPath: string): Promise<string | undefined> {
+    const localGit: git.SimpleGit = git(fsPath);
+    const remotesRaw: string | void = await localGit.remote(['-v']);
+
+    if (remotesRaw !== undefined) {
+        const gitPushUrl: RegExpExecArray | null = /(?<=origin)(.*)(?=\(push\))/.exec(remotesRaw);
+        if (gitPushUrl !== null) {
+            // remove the .git suffix
+            return gitPushUrl[0].trim().slice(0, -4);
+        }
+    }
+
+    return;
 }

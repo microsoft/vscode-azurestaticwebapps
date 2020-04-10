@@ -5,8 +5,8 @@
 
 import { Progress } from "vscode";
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
-import { getGitHubAccessToken } from "../../github/connectToGitHub";
 import { StaticSite } from "../../tree/StaticSiteTreeItem";
+import { getGitHubAccessToken } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from "../../utils/nonNull";
 import { requestUtils } from "../../utils/requestUtils";
@@ -26,7 +26,7 @@ export class CreateStaticWebAppStep extends AzureWizardExecuteStep<IStaticSiteWi
         // get the token if we never did
         wizardContext.accessToken = wizardContext.accessToken ? wizardContext.accessToken : await getGitHubAccessToken();
         const properties: {} = {
-            repositoryUrl: wizardContext.repoData?.html_url,
+            repositoryUrl: wizardContext.repoHtmlUrl,
             branch: wizardContext.branchData?.name,
             repositoryToken: wizardContext.accessToken,
             buildProperties: {
@@ -37,7 +37,7 @@ export class CreateStaticWebAppStep extends AzureWizardExecuteStep<IStaticSiteWi
         };
         requestBody.properties = properties;
 
-        const standard: string = 'Standard';
+        const standard: string = 'Free';
         requestBody.sku = { Name: standard, Tier: standard };
 
         requestOptions.body = JSON.stringify(requestBody);

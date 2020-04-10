@@ -3,14 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// tslint:disable-next-line:no-submodule-imports
-import * as git from 'simple-git/promise';
 import { Progress } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
-import { githubApiEndpoint, gitHubOrgDataSetting, repoBranchSetting, repoDataSetting } from '../../constants';
-import { createGitHubRequestOptions, gitHubRepoData, gitHubWebResource } from "../../github/connectToGitHub";
+import { githubApiEndpoint } from '../../constants';
+import { createGitHubRequestOptions, gitHubRepoData, gitHubWebResource, pushRepoToRemote } from "../../utils/gitHubUtils";
+import { nonNullProp } from '../../utils/nonNull';
 import { requestUtils } from '../../utils/requestUtils';
-import { updateWorkspaceSetting } from '../../utils/vsCodeConfig/settings';
 import { INewEndpointWizardContext } from "./INewEndpointWizardContext";
 
 export class RepoCreateStep extends AzureWizardExecuteStep<INewEndpointWizardContext> {
@@ -23,12 +21,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<INewEndpointWizardCon
         const gitHubRepoRes: gitHubRepoData = <gitHubRepoData>JSON.parse((await requestUtils.sendRequest<{ body: string }>(requestOption)).body);
         progress.report({ message: 'Created new github repo' });
 
-        const localGit: git.SimpleGit = git(wizardContext.projectFsPath);
-        await localGit.push(gitHubRepoRes.clone_url, gitHubRepoRes.default_branch);
-
-        await updateWorkspaceSetting(gitHubOrgDataSetting, { login: wizardContext.orgData?.login, repos_url: wizardContext.orgData?.repos_url }, wizardContext.projectFsPath);
-        await updateWorkspaceSetting(repoDataSetting, { name: gitHubRepoRes.name, html_url: gitHubRepoRes.html_url, url: gitHubRepoRes.url, repos_url: gitHubRepoRes.repos_url }, wizardContext.projectFsPath);
-        await updateWorkspaceSetting(repoBranchSetting, { name: gitHubRepoRes.default_branch }, wizardContext.projectFsPath);
+        await pushRepoToRemote(wizardContext.projectFsPath, nonNullProp(gitHubRepoRes, 'clone_url'), nonNullProp(gitHubRepoRes, 'default_branch'));
     }
 
     public shouldExecute(wizardContext: INewEndpointWizardContext): boolean {

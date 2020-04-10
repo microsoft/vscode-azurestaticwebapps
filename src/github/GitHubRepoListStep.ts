@@ -5,12 +5,10 @@
 
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
-import { repoDataSetting } from '../constants';
 import { ext } from '../extensionVariables';
+import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
-import { getWorkspaceSetting } from '../utils/vsCodeConfig/settings';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from './connectToGitHub';
 
 export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
     public async prompt(context: IStaticSiteWizardContext): Promise<void> {
@@ -22,11 +20,11 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticSiteWizardC
         } while (!repoData);
 
         context.repoData = repoData;
+        context.repoHtmlUrl = repoData.html_url;
     }
 
     public shouldPrompt(context: IStaticSiteWizardContext): boolean {
-        context.repoData = getWorkspaceSetting(repoDataSetting);
-        return !context.repoData;
+        return !context.repoHtmlUrl;
     }
 
     private async getRepositories(context: IStaticSiteWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {

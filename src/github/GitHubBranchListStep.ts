@@ -5,12 +5,11 @@
 
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
-import { repoBranchSetting } from '../constants';
+import { githubApiEndpoint } from '../constants';
 import { ext } from '../extensionVariables';
+import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
-import { getWorkspaceSetting } from '../utils/vsCodeConfig/settings';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from './connectToGitHub';
 
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
     public async prompt(context: IStaticSiteWizardContext): Promise<void> {
@@ -25,12 +24,14 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticSiteWizar
     }
 
     public shouldPrompt(context: IStaticSiteWizardContext): boolean {
-        context.branchData = getWorkspaceSetting(repoBranchSetting);
         return !context.branchData;
     }
 
     private async getBranchPicks(context: IStaticSiteWizardContext, picksCache: ICachedQuickPicks<gitHubBranchData>): Promise<IAzureQuickPickItem<gitHubBranchData | undefined>[]> {
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(context, `${nonNullProp(context, 'repoData').url}/branches`);
+        const repoHtmlUrl: string = nonNullProp(context, 'repoHtmlUrl');
+        const owner: string = repoHtmlUrl.split('/')[3];
+        const repo: string = repoHtmlUrl.split('/')[4];
+        const requestOption: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${repo}/branches`);
         return await getGitHubQuickPicksWithLoadMore<gitHubBranchData>(picksCache, requestOption, 'name');
     }
 }

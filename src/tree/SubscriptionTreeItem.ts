@@ -5,7 +5,7 @@
 
 import { ResourceManagementClient, ResourceModels } from 'azure-arm-resource';
 import { SiteNameStep } from 'vscode-azureappservice';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, IResourceGroupWizardContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase } from 'vscode-azureextensionui';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
@@ -14,6 +14,7 @@ import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStatic
 import { GitHubBranchListStep } from '../github/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../github/GitHubOrgListStep';
 import { GitHubRepoListStep } from '../github/GitHubRepoListStep';
+import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { requestUtils } from '../utils/requestUtils';
@@ -63,7 +64,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
         const wizardContext: IStaticSiteWizardContext = { ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
-        const promptSteps: AzureWizardPromptStep<IResourceGroupWizardContext>[] = [new SiteNameStep(), new ResourceGroupListStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
+        const promptSteps: AzureWizardPromptStep<IGitHubAccessTokenContext>[] = [new SiteNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
         LocationListStep.addStep(wizardContext, promptSteps);
         const executeSteps: AzureWizardExecuteStep<IStaticSiteWizardContext>[] = [new ResourceGroupCreateStep(), new CreateStaticWebAppStep()];
 
@@ -74,6 +75,12 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         });
 
         await wizard.prompt();
+        const newName: string | undefined = await wizardContext.relatedNameTask;
+        if (!newName) {
+            throw new Error(localize('noUniqueName', 'Failed to generate unique name for resources. Use advanced creation to manually enter resource names.'));
+        }
+        wizardContext.newResourceGroupName = newName;
+
         await wizard.execute();
         const newSiteName: string = nonNullProp(wizardContext, 'newSiteName');
         context.showCreatingTreeItem(newSiteName);

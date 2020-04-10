@@ -10,5 +10,5 @@ export async function createNewApi(): Promise<void> {
         throw new Error();
     }
 
-    await vscode.commands.executeCommand('azureFunctions.createNewProject', vscode.workspace.workspaceFolders[0].uri.fsPath, 'JavaScript', undefined, true, 'HttpTrigger-JavaScript', 'GetList');
+    await vscode.commands.executeCommand('azureFunctions.createNewProject', vscode.workspace.workspaceFolders[0].uri.fsPath, 'JavaScript', undefined, true, 'HttpTrigger-JavaScript', 'GetList', undefined, 'anonymous');
 }
