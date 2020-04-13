@@ -6,6 +6,7 @@
 import { commands } from 'vscode';
 import { AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
+import { browse } from './browse';
 import { createNewApi } from './createNewApi';
 import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
 import { createStaticSite } from './createStaticWebApp/createStaticSite';
@@ -25,4 +26,5 @@ export function registerCommands(): void {
     registerCommand('azureMarmelade.viewProperties', viewProperties);
     registerCommand('azureMarmelade.createFunction', createNewEndpoint);
     registerCommand('azureMarmelade.createNewApi', createNewApi);
+    registerCommand('azureMarmelade.browse', browse);
 }

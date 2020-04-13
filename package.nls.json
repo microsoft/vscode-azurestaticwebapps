@@ -12,5 +12,6 @@
     "azureMarmelade.deleteConfirmation.EnterName": "Prompts with an input box where you enter the resource group name to delete.",
     "azureMarmelade.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete.",
     "azureMarmelade.createNewProject": "Add API to your local project.",
-    "azureMarmelade.createFunction": "Add a GitHub endpoint for your local project."
+    "azureMarmelade.createFunction": "Add a GitHub endpoint for your local project.",
+    "azureMarmelade.browse": "Browse Static Site"
 }

@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { AzureParentTreeItem, AzureTreeItem, DialogResponses, TreeItemIconPath } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { localize } from "../utils/localize";
+import { openUrl } from '../utils/openUrl';
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
 
@@ -72,5 +73,9 @@ export class StaticSiteTreeItem extends AzureTreeItem {
             vscode.window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);
         });
+    }
+
+    public async browse(): Promise<void> {
+        await openUrl(`https://${this.description}`);
     }
 }

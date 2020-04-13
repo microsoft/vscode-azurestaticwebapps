@@ -5,6 +5,6 @@
 
 import { IActionContext } from "vscode-azureextensionui";
 
-export async function createNewEndpoint(context: IActionContext): Promise<void> {
+export async function createNewEndpoint(_context: IActionContext): Promise<void> {
     // call create new function
 }

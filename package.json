@@ -38,6 +38,7 @@
         "onCommand:azureMarmelade.viewProperties",
         "onCommand:azureMarmelade.createNewApi",
         "onCommand:azureMarmelade.createFunction",
+        "onCommand:azureMarmelade.browse",
         "onView:azureMarmelade"
     ],
     "main": "./main.js",
@@ -111,6 +112,11 @@
                     "light": "resources/light/AddFunction.svg",
                     "dark": "resources/dark/AddFunction.svg"
                 }
+            },
+            {
+                "command": "azureMarmelade.browse",
+                "title": "%azureMarmelade.browse%",
+                "category": "Azure Marmelade"
             }
         ],
         "viewsContainers": {
@@ -177,7 +183,7 @@
                 {
                     "command": "azureMarmelade.deleteStaticSite",
                     "when": "view == azureMarmelade && viewItem == azureStaticSite",
-                    "group": "1@1"
+                    "group": "3@1"
                 },
                 {
                     "command": "azureMarmelade.viewProperties",
@@ -187,7 +193,12 @@
                 {
                     "command": "azureMarmelade.openInPortal",
                     "when": "view == azureMarmelade && viewItem == azureStaticSite",
-                    "group": "9@2"
+                    "group": "1@1"
+                },
+                {
+                    "command": "azureMarmelade.browse",
+                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
+                    "group": "1@2"
                 },
                 {
                     "command": "azureMarmelade.refresh",
@@ -202,7 +213,12 @@
                 {
                     "command": "azureMarmelade.openInPortal",
                     "when": "view == azureMarmelade && viewItem == azureResource",
-                    "group": "9@2"
+                    "group": "1@1"
+                },
+                {
+                    "command": "azureMarmelade.browse",
+                    "when": "view == azureMarmelade && viewItem == azureResource",
+                    "group": "1@2"
                 }
             ],
             "commandPalette": [
