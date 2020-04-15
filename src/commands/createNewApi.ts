@@ -4,11 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { ext } from '../extensionVariables';
 
 export async function createNewApi(): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
         throw new Error();
     }
 
-    await vscode.commands.executeCommand('azureFunctions.createNewProject', vscode.workspace.workspaceFolders[0].uri.fsPath, 'JavaScript', undefined, true, 'HttpTrigger-JavaScript', 'GetList', undefined, 'anonymous');
+    const apiLanguage: string = (await ext.ui.showQuickPick([{ label: 'JavaScript' }, { label: 'TypeScript' }], { placeHolder: 'Select a language for the API...' })).label;
+
+    await vscode.commands.executeCommand('azureFunctions.createNewProject', `${vscode.workspace.workspaceFolders[0].uri.fsPath}/api`, apiLanguage, undefined, true, 'HttpTrigger', 'endpoint1', { authLevel: 'anonymous' });
 }

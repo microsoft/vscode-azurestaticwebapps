@@ -37,7 +37,7 @@
         "onCommand:azureMarmelade.selectSubscriptions",
         "onCommand:azureMarmelade.viewProperties",
         "onCommand:azureMarmelade.createNewApi",
-        "onCommand:azureMarmelade.createFunction",
+        "onCommand:azureMarmelade.createNewEndpoint",
         "onCommand:azureMarmelade.browse",
         "onView:azureMarmelade"
     ],
@@ -105,8 +105,8 @@
                 }
             },
             {
-                "command": "azureMarmelade.createFunction",
-                "title": "%azureMarmelade.createFunction%",
+                "command": "azureMarmelade.createNewEndpoint",
+                "title": "%azureMarmelade.createNewEndpoint%",
                 "category": "Azure Marmelade",
                 "icon": {
                     "light": "resources/light/AddFunction.svg",
@@ -149,7 +149,7 @@
                     "group": "navigation@2"
                 },
                 {
-                    "command": "azureMarmelade.createFunction",
+                    "command": "azureMarmelade.createNewEndpoint",
                     "when": "view == azureMarmelade",
                     "group": "navigation@3"
                 },

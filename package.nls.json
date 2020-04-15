@@ -11,7 +11,7 @@
     "azureMarmelade.deleteConfirmation": "The behavior to use when confirming delete of a resource group.",
     "azureMarmelade.deleteConfirmation.EnterName": "Prompts with an input box where you enter the resource group name to delete.",
     "azureMarmelade.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete.",
-    "azureMarmelade.createNewProject": "Add API to your local project.",
-    "azureMarmelade.createFunction": "Add a GitHub endpoint for your local project.",
+    "azureMarmelade.createNewApi": "Create New API...",
+    "azureMarmelade.createNewEndpoint": "Create Endpoint...",
     "azureMarmelade.browse": "Browse Static Site"
 }

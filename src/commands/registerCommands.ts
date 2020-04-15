@@ -24,7 +24,7 @@ export function registerCommands(): void {
     registerCommand('azureMarmelade.revealResource', revealResource);
     registerCommand('azureMarmelade.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('azureMarmelade.viewProperties', viewProperties);
-    registerCommand('azureMarmelade.createFunction', createNewEndpoint);
+    registerCommand('azureMarmelade.createNewEndpoint', createNewEndpoint);
     registerCommand('azureMarmelade.createNewApi', createNewApi);
     registerCommand('azureMarmelade.browse', browse);
 }
