@@ -9,7 +9,7 @@ import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptSt
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
-import { CreateStaticWebAppStep } from '../commands/createStaticWebApp/createStaticWebAppStep';
+import { CreateStaticWebAppStep } from '../commands/createStaticWebApp/CreateStaticWebAppStep';
 import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
 import { GitHubBranchListStep } from '../github/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../github/GitHubOrgListStep';
