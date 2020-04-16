@@ -5,7 +5,6 @@
 
 import { workspace } from "vscode";
 import { AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext } from "vscode-azureextensionui";
-import { GitHubOrgListStep } from "../github/GitHubOrgListStep";
 import { IGitHubAccessTokenContext } from "../IGitHubAccessTokenContext";
 import { getGitHubAccessToken } from "../utils/gitHubUtils";
 import { localize } from "../utils/localize";
@@ -21,7 +20,7 @@ export async function createGitHubRepo(context: IActionContext): Promise<void> {
     const wizardContext: INewEndpointWizardContext = { ...context, projectFsPath: workspace.workspaceFolders[0].uri.fsPath };
     const title: string = localize('connectGitHubRepo', 'Create new endpoint');
 
-    const promptSteps: AzureWizardPromptStep<IGitHubAccessTokenContext>[] = [new GitHubOrgListStep(), new RepoNameStep()];
+    const promptSteps: AzureWizardPromptStep<IGitHubAccessTokenContext>[] = [new RepoNameStep()];
     const executeSteps: AzureWizardExecuteStep<INewEndpointWizardContext>[] = [new RepoCreateStep()];
 
     const wizard: AzureWizard<INewEndpointWizardContext> = new AzureWizard(wizardContext, {

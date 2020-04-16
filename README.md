@@ -1,6 +1,6 @@
 # Azure Marmelade for Visual Studio Code (Preview)
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-marmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-marmelade) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-marmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-marmelade) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-marmelade)](https://dev.azure.com/ms-azuretools/AzCode/_build/latest?definitionId=23)
+[![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-marmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-marmelade) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-marmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-marmelade) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-marmelade)](https://dev.azure.com/ms-azuretools/AzCodePrivate/_build/latest?definitionId=29)
 
 Manage Azure Marmelade directly from VS Code.
 

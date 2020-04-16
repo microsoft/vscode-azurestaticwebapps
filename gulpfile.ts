@@ -11,7 +11,6 @@
 // tslint:disable:no-unsafe-any
 
 import * as cp from 'child_process';
-import * as fse from 'fs-extra';
 import * as gulp from 'gulp';
 import * as path from 'path';
 import { gulp_installAzureAccount, gulp_webpack } from 'vscode-azureextensiondev';
