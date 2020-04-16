@@ -23,7 +23,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticSiteWi
         // tslint:disable: no-unsafe-any
         requestBody.location = wizardContext.location?.name;
 
-        // get the token if we never did
+        // get the token if we never did (this occurs when we auto-detect the remote)
         wizardContext.accessToken = wizardContext.accessToken ? wizardContext.accessToken : await getGitHubAccessToken();
         const properties: {} = {
             repositoryUrl: wizardContext.repoHtmlUrl,

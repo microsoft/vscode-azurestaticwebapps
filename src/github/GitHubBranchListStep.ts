@@ -24,6 +24,11 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticSiteWizar
     }
 
     public shouldPrompt(context: IStaticSiteWizardContext): boolean {
+        if (context.newRepoName) {
+            // if this is a new repo, the only branch that will have been created is 'master'
+            context.branchData = { name: 'master' };
+
+        }
         return !context.branchData;
     }
 
