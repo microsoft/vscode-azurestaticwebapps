@@ -9,8 +9,8 @@ import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptSt
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
-import { CreateStaticWebAppStep } from '../commands/createStaticWebApp/CreateStaticWebAppStep';
 import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
+import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { GitHubBranchListStep } from '../github/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../github/GitHubOrgListStep';
 import { GitHubRepoListStep } from '../github/GitHubRepoListStep';
@@ -66,7 +66,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IGitHubAccessTokenContext>[] = [new SiteNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
         LocationListStep.addStep(wizardContext, promptSteps);
-        const executeSteps: AzureWizardExecuteStep<IStaticSiteWizardContext>[] = [new ResourceGroupCreateStep(), new CreateStaticWebAppStep()];
+        const executeSteps: AzureWizardExecuteStep<IStaticSiteWizardContext>[] = [new ResourceGroupCreateStep(), new StaticWebAppCreateStep()];
 
         const wizard: AzureWizard<IStaticSiteWizardContext> = new AzureWizard(wizardContext, {
             title,

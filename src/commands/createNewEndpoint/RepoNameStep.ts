@@ -10,21 +10,21 @@ import { createGitHubRequestOptions, gitHubWebResource } from '../../utils/gitHu
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { requestUtils } from '../../utils/requestUtils';
-import { INewEndpointWizardContext } from './INewEndpointWizardContext';
+import { IStaticSiteWizardContext } from '../createStaticWebApp/IStaticSiteWizardContext';
 
-export class RepoNameStep extends AzureWizardPromptStep<INewEndpointWizardContext> {
-    public async prompt(wizardContext: INewEndpointWizardContext): Promise<void> {
+export class RepoNameStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
+    public async prompt(wizardContext: IStaticSiteWizardContext): Promise<void> {
         wizardContext.newRepoName = (await ext.ui.showInputBox({
             prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository.'),
             validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value)
         })).trim();
     }
 
-    public shouldPrompt(wizardContext: INewEndpointWizardContext): boolean {
+    public shouldPrompt(wizardContext: IStaticSiteWizardContext): boolean {
         return !wizardContext.newRepoName;
     }
 
-    protected async isRepoAvailable(context: INewEndpointWizardContext, name: string): Promise<boolean> {
+    protected async isRepoAvailable(context: IStaticSiteWizardContext, name: string): Promise<boolean> {
         const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${nonNullProp(context, 'orgData').login}/${name}`);
         try {
             await requestUtils.sendRequest(requestOptions);
@@ -41,7 +41,7 @@ export class RepoNameStep extends AzureWizardPromptStep<INewEndpointWizardContex
         return false;
     }
 
-    private async validateRepoName(context: INewEndpointWizardContext, name: string | undefined): Promise<string | undefined> {
+    private async validateRepoName(context: IStaticSiteWizardContext, name: string | undefined): Promise<string | undefined> {
         name = name ? name.trim() : '';
 
         if (name === '.' || name === '..') {

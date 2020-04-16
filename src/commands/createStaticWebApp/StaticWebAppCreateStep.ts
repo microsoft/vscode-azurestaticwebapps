@@ -12,7 +12,7 @@ import { nonNullProp } from "../../utils/nonNull";
 import { requestUtils } from "../../utils/requestUtils";
 import { IStaticSiteWizardContext } from "./IStaticSiteWizardContext";
 
-export class CreateStaticWebAppStep extends AzureWizardExecuteStep<IStaticSiteWizardContext> {
+export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticSiteWizardContext> {
     public priority: number = 250;
 
     public async execute(wizardContext: IStaticSiteWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {

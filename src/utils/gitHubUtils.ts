@@ -128,11 +128,6 @@ export async function getGitHubAccessToken(): Promise<string> {
     }
 }
 
-export async function pushRepoToRemote(fsPath: string, remoteUrl: string, branch: string): Promise<void> {
-    const localGit: git.SimpleGit = git(fsPath);
-    await localGit.push(remoteUrl, branch);
-}
-
 export async function tryGetRemote(fsPath: string): Promise<string | undefined> {
     const localGit: git.SimpleGit = git(fsPath);
     const remotesRaw: string | void = await localGit.remote(['-v']);

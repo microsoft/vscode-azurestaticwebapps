@@ -20,5 +20,7 @@ export interface IStaticSiteWizardContext extends IResourceGroupWizardContext, I
     apiLocation?: string;
     appArtifactLocation?: string;
 
+    newRepoName?: string;
+
     site?: StaticSite;
 }

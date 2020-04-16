@@ -3,8 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { createGitHubRepo } from '../commands/createGitHubRepo';
+import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
+import { RepoCreateStep } from '../commands/createNewEndpoint/RepoCreateStep';
+import { RepoNameStep } from '../commands/createNewEndpoint/RepoNameStep';
 import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
 import { ext } from '../extensionVariables';
 import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from '../utils/gitHubUtils';
@@ -34,11 +35,12 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticSiteWizardC
         return !context.repoHtmlUrl;
     }
 
-    public async getSubWizard(context: IStaticSiteWizardContext): Promise<undefined> {
+    public async getSubWizard(context: IStaticSiteWizardContext): Promise<IWizardOptions<IStaticSiteWizardContext> | undefined> {
         if (context.repoData?.name === createNewRepo) {
-            await createGitHubRepo(context);
+            return { promptSteps: [new RepoNameStep()], executeSteps: [new RepoCreateStep()] };
+        } else {
+            return undefined;
         }
-        return;
     }
 
     private async getRepositories(context: IStaticSiteWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
