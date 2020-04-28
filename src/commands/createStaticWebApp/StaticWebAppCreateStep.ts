@@ -5,17 +5,17 @@
 
 import { Progress } from "vscode";
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
-import { StaticSite } from "../../tree/StaticSiteTreeItem";
+import { StaticWebApp } from "../../tree/StaticWebAppTreeItem";
 import { getGitHubAccessToken } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from "../../utils/nonNull";
 import { requestUtils } from "../../utils/requestUtils";
-import { IStaticSiteWizardContext } from "./IStaticSiteWizardContext";
+import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticSiteWizardContext> {
+export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     public priority: number = 250;
 
-    public async execute(wizardContext: IStaticSiteWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
+    public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${nonNullProp(wizardContext, 'resourceGroup').id}/providers/Microsoft.Web/staticSites/${wizardContext.newSiteName}?api-version=2019-12-01-preview`, wizardContext, 'PUT');
         requestOptions.headers['Content-Type'] = 'application/json';
         // tslint:disable-next-line:no-any
@@ -42,11 +42,11 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticSiteWi
 
         requestOptions.body = JSON.stringify(requestBody);
         progress.report({ message: localize('creatingStaticApp', 'Creating Static Web App "{0}"...', wizardContext.newSiteName) });
-        wizardContext.site = <StaticSite>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        wizardContext.site = <StaticWebApp>JSON.parse(await requestUtils.sendRequest(requestOptions));
         progress.report({ message: localize('creatingStaticApp', 'Created Static Web App "{0}".', wizardContext.newSiteName) });
     }
 
-    public shouldExecute(_wizardContext: IStaticSiteWizardContext): boolean {
+    public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {
         return true;
     }
 }

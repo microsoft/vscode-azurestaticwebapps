@@ -6,17 +6,17 @@
 import { AzureWizardPromptStep } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
-import { IStaticSiteWizardContext } from "./IStaticSiteWizardContext";
+import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export class ApiLocationStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
-    public async prompt(wizardContext: IStaticSiteWizardContext): Promise<void> {
+export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+    public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         wizardContext.apiLocation = (await ext.ui.showInputBox({
             value: 'api',
             prompt: localize('apiLocation', 'Enter the API directory')
         })).trim();
     }
 
-    public shouldPrompt(wizardContext: IStaticSiteWizardContext): boolean {
+    public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
         return !wizardContext.apiLocation;
     }
 

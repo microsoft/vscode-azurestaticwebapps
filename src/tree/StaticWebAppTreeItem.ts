@@ -11,7 +11,7 @@ import { openUrl } from '../utils/openUrl';
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
 
-export type StaticSite = {
+export type StaticWebApp = {
     id: string;
     location: string;
     name: string;
@@ -29,12 +29,12 @@ export type StaticSite = {
     type: string;
 };
 
-export class StaticSiteTreeItem extends AzureTreeItem {
-    public static contextValue: string = 'azureStaticSite';
-    public readonly contextValue: string = StaticSiteTreeItem.contextValue;
-    public readonly data: StaticSite;
+export class StaticWebAppTreeItem extends AzureTreeItem {
+    public static contextValue: string = 'azureStaticWebApp';
+    public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
+    public readonly data: StaticWebApp;
 
-    constructor(parent: AzureParentTreeItem, ss: StaticSite) {
+    constructor(parent: AzureParentTreeItem, ss: StaticWebApp) {
         super(parent);
         this.data = ss;
     }
@@ -56,7 +56,7 @@ export class StaticSiteTreeItem extends AzureTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getIconPath('resourceGroup');
+        return treeUtils.getThemedIconPath('azure-staticwebapps');
     }
 
     public async deleteTreeItemImpl(): Promise<void> {

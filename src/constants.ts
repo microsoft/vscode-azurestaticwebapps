@@ -3,5 +3,5 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-export const extensionPrefix: string = 'azureMarmelade';
+export const extensionPrefix: string = 'staticWebApps';
 export const githubApiEndpoint: string = 'https://api.github.com';

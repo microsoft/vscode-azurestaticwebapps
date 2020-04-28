@@ -5,10 +5,10 @@
 
 import { AzureTreeItem, IResourceGroupWizardContext } from 'vscode-azureextensionui';
 import { IGitHubAccessTokenContext } from '../../IGitHubAccessTokenContext';
-import { StaticSite } from '../../tree/StaticSiteTreeItem';
+import { StaticWebApp } from '../../tree/StaticWebAppTreeItem';
 import { gitHubBranchData, gitHubOrgData, gitHubRepoData } from '../../utils/gitHubUtils';
 
-export interface IStaticSiteWizardContext extends IResourceGroupWizardContext, IGitHubAccessTokenContext {
+export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, IGitHubAccessTokenContext {
     newSiteName?: string;
 
     orgData?: gitHubOrgData;
@@ -22,5 +22,5 @@ export interface IStaticSiteWizardContext extends IResourceGroupWizardContext, I
 
     newRepoName?: string;
 
-    site?: StaticSite;
+    site?: StaticWebApp;
 }

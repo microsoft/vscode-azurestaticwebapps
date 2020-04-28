@@ -18,5 +18,5 @@ export namespace ext {
     export let reporter: ITelemetryReporter;
     // tslint:disable-next-line: strict-boolean-expressions
     export let ignoreBundle: boolean = !/^(false|0)?$/i.test(process.env.AZCODE_MARMELADE_IGNORE_BUNDLE || '');
-    export let prefix: string = 'azureMarmelade';
+    export let prefix: string = 'staticWebApps';
 }

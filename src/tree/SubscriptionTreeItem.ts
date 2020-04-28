@@ -9,7 +9,7 @@ import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptSt
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
-import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { GitHubBranchListStep } from '../github/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../github/GitHubOrgListStep';
@@ -18,7 +18,7 @@ import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { requestUtils } from '../utils/requestUtils';
-import { StaticSite, StaticSiteTreeItem } from './StaticSiteTreeItem';
+import { StaticWebApp, StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public readonly childTypeLabel: string = localize('resourceGroup', 'Resource Group');
@@ -37,38 +37,38 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const client: ResourceManagementClient = createAzureClient(this.root, ResourceManagementClient);
         const rgs: ResourceModels.ResourceGroupListResult = this._nextLink ? await client.resourceGroups.listNext(this._nextLink) : await client.resourceGroups.list();
         this._nextLink = rgs.nextLink;
-        const allGetRequests: { value: StaticSite[] }[] = await Promise.all(rgs.map(async (rg) => {
+        const allGetRequests: { value: StaticWebApp[] }[] = await Promise.all(rgs.map(async (rg) => {
             const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${rg.id}/providers/Microsoft.Web/staticSites?api-version=2019-12-01-preview`, this.root);
             return JSON.parse(await requestUtils.sendRequest(requestOptions));
         }));
 
-        const staticSites: StaticSite[] = [];
+        const staticWebApps: StaticWebApp[] = [];
 
         for (const ssRes of allGetRequests) {
             if (ssRes.value.length > 0) {
                 for (const ss of ssRes.value) {
-                    staticSites.push(ss);
+                    staticWebApps.push(ss);
                 }
             }
         }
 
         return await this.createTreeItemsWithErrorHandling(
-            staticSites,
-            'invalidResourceGroup',
-            ss => new StaticSiteTreeItem(this, ss),
+            staticWebApps,
+            'invalidStaticWebApp',
+            ss => new StaticWebAppTreeItem(this, ss),
             ss => ss.name
         );
 
     }
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
-        const wizardContext: IStaticSiteWizardContext = { ...context, ...this.root };
+        const wizardContext: IStaticWebAppWizardContext = { ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IGitHubAccessTokenContext>[] = [new SiteNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
         LocationListStep.addStep(wizardContext, promptSteps);
-        const executeSteps: AzureWizardExecuteStep<IStaticSiteWizardContext>[] = [new ResourceGroupCreateStep(), new StaticWebAppCreateStep()];
+        const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [new ResourceGroupCreateStep(), new StaticWebAppCreateStep()];
 
-        const wizard: AzureWizard<IStaticSiteWizardContext> = new AzureWizard(wizardContext, {
+        const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
             title,
             promptSteps,
             executeSteps
@@ -85,6 +85,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const newSiteName: string = nonNullProp(wizardContext, 'newSiteName');
         context.showCreatingTreeItem(newSiteName);
 
-        return new StaticSiteTreeItem(this, nonNullProp(wizardContext, 'site'));
+        return new StaticWebAppTreeItem(this, nonNullProp(wizardContext, 'site'));
     }
 }

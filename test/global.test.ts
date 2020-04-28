@@ -19,7 +19,7 @@ export function createTestActionContext(): IActionContext {
 suiteSetup(async function (this: IHookCallbackContext): Promise<void> {
     this.timeout(1 * 60 * 1000);
 
-    await vscode.commands.executeCommand('azureMarmelade.refresh'); // activate the extension before tests begin
+    await vscode.commands.executeCommand('staticWebApps.refresh'); // activate the extension before tests begin
     ext.outputChannel = new TestOutputChannel();
     ext.ui = testUserInput;
 

@@ -1,23 +1,23 @@
 {
-    "name": "vscode-azuremarmelade",
-    "displayName": "Azure Marmelade",
-    "description": "%azureMarmelade.description%",
+    "name": "vscode-azurestaticwebapps",
+    "displayName": "Azure Static Web Apps",
+    "description": "%staticWebApps.description%",
     "version": "0.1.0-alpha",
     "publisher": "ms-azuretools",
-    "icon": "resources/resourceGroup.png",
+    "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "engines": {
         "vscode": "^1.41.0"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Microsoft/vscode-azureMarmelade"
+        "url": "https://github.com/Microsoft/vscode-azurestaticwebapps"
     },
     "galleryBanner": {
         "color": "#3a3d41",
         "theme": "dark"
     },
-    "homepage": "https://github.com/Microsoft/vscode-azureMarmelade/blob/master/README.md",
+    "homepage": "https://github.com/Microsoft/vscode-azurestaticwebapps/blob/master/README.md",
     "license": "SEE LICENSE IN LICENSE.md",
     "categories": [
         "Azure"
@@ -28,62 +28,56 @@
     ],
     "preview": true,
     "activationEvents": [
-        "onCommand:azureMarmelade.createStaticSite",
-        "onCommand:azureMarmelade.deleteStaticSite",
-        "onCommand:azureMarmelade.loadMore",
-        "onCommand:azureMarmelade.openInPortal",
-        "onCommand:azureMarmelade.refresh",
-        "onCommand:azureMarmelade.revealResource",
-        "onCommand:azureMarmelade.selectSubscriptions",
-        "onCommand:azureMarmelade.viewProperties",
-        "onCommand:azureMarmelade.createNewApi",
-        "onCommand:azureMarmelade.createNewEndpoint",
-        "onCommand:azureMarmelade.browse",
-        "onView:azureMarmelade"
+        "onCommand:staticWebApps.createStaticWebApp",
+        "onCommand:staticWebApps.deleteStaticWebApp",
+        "onCommand:staticWebApps.loadMore",
+        "onCommand:staticWebApps.openInPortal",
+        "onCommand:staticWebApps.refresh",
+        "onCommand:staticWebApps.selectSubscriptions",
+        "onCommand:staticWebApps.viewProperties",
+        "onCommand:staticWebApps.createNewApi",
+        "onCommand:staticWebApps.createNewEndpoint",
+        "onCommand:staticWebApps.browse",
+        "onView:staticWebApps"
     ],
     "main": "./main.js",
     "contributes": {
         "commands": [
             {
-                "command": "azureMarmelade.createStaticSite",
-                "title": "%azureMarmelade.createStaticSite%",
-                "category": "Azure Marmelade",
+                "command": "staticWebApps.createStaticWebApp",
+                "title": "%staticWebApps.createStaticWebApp%",
+                "category": "Azure Static Web Apps",
                 "icon": {
                     "light": "resources/light/add.svg",
                     "dark": "resources/dark/add.svg"
                 }
             },
             {
-                "command": "azureMarmelade.deleteStaticSite",
-                "title": "%azureMarmelade.deleteStaticSite%",
-                "category": "Azure Marmelade"
+                "command": "staticWebApps.deleteStaticWebApp",
+                "title": "%staticWebApps.deleteStaticWebApp%",
+                "category": "Azure Static Web Apps"
             },
             {
-                "command": "azureMarmelade.loadMore",
-                "title": "%azureMarmelade.loadMore%",
-                "category": "Azure Marmelade"
+                "command": "staticWebApps.loadMore",
+                "title": "%staticWebApps.loadMore%",
+                "category": "Azure Static Web Apps"
             },
             {
-                "command": "azureMarmelade.openInPortal",
-                "title": "%azureMarmelade.openInPortal%",
-                "category": "Azure Marmelade"
+                "command": "staticWebApps.openInPortal",
+                "title": "%staticWebApps.openInPortal%",
+                "category": "Azure Static Web Apps"
             },
             {
-                "command": "azureMarmelade.refresh",
-                "title": "%azureMarmelade.refresh%",
-                "category": "Azure Marmelade",
+                "command": "staticWebApps.refresh",
+                "title": "%staticWebApps.refresh%",
+                "category": "Azure Static Web Apps",
                 "icon": {
                     "light": "resources/light/refresh.svg",
                     "dark": "resources/dark/refresh.svg"
                 }
             },
             {
-                "command": "azureMarmelade.revealResource",
-                "title": "%azureMarmelade.revealResource%",
-                "category": "Azure Marmelade"
-            },
-            {
-                "command": "azureMarmelade.selectSubscriptions",
+                "command": "staticWebApps.selectSubscriptions",
                 "title": "Select Subscriptions...",
                 "icon": {
                     "light": "resources/light/filter.svg",
@@ -91,32 +85,32 @@
                 }
             },
             {
-                "command": "azureMarmelade.viewProperties",
-                "title": "%azureMarmelade.viewProperties%",
-                "category": "Azure Marmelade"
+                "command": "staticWebApps.viewProperties",
+                "title": "%staticWebApps.viewProperties%",
+                "category": "Azure Static Web Apps"
             },
             {
-                "command": "azureMarmelade.createNewApi",
-                "title": "%azureMarmelade.createNewApi%",
-                "category": "Azure Marmelade",
+                "command": "staticWebApps.createNewApi",
+                "title": "%staticWebApps.createNewApi%",
+                "category": "Azure Static Web Apps",
                 "icon": {
                     "light": "resources/light/CreateNewProject.svg",
                     "dark": "resources/dark/CreateNewProject.svg"
                 }
             },
             {
-                "command": "azureMarmelade.createNewEndpoint",
-                "title": "%azureMarmelade.createNewEndpoint%",
-                "category": "Azure Marmelade",
+                "command": "staticWebApps.createNewEndpoint",
+                "title": "%staticWebApps.createNewEndpoint%",
+                "category": "Azure Static Web Apps",
                 "icon": {
                     "light": "resources/light/AddFunction.svg",
                     "dark": "resources/dark/AddFunction.svg"
                 }
             },
             {
-                "command": "azureMarmelade.browse",
-                "title": "%azureMarmelade.browse%",
-                "category": "Azure Marmelade"
+                "command": "staticWebApps.browse",
+                "title": "%staticWebApps.browse%",
+                "category": "Azure Static Web Apps"
             }
         ],
         "viewsContainers": {
@@ -131,111 +125,107 @@
         "views": {
             "azure": [
                 {
-                    "id": "azureMarmelade",
-                    "name": "Marmelade"
+                    "id": "staticWebApps",
+                    "name": "Static Web Apps"
                 }
             ]
         },
         "menus": {
             "view/title": [
                 {
-                    "command": "azureMarmelade.createStaticSite",
-                    "when": "view == azureMarmelade",
+                    "command": "staticWebApps.createStaticWebApp",
+                    "when": "view == staticWebApps",
                     "group": "navigation@1"
                 },
                 {
-                    "command": "azureMarmelade.createNewApi",
-                    "when": "view == azureMarmelade",
+                    "command": "staticWebApps.createNewApi",
+                    "when": "view == staticWebApps",
                     "group": "navigation@2"
                 },
                 {
-                    "command": "azureMarmelade.createNewEndpoint",
-                    "when": "view == azureMarmelade",
+                    "command": "staticWebApps.createNewEndpoint",
+                    "when": "view == staticWebApps",
                     "group": "navigation@3"
                 },
                 {
-                    "command": "azureMarmelade.refresh",
-                    "when": "view == azureMarmelade",
+                    "command": "staticWebApps.refresh",
+                    "when": "view == staticWebApps",
                     "group": "navigation@4"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "azureMarmelade.selectSubscriptions",
-                    "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
+                    "command": "staticWebApps.selectSubscriptions",
+                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
                     "group": "inline"
                 },
                 {
-                    "command": "azureMarmelade.createStaticSite",
-                    "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
+                    "command": "staticWebApps.createStaticWebApp",
+                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
                     "group": "1@1"
                 },
                 {
-                    "command": "azureMarmelade.openInPortal",
-                    "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
+                    "command": "staticWebApps.openInPortal",
+                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
                     "group": "9@1"
                 },
                 {
-                    "command": "azureMarmelade.refresh",
-                    "when": "view == azureMarmelade && viewItem == azureextensionui.azureSubscription",
+                    "command": "staticWebApps.refresh",
+                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
                     "group": "9@2"
                 },
                 {
-                    "command": "azureMarmelade.deleteStaticSite",
-                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
+                    "command": "staticWebApps.deleteStaticWebApp",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "3@1"
                 },
                 {
-                    "command": "azureMarmelade.viewProperties",
-                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
+                    "command": "staticWebApps.viewProperties",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "9@1"
                 },
                 {
-                    "command": "azureMarmelade.openInPortal",
-                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
+                    "command": "staticWebApps.openInPortal",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "1@1"
                 },
                 {
-                    "command": "azureMarmelade.browse",
-                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
+                    "command": "staticWebApps.browse",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "1@2"
                 },
                 {
-                    "command": "azureMarmelade.refresh",
-                    "when": "view == azureMarmelade && viewItem == azureStaticSite",
+                    "command": "staticWebApps.refresh",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "9@3"
                 },
                 {
-                    "command": "azureMarmelade.viewProperties",
-                    "when": "view == azureMarmelade && viewItem == azureResource",
+                    "command": "staticWebApps.viewProperties",
+                    "when": "view == staticWebApps && viewItem == azureResource",
                     "group": "9@1"
                 },
                 {
-                    "command": "azureMarmelade.openInPortal",
-                    "when": "view == azureMarmelade && viewItem == azureResource",
+                    "command": "staticWebApps.openInPortal",
+                    "when": "view == staticWebApps && viewItem == azureResource",
                     "group": "1@1"
                 },
                 {
-                    "command": "azureMarmelade.browse",
-                    "when": "view == azureMarmelade && viewItem == azureResource",
+                    "command": "staticWebApps.browse",
+                    "when": "view == staticWebApps && viewItem == azureResource",
                     "group": "1@2"
                 }
             ],
             "commandPalette": [
                 {
-                    "command": "azureMarmelade.selectSubscriptions",
+                    "command": "staticWebApps.selectSubscriptions",
                     "when": "never"
                 },
                 {
-                    "command": "azureMarmelade.refresh",
+                    "command": "staticWebApps.refresh",
                     "when": "never"
                 },
                 {
-                    "command": "azureMarmelade.loadMore",
-                    "when": "never"
-                },
-                {
-                    "command": "azureMarmelade.revealResource",
+                    "command": "staticWebApps.loadMore",
                     "when": "never"
                 }
             ]
@@ -249,11 +239,11 @@
         ],
         "configuration": [
             {
-                "title": "Azure Marmelade",
+                "title": "Azure Static Web Apps",
                 "properties": {
-                    "azureMarmelade.enableOutputTimestamps": {
+                    "staticWebApps.enableOutputTimestamps": {
                         "type": "boolean",
-                        "description": "%azureMarmelade.enableOutputTimestamps%",
+                        "description": "%staticWebApps.enableOutputTimestamps%",
                         "default": true
                     }
                 }

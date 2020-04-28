@@ -17,21 +17,21 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }): Promise<AzureExtensionApiProvider> {
     ext.context = context;
     ext.reporter = createTelemetryReporter(context);
-    ext.outputChannel = createAzExtOutputChannel('Azure Marmelade', ext.prefix);
+    ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps', ext.prefix);
     context.subscriptions.push(ext.outputChannel);
     ext.ui = new AzureUserInput(context.globalState);
 
     registerUIExtensionVariables(ext);
     registerAppServiceExtensionVariables(ext);
 
-    await callWithTelemetryAndErrorHandling('azureMarmelade.activate', async (activateContext: IActionContext) => {
+    await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
         activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
 
         const accountTreeItem: AzureAccountTreeItem = new AzureAccountTreeItem();
         context.subscriptions.push(accountTreeItem);
-        ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'azureMarmelade.loadMore');
-        context.subscriptions.push(vscode.window.createTreeView('azureMarmelade', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true }));
+        ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'staticWebApps.loadMore');
+        context.subscriptions.push(vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true }));
 
         registerCommands();
     });

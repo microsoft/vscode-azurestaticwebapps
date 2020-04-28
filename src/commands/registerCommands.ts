@@ -9,22 +9,20 @@ import { ext } from '../extensionVariables';
 import { browse } from './browse';
 import { createNewApi } from './createNewApi';
 import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
-import { createStaticSite } from './createStaticWebApp/createStaticSite';
-import { deleteStaticSite } from './deleteStaticSite';
+import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
+import { deleteStaticWebApp } from './deleteStaticWebApp';
 import { openInPortal } from './openInPortal';
-import { revealResource } from './revealResource';
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
-    registerCommand('azureMarmelade.createStaticSite', createStaticSite);
-    registerCommand('azureMarmelade.deleteStaticSite', deleteStaticSite);
-    registerCommand('azureMarmelade.loadMore', async (context: IActionContext, node: AzureTreeItem) => await ext.tree.loadMore(node, context));
-    registerCommand('azureMarmelade.openInPortal', openInPortal);
-    registerCommand('azureMarmelade.refresh', async (_context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(node));
-    registerCommand('azureMarmelade.revealResource', revealResource);
-    registerCommand('azureMarmelade.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
-    registerCommand('azureMarmelade.viewProperties', viewProperties);
-    registerCommand('azureMarmelade.createNewEndpoint', createNewEndpoint);
-    registerCommand('azureMarmelade.createNewApi', createNewApi);
-    registerCommand('azureMarmelade.browse', browse);
+    registerCommand('staticWebApps.createStaticWebApp', createStaticWebApp);
+    registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
+    registerCommand('staticWebApps.loadMore', async (context: IActionContext, node: AzureTreeItem) => await ext.tree.loadMore(node, context));
+    registerCommand('staticWebApps.openInPortal', openInPortal);
+    registerCommand('staticWebApps.refresh', async (_context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(node));
+    registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
+    registerCommand('staticWebApps.viewProperties', viewProperties);
+    registerCommand('staticWebApps.createNewEndpoint', createNewEndpoint);
+    registerCommand('staticWebApps.createNewApi', createNewApi);
+    registerCommand('staticWebApps.browse', browse);
 }

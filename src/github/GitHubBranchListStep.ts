@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { githubApiEndpoint } from '../constants';
 import { ext } from '../extensionVariables';
 import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 
-export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
-    public async prompt(context: IStaticSiteWizardContext): Promise<void> {
+export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+    public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseBranch', 'Choose branch');
         let branchData: gitHubBranchData | undefined;
         const picksCache: ICachedQuickPicks<gitHubBranchData> = { picks: [] };
@@ -23,7 +23,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticSiteWizar
         context.branchData = branchData;
     }
 
-    public shouldPrompt(context: IStaticSiteWizardContext): boolean {
+    public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
         if (context.newRepoName) {
             // if this is a new repo, the only branch that will have been created is 'master'
             context.branchData = { name: 'master' };
@@ -32,7 +32,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticSiteWizar
         return !context.branchData;
     }
 
-    private async getBranchPicks(context: IStaticSiteWizardContext, picksCache: ICachedQuickPicks<gitHubBranchData>): Promise<IAzureQuickPickItem<gitHubBranchData | undefined>[]> {
+    private async getBranchPicks(context: IStaticWebAppWizardContext, picksCache: ICachedQuickPicks<gitHubBranchData>): Promise<IAzureQuickPickItem<gitHubBranchData | undefined>[]> {
         const repoHtmlUrl: string = nonNullProp(context, 'repoHtmlUrl');
         const owner: string = repoHtmlUrl.split('/')[3];
         const repo: string = repoHtmlUrl.split('/')[4];

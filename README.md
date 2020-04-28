@@ -1,10 +1,10 @@
-# Azure Marmelade for Visual Studio Code (Preview)
+# Azure Static Web Apps for Visual Studio Code (Preview)
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-marmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-marmelade) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-marmelade.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-marmelade) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-marmelade)](https://dev.azure.com/ms-azuretools/AzCodePrivate/_build/latest?definitionId=29)
+[![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-azurestaticwebapps.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-azurestaticwebapps.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-azurestaticwebapps)](https://dev.azure.com/ms-azuretools/AzCodePrivate/_build/latest?definitionId=29)
 
-Manage Azure Marmelade directly from VS Code.
+Manage Azure Static Web Apps directly from VS Code.
 
-**Visit the [wiki](https://github.com/Microsoft/vscode-marmelade/wiki) for additional information about the extension.**
+**Visit the [wiki](https://github.com/Microsoft/vscode-azurestaticwebapps/wiki) for additional information about the extension.**
 
 > Sign up today for your free Azure account and receive 12 months of free popular services, $200 free credit and 25+ always free services 👉 [Start Free](https://azure.microsoft.com/free/open-source).
 

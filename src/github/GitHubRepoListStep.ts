@@ -6,16 +6,16 @@
 import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
 import { RepoCreateStep } from '../commands/createNewEndpoint/RepoCreateStep';
 import { RepoNameStep } from '../commands/createNewEndpoint/RepoNameStep';
-import { IStaticSiteWizardContext } from '../commands/createStaticWebApp/IStaticSiteWizardContext';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { ext } from '../extensionVariables';
 import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 
 const createNewRepo: string = 'createNewRepo';
-export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticSiteWizardContext> {
+export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
-    public async prompt(context: IStaticSiteWizardContext): Promise<void> {
+    public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseRepo', 'Choose repository');
         let repoData: gitHubRepoData | undefined;
         let quickPickItems: IAzureQuickPickItem<gitHubRepoData | undefined>[] = [];
@@ -31,11 +31,11 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticSiteWizardC
         context.repoHtmlUrl = repoData.html_url;
     }
 
-    public shouldPrompt(context: IStaticSiteWizardContext): boolean {
+    public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
         return !context.repoHtmlUrl;
     }
 
-    public async getSubWizard(context: IStaticSiteWizardContext): Promise<IWizardOptions<IStaticSiteWizardContext> | undefined> {
+    public async getSubWizard(context: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
         if (context.repoData?.name === createNewRepo) {
             return { promptSteps: [new RepoNameStep()], executeSteps: [new RepoCreateStep()] };
         } else {
@@ -43,7 +43,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticSiteWizardC
         }
     }
 
-    private async getRepositories(context: IStaticSiteWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
+    private async getRepositories(context: IStaticWebAppWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
         const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, nonNullProp(context, 'orgData').repos_url);
         return await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name');
     }

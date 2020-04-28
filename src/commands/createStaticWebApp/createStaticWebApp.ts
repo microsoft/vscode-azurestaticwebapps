@@ -6,17 +6,17 @@
 import { MessageItem, window } from 'vscode';
 import { IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
-import { StaticSiteTreeItem } from '../../tree/StaticSiteTreeItem';
+import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
 import { openUrl } from '../../utils/openUrl';
 
-export async function createStaticSite(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
+export async function createStaticWebApp(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 
-    const ssNode: StaticSiteTreeItem = await node.createChild(context);
+    const ssNode: StaticWebAppTreeItem = await node.createChild(context);
 
     const createdSs: string = localize('createdSs', 'Created static site "{0}".', ssNode.name);
     ext.outputChannel.appendLog(createdSs);

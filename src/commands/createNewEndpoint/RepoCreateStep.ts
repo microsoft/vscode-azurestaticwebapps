@@ -10,12 +10,12 @@ import { ext } from '../../extensionVariables';
 import { createGitHubRequestOptions, gitHubRepoData, gitHubWebResource } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
 import { requestUtils } from '../../utils/requestUtils';
-import { IStaticSiteWizardContext } from '../createStaticWebApp/IStaticSiteWizardContext';
+import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 
-export class RepoCreateStep extends AzureWizardExecuteStep<IStaticSiteWizardContext> {
+export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     public priority: number = 200;
 
-    public async execute(wizardContext: IStaticSiteWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
+    public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const creatingGitHubRepo: string = localize('creatingGitHubRepo', 'Creating new GitHub repository "{0}"', wizardContext.newRepoName);
         ext.outputChannel.appendLog(creatingGitHubRepo);
         progress.report({ message: creatingGitHubRepo });
@@ -29,7 +29,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticSiteWizardCont
 
     }
 
-    public shouldExecute(wizardContext: IStaticSiteWizardContext): boolean {
+    public shouldExecute(wizardContext: IStaticWebAppWizardContext): boolean {
         return !!(wizardContext.accessToken && wizardContext.newRepoName);
     }
 
