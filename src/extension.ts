@@ -17,7 +17,7 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
 export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }): Promise<AzureExtensionApiProvider> {
     ext.context = context;
     ext.reporter = createTelemetryReporter(context);
-    ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps', ext.prefix);
+    ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps (Preview)', ext.prefix);
     context.subscriptions.push(ext.outputChannel);
     ext.ui = new AzureUserInput(context.globalState);
 

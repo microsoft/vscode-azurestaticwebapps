@@ -18,7 +18,7 @@ export async function createStaticWebApp(context: IActionContext, node?: Subscri
 
     const ssNode: StaticWebAppTreeItem = await node.createChild(context);
 
-    const createdSs: string = localize('createdSs', 'Created static site "{0}".', ssNode.name);
+    const createdSs: string = localize('createdSs', 'Created static web app "{0}".', ssNode.name);
     ext.outputChannel.appendLog(createdSs);
 
     const showActions: MessageItem = { title: 'Show Actions' };

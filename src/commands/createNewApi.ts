@@ -12,6 +12,7 @@ export async function createNewApi(): Promise<void> {
     }
 
     const apiLanguage: string = (await ext.ui.showQuickPick([{ label: 'JavaScript' }, { label: 'TypeScript' }], { placeHolder: 'Select a language for the API...' })).label;
+    const addEndpoint: string = (await ext.ui.showQuickPick([{ label: 'JavaScript' }, { label: 'TypeScript' }], { placeHolder: 'Select a language for the API...' })).label;
 
     await vscode.commands.executeCommand('azureFunctions.createNewProject', `${vscode.workspace.workspaceFolders[0].uri.fsPath}/api`, apiLanguage, undefined, true, 'HttpTrigger', 'endpoint1', { authLevel: 'anonymous' });
 }
