@@ -126,7 +126,7 @@
             "azure": [
                 {
                     "id": "staticWebApps",
-                    "name": "Static Web Apps"
+                    "name": "Static Web Apps (Preview)"
                 }
             ]
         },

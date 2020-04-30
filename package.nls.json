@@ -13,5 +13,5 @@
     "staticWebApps.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete.",
     "staticWebApps.createNewApi": "Create New API...",
     "staticWebApps.createNewEndpoint": "Create Endpoint...",
-    "staticWebApps.browse": "Browse Site"
+    "staticWebApps.browse": "Browse to site"
 }
