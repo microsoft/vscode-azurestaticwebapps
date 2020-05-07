@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { AzExtTreeItem, AzureParentTreeItem, DialogResponses, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
@@ -72,9 +72,6 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
     }
 
     public async deleteTreeItemImpl(): Promise<void> {
-        const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete "{0}"?', this.name);
-        await ext.ui.showWarningMessage(confirmMessage, { modal: true }, DialogResponses.deleteResponse, DialogResponses.cancel);
-
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}?api-version=2019-12-01-preview`, this.root, 'DELETE');
 
         const deleting: string = localize('Deleting', 'Deleting "{0}"...', this.name);
