@@ -7,11 +7,12 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
+import { noWorkspaceError } from '../../constants';
 import { ext } from '../../extensionVariables';
 
 export async function createNewEndpoint(_context: IActionContext): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
-        throw new Error();
+        throw new Error(noWorkspaceError);
     }
 
     const endpointName: string = 'endpoint';

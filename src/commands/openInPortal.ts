@@ -7,7 +7,7 @@ import * as ui from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
-export async function openInPortal(context: ui.IActionContext, node?: StaticWebAppTreeItem): Promise<void> {
+export async function openInPortal(context: ui.IActionContext, node?: ui.AzureTreeItem): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
