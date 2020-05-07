@@ -2,11 +2,36 @@
 
 [![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-azurestaticwebapps.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-azurestaticwebapps.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-azurestaticwebapps)](https://dev.azure.com/ms-azuretools/AzCodePrivate/_build/latest?definitionId=30)
 
-Manage Azure Static Web Apps (Preview) directly from VS Code.
+Use the Azure Static Web Apps (Preview) extension to quickly create and manage Azure Static Web Apps (Preview) directly from VS Code.
 
 **Visit the [wiki](https://github.com/Microsoft/vscode-azurestaticwebapps/wiki) for additional information about the extension.**
 
 > Sign up today for your free Azure account and receive 12 months of free popular services, $200 free credit and 25+ always free services 👉 [Start Free](https://azure.microsoft.com/free/open-source).
+
+## Create your first static web app
+
+1. Select the button to create a new static web app in the Azure Static Web App (Preview) explorer
+    **INSERT SCREENSHOT HERE**
+1. Authorize VS Code have access to your GitHub account
+    **INSERT SCREENSHOT HERE**
+1. Select a GitHub repository to configure to the new static web app
+    > If your local project has a remote configured, the extension will default to that repository
+1. Provide the app, api, and build artifact folder names
+
+## Create an API for your static web app
+This extension has a dependancy on the [Azure Functions Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) to create APIs and endpoints.  Your SPA project needs to have an "api" folder that contains all of the endpoints.
+
+1. Open your SPA project in your VS Code workspace
+1. Select the button to create a new API
+    **INSERT SCREENSHOT HERE**
+1. Select a language for the API, either JavaScript or TypeScript
+1. Click "Yes" to creating an endpoint
+
+## Updating your static web app
+
+1. Commit and push your changes to the GitHub repository that your static web app is configured to.  It will then use [GitHub Actions](https://github.com/features/actions) to update your app.
+    > If you create a PR, GitHub Actions will create a staging environment with your new changes.  Manage these builds under the "Environments" tree item.
+    **INSERT SCREENSHOT HERE**
 
 ## Contributing
 
