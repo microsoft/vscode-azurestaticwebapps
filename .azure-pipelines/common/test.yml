@@ -7,11 +7,6 @@ steps:
   displayName: 'Start X Virtual Frame Buffer'
   condition: eq(variables['Agent.OS'], 'Linux')
 
-- task: UsePythonVersion@0
-  displayName: 'Use Python 3.6.x'
-  inputs:
-    versionSpec: 3.6.x
-
 - task: Npm@1
   displayName: 'Test'
   inputs:
