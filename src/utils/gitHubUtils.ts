@@ -130,14 +130,19 @@ export async function getGitHubAccessToken(): Promise<string> {
 
 export async function tryGetRemote(fsPath: string): Promise<string | undefined> {
     const localGit: git.SimpleGit = git(fsPath);
-    const remotesRaw: string | void = await localGit.remote(['-v']);
 
-    if (remotesRaw !== undefined) {
-        const gitPushUrl: RegExpExecArray | null = /(?<=origin)(.*)(?=\(push\))/.exec(remotesRaw);
-        if (gitPushUrl !== null) {
-            // remove the .git suffix
-            return gitPushUrl[0].trim().slice(0, -4);
+    try {
+        const remotesRaw: string | void = await localGit.remote(['-v']);
+
+        if (remotesRaw !== undefined) {
+            const gitPushUrl: RegExpExecArray | null = /(?<=origin)(.*)(?=\(push\))/.exec(remotesRaw);
+            if (gitPushUrl !== null) {
+                // remove the .git suffix
+                return gitPushUrl[0].trim().slice(0, -4);
+            }
         }
+    } catch (error) {
+        // don't do anything for an error, this shouldn't prevent creation
     }
 
     return;

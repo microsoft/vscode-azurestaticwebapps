@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { AzureParentTreeItem, AzureTreeItem, DialogResponses, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, DialogResponses, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
+import { EnvironmentsTreeItem } from './EnvironmentsTreeItem';
 
+// using a customly defined type because the type provided by WebsiteManagementModels.StaticSiteARMResource doesn't match the actual payload
 export type StaticWebApp = {
     id: string;
     location: string;
@@ -29,14 +31,17 @@ export type StaticWebApp = {
     type: string;
 };
 
-export class StaticWebAppTreeItem extends AzureTreeItem {
+export class StaticWebAppTreeItem extends AzureParentTreeItem {
     public static contextValue: string = 'azureStaticWebApp';
     public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
     public readonly data: StaticWebApp;
 
+    public environmentsTreeItem: EnvironmentsTreeItem;
+
     constructor(parent: AzureParentTreeItem, ss: StaticWebApp) {
         super(parent);
         this.data = ss;
+        this.environmentsTreeItem = new EnvironmentsTreeItem(this);
     }
 
     public get name(): string {
@@ -57,6 +62,13 @@ export class StaticWebAppTreeItem extends AzureTreeItem {
 
     public get iconPath(): TreeItemIconPath {
         return treeUtils.getThemedIconPath('azure-staticwebapps');
+    }
+
+    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
+        return [this.environmentsTreeItem];
+    }
+    public hasMoreChildrenImpl(): boolean {
+        return false;
     }
 
     public async deleteTreeItemImpl(): Promise<void> {

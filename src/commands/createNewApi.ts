@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { noWorkspaceError } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
 
 export async function createNewApi(): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
-        throw new Error();
+        throw new Error(noWorkspaceError);
     }
 
     const apiLanguage: string = (await ext.ui.showQuickPick([{ label: 'JavaScript' }, { label: 'TypeScript' }], { placeHolder: 'Select a language for the API...' })).label;
@@ -22,5 +23,5 @@ export async function createNewApi(): Promise<void> {
         endpointName = (await ext.ui.showInputBox({ prompt: 'Provide an endpoint name', value: 'endpoint1' }));
     }
 
-    await vscode.commands.executeCommand('azureFunctions.createNewProject', `${vscode.workspace.workspaceFolders[0].uri.fsPath}/api`, apiLanguage, undefined, true, triggerPrompt, 'endpoint1', { authLevel: 'anonymous' });
+    await vscode.commands.executeCommand('azureFunctions.createNewProject', `${vscode.workspace.workspaceFolders[0].uri.fsPath}/api`, apiLanguage, undefined, true, triggerPrompt, endpointName, { authLevel: 'anonymous' });
 }
