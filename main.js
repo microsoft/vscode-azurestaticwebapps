@@ -16,12 +16,10 @@ let perfStats = {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 
-const ignoreBundle = !/^(false|0)?$/i.test(process.env.AZCODE_MARMELADE_IGNORE_BUNDLE || '');
-const extensionPath = ignoreBundle ? "./dist/extension.bundle" : "./dist/extension.bundle";
-const extension = require(extensionPath);
+const extension = require('./out/src/extension');
 
 async function activate(ctx) {
-    return await extension.activateInternal(ctx, perfStats);
+    return await extension.activateInternal(ctx, perfStats, true /* ignoreBundle */);
 }
 
 async function deactivate(ctx) {
