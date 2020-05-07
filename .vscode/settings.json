@@ -1,4 +1,8 @@
 {
+    "editor.codeActionsOnSave": {
+        "source.fixAll.tslint": true,
+        "source.organizeImports": true
+    },
     "editor.formatOnSave": true,
     "editor.insertSpaces": true,
     "editor.detectIndentation": false,
@@ -10,11 +14,9 @@
         "**/node_modules": true,
         ".vscode-test": true
     },
-    "editor.codeActionsOnSave": {
-        "source.fixAll.tslint": true,
-    },
     "tslint.ignoreDefinitionFiles": true,
     "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.tsdk": "node_modules/typescript/lib",
     "appService.zipIgnorePattern": [
         "node_modules{,/**}",
         ".vscode{,/**}"
