@@ -1,8 +1,8 @@
-# Azure Static Web Apps (Preview) for Visual Studio Code (Preview)
+# Azure Static Web Apps (Preview) for Visual Studio Code
 
 [![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-azurestaticwebapps.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-azurestaticwebapps.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-azurestaticwebapps)](https://dev.azure.com/ms-azuretools/AzCodePrivate/_build/latest?definitionId=30)
 
-Use the Azure Static Web Apps (Preview) extension to quickly create and manage Azure Static Web Apps (Preview) directly from VS Code.
+Use this extension to quickly create and manage Azure Static Web Apps (Preview) directly from VS Code.
 
 **Visit the [wiki](https://github.com/Microsoft/vscode-azurestaticwebapps/wiki) for additional information about the extension.**
 
@@ -16,12 +16,17 @@ Use the Azure Static Web Apps (Preview) extension to quickly create and manage A
     **INSERT SCREENSHOT HERE**
 1. Select a GitHub repository to configure to the new static web app
     > If your local project has a remote configured, the extension will default to that repository
-1. Provide the app, api, and build artifact folder names
+1. Provide the app folder name
+    > Location of your application code. For example, '/' represents the root of your app, while '/app' represents a directory called 'app'.
+1. Provide the api folder name
+    > Location of your Azure Functions code. For example, '/api' represents a folder called 'api'.
+1. Provide the build artifact folder name
+    > The path of your build output relative to your apps location. For example, setting a value of 'build' when your app location is set to '/app' will cause the content at '/app/build' to be served.
 
 ## Create an API for your static web app
-This extension has a dependancy on the [Azure Functions Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) to create APIs and endpoints.  Your SPA project needs to have an "api" folder that contains all of the endpoints.
+This extension has a dependency on the [Azure Functions Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) to create APIs and endpoints.  Your static web apps project needs to have an "api" folder that contains a Functions project.
 
-1. Open your SPA project in your VS Code workspace
+1. Open your static web app project in your VS Code workspace
 1. Select the button to create a new API
     **INSERT SCREENSHOT HERE**
 1. Select a language for the API, either JavaScript or TypeScript
