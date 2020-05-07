@@ -45,7 +45,21 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const wizardContext: IStaticWebAppWizardContext = { ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IGitHubAccessTokenContext>[] = [new SiteNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
+
+        // hard-coding locations available during preview
+        // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
+        wizardContext.locationsTask = new Promise((resolve) => {
+            resolve([
+                { name: 'Central US' },
+                { name: 'East US 2' },
+                { name: 'East Asia' },
+                { name: 'West Europe' },
+                { name: 'West US 2' }
+            ]);
+        });
+
         LocationListStep.addStep(wizardContext, promptSteps);
+
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [new ResourceGroupCreateStep(), new StaticWebAppCreateStep()];
 
         const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
