@@ -16,6 +16,6 @@ export namespace ext {
     export let outputChannel: IAzExtOutputChannel;
     export let ui: IAzureUserInput;
     // tslint:disable-next-line: strict-boolean-expressions
-    export let ignoreBundle: boolean = !/^(false|0)?$/i.test(process.env.AZCODE_MARMELADE_IGNORE_BUNDLE || '');
+    export let ignoreBundle: boolean | undefined;
     export let prefix: string = 'staticWebApps';
 }
