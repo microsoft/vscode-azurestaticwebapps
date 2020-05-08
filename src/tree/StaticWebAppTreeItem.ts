@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, IActionContext, parseError, TreeItemIconPath } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
@@ -12,7 +12,7 @@ import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentsTreeItem } from './EnvironmentsTreeItem';
 
-// using a customly defined type because the type provided by WebsiteManagementModels.StaticSiteARMResource doesn't match the actual payload
+// using a custom defined type because the type provided by WebsiteManagementModels.StaticSiteARMResource doesn't match the actual payload
 export type StaticWebApp = {
     id: string;
     location: string;
@@ -29,6 +29,14 @@ export type StaticWebApp = {
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
+};
+
+type AzureAsyncOperationResponse = {
+    status: string;
+    error?: {
+        code: string;
+        message: string;
+    };
 };
 
 export class StaticWebAppTreeItem extends AzureParentTreeItem {
@@ -73,12 +81,31 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
 
     public async deleteTreeItemImpl(): Promise<void> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}?api-version=2019-12-01-preview`, this.root, 'DELETE');
+        const deleting: string = localize('deleting', 'Deleting "{0}"...', this.name);
 
-        const deleting: string = localize('Deleting', 'Deleting "{0}"...', this.name);
-        const deleteSucceeded: string = localize('DeleteSucceeded', 'Successfully deleted "{0}".', this.name);
         await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
-            await requestUtils.sendRequest(requestOptions);
+
+            // weird bug where the delete response always returns "" initially, but the 2nd request returns with response containing request url
+            let deleteJsonString: string = await requestUtils.sendRequest(requestOptions);
+            deleteJsonString = await requestUtils.sendRequest(requestOptions);
+
+            try {
+                const deleteRes: { id: string; status: string } = <{ id: string; status: string }>JSON.parse(deleteJsonString);
+                const deletePollingReq: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${deleteRes.id}?api-version=2019-12-01-preview`, this.root);
+                const operationRes: AzureAsyncOperationResponse = await this.pollAzureAsyncOperation(deletePollingReq);
+
+                if (operationRes.error) {
+                    throw new Error(operationRes.error.message);
+                }
+            } catch (error) {
+                // swallow JSON parsing errors and assume it succeeded
+                if (parseError(error).message !== 'Unexpected end of JSON input') {
+                    throw error;
+                }
+            }
+
+            const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted "{0}".', this.name);
             vscode.window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);
         });
@@ -86,5 +113,26 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
 
     public async browse(): Promise<void> {
         await openUrl(`https://${this.description}`);
+    }
+
+    //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
+    private async pollAzureAsyncOperation(azureRequest: requestUtils.Request, timeoutInSeconds: number = 60): Promise<AzureAsyncOperationResponse> {
+        const maxTime: number = Date.now() + timeoutInSeconds * 1000;
+        while (Date.now() < maxTime) {
+            const statusJsonString: string = await requestUtils.sendRequest(azureRequest);
+            try {
+                const operationResponse: AzureAsyncOperationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
+                if (operationResponse.status !== 'InProgress') {
+                    return operationResponse;
+                }
+            } catch (error) {
+                // swallow JSON parsing errors
+            }
+
+            await new Promise<void>((resolve: () => void): NodeJS.Timer => setTimeout(resolve, 1000));
+        }
+
+        throw new Error(localize('timedOut', 'Operation Timed Out'));
+
     }
 }
