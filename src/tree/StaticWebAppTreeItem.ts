@@ -32,6 +32,7 @@ export type StaticWebApp = {
 };
 
 type AzureAsyncOperationResponse = {
+    id: string;
     status: string;
     error?: {
         code: string;
@@ -86,20 +87,22 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
         await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
 
-            // weird bug where the delete response always returns "" initially, but the 2nd request returns with response containing request url
+            // weird bug where the delete response always returns "" initially, 2nd request returns the Azure-AsyncOperation response
+            // and every time after that, it returns "" again.  Unfortunately, we can't use this.pollAzureAsyncOperation due to this behavior
             let deleteJsonString: string = await requestUtils.sendRequest(requestOptions);
             deleteJsonString = await requestUtils.sendRequest(requestOptions);
 
             try {
-                const deleteRes: { id: string; status: string } = <{ id: string; status: string }>JSON.parse(deleteJsonString);
-                const deletePollingReq: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${deleteRes.id}?api-version=2019-12-01-preview`, this.root);
-                const operationRes: AzureAsyncOperationResponse = await this.pollAzureAsyncOperation(deletePollingReq);
-
-                if (operationRes.error) {
-                    throw new Error(operationRes.error.message);
+                const deleteRes: AzureAsyncOperationResponse = <AzureAsyncOperationResponse>JSON.parse(deleteJsonString);
+                if (deleteRes.error) {
+                    throw new Error(deleteRes.error.message);
                 }
+
+                const deletePollingReq: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${deleteRes.id}?api-version=2019-12-01-preview`, this.root);
+                await this.pollAzureAsyncOperation(deletePollingReq);
+
             } catch (error) {
-                // swallow JSON parsing errors and assume it succeeded
+                // swallow JSON parsing errors and assume it succeeded (old behavior)
                 if (parseError(error).message !== 'Unexpected end of JSON input') {
                     throw error;
                 }
@@ -123,6 +126,10 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
             try {
                 const operationResponse: AzureAsyncOperationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
                 if (operationResponse.status !== 'InProgress') {
+                    if (operationResponse.error) {
+                        throw new Error(operationResponse.error.message);
+                    }
+
                     return operationResponse;
                 }
             } catch (error) {
