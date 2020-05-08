@@ -280,7 +280,8 @@
         "vscode-nls": "^4.1.1"
     },
     "extensionDependencies": [
-        "ms-vscode.azure-account"
+        "ms-vscode.azure-account",
+        "ms-azuretools.vscode-azurefunctions"
     ],
     "enableProposedApi": true
 }
