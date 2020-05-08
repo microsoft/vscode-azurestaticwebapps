@@ -4,11 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { IActionContext } from 'vscode-azureextensionui';
 import { noWorkspaceError } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
+import { validateFuncExtInstalled } from './validateFuncExtInstalled';
 
-export async function createNewApi(): Promise<void> {
+export async function createNewApi(context: IActionContext): Promise<void> {
+    await validateFuncExtInstalled(context);
+
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
         throw new Error(noWorkspaceError);
     }

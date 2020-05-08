@@ -9,8 +9,11 @@ import * as vscode from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
 import { noWorkspaceError } from '../../constants';
 import { ext } from '../../extensionVariables';
+import { validateFuncExtInstalled } from '../validateFuncExtInstalled';
 
-export async function createNewEndpoint(_context: IActionContext): Promise<void> {
+export async function createNewEndpoint(context: IActionContext): Promise<void> {
+    await validateFuncExtInstalled(context);
+
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
         throw new Error(noWorkspaceError);
     }
@@ -31,7 +34,6 @@ export async function createNewEndpoint(_context: IActionContext): Promise<void>
     }
 
     newName = await ext.ui.showInputBox({ value: newName, prompt: 'Provide an endpoint name' });
-
     await vscode.commands.executeCommand('azureFunctions.createFunction', projectPath, 'HttpTrigger', newName, { authLevel: 'anonymous' });
 
 }
