@@ -190,9 +190,14 @@
                     "group": "1@2"
                 },
                 {
+                    "command": "staticWebApps.viewProperties",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build)$/",
+                    "group": "9@1"
+                },
+                {
                     "command": "staticWebApps.refresh",
                     "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build|Environments)$/",
-                    "group": "9@3"
+                    "group": "9@2"
                 }
             ],
             "commandPalette": [
