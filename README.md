@@ -10,11 +10,11 @@ Use this extension to quickly create and manage Azure Static Web Apps (Preview) 
 
 ## Create your first static web app
 
-1. Select the button to create a new static web app in the Azure Static Web App (Preview) explorer
+1. Click the '+' button in the explorer to setup a new static web app
     **INSERT SCREENSHOT HERE**
-1. Authorize VS Code have access to your GitHub account
+1. Authorize access to your GitHub account so the extension can find your repositories
     **INSERT SCREENSHOT HERE**
-1. Select a GitHub repository to configure to the new static web app
+1. Select a repository and branch that will be deployed to the static web app
     > If your local project has a remote configured, the extension will default to that repository
 1. Provide the app folder name
     > Location of your application code. For example, '/' represents the root of your app, while '/app' represents a directory called 'app'.
