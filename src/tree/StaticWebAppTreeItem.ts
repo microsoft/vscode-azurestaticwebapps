@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IncomingMessage } from 'ms-rest';
 import * as vscode from 'vscode';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, parseError, TreeItemIconPath } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
@@ -86,30 +87,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
 
         await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
-
-            // weird bug where the delete response always returns "" initially, 2nd request returns the Azure-AsyncOperation response
-            // and every time after that, it returns "" again.  Unfortunately, we can't use this.pollAzureAsyncOperation due to this behavior
-            let deleteJsonString: string = await requestUtils.sendRequest(requestOptions);
-            deleteJsonString = await requestUtils.sendRequest(requestOptions);
-
-            try {
-                const deleteRes: AzureAsyncOperationResponse = <AzureAsyncOperationResponse>JSON.parse(deleteJsonString);
-                if (deleteRes.error) {
-                    throw new Error(deleteRes.error.message);
-                }
-
-                // if there's no id, just fallback to old behavior
-                if (deleteRes.id) {
-                    const deletePollingReq: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${deleteRes.id}?api-version=2019-12-01-preview`, this.root);
-                    await this.pollAzureAsyncOperation(deletePollingReq);
-                }
-
-            } catch (error) {
-                // swallow JSON parsing errors and assume it succeeded (old behavior)
-                if (parseError(error).message !== 'Unexpected end of JSON input') {
-                    throw error;
-                }
-            }
+            await this.pollAzureAsyncOperation(requestOptions);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted "{0}".', this.name);
             vscode.window.showInformationMessage(deleteSucceeded);
@@ -122,10 +100,16 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
     }
 
     //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
-    private async pollAzureAsyncOperation(azureRequest: requestUtils.Request, timeoutInSeconds: number = 60): Promise<AzureAsyncOperationResponse> {
+    private async pollAzureAsyncOperation(asyncOperationRequest: requestUtils.Request, timeoutInSeconds: number = 60): Promise<void> {
+        asyncOperationRequest.resolveWithFullResponse = true;
+        const asyncAzureRes: IncomingMessage = await requestUtils.sendRequest(asyncOperationRequest);
+        const monitorStatusUrl: string = <string>asyncAzureRes.headers['azure-asyncoperation'];
+
+        // the url already includes resourceManagerEndpointUrl, so just use getDefaultRequest instead
+        const monitorStatusReq: requestUtils.Request = await requestUtils.getDefaultRequest(monitorStatusUrl, this.root.credentials);
         const maxTime: number = Date.now() + timeoutInSeconds * 1000;
         while (Date.now() < maxTime) {
-            const statusJsonString: string = await requestUtils.sendRequest(azureRequest);
+            const statusJsonString: string = await requestUtils.sendRequest(monitorStatusReq);
             try {
                 const operationResponse: AzureAsyncOperationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
                 if (operationResponse.status !== 'InProgress') {
@@ -133,16 +117,17 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
                         throw new Error(operationResponse.error.message);
                     }
 
-                    return operationResponse;
+                    return;
                 }
             } catch (error) {
                 // swallow JSON parsing errors
-                if (parseError(error).message !== 'Unexpected end of JSON input') {
+                if (!/^Unexpected.*JSON/.test(parseError(error).message)) {
                     throw error;
                 }
             }
 
-            await new Promise<void>((resolve: () => void): NodeJS.Timer => setTimeout(resolve, 1000));
+            // wait 500 ms between polls
+            await new Promise<void>((resolve: () => void): NodeJS.Timer => setTimeout(resolve, 500));
         }
 
         throw new Error(localize('timedOut', 'Operation Timed Out'));
