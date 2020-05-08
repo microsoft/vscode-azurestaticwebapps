@@ -32,7 +32,7 @@ export type StaticWebApp = {
 };
 
 type AzureAsyncOperationResponse = {
-    id: string;
+    id?: string;
     status: string;
     error?: {
         code: string;
@@ -98,8 +98,11 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
                     throw new Error(deleteRes.error.message);
                 }
 
-                const deletePollingReq: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${deleteRes.id}?api-version=2019-12-01-preview`, this.root);
-                await this.pollAzureAsyncOperation(deletePollingReq);
+                // if there's no id, just fallback to old behavior
+                if (deleteRes.id) {
+                    const deletePollingReq: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${deleteRes.id}?api-version=2019-12-01-preview`, this.root);
+                    await this.pollAzureAsyncOperation(deletePollingReq);
+                }
 
             } catch (error) {
                 // swallow JSON parsing errors and assume it succeeded (old behavior)
