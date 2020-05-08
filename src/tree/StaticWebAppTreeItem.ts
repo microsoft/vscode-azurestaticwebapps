@@ -137,6 +137,9 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
                 }
             } catch (error) {
                 // swallow JSON parsing errors
+                if (parseError(error).message !== 'Unexpected end of JSON input') {
+                    throw error;
+                }
             }
 
             await new Promise<void>((resolve: () => void): NodeJS.Timer => setTimeout(resolve, 1000));
