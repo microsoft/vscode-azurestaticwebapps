@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
 import { noWorkspaceError } from '../../constants';
 import { ext } from '../../extensionVariables';
+import { localize } from '../../utils/localize';
 
 export async function createNewEndpoint(_context: IActionContext): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
@@ -24,13 +25,17 @@ export async function createNewEndpoint(_context: IActionContext): Promise<void>
 
     while (count < maxTries) {
         newName = generateSuffixedName(endpointName, count);
-        if (await isRelatedNameAvailable(projectPath, newName)) {
+        if (await isNameAvailable(projectPath, newName)) {
             break;
         }
         count += 1;
     }
 
-    newName = await ext.ui.showInputBox({ value: newName, prompt: 'Provide an endpoint name' });
+    newName = await ext.ui.showInputBox({
+        value: newName, prompt: localize('enterEndpointName', 'Provide a unique endpoint name'), validateInput: async (value) => {
+            return await isNameAvailable(projectPath, value) ? undefined : localize('endpointNotAvailable', 'The endpoint name "{0}" is not available.', value);
+        }
+    });
 
     await vscode.commands.executeCommand('azureFunctions.createFunction', projectPath, 'HttpTrigger', newName, { authLevel: 'anonymous' });
 
@@ -43,6 +48,6 @@ function generateSuffixedName(preferredName: string, i: number): string {
     return unsuffixedName + suffix;
 }
 
-async function isRelatedNameAvailable(projectPath: string, newName: string): Promise<boolean> {
+async function isNameAvailable(projectPath: string, newName: string): Promise<boolean> {
     return !(await fse.pathExists(path.join(projectPath, newName)));
 }
