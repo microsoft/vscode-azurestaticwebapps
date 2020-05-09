@@ -5,8 +5,9 @@
 
 import { IncomingMessage } from 'ms-rest';
 import * as vscode from 'vscode';
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, parseError, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
+import { delay } from '../utils/delay';
 import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
 import { requestUtils } from "../utils/requestUtils";
@@ -100,37 +101,32 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
     }
 
     //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
-    private async pollAzureAsyncOperation(asyncOperationRequest: requestUtils.Request, timeoutInSeconds: number = 60): Promise<void> {
+    private async pollAzureAsyncOperation(asyncOperationRequest: requestUtils.Request): Promise<void> {
         asyncOperationRequest.resolveWithFullResponse = true;
         const asyncAzureRes: IncomingMessage = await requestUtils.sendRequest(asyncOperationRequest);
         const monitorStatusUrl: string = <string>asyncAzureRes.headers['azure-asyncoperation'];
-
         // the url already includes resourceManagerEndpointUrl, so just use getDefaultRequest instead
         const monitorStatusReq: requestUtils.Request = await requestUtils.getDefaultRequest(monitorStatusUrl, this.root.credentials);
+
+        const timeoutInSeconds: number = 60;
         const maxTime: number = Date.now() + timeoutInSeconds * 1000;
         while (Date.now() < maxTime) {
             const statusJsonString: string = await requestUtils.sendRequest(monitorStatusReq);
+            let operationResponse: AzureAsyncOperationResponse | undefined;
             try {
-                const operationResponse: AzureAsyncOperationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
-                if (operationResponse.status !== 'InProgress') {
-                    if (operationResponse.error) {
-                        throw new Error(operationResponse.error.message);
-                    }
-
-                    return;
-                }
-            } catch (error) {
+                operationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
+            } catch {
                 // swallow JSON parsing errors
-                if (!/^Unexpected.*JSON/.test(parseError(error).message)) {
-                    throw error;
-                }
             }
 
-            // wait 500 ms between polls
-            await new Promise<void>((resolve: () => void): NodeJS.Timer => setTimeout(resolve, 500));
+            if (operationResponse?.status !== 'InProgress') {
+                if (operationResponse?.error) {
+                    throw operationResponse.error;
+                }
+                return;
+            }
         }
 
-        throw new Error(localize('timedOut', 'Operation Timed Out'));
-
+        await delay(500);
     }
 }
