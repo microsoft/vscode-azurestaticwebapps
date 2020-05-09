@@ -38,6 +38,7 @@
         "onCommand:staticWebApps.createNewApi",
         "onCommand:staticWebApps.createNewEndpoint",
         "onCommand:staticWebApps.browse",
+        "onCommand:staticWebApps.showActions",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -110,6 +111,11 @@
             {
                 "command": "staticWebApps.browse",
                 "title": "%staticWebApps.browse%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.showActions",
+                "title": "%staticWebApps.showActions%",
                 "category": "Azure Static Web Apps"
             }
         ],
@@ -185,9 +191,14 @@
                     "group": "1@1"
                 },
                 {
-                    "command": "staticWebApps.browse",
+                    "command": "staticWebApps.showActions",
                     "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build)$/",
                     "group": "1@2"
+                },
+                {
+                    "command": "staticWebApps.browse",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build)$/",
+                    "group": "1@3"
                 },
                 {
                     "command": "staticWebApps.viewProperties",

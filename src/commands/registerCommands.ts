@@ -12,6 +12,7 @@ import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
 import { openInPortal } from './openInPortal';
+import { showActions } from './showActions';
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
@@ -25,4 +26,5 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.createNewEndpoint', createNewEndpoint);
     registerCommand('staticWebApps.createNewApi', createNewApi);
     registerCommand('staticWebApps.browse', browse);
+    registerCommand('staticWebApps.showActions', showActions);
 }

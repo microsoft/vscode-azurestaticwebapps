@@ -22,27 +22,27 @@ export type StaticWebAppBuild = {
 export class BuildTreeItem extends AzureTreeItem {
     public static contextValue: string = 'azureStaticBuild';
     public readonly contextValue: string = BuildTreeItem.contextValue;
-    private readonly build: StaticWebAppBuild;
+    private readonly data: StaticWebAppBuild;
 
     constructor(parent: EnvironmentsTreeItem, build: StaticWebAppBuild) {
         super(parent);
-        this.build = build;
+        this.data = build;
     }
 
     public get name(): string {
-        return this.build.buildId;
+        return this.data.buildId;
     }
 
     public get id(): string {
-        return this.build.id;
+        return this.data.id;
     }
 
     public get label(): string {
-        return this.build.properties.pullRequestTitle;
+        return this.data.properties.pullRequestTitle;
     }
 
     public get description(): string | undefined {
-        return this.build.properties.sourceBranch;
+        return this.data.properties.sourceBranch;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -50,6 +50,6 @@ export class BuildTreeItem extends AzureTreeItem {
     }
 
     public async browse(): Promise<void> {
-        await openUrl(`https://${this.build.properties.hostname}`);
+        await openUrl(`https://${this.data.properties.hostname}`);
     }
 }
