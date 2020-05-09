@@ -271,11 +271,11 @@
         "webpack-cli": "^3.3.7"
     },
     "dependencies": {
+        "azure-arm-resource": "^3.0.0-preview",
         "fs-extra": "^8.1.0",
         "ms-rest": "^2.5.3",
         "request-promise": "^4.2.5",
         "simple-git": "^1.132.0",
-        "vscode-azureappservice": "^0.59.0",
         "vscode-azureextensionui": "^0.32.0",
         "vscode-nls": "^4.1.1"
     },

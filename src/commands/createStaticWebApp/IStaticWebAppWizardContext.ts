@@ -9,7 +9,7 @@ import { StaticWebApp } from '../../tree/StaticWebAppTreeItem';
 import { gitHubBranchData, gitHubOrgData, gitHubRepoData } from '../../utils/gitHubUtils';
 
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, IGitHubAccessTokenContext {
-    newSiteName?: string;
+    newStaticWebAppName?: string;
 
     orgData?: gitHubOrgData;
     repoData?: gitHubRepoData;
@@ -22,5 +22,5 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     newRepoName?: string;
 
-    site?: StaticWebApp;
+    staticWebApp?: StaticWebApp;
 }
