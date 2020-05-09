@@ -28,6 +28,8 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
             prompt,
             validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(wizardContext, value)
         })).trim();
+
+        wizardContext.relatedNameTask = this.generateRelatedName(wizardContext, wizardContext.newStaticWebAppName, resourceGroupNamingRules);
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
@@ -45,7 +47,7 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
             return localize('invalidLength', 'The name must be between {0} and {1} characters.', staticWebAppNamingRules.minLength, staticWebAppNamingRules.maxLength);
         } else if (staticWebAppNamingRules.invalidCharsRegExp.test(name)) {
             return localize('invalidChars', 'The name can only contain alphanumeric characters and the symbol "-"');
-        } else if (!await this.isNameAvailableInRg(wizardContext, name, name)) {
+        } else if (wizardContext.resourceGroup?.name && !await this.isNameAvailableInRg(wizardContext, wizardContext.resourceGroup.name, name)) {
             return localize('nameAlreadyExists', 'Static web app name "{0}" already exists in resource group "{1}".', name, name);
         } else {
             return undefined;
