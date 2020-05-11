@@ -125,8 +125,8 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
                 }
                 return;
             }
-        }
 
-        await delay(500);
+            await delay(2000);
+        }
     }
 }
