@@ -38,6 +38,7 @@
         "onCommand:staticWebApps.createNewApi",
         "onCommand:staticWebApps.createNewEndpoint",
         "onCommand:staticWebApps.browse",
+        "onCommand:staticWebApps.showActions",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -111,6 +112,11 @@
                 "command": "staticWebApps.browse",
                 "title": "%staticWebApps.browse%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.showActions",
+                "title": "%staticWebApps.showActions%",
+                "category": "Azure Static Web Apps"
             }
         ],
         "viewsContainers": {
@@ -180,24 +186,29 @@
                     "group": "3@1"
                 },
                 {
-                    "command": "staticWebApps.openInPortal",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environments)$/",
+                    "command": "staticWebApps.browse",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
                     "group": "1@1"
                 },
                 {
-                    "command": "staticWebApps.browse",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build)$/",
+                    "command": "staticWebApps.showActions",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
                     "group": "9@1"
                 },
                 {
-                    "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build|Environments)$/",
+                    "command": "staticWebApps.openInPortal",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environments)$/",
                     "group": "9@2"
+                },
+                {
+                    "command": "staticWebApps.refresh",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Environments)$/",
+                    "group": "9@3"
                 }
             ],
             "commandPalette": [
