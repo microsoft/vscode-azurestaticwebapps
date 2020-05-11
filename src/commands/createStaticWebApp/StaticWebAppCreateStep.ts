@@ -16,7 +16,8 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
     public priority: number = 250;
 
     public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${nonNullProp(wizardContext, 'resourceGroup').id}/providers/Microsoft.Web/staticSites/${wizardContext.newSiteName}?api-version=2019-12-01-preview`, wizardContext, 'PUT');
+        const newName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${nonNullProp(wizardContext, 'resourceGroup').id}/providers/Microsoft.Web/staticSites/${newName}?api-version=2019-12-01-preview`, wizardContext, 'PUT');
         requestOptions.headers['Content-Type'] = 'application/json';
         // tslint:disable-next-line:no-any
         const requestBody: any = {};
@@ -41,9 +42,10 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
         requestBody.sku = { Name: standard, Tier: standard };
 
         requestOptions.body = JSON.stringify(requestBody);
-        progress.report({ message: localize('creatingStaticApp', 'Creating Static Web App "{0}"...', wizardContext.newSiteName) });
-        wizardContext.site = <StaticWebApp>JSON.parse(await requestUtils.sendRequest(requestOptions));
-        progress.report({ message: localize('creatingStaticApp', 'Created Static Web App "{0}".', wizardContext.newSiteName) });
+
+        progress.report({ message: localize('creatingStaticApp', 'Creating Static Web App "{0}"...', newName) });
+        wizardContext.staticWebApp = <StaticWebApp>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        progress.report({ message: localize('creatingStaticApp', 'Created Static Web App "{0}".', newName) });
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {

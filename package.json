@@ -275,7 +275,6 @@
         "ms-rest": "^2.5.3",
         "request-promise": "^4.2.5",
         "simple-git": "^1.132.0",
-        "vscode-azureappservice": "^0.59.0",
         "vscode-azureextensionui": "^0.32.0",
         "vscode-nls": "^4.1.1"
     },
