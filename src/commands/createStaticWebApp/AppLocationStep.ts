@@ -12,8 +12,7 @@ export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         wizardContext.appLocation = (await ext.ui.showInputBox({
             value: 'app',
-            prompt: localize('appLocation', 'Enter the app directory'),
-            placeHolder: 'Directory to change to before starting a build. This is where we will look for package.json/.nvmrc/etc.'
+            prompt: localize('appLocation', "Enter the location of your application code"),
         })).trim();
     }
 
