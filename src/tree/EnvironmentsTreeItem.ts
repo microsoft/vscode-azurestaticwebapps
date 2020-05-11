@@ -6,7 +6,7 @@
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
-import { BuildTreeItem, StaticWebAppBuild } from "./BuildTreeItem";
+import { EnvironmentTreeItem, StaticEnvironment } from "./EnvironmentTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
 export class EnvironmentsTreeItem extends AzureParentTreeItem {
@@ -27,10 +27,10 @@ export class EnvironmentsTreeItem extends AzureParentTreeItem {
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/builds?api-version=2019-12-01-preview`, this.root);
-        let builds: StaticWebAppBuild[] = (<{ value: StaticWebAppBuild[] }>JSON.parse(await requestUtils.sendRequest(requestOptions))).value;
-        builds = builds.filter((build: StaticWebAppBuild) => {
-            // the default build is production, which is the parent node
-            if (build.name === 'default') {
+        let envs: StaticEnvironment[] = (<{ value: StaticEnvironment[] }>JSON.parse(await requestUtils.sendRequest(requestOptions))).value;
+        envs = envs.filter((env: StaticEnvironment) => {
+            // the default env is production, which is the parent node
+            if (env.name === 'default') {
                 return false;
             }
 
@@ -38,10 +38,10 @@ export class EnvironmentsTreeItem extends AzureParentTreeItem {
         });
 
         return await this.createTreeItemsWithErrorHandling(
-            builds,
-            'invalidStaticBuild',
-            build => new BuildTreeItem(this, build),
-            build => build.buildId
+            envs,
+            'invalidStaticEnvironment',
+            env => new EnvironmentTreeItem(this, env),
+            env => env.buildId
         );
     }
     public hasMoreChildrenImpl(): boolean {
