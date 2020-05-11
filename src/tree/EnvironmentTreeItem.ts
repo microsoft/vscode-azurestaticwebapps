@@ -8,7 +8,7 @@ import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
 
-export type StaticWebAppBuild = {
+export type StaticEnvironment = {
     buildId: string;
     id: string;
     name: string;
@@ -19,14 +19,14 @@ export type StaticWebAppBuild = {
     };
 };
 
-export class BuildTreeItem extends AzureTreeItem {
-    public static contextValue: string = 'azureStaticBuild';
-    public readonly contextValue: string = BuildTreeItem.contextValue;
-    private readonly data: StaticWebAppBuild;
+export class EnvironmentTreeItem extends AzureTreeItem {
+    public static contextValue: string = 'azureStaticEnvironment';
+    public readonly contextValue: string = EnvironmentTreeItem.contextValue;
+    private readonly data: StaticEnvironment;
 
-    constructor(parent: EnvironmentsTreeItem, build: StaticWebAppBuild) {
+    constructor(parent: EnvironmentsTreeItem, env: StaticEnvironment) {
         super(parent);
-        this.data = build;
+        this.data = env;
     }
 
     public get name(): string {
