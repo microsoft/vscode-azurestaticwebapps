@@ -7,9 +7,13 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
+// tslint:disable-next-line: no-submodule-imports
+import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { noWorkspaceError } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
+import { nonNullValue } from '../../utils/nonNull';
+import { AzureFunctionsExtensionApi } from '../../vscode-azurefunctions.api';
 
 export async function createNewEndpoint(_context: IActionContext): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
@@ -17,7 +21,7 @@ export async function createNewEndpoint(_context: IActionContext): Promise<void>
     }
 
     const endpointName: string = 'endpoint';
-    const projectPath: string = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, 'api');
+    const folderPath: string = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, 'api');
 
     const maxTries: number = 100;
     let count: number = 1;
@@ -25,7 +29,7 @@ export async function createNewEndpoint(_context: IActionContext): Promise<void>
 
     while (count < maxTries) {
         newName = generateSuffixedName(endpointName, count);
-        if (await isNameAvailable(projectPath, newName)) {
+        if (await isNameAvailable(folderPath, newName)) {
             break;
         }
         count += 1;
@@ -33,12 +37,22 @@ export async function createNewEndpoint(_context: IActionContext): Promise<void>
 
     newName = await ext.ui.showInputBox({
         value: newName, prompt: localize('enterEndpointName', 'Provide a unique endpoint name'), validateInput: async (value) => {
-            return await isNameAvailable(projectPath, value) ? undefined : localize('endpointNotAvailable', 'The endpoint name "{0}" is not available.', value);
+            return await isNameAvailable(folderPath, value) ? undefined : localize('endpointNotAvailable', 'The endpoint name "{0}" is not available.', value);
         }
     });
 
-    await vscode.commands.executeCommand('azureFunctions.createFunction', projectPath, 'HttpTrigger', newName, { authLevel: 'anonymous' });
+    const funcExtensionId: string = 'ms-azuretools.vscode-azurefunctions';
+    const extension: vscode.Extension<AzureExtensionApiProvider> = nonNullValue(vscode.extensions.getExtension(funcExtensionId), funcExtensionId);
+    const funcApi: AzureFunctionsExtensionApi = extension.exports.getApi('^1.1.0');
 
+    await funcApi.createFunction({
+        folderPath,
+        functionName: newName,
+        suppressCreateProjectPrompt: true,
+        templateId: 'HttpTrigger',
+        languageFilter: /^(Java|Type)Script$/i,
+        functionSettings: { authLevel: 'anonymous' }
+    });
 }
 
 function generateSuffixedName(preferredName: string, i: number): string {
@@ -48,6 +62,6 @@ function generateSuffixedName(preferredName: string, i: number): string {
     return unsuffixedName + suffix;
 }
 
-async function isNameAvailable(projectPath: string, newName: string): Promise<boolean> {
-    return !(await fse.pathExists(path.join(projectPath, newName)));
+async function isNameAvailable(folderPath: string, newName: string): Promise<boolean> {
+    return !(await fse.pathExists(path.join(folderPath, newName)));
 }
