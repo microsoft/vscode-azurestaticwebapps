@@ -3,14 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from 'vscode-azureextensionui';
+import { AzExtTreeItem, IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { ConfigurationTreeItem } from '../tree/ConfigurationTreeItem';
 
-export async function editAppSetting(context: IActionContext, node?: ConfigurationTreeItem): Promise<void> {
+export async function deleteNode(context: IActionContext, expectedContextValue: string | RegExp, node?: AzExtTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ConfigurationTreeItem>(ConfigurationTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker(expectedContextValue, { ...context, suppressCreatePick: true });
     }
 
-    await node.edit(context);
+    await node.deleteTreeItem(context);
 }

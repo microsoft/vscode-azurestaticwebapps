@@ -4,33 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureParentTreeItem, AzureTreeItem, IActionContext, ICreateChildImplContext, TreeItemIconPath } from 'vscode-azureextensionui';
+import { ext } from '../extensionVariables';
 import { requestUtils } from '../utils/requestUtils';
 import { treeUtils } from '../utils/treeUtils';
 import { ConfigurationTreeItem } from './ConfigurationTreeItem';
+import { IDataTreeItem } from './IDataTreeItem';
 
-// export function validateConfigurationKey(settings: StringDictionary, client: SiteClient, newKey?: string, oldKey?: string): string | undefined {
-//     newKey = newKey ? newKey : '';
+export function validateConfigurationKey(settings: staticConfigurations, newKey?: string, oldKey?: string): string | undefined {
+    newKey = newKey ? newKey : '';
 
-//     if (client.isLinux && /[^\w\.]+/.test(newKey)) {
-//         return 'App setting names can only contain letters, numbers (0-9), periods ("."), and underscores ("_")';
-//     }
+    newKey = newKey.trim();
+    if (newKey.length === 0) {
+        return 'App setting names must have at least one non-whitespace character.';
+    }
 
-//     newKey = newKey.trim();
-//     if (newKey.length === 0) {
-//         return 'App setting names must have at least one non-whitespace character.';
-//     }
+    oldKey = oldKey ? oldKey.trim().toLowerCase() : oldKey;
+    if (settings.properties && newKey.toLowerCase() !== oldKey) {
+        for (const key of Object.keys(settings.properties)) {
+            if (key.toLowerCase() === newKey.toLowerCase()) {
+                return `Setting "${newKey}" already exists.`;
+            }
+        }
+    }
 
-//     oldKey = oldKey ? oldKey.trim().toLowerCase() : oldKey;
-//     if (settings.properties && newKey.toLowerCase() !== oldKey) {
-//         for (const key of Object.keys(settings.properties)) {
-//             if (key.toLowerCase() === newKey.toLowerCase()) {
-//                 return `Setting "${newKey}" already exists.`;
-//             }
-//         }
-//     }
-
-//     return undefined;
-// }
+    return undefined;
+}
 
 export type staticConfigurations = {
     id: string;
@@ -39,19 +37,29 @@ export type staticConfigurations = {
     properties?: { [key: string]: string };
 };
 
-export class ConfigurationsTreeItem extends AzureParentTreeItem {
-    public static contextValue: string = 'applicationSettings';
-    public readonly label: string = 'Application Settings';
+export class ConfigurationsTreeItem extends AzureParentTreeItem implements IDataTreeItem {
+    public static contextValue: string = 'azureStaticConfigurations';
+    public readonly label: string = 'Configurations';
     public readonly childTypeLabel: string = 'App Setting';
     public readonly contextValue: string = ConfigurationsTreeItem.contextValue;
     private _settings: staticConfigurations | undefined;
 
     public get id(): string {
-        return 'configuration';
+        return 'configurations';
     }
 
     public get iconPath(): TreeItemIconPath {
         return treeUtils.getThemedIconPath('settings');
+    }
+
+    public get data(): staticConfigurations | undefined {
+        return this._settings;
+    }
+
+    public async getDataImpl(): Promise<void> {
+        if (!this._settings) {
+            this._settings = await this.listApplicationSettings();
+        }
     }
 
     public hasMoreChildrenImpl(): boolean {
@@ -59,8 +67,8 @@ export class ConfigurationsTreeItem extends AzureParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean): Promise<AzureTreeItem[]> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/listFunctionAppSettings?api-version=2019-12-01-preview`, this.root, 'POST');
-        this._settings = <staticConfigurations>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        this._settings = await this.listApplicationSettings();
+        // tslint:disable-next-line: strict-boolean-expressions
         const properties: { [name: string]: string } = this._settings.properties || {};
         return Object.keys(properties).map(key => {
             return new ConfigurationTreeItem(this, key, properties[key]);
@@ -69,7 +77,6 @@ export class ConfigurationsTreeItem extends AzureParentTreeItem {
 
     public async editSettingItem(oldKey: string, newKey: string, value: string, context: IActionContext): Promise<void> {
         // make a deep copy so settings are not cached if there's a failure
-        // tslint:disable-next-line: no-unsafe-any
         const settings: staticConfigurations = <staticConfigurations>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
         if (settings.properties) {
             if (oldKey !== newKey) {
@@ -78,57 +85,61 @@ export class ConfigurationsTreeItem extends AzureParentTreeItem {
             settings.properties[newKey] = value;
         }
 
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/config/functionappsettings?api-version=2019-12-01-preview`, this.root, 'PUT');
-        requestOptions.headers['Content-Type'] = 'application/json';
-        const requestBody: {} = { properties: { appSettings: settings } };
-        requestOptions.body = requestBody;
-        await requestUtils.pollAzureAsyncOperation(requestOptions, this);
-
-        // this._settings = await this.root.client.updateApplicationSettings(settings);
+        await this.updateApplicationSettings(settings);
     }
 
     public async deleteSettingItem(key: string, context: IActionContext): Promise<void> {
         // make a deep copy so settings are not cached if there's a failure
-        // tslint:disable-next-line: no-unsafe-any
-        // const settings: StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
+        const settings: staticConfigurations = <staticConfigurations>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
 
-        // if (settings.properties) {
-        //     delete settings.properties[key];
-        // }
+        if (settings.properties) {
+            delete settings.properties[key];
+        }
 
-        // this._settings = await this.root.client.updateApplicationSettings(settings);
+        await this.updateApplicationSettings(settings);
     }
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzureTreeItem> {
         // make a deep copy so settings are not cached if there's a failure
-        // tslint:disable-next-line: no-unsafe-any
-        // const settings: StringDictionary = JSON.parse(JSON.stringify(await this.ensureSettings(context)));
-        // const newKey: string = await ext.ui.showInputBox({
-        //     prompt: 'Enter new setting key',
-        //     validateInput: (v?: string): string | undefined => validateConfigurationKey(settings, this.root.client, v)
-        // });
+        const settings: staticConfigurations = <staticConfigurations>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
+        const newKey: string = await ext.ui.showInputBox({
+            prompt: 'Enter new setting key',
+            validateInput: (v?: string): string | undefined => validateConfigurationKey(settings, v)
+        });
 
-        // const newValue: string = await ext.ui.showInputBox({
-        //     prompt: `Enter setting value for "${newKey}"`
-        // });
+        const newValue: string = await ext.ui.showInputBox({
+            prompt: `Enter setting value for "${newKey}"`
+        });
 
-        // if (!settings.properties) {
-        //     settings.properties = {};
-        // }
+        if (!settings.properties) {
+            settings.properties = {};
+        }
 
-        // context.showCreatingTreeItem(newKey);
-        // settings.properties[newKey] = newValue;
+        context.showCreatingTreeItem(newKey);
+        settings.properties[newKey] = newValue;
 
-        // this._settings = await this.root.client.updateApplicationSettings(settings);
+        await this.updateApplicationSettings(settings);
 
-        return await ConfigurationTreeItem.createConfigurationTreeItem(this, 'newKey', 'newValue');
+        return new ConfigurationTreeItem(this, newKey, newValue);
     }
 
-    public async ensureSettings(context: IActionContext): Promise<{ properties: { [name: string]: string } }> {
+    public async ensureSettings(context: IActionContext): Promise<staticConfigurations> {
         if (!this._settings) {
             await this.getCachedChildren(context);
         }
 
         return <staticConfigurations>this._settings;
+    }
+
+    public async listApplicationSettings(): Promise<staticConfigurations> {
+        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/listFunctionAppSettings?api-version=2019-12-01-preview`, this.root, 'POST');
+        return <staticConfigurations>JSON.parse(await requestUtils.sendRequest(requestOptions));
+    }
+
+    public async updateApplicationSettings(settings: staticConfigurations): Promise<void> {
+        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/config/functionappsettings?api-version=2019-12-01-preview`, this.root, 'PUT');
+        requestOptions.headers['Content-Type'] = 'application/json';
+        requestOptions.body = JSON.stringify({ properties: settings.properties });
+        this._settings = <staticConfigurations>JSON.parse(await requestUtils.sendRequest(requestOptions));
     }
 }

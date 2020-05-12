@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { ConfigurationsTreeItem } from "./ConfigurationsTreeItem";
 import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
+import { IDataTreeItem } from "./IDataTreeItem";
 
 export type StaticEnvironment = {
     buildId: string;
@@ -20,12 +21,12 @@ export type StaticEnvironment = {
     };
 };
 
-export class EnvironmentTreeItem extends AzureParentTreeItem {
+export class EnvironmentTreeItem extends AzureParentTreeItem implements IDataTreeItem {
 
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
     public configurationsTreeItem: ConfigurationsTreeItem;
-    private readonly data: StaticEnvironment;
+    public readonly data: StaticEnvironment;
 
     constructor(parent: EnvironmentsTreeItem, env: StaticEnvironment) {
         super(parent);
@@ -53,7 +54,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem {
         return treeUtils.getThemedIconPath('azure-staticwebapps');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzureParentTreeItem[]> {
         return [this.configurationsTreeItem];
     }
 

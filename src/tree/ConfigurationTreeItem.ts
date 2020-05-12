@@ -6,7 +6,7 @@
 import { AzureTreeItem, DialogResponses, IActionContext, TreeItemIconPath } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { treeUtils } from '../utils/treeUtils';
-import { ConfigurationsTreeItem } from './ConfigurationsTreeItem';
+import { ConfigurationsTreeItem, staticConfigurations, validateConfigurationKey } from './ConfigurationsTreeItem';
 
 /**
  * NOTE: This leverages a command with id `ext.prefix + '.toggleConfigurationVisibility'` that should be registered by each extension
@@ -55,13 +55,13 @@ export class ConfigurationTreeItem extends AzureTreeItem {
     }
 
     public async rename(context: IActionContext): Promise<void> {
-        const settings: { properties: { [name: string]: string } } = await this.parent.ensureSettings(context);
+        const settings: staticConfigurations = await this.parent.ensureSettings(context);
 
         const oldKey: string = this._key;
         const newKey: string = await ext.ui.showInputBox({
             prompt: `Enter a new name for "${oldKey}"`,
-            value: this._key
-            // validateInput: (v?: string): string | undefined => validateConfigurationKey(settings, this.root.client, v, oldKey)
+            value: this._key,
+            validateInput: (v?: string): string | undefined => validateConfigurationKey(settings, v, oldKey)
         });
 
         await this.parent.editSettingItem(oldKey, newKey, this._value, context);
@@ -77,31 +77,5 @@ export class ConfigurationTreeItem extends AzureTreeItem {
     public async toggleValueVisibility(): Promise<void> {
         this._hideValue = !this._hideValue;
         await this.refresh();
-    }
-
-    public async toggleSlotSetting(): Promise<void> {
-        // const slotSettings: SlotConfigNamesResource = await this.root.client.listSlotConfigurationNames();
-        // if (!slotSettings.configurationNames) {
-        //     slotSettings.configurationNames = [];
-        // }
-        // const slotSettingIndex: number = slotSettings.configurationNames.findIndex((value: string) => { return value === this._key; });
-
-        // if (slotSettingIndex >= 0) {
-        //     slotSettings.configurationNames.splice(slotSettingIndex, 1);
-        // } else {
-        //     slotSettings.configurationNames.push(this._key);
-        // }
-
-        // await this.root.client.updateSlotConfigurationNames(slotSettings);
-        // await this.refresh();
-    }
-
-    public async refreshImpl(): Promise<void> {
-        // const slotSettings: SlotConfigNamesResource = await this.root.client.listSlotConfigurationNames();
-        // if (slotSettings.configurationNames && slotSettings.configurationNames.find((value: string) => { return value === this._key; })) {
-        //     this.description = localize('slotSetting', 'Slot Setting');
-        // } else {
-        //     this.description = undefined;
-        // }
     }
 }

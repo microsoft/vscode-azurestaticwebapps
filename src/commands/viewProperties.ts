@@ -5,12 +5,23 @@
 
 import { IActionContext, openReadOnlyJson } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
+import { IDataTreeItem } from '../tree/IDataTreeItem';
 import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
+import { localize } from '../utils/localize';
+import { nonNullProp } from '../utils/nonNull';
 
-export async function viewProperties(context: IActionContext, node?: StaticWebAppTreeItem): Promise<void> {
+export async function viewProperties(context: IActionContext, node?: IDataTreeItem): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
-    await openReadOnlyJson(node, node.data);
+    if (!node.data) {
+        if (node.getDataImpl) {
+            await node.getDataImpl();
+        } else {
+            throw new Error(localize('No data found on resource "{0}"', node.label));
+        }
+    }
+
+    await openReadOnlyJson(node, nonNullProp(node, 'data'));
 }
