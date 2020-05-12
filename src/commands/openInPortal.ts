@@ -20,10 +20,9 @@ export async function openInPortal(context: ui.IActionContext, node?: ui.AzureTr
             if (node.parent instanceof EnvironmentTreeItem) {
                 node = <StaticWebAppTreeItem>node.parent.parent?.parent;
                 await ui.openInPortal(node.root, `${node.fullId}/configurations`);
-            } else {
-                await ui.openInPortal(node.root, node.fullId);
+                return;
             }
-            return;
+        // fall down to default case
         default:
             await ui.openInPortal(node.root, node.fullId);
             return;

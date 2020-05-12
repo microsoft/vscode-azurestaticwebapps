@@ -16,7 +16,7 @@ import { ext } from "../../extensionVariables";
 export async function getLocalSettingsFile(folderName?: string): Promise<string> {
     // tslint:disable-next-line: strict-boolean-expressions
     const folders: WorkspaceFolder[] = workspace.workspaceFolders || [];
-    if (folderName || folders.length === 1) {
+    if (folderName && folders.length === 1) {
         const workspacePath: string = folderName && path.join(folders[0].uri.fsPath, folderName) || folders[0].uri.fsPath;
         const localSettingsFile: string = path.join(workspacePath, localSettingsFileName);
         if (await fse.pathExists(localSettingsFile)) {

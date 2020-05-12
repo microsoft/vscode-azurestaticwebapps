@@ -9,7 +9,7 @@ import { localSettingsFileName } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { AppSettingsTreeItem, staticConfigurations } from '../../tree/AppSettingsTreeItem';
 import { localize } from "../../utils/localize";
-import { nonNullValue } from '../../utils/nonNull';
+import { nonNullProp, nonNullValue } from '../../utils/nonNull';
 import { confirmOverwriteSettings } from "./confirmOverwriteSettings";
 import { getLocalSettingsFile } from "./getLocalSettingsFile";
 
@@ -26,20 +26,20 @@ export async function uploadAppSettings(context: IActionContext, node?: AppSetti
     }
 
     await node.runWithTemporaryDescription(localize('uploading', 'Uploading...'), async () => {
-        const configNode: AppSettingsTreeItem = nonNullValue(node);
+        const appSettingsNode: AppSettingsTreeItem = nonNullValue(node);
         ext.outputChannel.show(true);
-        ext.outputChannel.appendLog(localize('uploadStart', 'Uploading settings to "{0}"...', node?.parent?.label));
+        ext.outputChannel.appendLog(localize('uploadStart', 'Uploading settings to "{0}"...', appSettingsNode.parent?.label));
         const localSettings: ILocalSettingsJson = <ILocalSettingsJson>await fse.readJson(localSettingsPath);
 
         if (localSettings.Values) {
-            const remoteSettings: staticConfigurations = await configNode.listApplicationSettings();
+            const remoteSettings: staticConfigurations = await appSettingsNode.listApplicationSettings();
             if (!remoteSettings.properties) {
                 remoteSettings.properties = {};
             }
 
-            await confirmOverwriteSettings(localSettings.Values, remoteSettings.properties, configNode.label);
+            await confirmOverwriteSettings(localSettings.Values, remoteSettings.properties, nonNullProp(appSettingsNode, 'parent').label);
 
-            await configNode.updateApplicationSettings(remoteSettings);
+            await appSettingsNode.updateApplicationSettings(remoteSettings);
         } else {
             throw new Error(localize('noSettings', 'No settings found in "{0}".', localSettingsFileName));
         }
