@@ -265,7 +265,7 @@
         "@types/node": "^10.0.0",
         "@types/request": "^2.48.4",
         "@types/request-promise": "4.1.46",
-        "@types/vscode": "1.41.0",
+        "@types/vscode": "1.45.0",
         "glob": "^7.1.6",
         "gulp": "^4.0.2",
         "mocha": "^7.1.2",
