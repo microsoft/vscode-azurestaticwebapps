@@ -35,7 +35,6 @@
         "onCommand:staticWebApps.refresh",
         "onCommand:staticWebApps.selectSubscriptions",
         "onCommand:staticWebApps.viewProperties",
-        "onCommand:staticWebApps.createNewApi",
         "onCommand:staticWebApps.createNewEndpoint",
         "onCommand:staticWebApps.browse",
         "onCommand:staticWebApps.showActions",
@@ -95,15 +94,6 @@
                 "command": "staticWebApps.viewProperties",
                 "title": "%staticWebApps.viewProperties%",
                 "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.createNewApi",
-                "title": "%staticWebApps.createNewApi%",
-                "category": "Azure Static Web Apps",
-                "icon": {
-                    "light": "resources/light/CreateNewProject.svg",
-                    "dark": "resources/dark/CreateNewProject.svg"
-                }
             },
             {
                 "command": "staticWebApps.createNewEndpoint",
@@ -184,19 +174,14 @@
                     "group": "navigation@1"
                 },
                 {
-                    "command": "staticWebApps.createNewApi",
+                    "command": "staticWebApps.createNewEndpoint",
                     "when": "view == staticWebApps",
                     "group": "navigation@2"
                 },
                 {
-                    "command": "staticWebApps.createNewEndpoint",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@3"
-                },
-                {
                     "command": "staticWebApps.refresh",
                     "when": "view == staticWebApps",
-                    "group": "navigation@4"
+                    "group": "navigation@3"
                 }
             ],
             "view/item/context": [

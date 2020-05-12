@@ -13,7 +13,6 @@ import { renameAppSetting } from './appSettings/renameAppSetting';
 import { uploadAppSettings } from './appSettings/uploadAppSettings';
 import { browse } from './browse';
 import { createChildNode } from './createChildNode';
-import { createNewApi } from './createNewApi';
 import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
 import { deleteNode } from './deleteNode';
@@ -31,7 +30,6 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('staticWebApps.viewProperties', viewProperties);
     registerCommand('staticWebApps.createNewEndpoint', createNewEndpoint);
-    registerCommand('staticWebApps.createNewApi', createNewApi);
     registerCommand('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
     registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, ConfigurationsTreeItem.contextValue, node));
