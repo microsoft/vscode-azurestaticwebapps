@@ -9,7 +9,7 @@
 import * as fse from 'fs-extra';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import { gulp_installAzureAccount, gulp_installVSCodeExtension, gulp_webpack } from 'vscode-azureextensiondev';
+import { gulp_installVSCodeExtension, gulp_webpack } from 'vscode-azureextensiondev';
 
 declare let exports: { [key: string]: unknown };
 
@@ -23,7 +23,11 @@ async function prepareForWebpack(): Promise<void> {
 }
 
 async function gulp_installFunctionsExtension(): Promise<void> {
-    return gulp_installVSCodeExtension('ms-azuretools', 'vscode-azurefunctions');
+    return gulp_installVSCodeExtension('ms-azuretools', 'vscode-azurefunctions', true /*useInsiders*/);
+}
+
+async function gulp_installAzureAccount(): Promise<void> {
+    return gulp_installVSCodeExtension('ms-vscode', 'azure-account', true /*useInsiders*/);
 }
 
 exports['webpack-dev'] = gulp.series(prepareForWebpack, () => gulp_webpack('development'));
