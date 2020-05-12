@@ -7,7 +7,6 @@ import { commands } from 'vscode';
 import { AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { browse } from './browse';
-import { createNewApi } from './createNewApi';
 import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
@@ -24,7 +23,6 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('staticWebApps.viewProperties', viewProperties);
     registerCommand('staticWebApps.createNewEndpoint', createNewEndpoint);
-    registerCommand('staticWebApps.createNewApi', createNewApi);
     registerCommand('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
 }

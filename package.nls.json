@@ -11,7 +11,6 @@
     "staticWebApps.deleteConfirmation": "The behavior to use when confirming delete of a resource group.",
     "staticWebApps.deleteConfirmation.EnterName": "Prompts with an input box where you enter the resource group name to delete.",
     "staticWebApps.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete.",
-    "staticWebApps.createNewApi": "Create New API...",
     "staticWebApps.createNewEndpoint": "Create Endpoint...",
     "staticWebApps.browse": "Browse Site",
     "staticWebApps.showActions": "Show Actions"
