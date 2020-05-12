@@ -39,6 +39,15 @@
         "onCommand:staticWebApps.createNewEndpoint",
         "onCommand:staticWebApps.browse",
         "onCommand:staticWebApps.showActions",
+        "onCommand:staticWebApps.appSettings.add",
+        "onCommand:staticWebApps.appSettings.download",
+        "onCommand:staticWebApps.appSettings.upload",
+        "onCommand:staticWebApps.appSettings.edit",
+        "onCommand:staticWebApps.appSettings.rename",
+        "onCommand:staticWebApps.appSettings.delete",
+        "onCommand:staticWebApps.appSettings.encrypt",
+        "onCommand:staticWebApps.appSettings.decrypt",
+        "onCommand:staticWebApps.appSettings.toggleSlotSetting",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -116,6 +125,51 @@
             {
                 "command": "staticWebApps.showActions",
                 "title": "%staticWebApps.showActions%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.add",
+                "title": "%staticWebApps.appSettings.add%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.download",
+                "title": "%staticWebApps.appSettings.download%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.upload",
+                "title": "%staticWebApps.appSettings.upload%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.edit",
+                "title": "%staticWebApps.appSettings.edit%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.rename",
+                "title": "%staticWebApps.appSettings.rename%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.delete",
+                "title": "%staticWebApps.appSettings.delete%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.encrypt",
+                "title": "%staticWebApps.appSettings.encrypt%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.decrypt",
+                "title": "%staticWebApps.appSettings.decrypt%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.toggleSlotSetting",
+                "title": "%staticWebApps.appSettings.toggleSlotSetting%",
                 "category": "Azure Static Web Apps"
             }
         ],
@@ -209,6 +263,51 @@
                     "command": "staticWebApps.refresh",
                     "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Environments)$/",
                     "group": "9@3"
+                },
+                {
+                    "command": "staticWebApps.appSettings.add",
+                    "when": "view == staticWebApps && viewItem == applicationSettings",
+                    "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.appSettings.download",
+                    "when": "view == staticWebApps && viewItem == applicationSettings",
+                    "group": "1@2"
+                },
+                {
+                    "command": "staticWebApps.appSettings.upload",
+                    "when": "view == staticWebApps && viewItem == applicationSettings",
+                    "group": "1@3"
+                },
+                {
+                    "command": "staticWebApps.refresh",
+                    "when": "view == staticWebApps && viewItem == applicationSettings",
+                    "group": "2@1"
+                },
+                {
+                    "command": "staticWebApps.appSettings.edit",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.appSettings.rename",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@2"
+                },
+                {
+                    "command": "staticWebApps.appSettings.delete",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@3"
+                },
+                {
+                    "command": "staticWebApps.appSettings.toggleSlotSetting",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@4"
+                },
+                {
+                    "command": "staticWebApps.toggleAppSettingVisibility",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "inline"
                 }
             ],
             "commandPalette": [

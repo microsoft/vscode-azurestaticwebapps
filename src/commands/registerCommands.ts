@@ -4,13 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { commands } from 'vscode';
-import { AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
+import { AzExtParentTreeItem, AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
+import { ConfigurationsTreeItem } from '../tree/ConfigurationsTreeItem';
 import { browse } from './browse';
+import { createChildNode } from './createChildNode';
 import { createNewApi } from './createNewApi';
 import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
+import { editAppSetting } from './editAppSetting';
 import { openInPortal } from './openInPortal';
 import { showActions } from './showActions';
 import { viewProperties } from './viewProperties';
@@ -27,4 +30,6 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.createNewApi', createNewApi);
     registerCommand('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
+    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, ConfigurationsTreeItem.contextValue, node));
+    registerCommand('staticWebApps.appSettings.edit', editAppSetting);
 }

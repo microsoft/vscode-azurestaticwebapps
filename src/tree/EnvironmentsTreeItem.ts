@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem, StaticEnvironment } from "./EnvironmentTreeItem";
@@ -25,7 +25,7 @@ export class EnvironmentsTreeItem extends AzureParentTreeItem {
         return treeUtils.getIconPath('Azure-Static-Apps-Environments');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzureParentTreeItem[]> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/builds?api-version=2019-12-01-preview`, this.root);
         let envs: StaticEnvironment[] = (<{ value: StaticEnvironment[] }>JSON.parse(await requestUtils.sendRequest(requestOptions))).value;
         envs = envs.filter((env: StaticEnvironment) => {
