@@ -6,21 +6,21 @@
 import { AzureTreeItem, DialogResponses, IActionContext, TreeItemIconPath } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { treeUtils } from '../utils/treeUtils';
-import { ConfigurationsTreeItem, staticConfigurations, validateConfigurationKey } from './ConfigurationsTreeItem';
+import { AppSettingsTreeItem, staticConfigurations, validateConfigurationKey } from './AppSettingsTreeItem';
 
 /**
  * NOTE: This leverages a command with id `ext.prefix + '.toggleConfigurationVisibility'` that should be registered by each extension
  */
-export class ConfigurationTreeItem extends AzureTreeItem {
+export class AppSettingTreeItem extends AzureTreeItem {
     public static contextValue: string = 'applicationSettingItem';
-    public readonly contextValue: string = ConfigurationTreeItem.contextValue;
-    public readonly parent: ConfigurationsTreeItem;
+    public readonly contextValue: string = AppSettingTreeItem.contextValue;
+    public readonly parent: AppSettingsTreeItem;
 
     private _key: string;
     private _value: string;
     private _hideValue: boolean;
 
-    constructor(parent: ConfigurationsTreeItem, key: string, value: string) {
+    constructor(parent: AppSettingsTreeItem, key: string, value: string) {
         super(parent);
         this._key = key;
         this._value = value;

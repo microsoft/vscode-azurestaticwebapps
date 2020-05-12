@@ -5,7 +5,7 @@
 
 import * as ui from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { ConfigurationsTreeItem } from '../tree/ConfigurationsTreeItem';
+import { AppSettingsTreeItem } from '../tree/AppSettingsTreeItem';
 import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
@@ -15,8 +15,8 @@ export async function openInPortal(context: ui.IActionContext, node?: ui.AzureTr
     }
 
     switch (node.contextValue) {
-        // the deep link for Configurations is the ${swa.id}/configurations, however if the entry point was a build's configurations, the link is broken
-        case ConfigurationsTreeItem.contextValue:
+        // the deep link for App Settings is the ${swa.id}/configurations, however if the entry point was a build's configurations, the link is broken
+        case AppSettingsTreeItem.contextValue:
             if (node.parent instanceof EnvironmentTreeItem) {
                 node = <StaticWebAppTreeItem>node.parent.parent?.parent;
                 await ui.openInPortal(node.root, `${node.fullId}/configurations`);

@@ -6,7 +6,7 @@
 import { AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
-import { ConfigurationsTreeItem } from "./ConfigurationsTreeItem";
+import { AppSettingsTreeItem } from "./AppSettingsTreeItem";
 import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 
@@ -25,13 +25,13 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
-    public configurationsTreeItem: ConfigurationsTreeItem;
+    public appSettingsTreeItem: AppSettingsTreeItem;
     public readonly data: StaticEnvironment;
 
     constructor(parent: EnvironmentsTreeItem, env: StaticEnvironment) {
         super(parent);
         this.data = env;
-        this.configurationsTreeItem = new ConfigurationsTreeItem(this);
+        this.appSettingsTreeItem = new AppSettingsTreeItem(this);
     }
 
     public get name(): string {
@@ -55,7 +55,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzureParentTreeItem[]> {
-        return [this.configurationsTreeItem];
+        return [this.appSettingsTreeItem];
     }
 
     public hasMoreChildrenImpl(): boolean {

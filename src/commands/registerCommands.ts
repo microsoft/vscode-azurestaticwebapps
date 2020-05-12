@@ -6,8 +6,8 @@
 import { commands } from 'vscode';
 import { AzExtParentTreeItem, AzExtTreeItem, AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { ConfigurationsTreeItem } from '../tree/ConfigurationsTreeItem';
-import { ConfigurationTreeItem } from '../tree/ConfigurationTreeItem';
+import { AppSettingsTreeItem } from '../tree/AppSettingsTreeItem';
+import { AppSettingTreeItem } from '../tree/AppSettingTreeItem';
 import { editAppSetting } from './appSettings/editAppSetting';
 import { renameAppSetting } from './appSettings/renameAppSetting';
 import { uploadAppSettings } from './appSettings/uploadAppSettings';
@@ -32,10 +32,10 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.createNewEndpoint', createNewEndpoint);
     registerCommand('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
-    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, ConfigurationsTreeItem.contextValue, node));
-    registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, ConfigurationTreeItem.contextValue, node));
+    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, AppSettingsTreeItem.contextValue, node));
+    registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, AppSettingTreeItem.contextValue, node));
     registerCommand('staticWebApps.appSettings.edit', editAppSetting);
     registerCommand('staticWebApps.appSettings.rename', renameAppSetting);
-    registerCommand('staticWebApps.appSettings.upload', async (context: IActionContext, node?: ConfigurationsTreeItem) => await uploadAppSettings(context, node, 'api'));
-    registerCommand('staticWebApps.toggleAppSettingVisibility', async (_context: IActionContext, node: ConfigurationTreeItem) => { await node.toggleValueVisibility(); }, 250);
+    registerCommand('staticWebApps.appSettings.upload', async (context: IActionContext, node?: AppSettingsTreeItem) => await uploadAppSettings(context, node, 'api'));
+    registerCommand('staticWebApps.toggleAppSettingVisibility', async (_context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(); }, 250);
 }

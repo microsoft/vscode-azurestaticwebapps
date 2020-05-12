@@ -222,27 +222,27 @@
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Configurations)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|AppSettings)$/",
                     "group": "9@1"
                 },
                 {
                     "command": "staticWebApps.openInPortal",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environments|Configurations)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environments|AppSettings)$/",
                     "group": "9@2"
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Environments|Configurations)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Environments|AppSettings)$/",
                     "group": "9@3"
                 },
                 {
                     "command": "staticWebApps.appSettings.add",
-                    "when": "view == staticWebApps && viewItem == azureStaticConfigurations",
+                    "when": "view == staticWebApps && viewItem == azureStaticAppSettings",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.appSettings.upload",
-                    "when": "view == staticWebApps && viewItem == azureStaticConfigurations",
+                    "when": "view == staticWebApps && viewItem == azureStaticAppSettings",
                     "group": "1@3"
                 },
                 {

@@ -7,7 +7,7 @@ import * as fse from 'fs-extra';
 import { IActionContext } from "vscode-azureextensionui";
 import { localSettingsFileName } from "../../constants";
 import { ext } from "../../extensionVariables";
-import { ConfigurationsTreeItem, staticConfigurations } from '../../tree/ConfigurationsTreeItem';
+import { AppSettingsTreeItem, staticConfigurations } from '../../tree/AppSettingsTreeItem';
 import { localize } from "../../utils/localize";
 import { nonNullValue } from '../../utils/nonNull';
 import { confirmOverwriteSettings } from "./confirmOverwriteSettings";
@@ -19,14 +19,14 @@ interface ILocalSettingsJson {
     ConnectionStrings?: { [key: string]: string };
 }
 
-export async function uploadAppSettings(context: IActionContext, node?: ConfigurationsTreeItem, folderName?: string): Promise<void> {
+export async function uploadAppSettings(context: IActionContext, node?: AppSettingsTreeItem, folderName?: string): Promise<void> {
     const localSettingsPath: string = await getLocalSettingsFile(folderName);
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ConfigurationsTreeItem>(ConfigurationsTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<AppSettingsTreeItem>(AppSettingsTreeItem.contextValue, context);
     }
 
     await node.runWithTemporaryDescription(localize('uploading', 'Uploading...'), async () => {
-        const configNode: ConfigurationsTreeItem = nonNullValue(node);
+        const configNode: AppSettingsTreeItem = nonNullValue(node);
         ext.outputChannel.show(true);
         ext.outputChannel.appendLog(localize('uploadStart', 'Uploading settings to "{0}"...', node?.parent?.label));
         const localSettings: ILocalSettingsJson = <ILocalSettingsJson>await fse.readJson(localSettingsPath);

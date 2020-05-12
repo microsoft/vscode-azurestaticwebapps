@@ -3,14 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IncomingMessage } from 'ms-rest';
 import * as vscode from 'vscode';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
+import { delay } from '../utils/delay';
 import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
-import { ConfigurationsTreeItem } from './ConfigurationsTreeItem';
+import { AppSettingsTreeItem } from './AppSettingsTreeItem';
 import { EnvironmentsTreeItem } from './EnvironmentsTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
@@ -33,18 +35,27 @@ export type StaticWebApp = {
     type: string;
 };
 
+type AzureAsyncOperationResponse = {
+    id?: string;
+    status: string;
+    error?: {
+        code: string;
+        message: string;
+    };
+};
+
 export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticWebApp';
     public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
     public readonly data: StaticWebApp;
 
-    public configurationsTreeItem: ConfigurationsTreeItem;
+    public appSettingsTreeItem: AppSettingsTreeItem;
     public environmentsTreeItem: EnvironmentsTreeItem;
 
     constructor(parent: AzureParentTreeItem, ss: StaticWebApp) {
         super(parent);
         this.data = ss;
-        this.configurationsTreeItem = new ConfigurationsTreeItem(this);
+        this.appSettingsTreeItem = new AppSettingsTreeItem(this);
         this.environmentsTreeItem = new EnvironmentsTreeItem(this);
     }
 
@@ -69,7 +80,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
-        return [this.configurationsTreeItem, this.environmentsTreeItem];
+        return [this.appSettingsTreeItem, this.environmentsTreeItem];
     }
     public hasMoreChildrenImpl(): boolean {
         return false;
@@ -81,7 +92,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
 
         await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
-            await requestUtils.pollAzureAsyncOperation(requestOptions, this);
+            await this.pollAzureAsyncOperation(requestOptions);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted "{0}".', this.name);
             vscode.window.showInformationMessage(deleteSucceeded);
@@ -91,5 +102,35 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
 
     public async browse(): Promise<void> {
         await openUrl(`https://${this.description}`);
+    }
+
+    //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
+    private async pollAzureAsyncOperation(asyncOperationRequest: requestUtils.Request): Promise<void> {
+        asyncOperationRequest.resolveWithFullResponse = true;
+        const asyncAzureRes: IncomingMessage = await requestUtils.sendRequest(asyncOperationRequest);
+        const monitorStatusUrl: string = <string>asyncAzureRes.headers['azure-asyncoperation'];
+        // the url already includes resourceManagerEndpointUrl, so just use getDefaultRequest instead
+        const monitorStatusReq: requestUtils.Request = await requestUtils.getDefaultRequest(monitorStatusUrl, this.root.credentials);
+
+        const timeoutInSeconds: number = 60;
+        const maxTime: number = Date.now() + timeoutInSeconds * 1000;
+        while (Date.now() < maxTime) {
+            const statusJsonString: string = await requestUtils.sendRequest(monitorStatusReq);
+            let operationResponse: AzureAsyncOperationResponse | undefined;
+            try {
+                operationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
+            } catch {
+                // swallow JSON parsing errors
+            }
+
+            if (operationResponse?.status !== 'InProgress') {
+                if (operationResponse?.error) {
+                    throw operationResponse.error;
+                }
+                return;
+            }
+
+            await delay(2000);
+        }
     }
 }

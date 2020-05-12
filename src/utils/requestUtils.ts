@@ -3,19 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { HttpMethods, IncomingMessage, ServiceClientCredentials, WebResource } from "ms-rest";
+import { HttpMethods, ServiceClientCredentials, WebResource } from "ms-rest";
 import * as requestP from 'request-promise';
-import { appendExtensionUserAgent, AzureTreeItem, ISubscriptionContext } from "vscode-azureextensionui";
-import { delay } from "./delay";
-
-type AzureAsyncOperationResponse = {
-    id?: string;
-    status: string;
-    error?: {
-        code: string;
-        message: string;
-    };
-};
+import { appendExtensionUserAgent, ISubscriptionContext } from "vscode-azureextensionui";
 
 export namespace requestUtils {
     export type Request = WebResource & requestP.RequestPromiseOptions;
@@ -62,35 +52,5 @@ export namespace requestUtils {
                 }
             });
         });
-    }
-
-    //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
-    export async function pollAzureAsyncOperation(asyncOperationRequest: Request, node: AzureTreeItem): Promise<void> {
-        asyncOperationRequest.resolveWithFullResponse = true;
-        const asyncAzureRes: IncomingMessage = await sendRequest(asyncOperationRequest);
-        const monitorStatusUrl: string = <string>asyncAzureRes.headers['azure-asyncoperation'];
-        // the url already includes resourceManagerEndpointUrl, so just use getDefaultRequest instead
-        const monitorStatusReq: Request = await getDefaultRequest(monitorStatusUrl, node.root.credentials);
-
-        const timeoutInSeconds: number = 60;
-        const maxTime: number = Date.now() + timeoutInSeconds * 1000;
-        while (Date.now() < maxTime) {
-            const statusJsonString: string = await sendRequest(monitorStatusReq);
-            let operationResponse: AzureAsyncOperationResponse | undefined;
-            try {
-                operationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
-            } catch {
-                // swallow JSON parsing errors
-            }
-
-            if (operationResponse?.status !== 'InProgress') {
-                if (operationResponse?.error) {
-                    throw operationResponse.error;
-                }
-                return;
-            }
-
-            await delay(2000);
-        }
     }
 }

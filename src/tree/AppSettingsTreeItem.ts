@@ -7,7 +7,7 @@ import { AzureParentTreeItem, AzureTreeItem, IActionContext, ICreateChildImplCon
 import { ext } from '../extensionVariables';
 import { requestUtils } from '../utils/requestUtils';
 import { treeUtils } from '../utils/treeUtils';
-import { ConfigurationTreeItem } from './ConfigurationTreeItem';
+import { AppSettingTreeItem } from './AppSettingTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
 export function validateConfigurationKey(settings: staticConfigurations, newKey?: string, oldKey?: string): string | undefined {
@@ -37,11 +37,11 @@ export type staticConfigurations = {
     properties?: { [key: string]: string };
 };
 
-export class ConfigurationsTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
-    public static contextValue: string = 'azureStaticConfigurations';
-    public readonly label: string = 'Configurations';
+export class AppSettingsTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
+    public static contextValue: string = 'azureStaticAppSettings';
+    public readonly label: string = 'Application Settings';
     public readonly childTypeLabel: string = 'App Setting';
-    public readonly contextValue: string = ConfigurationsTreeItem.contextValue;
+    public readonly contextValue: string = AppSettingsTreeItem.contextValue;
     private _settings: staticConfigurations | undefined;
 
     public get id(): string {
@@ -71,7 +71,7 @@ export class ConfigurationsTreeItem extends AzureParentTreeItem implements IAzur
         // tslint:disable-next-line: strict-boolean-expressions
         const properties: { [name: string]: string } = this._settings.properties || {};
         return Object.keys(properties).map(key => {
-            return new ConfigurationTreeItem(this, key, properties[key]);
+            return new AppSettingTreeItem(this, key, properties[key]);
         });
     }
 
@@ -120,7 +120,7 @@ export class ConfigurationsTreeItem extends AzureParentTreeItem implements IAzur
 
         await this.updateApplicationSettings(settings);
 
-        return new ConfigurationTreeItem(this, newKey, newValue);
+        return new AppSettingTreeItem(this, newKey, newValue);
     }
 
     public async ensureSettings(context: IActionContext): Promise<staticConfigurations> {
