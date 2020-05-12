@@ -5,9 +5,11 @@ import { AzureTreeItem } from "vscode-azureextensionui";
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export interface IDataTreeItem extends AzureTreeItem {
+export interface IAzureResourceTreeItem extends AzureTreeItem {
     data: {} | undefined;
 
-    // gets called if data is undefined
+    /**
+     * Implement this to execute any async code when data is undefined
+     */
     getDataImpl?(): Promise<void>;
 }

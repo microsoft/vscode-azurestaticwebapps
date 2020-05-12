@@ -8,7 +8,7 @@ import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { ConfigurationsTreeItem } from "./ConfigurationsTreeItem";
 import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
-import { IDataTreeItem } from "./IDataTreeItem";
+import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 
 export type StaticEnvironment = {
     buildId: string;
@@ -21,7 +21,7 @@ export type StaticEnvironment = {
     };
 };
 
-export class EnvironmentTreeItem extends AzureParentTreeItem implements IDataTreeItem {
+export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
 
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;

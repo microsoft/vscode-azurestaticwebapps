@@ -12,7 +12,7 @@ import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { ConfigurationsTreeItem } from './ConfigurationsTreeItem';
 import { EnvironmentsTreeItem } from './EnvironmentsTreeItem';
-import { IDataTreeItem } from './IDataTreeItem';
+import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
 // using a custom defined type because the type provided by WebsiteManagementModels.StaticSiteARMResource doesn't match the actual payload
 export type StaticWebApp = {
@@ -33,7 +33,7 @@ export type StaticWebApp = {
     type: string;
 };
 
-export class StaticWebAppTreeItem extends AzureParentTreeItem implements IDataTreeItem {
+export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticWebApp';
     public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
     public readonly data: StaticWebApp;

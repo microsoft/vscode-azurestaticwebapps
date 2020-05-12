@@ -8,7 +8,7 @@ import { ext } from '../extensionVariables';
 import { requestUtils } from '../utils/requestUtils';
 import { treeUtils } from '../utils/treeUtils';
 import { ConfigurationTreeItem } from './ConfigurationTreeItem';
-import { IDataTreeItem } from './IDataTreeItem';
+import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
 export function validateConfigurationKey(settings: staticConfigurations, newKey?: string, oldKey?: string): string | undefined {
     newKey = newKey ? newKey : '';
@@ -37,7 +37,7 @@ export type staticConfigurations = {
     properties?: { [key: string]: string };
 };
 
-export class ConfigurationsTreeItem extends AzureParentTreeItem implements IDataTreeItem {
+export class ConfigurationsTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticConfigurations';
     public readonly label: string = 'Configurations';
     public readonly childTypeLabel: string = 'App Setting';
