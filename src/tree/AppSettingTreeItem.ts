@@ -6,7 +6,7 @@
 import { AzureTreeItem, DialogResponses, IActionContext, TreeItemIconPath } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { treeUtils } from '../utils/treeUtils';
-import { AppSettingsTreeItem, staticConfigurations, validateConfigurationKey } from './AppSettingsTreeItem';
+import { AppSettingsTreeItem, staticAppSettings, validateConfigurationKey } from './AppSettingsTreeItem';
 
 /**
  * NOTE: This leverages a command with id `ext.prefix + '.toggleConfigurationVisibility'` that should be registered by each extension
@@ -55,7 +55,7 @@ export class AppSettingTreeItem extends AzureTreeItem {
     }
 
     public async rename(context: IActionContext): Promise<void> {
-        const settings: staticConfigurations = await this.parent.ensureSettings(context);
+        const settings: staticAppSettings = await this.parent.ensureSettings(context);
 
         const oldKey: string = this._key;
         const newKey: string = await ext.ui.showInputBox({

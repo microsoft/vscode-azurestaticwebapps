@@ -10,7 +10,7 @@ import { treeUtils } from '../utils/treeUtils';
 import { AppSettingTreeItem } from './AppSettingTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
-export function validateConfigurationKey(settings: staticConfigurations, newKey?: string, oldKey?: string): string | undefined {
+export function validateConfigurationKey(settings: staticAppSettings, newKey?: string, oldKey?: string): string | undefined {
     newKey = newKey ? newKey : '';
 
     newKey = newKey.trim();
@@ -30,7 +30,7 @@ export function validateConfigurationKey(settings: staticConfigurations, newKey?
     return undefined;
 }
 
-export type staticConfigurations = {
+export type staticAppSettings = {
     id: string;
     location: string;
     name: string;
@@ -42,7 +42,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem implements IAzureRe
     public readonly label: string = 'Application Settings';
     public readonly childTypeLabel: string = 'App Setting';
     public readonly contextValue: string = AppSettingsTreeItem.contextValue;
-    private _settings: staticConfigurations | undefined;
+    private _settings: staticAppSettings | undefined;
 
     public get id(): string {
         return 'configurations';
@@ -52,7 +52,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem implements IAzureRe
         return treeUtils.getThemedIconPath('settings');
     }
 
-    public get data(): staticConfigurations | undefined {
+    public get data(): staticAppSettings | undefined {
         return this._settings;
     }
 
@@ -77,7 +77,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async editSettingItem(oldKey: string, newKey: string, value: string, context: IActionContext): Promise<void> {
         // make a deep copy so settings are not cached if there's a failure
-        const settings: staticConfigurations = <staticConfigurations>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
+        const settings: staticAppSettings = <staticAppSettings>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
         if (settings.properties) {
             if (oldKey !== newKey) {
                 delete settings.properties[oldKey];
@@ -90,7 +90,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async deleteSettingItem(key: string, context: IActionContext): Promise<void> {
         // make a deep copy so settings are not cached if there's a failure
-        const settings: staticConfigurations = <staticConfigurations>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
+        const settings: staticAppSettings = <staticAppSettings>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
 
         if (settings.properties) {
             delete settings.properties[key];
@@ -101,7 +101,7 @@ export class AppSettingsTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzureTreeItem> {
         // make a deep copy so settings are not cached if there's a failure
-        const settings: staticConfigurations = <staticConfigurations>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
+        const settings: staticAppSettings = <staticAppSettings>JSON.parse(JSON.stringify(await this.ensureSettings(context)));
         const newKey: string = await ext.ui.showInputBox({
             prompt: 'Enter new setting key',
             validateInput: (v?: string): string | undefined => validateConfigurationKey(settings, v)
@@ -123,23 +123,23 @@ export class AppSettingsTreeItem extends AzureParentTreeItem implements IAzureRe
         return new AppSettingTreeItem(this, newKey, newValue);
     }
 
-    public async ensureSettings(context: IActionContext): Promise<staticConfigurations> {
+    public async ensureSettings(context: IActionContext): Promise<staticAppSettings> {
         if (!this._settings) {
             await this.getCachedChildren(context);
         }
 
-        return <staticConfigurations>this._settings;
+        return <staticAppSettings>this._settings;
     }
 
-    public async listApplicationSettings(): Promise<staticConfigurations> {
+    public async listApplicationSettings(): Promise<staticAppSettings> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/listFunctionAppSettings?api-version=2019-12-01-preview`, this.root, 'POST');
-        return <staticConfigurations>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        return <staticAppSettings>JSON.parse(await requestUtils.sendRequest(requestOptions));
     }
 
-    public async updateApplicationSettings(settings: staticConfigurations): Promise<void> {
+    public async updateApplicationSettings(settings: staticAppSettings): Promise<void> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/config/functionappsettings?api-version=2019-12-01-preview`, this.root, 'PUT');
         requestOptions.headers['Content-Type'] = 'application/json';
         requestOptions.body = JSON.stringify({ properties: settings.properties });
-        this._settings = <staticConfigurations>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        this._settings = <staticAppSettings>JSON.parse(await requestUtils.sendRequest(requestOptions));
     }
 }

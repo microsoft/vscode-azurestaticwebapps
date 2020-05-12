@@ -7,7 +7,7 @@ import * as fse from 'fs-extra';
 import { IActionContext } from "vscode-azureextensionui";
 import { localSettingsFileName } from "../../constants";
 import { ext } from "../../extensionVariables";
-import { AppSettingsTreeItem, staticConfigurations } from '../../tree/AppSettingsTreeItem';
+import { AppSettingsTreeItem, staticAppSettings } from '../../tree/AppSettingsTreeItem';
 import { localize } from "../../utils/localize";
 import { nonNullProp, nonNullValue } from '../../utils/nonNull';
 import { confirmOverwriteSettings } from "./confirmOverwriteSettings";
@@ -32,7 +32,7 @@ export async function uploadAppSettings(context: IActionContext, node?: AppSetti
         const localSettings: ILocalSettingsJson = <ILocalSettingsJson>await fse.readJson(localSettingsPath);
 
         if (localSettings.Values) {
-            const remoteSettings: staticConfigurations = await appSettingsNode.listApplicationSettings();
+            const remoteSettings: staticAppSettings = await appSettingsNode.listApplicationSettings();
             if (!remoteSettings.properties) {
                 remoteSettings.properties = {};
             }
