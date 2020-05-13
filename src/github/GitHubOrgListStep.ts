@@ -15,8 +15,8 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IGitHubAccessTokenC
     public async prompt(context: IGitHubAccessTokenContext): Promise<void> {
 
         if (workspace.workspaceFolders && workspace.workspaceFolders.length > 0) {
-            // returns empty string if no remote
-            context.repoHtmlUrl = await tryGetRemote(workspace.workspaceFolders[0].uri.fsPath);
+            // returns empty string if no valid remote detected
+            context.repoHtmlUrl = await tryGetRemote(context, workspace.workspaceFolders[0].uri.fsPath);
             if (context.repoHtmlUrl) {
                 return;
             }

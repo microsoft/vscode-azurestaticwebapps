@@ -3,7 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { HttpMethods, TokenCredentials } from 'ms-rest';
+// tslint:disable-next-line:no-require-imports
+import gitUrlParse = require('git-url-parse');
+import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
 // tslint:disable-next-line:no-implicit-dependencies
 import { Response } from 'request';
 // tslint:disable-next-line:no-submodule-imports
@@ -11,8 +13,11 @@ import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { githubApiEndpoint } from '../constants';
 import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { requestUtils } from './requestUtils';
+// tslint:disable-next-line:no-implicit-dependencies
+// tslint:disable-next-line:no-submodule-imports
 
 export type gitHubOrgData = { login: string; repos_url: string };
 export type gitHubRepoData = { name: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
@@ -128,22 +133,32 @@ export async function getGitHubAccessToken(): Promise<string> {
     }
 }
 
-export async function tryGetRemote(fsPath: string): Promise<string | undefined> {
+export async function tryGetRemote(context: IGitHubAccessTokenContext, fsPath: string): Promise<string | undefined> {
     const localGit: git.SimpleGit = git(fsPath);
 
     try {
-        const remotesRaw: string | void = await localGit.remote(['-v']);
+        const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
 
-        if (remotesRaw !== undefined) {
-            const gitPushUrl: RegExpExecArray | null = /(?<=origin)(.*)(?=\(push\))/.exec(remotesRaw);
-            if (gitPushUrl !== null) {
-                // remove the .git suffix
-                return gitPushUrl[0].trim().slice(0, -4);
+        if (originUrl !== undefined) {
+            const { owner, name } = await getRepoFullname(originUrl);
+            const repoReq: requestUtils.Request = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}`);
+            const repoRes: IncomingMessage & { body: string } = await requestUtils.sendRequest(repoReq);
+            // the GitHub API response has a lot more properties than this, but these are the only ones we care about
+            const bodyJson: { html_url: string; permissions: { admin: boolean } } = <{ html_url: string; permissions: { admin: boolean } }>JSON.parse(repoRes.body);
+            // to create a workflow, the user needs admin access so if it's not true, it will fail
+            if (bodyJson.permissions.admin) {
+                return bodyJson.html_url;
             }
         }
+
     } catch (error) {
         // don't do anything for an error, this shouldn't prevent creation
     }
 
     return;
+}
+
+export async function getRepoFullname(gitUrl: string): Promise<{ owner: string; name: string }> {
+    const parsedUrl: gitUrlParse.GitUrl = gitUrlParse(gitUrl);
+    return { owner: parsedUrl.owner, name: parsedUrl.name };
 }
