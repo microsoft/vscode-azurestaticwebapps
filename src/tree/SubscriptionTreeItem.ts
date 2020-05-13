@@ -14,6 +14,7 @@ import { GitHubBranchListStep } from '../github/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../github/GitHubOrgListStep';
 import { GitHubRepoListStep } from '../github/GitHubRepoListStep';
 import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
+import { getGitHubAccessToken } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { requestUtils } from '../utils/requestUtils';
@@ -67,6 +68,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             promptSteps,
             executeSteps
         });
+
+        wizardContext.accessToken = await getGitHubAccessToken();
 
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');

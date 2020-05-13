@@ -29,6 +29,8 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
 
         context.repoData = repoData;
         context.repoHtmlUrl = repoData.html_url;
+        // if this is a new repo, the only branch that will have been created is 'master'
+        context.branchData = repoData.name === createNewRepo ? { name: 'master' } : undefined;
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
@@ -43,6 +45,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         }
     }
 
+    // refactor to getPicks and add button in that method
     private async getRepositories(context: IStaticWebAppWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
         const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, nonNullProp(context, 'orgData').repos_url);
         return await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name');

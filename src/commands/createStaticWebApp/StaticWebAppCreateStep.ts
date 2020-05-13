@@ -6,7 +6,6 @@
 import { Progress } from "vscode";
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { StaticWebApp } from "../../tree/StaticWebAppTreeItem";
-import { getGitHubAccessToken } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from "../../utils/nonNull";
 import { requestUtils } from "../../utils/requestUtils";
@@ -24,8 +23,6 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
         // tslint:disable: no-unsafe-any
         requestBody.location = wizardContext.location?.name;
 
-        // get the token if we never did (this occurs when we auto-detect the remote)
-        wizardContext.accessToken = wizardContext.accessToken ? wizardContext.accessToken : await getGitHubAccessToken();
         const properties: {} = {
             repositoryUrl: wizardContext.repoHtmlUrl,
             branch: wizardContext.branchData?.name,
