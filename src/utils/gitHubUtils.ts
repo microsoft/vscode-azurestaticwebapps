@@ -13,8 +13,6 @@ import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { requestUtils } from './requestUtils';
-// tslint:disable-next-line:no-implicit-dependencies
-// tslint:disable-next-line:no-submodule-imports
 
 export type gitHubOrgData = { login: string; repos_url: string };
 export type gitHubRepoData = { name: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
