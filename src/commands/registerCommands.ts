@@ -13,7 +13,7 @@ import { renameAppSetting } from './appSettings/renameAppSetting';
 import { uploadAppSettings } from './appSettings/uploadAppSettings';
 import { browse } from './browse';
 import { createChildNode } from './createChildNode';
-import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
+import { createNewEndpoint } from './createNewEndpoint';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
 import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';

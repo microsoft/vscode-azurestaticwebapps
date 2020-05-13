@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
-import { RepoCreateStep } from '../commands/createNewEndpoint/RepoCreateStep';
-import { RepoNameStep } from '../commands/createNewEndpoint/RepoNameStep';
-import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
-import { ext } from '../extensionVariables';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from '../utils/gitHubUtils';
-import { localize } from '../utils/localize';
-import { nonNullProp } from '../utils/nonNull';
+import { ext } from '../../extensionVariables';
+import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from '../../utils/gitHubUtils';
+import { localize } from '../../utils/localize';
+import { nonNullProp } from '../../utils/nonNull';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { RepoCreateStep } from './RepoCreateStep';
+import { RepoNameStep } from './RepoNameStep';
 
 const createNewRepo: string = 'createNewRepo';
 export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {

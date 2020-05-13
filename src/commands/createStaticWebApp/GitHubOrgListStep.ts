@@ -5,14 +5,14 @@
 
 import { workspace } from 'vscode';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../constants';
-import { ext } from '../extensionVariables';
-import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
-import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource, tryGetRemote } from '../utils/gitHubUtils';
-import { localize } from '../utils/localize';
+import { githubApiEndpoint } from '../../constants';
+import { ext } from '../../extensionVariables';
+import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource, tryGetRemote } from '../../utils/gitHubUtils';
+import { localize } from '../../utils/localize';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
-export class GitHubOrgListStep extends AzureWizardPromptStep<IGitHubAccessTokenContext> {
-    public async prompt(context: IGitHubAccessTokenContext): Promise<void> {
+export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+    public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
 
         if (workspace.workspaceFolders && workspace.workspaceFolders.length > 0) {
             // returns empty string if no valid remote detected
@@ -32,11 +32,11 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IGitHubAccessTokenC
         context.orgData = orgData;
     }
 
-    public shouldPrompt(context: IGitHubAccessTokenContext): boolean {
+    public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
         return !context.repoHtmlUrl || !context.orgData;
     }
 
-    private async getOrganizations(context: IGitHubAccessTokenContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
+    private async getOrganizations(context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
         let requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/user`);
         let quickPickItems: IAzureQuickPickItem<gitHubOrgData>[] = createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login');
 

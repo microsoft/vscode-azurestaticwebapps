@@ -10,7 +10,7 @@ import { ext } from '../../extensionVariables';
 import { createGitHubRequestOptions, gitHubRepoData, gitHubWebResource } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
 import { requestUtils } from '../../utils/requestUtils';
-import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     public priority: number = 200;

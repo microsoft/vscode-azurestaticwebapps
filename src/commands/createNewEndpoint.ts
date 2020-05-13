@@ -8,11 +8,11 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
 import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
-import { defaultApiName } from '../../constants';
-import { ext } from '../../extensionVariables';
-import { localize } from '../../utils/localize';
-import { nonNullValue } from '../../utils/nonNull';
-import { AzureFunctionsExtensionApi } from '../../vscode-azurefunctions.api';
+import { defaultApiName } from '../constants';
+import { ext } from '../extensionVariables';
+import { localize } from '../utils/localize';
+import { nonNullValue } from '../utils/nonNull';
+import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
 
 export async function createNewEndpoint(_context: IActionContext): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
