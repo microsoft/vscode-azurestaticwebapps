@@ -318,6 +318,7 @@
     },
     "devDependencies": {
         "@types/fs-extra": "^8.1.0",
+        "@types/git-url-parse": "^9.0.0",
         "@types/gulp": "^4.0.6",
         "@types/mocha": "^7.0.2",
         "@types/node": "^10.0.0",
@@ -341,6 +342,7 @@
     },
     "dependencies": {
         "fs-extra": "^8.1.0",
+        "git-url-parse": "^11.1.2",
         "ms-rest": "^2.5.3",
         "request": "^2.88.2",
         "request-promise": "^4.2.5",
