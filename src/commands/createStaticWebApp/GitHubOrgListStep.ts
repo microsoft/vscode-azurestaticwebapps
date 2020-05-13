@@ -3,25 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { workspace } from 'vscode';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource, tryGetRemote } from '../../utils/gitHubUtils';
+import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-
-        if (workspace.workspaceFolders && workspace.workspaceFolders.length > 0) {
-            // returns empty string if no valid remote detected
-            context.repoHtmlUrl = await tryGetRemote(context, workspace.workspaceFolders[0].uri.fsPath);
-            if (context.repoHtmlUrl) {
-                return;
-            }
-        }
-
         const placeHolder: string = localize('chooseOrg', 'Choose organization.');
         let orgData: gitHubOrgData | undefined;
 
@@ -33,7 +23,7 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
-        return !context.repoHtmlUrl || !context.orgData;
+        return !context.repoHtmlUrl;
     }
 
     private async getOrganizations(context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
