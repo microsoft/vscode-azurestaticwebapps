@@ -18,9 +18,11 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseRepo', 'Choose repository');
         let repoData: gitHubRepoData | undefined;
+        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, nonNullProp(context, 'orgData').repos_url);
         const picksCache: ICachedQuickPicks<gitHubRepoData> = { picks: [] };
+
         do {
-            repoData = (await ext.ui.showQuickPick(this.getRepoPicks(context, picksCache), { placeHolder })).data;
+            repoData = (await ext.ui.showQuickPick(this.getRepoPicks(requestOptions, picksCache), { placeHolder })).data;
         } while (!repoData);
 
         context.repoData = repoData;
@@ -39,14 +41,11 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         }
     }
 
-    private async getRepoPicks(context: IStaticWebAppWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
-        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, nonNullProp(context, 'orgData').repos_url);
+    private async getRepoPicks(requestOptions: gitHubWebResource, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
         const quickPickItems: IAzureQuickPickItem<gitHubRepoData | undefined>[] =
-            await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name');
+            await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name', 0.1); //CHANGE BACK
         quickPickItems.unshift({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, html_url: createNewRepo, url: createNewRepo } });
 
-        // update to the next url if loadMore is clicked
-        nonNullProp(context, 'orgData').repos_url = requestOptions.url;
         return quickPickItems;
     }
 }
