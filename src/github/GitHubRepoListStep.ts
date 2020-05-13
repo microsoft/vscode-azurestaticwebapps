@@ -45,7 +45,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
 
     private async getRepoPicks(requestOptions: gitHubWebResource, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
         const quickPickItems: IAzureQuickPickItem<gitHubRepoData | undefined>[] =
-            await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name', 0.1); //CHANGE BACK
+            await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name');
         quickPickItems.unshift({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, html_url: createNewRepo, url: createNewRepo } });
 
         return quickPickItems;
