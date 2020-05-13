@@ -27,6 +27,8 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
 
         context.repoData = repoData;
         context.repoHtmlUrl = repoData.html_url;
+        // if this is a new repo, the only branch that will have been created is 'master'
+        context.branchData = repoData.name === createNewRepo ? { name: 'master' } : undefined;
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
