@@ -13,5 +13,11 @@
     "staticWebApps.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete.",
     "staticWebApps.createNewEndpoint": "Create Endpoint...",
     "staticWebApps.browse": "Browse Site",
-    "staticWebApps.showActions": "Show Actions"
+    "staticWebApps.showActions": "Show Actions",
+    "staticWebApps.appSettings.add": "Add New Setting...",
+    "staticWebApps.appSettings.upload": "Upload Local Settings...",
+    "staticWebApps.appSettings.edit": "Edit Setting...",
+    "staticWebApps.appSettings.rename": "Rename Setting...",
+    "staticWebApps.appSettings.delete": "Delete Setting...",
+    "staticWebApps.toggleAppSettingVisibility": "Toggle App Setting Visibility."
 }

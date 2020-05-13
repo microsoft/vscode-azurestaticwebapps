@@ -6,9 +6,7 @@
 // tslint:disable-next-line:no-require-imports
 import gitUrlParse = require('git-url-parse');
 import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
-// tslint:disable-next-line:no-implicit-dependencies
 import { Response } from 'request';
-// tslint:disable-next-line:no-submodule-imports
 import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
@@ -16,8 +14,6 @@ import { IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../constants';
 import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { requestUtils } from './requestUtils';
-// tslint:disable-next-line:no-implicit-dependencies
-// tslint:disable-next-line:no-submodule-imports
 
 export type gitHubOrgData = { login: string; repos_url: string };
 export type gitHubRepoData = { name: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
