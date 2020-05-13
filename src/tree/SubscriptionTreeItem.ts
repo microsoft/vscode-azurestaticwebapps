@@ -69,14 +69,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         });
 
         await wizard.prompt();
-        const newName: string | undefined = await wizardContext.relatedNameTask;
-        if (!newName) {
-            throw new Error(localize('noUniqueName', 'Failed to generate unique name for resources. Use advanced creation to manually enter resource names.'));
-        }
-        wizardContext.newResourceGroupName = newName;
+        const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+        wizardContext.newResourceGroupName = newStaticWebAppName;
 
         await wizard.execute();
-        const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
         context.showCreatingTreeItem(newStaticWebAppName);
 
         return new StaticWebAppTreeItem(this, nonNullProp(wizardContext, 'staticWebApp'));
