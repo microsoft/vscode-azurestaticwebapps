@@ -9,7 +9,7 @@ import { ext } from '../../extensionVariables';
 import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, getRepoFullname, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
-import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {

@@ -9,7 +9,7 @@ import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource, tryGetRemote } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
-import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {

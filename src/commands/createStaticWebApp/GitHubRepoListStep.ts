@@ -8,7 +8,7 @@ import { ext } from '../../extensionVariables';
 import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
-import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { RepoCreateStep } from './RepoCreateStep';
 import { RepoNameStep } from './RepoNameStep';
 

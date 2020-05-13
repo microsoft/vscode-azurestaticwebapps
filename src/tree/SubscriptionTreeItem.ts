@@ -7,12 +7,12 @@ import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptSt
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
+import { GitHubBranchListStep } from '../commands/createStaticWebApp/GitHubBranchListStep';
+import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
+import { GitHubRepoListStep } from '../commands/createStaticWebApp/GitHubRepoListStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
-import { GitHubBranchListStep } from '../commands/github/GitHubBranchListStep';
-import { GitHubOrgListStep } from '../commands/github/GitHubOrgListStep';
-import { GitHubRepoListStep } from '../commands/github/GitHubRepoListStep';
 import { getGitHubAccessToken } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';

@@ -10,7 +10,7 @@ import { createGitHubRequestOptions, gitHubWebResource } from '../../utils/gitHu
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { requestUtils } from '../../utils/requestUtils';
-import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
