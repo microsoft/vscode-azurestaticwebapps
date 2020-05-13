@@ -19,8 +19,9 @@ interface ILocalSettingsJson {
     ConnectionStrings?: { [key: string]: string };
 }
 
-export async function uploadAppSettings(context: IActionContext, node?: AppSettingsTreeItem, folderName?: string): Promise<void> {
-    const localSettingsPath: string = await getLocalSettingsFile(folderName);
+// https://github.com/microsoft/vscode-azurestaticwebapps/issues/62
+export async function uploadAppSettings(context: IActionContext, node?: AppSettingsTreeItem): Promise<void> {
+    const localSettingsPath: string = await getLocalSettingsFile();
     if (!node) {
         node = await ext.tree.showTreeItemPicker<AppSettingsTreeItem>(AppSettingsTreeItem.contextValue, context);
     }

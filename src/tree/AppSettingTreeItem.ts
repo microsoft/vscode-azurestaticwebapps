@@ -9,8 +9,10 @@ import { treeUtils } from '../utils/treeUtils';
 import { AppSettingsTreeItem, staticAppSettings, validateConfigurationKey } from './AppSettingsTreeItem';
 
 /**
- * NOTE: This leverages a command with id `ext.prefix + '.toggleConfigurationVisibility'` that should be registered by each extension
+ * NOTE: This leverages a command with id `ext.prefix + '.toggleAppSettingVisibility'` that should be registered by each extension
  */
+
+// https://github.com/microsoft/vscode-azurestaticwebapps/issues/62
 export class AppSettingTreeItem extends AzureTreeItem {
     public static contextValue: string = 'applicationSettingItem';
     public readonly contextValue: string = AppSettingTreeItem.contextValue;
@@ -40,7 +42,7 @@ export class AppSettingTreeItem extends AzureTreeItem {
     }
 
     public get commandId(): string {
-        return ext.prefix + '.toggleConfigurationVisibility';
+        return ext.prefix + '.toggleAppSettingVisibility';
     }
 
     public async edit(context: IActionContext): Promise<void> {

@@ -36,6 +36,6 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, AppSettingTreeItem.contextValue, node));
     registerCommand('staticWebApps.appSettings.edit', editAppSetting);
     registerCommand('staticWebApps.appSettings.rename', renameAppSetting);
-    registerCommand('staticWebApps.appSettings.upload', async (context: IActionContext, node?: AppSettingsTreeItem) => await uploadAppSettings(context, node, 'api'));
+    registerCommand('staticWebApps.appSettings.upload', uploadAppSettings);
     registerCommand('staticWebApps.toggleAppSettingVisibility', async (_context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(); }, 250);
 }

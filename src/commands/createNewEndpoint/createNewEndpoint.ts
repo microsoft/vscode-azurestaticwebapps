@@ -7,8 +7,8 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
-// tslint:disable-next-line: no-submodule-imports
 import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
+import { defaultApiName } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
 import { nonNullValue } from '../../utils/nonNull';
@@ -21,7 +21,7 @@ export async function createNewEndpoint(_context: IActionContext): Promise<void>
     }
 
     const endpointName: string = 'endpoint';
-    const folderPath: string = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, 'api');
+    const folderPath: string = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, defaultApiName);
 
     const maxTries: number = 100;
     let count: number = 1;

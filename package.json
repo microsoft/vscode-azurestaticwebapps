@@ -43,7 +43,6 @@
         "onCommand:staticWebApps.appSettings.edit",
         "onCommand:staticWebApps.appSettings.rename",
         "onCommand:staticWebApps.appSettings.delete",
-        "onCommand:staticWebApps.appSettings.toggleSlotSetting",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -142,7 +141,7 @@
             {
                 "command": "staticWebApps.toggleAppSettingVisibility",
                 "title": "%staticWebApps.toggleAppSettingVisibility%",
-                "category": "Azure Functions",
+                "category": "Azure Static Web Apps",
                 "icon": {
                     "light": "resources/light/Visible.svg",
                     "dark": "resources/dark/Visible.svg"
@@ -278,6 +277,10 @@
                 {
                     "command": "staticWebApps.loadMore",
                     "when": "never"
+                },
+                {
+                    "command": "staticWebApps.toggleAppSettingVisibility",
+                    "when": "never"
                 }
             ]
         },
@@ -339,6 +342,7 @@
     "dependencies": {
         "fs-extra": "^8.1.0",
         "ms-rest": "^2.5.3",
+        "request": "^2.88.2",
         "request-promise": "^4.2.5",
         "simple-git": "^1.132.0",
         "vscode-azureextensionui": "^0.32.0",

@@ -6,18 +6,18 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import { workspace, WorkspaceFolder } from "vscode";
-import { localSettingsFileName } from "../../constants";
+import { defaultApiName, localSettingsFileName } from "../../constants";
 import { ext } from "../../extensionVariables";
 
 /**
  * If only one project is open and the default local settings file exists, return that.
  * Otherwise, prompt
  */
-export async function getLocalSettingsFile(folderName?: string): Promise<string> {
+export async function getLocalSettingsFile(): Promise<string> {
     // tslint:disable-next-line: strict-boolean-expressions
-    const folders: WorkspaceFolder[] = workspace.workspaceFolders || [];
-    if (folderName && folders.length === 1) {
-        const workspacePath: string = folderName && path.join(folders[0].uri.fsPath, folderName) || folders[0].uri.fsPath;
+    const folders: readonly WorkspaceFolder[] = workspace.workspaceFolders || [];
+    if (folders.length === 1) {
+        const workspacePath: string = path.join(folders[0].uri.fsPath, defaultApiName) || folders[0].uri.fsPath;
         const localSettingsFile: string = path.join(workspacePath, localSettingsFileName);
         if (await fse.pathExists(localSettingsFile)) {
             return localSettingsFile;

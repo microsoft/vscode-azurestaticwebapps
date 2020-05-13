@@ -10,6 +10,7 @@ import { treeUtils } from '../utils/treeUtils';
 import { AppSettingTreeItem } from './AppSettingTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
+// https://github.com/microsoft/vscode-azurestaticwebapps/issues/62
 export function validateConfigurationKey(settings: staticAppSettings, newKey?: string, oldKey?: string): string | undefined {
     newKey = newKey ? newKey : '';
 

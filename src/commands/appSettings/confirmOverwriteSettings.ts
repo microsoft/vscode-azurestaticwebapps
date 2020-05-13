@@ -8,6 +8,7 @@ import { DialogResponses } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from '../../utils/localize';
 
+// https://github.com/microsoft/vscode-azurestaticwebapps/issues/62
 export async function confirmOverwriteSettings(sourceSettings: { [key: string]: string }, destinationSettings: { [key: string]: string }, destinationName: string): Promise<void> {
     let suppressPrompt: boolean = false;
     let overwriteSetting: boolean = false;
