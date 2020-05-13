@@ -13,12 +13,14 @@ import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
+        let branchData: gitHubBranchData | undefined;
         const { owner, name } = await getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
         const placeHolder: string = localize('chooseBranch', 'Choose branch for repository "{0}/{1}"', owner, name);
-        let branchData: gitHubBranchData | undefined;
+
+        const requestOption: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}/branches`);
         const picksCache: ICachedQuickPicks<gitHubBranchData> = { picks: [] };
         do {
-            branchData = (await ext.ui.showQuickPick(this.getBranchPicks(context, picksCache), { placeHolder })).data;
+            branchData = (await ext.ui.showQuickPick(this.getBranchPicks(requestOption, picksCache), { placeHolder })).data;
         } while (!branchData);
 
         context.branchData = branchData;
@@ -28,9 +30,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
         return !context.branchData;
     }
 
-    private async getBranchPicks(context: IStaticWebAppWizardContext, picksCache: ICachedQuickPicks<gitHubBranchData>): Promise<IAzureQuickPickItem<gitHubBranchData | undefined>[]> {
-        const { owner, name } = await getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}/branches`);
+    private async getBranchPicks(requestOption: gitHubWebResource, picksCache: ICachedQuickPicks<gitHubBranchData>): Promise<IAzureQuickPickItem<gitHubBranchData | undefined>[]> {
         return await getGitHubQuickPicksWithLoadMore<gitHubBranchData>(picksCache, requestOption, 'name');
     }
 }
