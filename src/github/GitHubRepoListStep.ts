@@ -18,13 +18,9 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseRepo', 'Choose repository');
         let repoData: gitHubRepoData | undefined;
-        let quickPickItems: IAzureQuickPickItem<gitHubRepoData | undefined>[] = [];
         const picksCache: ICachedQuickPicks<gitHubRepoData> = { picks: [] };
-        quickPickItems.push({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, html_url: createNewRepo, url: createNewRepo } });
-        quickPickItems = quickPickItems.concat(await this.getRepositories(context, picksCache));
-
         do {
-            repoData = (await ext.ui.showQuickPick(quickPickItems, { placeHolder })).data;
+            repoData = (await ext.ui.showQuickPick(this.getRepoPicks(context, picksCache), { placeHolder })).data;
         } while (!repoData);
 
         context.repoData = repoData;
@@ -43,8 +39,14 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         }
     }
 
-    private async getRepositories(context: IStaticWebAppWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
+    private async getRepoPicks(context: IStaticWebAppWizardContext, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
         const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, nonNullProp(context, 'orgData').repos_url);
-        return await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name');
+        const quickPickItems: IAzureQuickPickItem<gitHubRepoData | undefined>[] =
+            await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name');
+        quickPickItems.unshift({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, html_url: createNewRepo, url: createNewRepo } });
+
+        // update to the next url if loadMore is clicked
+        nonNullProp(context, 'orgData').repos_url = requestOptions.url;
+        return quickPickItems;
     }
 }
