@@ -38,6 +38,11 @@
         "onCommand:staticWebApps.createNewEndpoint",
         "onCommand:staticWebApps.browse",
         "onCommand:staticWebApps.showActions",
+        "onCommand:staticWebApps.appSettings.add",
+        "onCommand:staticWebApps.appSettings.upload",
+        "onCommand:staticWebApps.appSettings.edit",
+        "onCommand:staticWebApps.appSettings.rename",
+        "onCommand:staticWebApps.appSettings.delete",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -107,6 +112,40 @@
                 "command": "staticWebApps.showActions",
                 "title": "%staticWebApps.showActions%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.add",
+                "title": "%staticWebApps.appSettings.add%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.upload",
+                "title": "%staticWebApps.appSettings.upload%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.edit",
+                "title": "%staticWebApps.appSettings.edit%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.rename",
+                "title": "%staticWebApps.appSettings.rename%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.delete",
+                "title": "%staticWebApps.appSettings.delete%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.toggleAppSettingVisibility",
+                "title": "%staticWebApps.toggleAppSettingVisibility%",
+                "category": "Azure Static Web Apps",
+                "icon": {
+                    "light": "resources/light/Visible.svg",
+                    "dark": "resources/dark/Visible.svg"
+                }
             }
         ],
         "viewsContainers": {
@@ -182,18 +221,48 @@
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|AppSettings)$/",
                     "group": "9@1"
                 },
                 {
                     "command": "staticWebApps.openInPortal",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environments)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environments|AppSettings)$/",
                     "group": "9@2"
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Environments)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Environments|AppSettings)$/",
                     "group": "9@3"
+                },
+                {
+                    "command": "staticWebApps.appSettings.add",
+                    "when": "view == staticWebApps && viewItem == azureStaticAppSettings",
+                    "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.appSettings.upload",
+                    "when": "view == staticWebApps && viewItem == azureStaticAppSettings",
+                    "group": "1@3"
+                },
+                {
+                    "command": "staticWebApps.appSettings.edit",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.appSettings.rename",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@2"
+                },
+                {
+                    "command": "staticWebApps.appSettings.delete",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@3"
+                },
+                {
+                    "command": "staticWebApps.toggleAppSettingVisibility",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "inline"
                 }
             ],
             "commandPalette": [
@@ -207,6 +276,10 @@
                 },
                 {
                     "command": "staticWebApps.loadMore",
+                    "when": "never"
+                },
+                {
+                    "command": "staticWebApps.toggleAppSettingVisibility",
                     "when": "never"
                 }
             ]
@@ -269,6 +342,7 @@
     "dependencies": {
         "fs-extra": "^8.1.0",
         "ms-rest": "^2.5.3",
+        "request": "^2.88.2",
         "request-promise": "^4.2.5",
         "simple-git": "^1.132.0",
         "vscode-azureextensionui": "^0.32.0",

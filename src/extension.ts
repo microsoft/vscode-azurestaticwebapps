@@ -7,7 +7,6 @@
 
 import * as vscode from 'vscode';
 import { AzExtTreeDataProvider, AzureUserInput, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
-// tslint:disable-next-line:no-submodule-imports
 import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { registerCommands } from './commands/registerCommands';
 import { ext } from './extensionVariables';

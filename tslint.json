@@ -64,6 +64,7 @@
         "no-return-await": false,
         "no-parameter-reassignment": false,
         "no-object-literal-type-assertion": false,
+        "no-submodule-imports": false,
         "function-name": [
             true,
             {
