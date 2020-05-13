@@ -10,10 +10,9 @@ import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep'
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
-import { GitHubBranchListStep } from '../github/GitHubBranchListStep';
-import { GitHubOrgListStep } from '../github/GitHubOrgListStep';
-import { GitHubRepoListStep } from '../github/GitHubRepoListStep';
-import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
+import { GitHubBranchListStep } from '../commands/github/GitHubBranchListStep';
+import { GitHubOrgListStep } from '../commands/github/GitHubOrgListStep';
+import { GitHubRepoListStep } from '../commands/github/GitHubRepoListStep';
 import { getGitHubAccessToken } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
@@ -45,7 +44,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
         const wizardContext: IStaticWebAppWizardContext = { ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
-        const promptSteps: AzureWizardPromptStep<IGitHubAccessTokenContext>[] = [new StaticWebAppNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
+        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new StaticWebAppNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
 
         // hard-coding locations available during preview
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18

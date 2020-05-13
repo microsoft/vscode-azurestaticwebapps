@@ -11,8 +11,8 @@ import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { githubApiEndpoint } from '../constants';
-import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
 import { requestUtils } from './requestUtils';
 
 export type gitHubOrgData = { login: string; repos_url: string };
@@ -103,7 +103,7 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
     }
 }
 
-export async function createGitHubRequestOptions(context: IGitHubAccessTokenContext, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
+export async function createGitHubRequestOptions(context: IStaticWebAppWizardContext, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
     if (!context.accessToken) {
         context.accessToken = await getGitHubAccessToken();
     }
@@ -129,7 +129,7 @@ export async function getGitHubAccessToken(): Promise<string> {
     }
 }
 
-export async function tryGetRemote(context: IGitHubAccessTokenContext, fsPath: string): Promise<string | undefined> {
+export async function tryGetRemote(context: IStaticWebAppWizardContext, fsPath: string): Promise<string | undefined> {
     const localGit: git.SimpleGit = git(fsPath);
 
     try {

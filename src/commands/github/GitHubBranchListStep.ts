@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
-import { githubApiEndpoint } from '../constants';
-import { ext } from '../extensionVariables';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, getRepoFullname, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from '../utils/gitHubUtils';
-import { localize } from '../utils/localize';
-import { nonNullProp } from '../utils/nonNull';
+import { githubApiEndpoint } from '../../constants';
+import { ext } from '../../extensionVariables';
+import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, getRepoFullname, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from '../../utils/gitHubUtils';
+import { localize } from '../../utils/localize';
+import { nonNullProp } from '../../utils/nonNull';
+import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
