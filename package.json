@@ -216,7 +216,7 @@
                 },
                 {
                     "command": "staticWebApps.showActions",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "1@2"
                 },
                 {
@@ -226,12 +226,12 @@
                 },
                 {
                     "command": "staticWebApps.openInPortal",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environments|AppSettings)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|AppSettings)$/",
                     "group": "9@2"
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Environments|AppSettings)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|AppSettings)$/",
                     "group": "9@3"
                 },
                 {

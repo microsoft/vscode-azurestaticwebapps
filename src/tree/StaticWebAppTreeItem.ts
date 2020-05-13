@@ -6,14 +6,15 @@
 import { IncomingMessage } from 'ms-rest';
 import * as vscode from 'vscode';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { delay } from '../utils/delay';
+import { getRepoFullname } from '../utils/gitHubUtils';
 import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
-import { AppSettingsTreeItem } from './AppSettingsTreeItem';
-import { EnvironmentsTreeItem } from './EnvironmentsTreeItem';
+import { EnvironmentTreeItem, StaticEnvironment } from './EnvironmentTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
 // using a custom defined type because the type provided by WebsiteManagementModels.StaticSiteARMResource doesn't match the actual payload
@@ -49,14 +50,9 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
     public readonly data: StaticWebApp;
 
-    public appSettingsTreeItem: AppSettingsTreeItem;
-    public environmentsTreeItem: EnvironmentsTreeItem;
-
     constructor(parent: AzureParentTreeItem, ss: StaticWebApp) {
         super(parent);
         this.data = ss;
-        this.appSettingsTreeItem = new AppSettingsTreeItem(this);
-        this.environmentsTreeItem = new EnvironmentsTreeItem(this);
     }
 
     public get name(): string {
@@ -72,7 +68,8 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     }
 
     public get description(): string | undefined {
-        return this.data.properties.defaultHostname;
+        const { owner, name } = getRepoFullname(this.data.properties.repositoryUrl);
+        return `${owner}/${name}`;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -80,8 +77,28 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
-        return [this.appSettingsTreeItem, this.environmentsTreeItem];
+        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}/builds?api-version=2019-12-01-preview`, this.root);
+        const envs: StaticEnvironment[] = (<{ value: StaticEnvironment[] }>JSON.parse(await requestUtils.sendRequest(requestOptions))).value;
+
+        return await this.createTreeItemsWithErrorHandling(
+            envs,
+            'invalidStaticEnvironment',
+            env => new EnvironmentTreeItem(this, env),
+            env => env.buildId
+        );
     }
+
+    public compareChildrenImpl(ti1: AzExtTreeItem, ti2: AzExtTreeItem): number {
+        // production environment should always be on top
+        if (ti1.label === productionEnvironmentName) {
+            return -1;
+        } else if (ti2.label === productionEnvironmentName) {
+            return 1;
+        }
+
+        return super.compareChildrenImpl(ti1, ti2);
+    }
+
     public hasMoreChildrenImpl(): boolean {
         return false;
     }
@@ -101,7 +118,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     }
 
     public async browse(): Promise<void> {
-        await openUrl(`https://${this.description}`);
+        await openUrl(`https://${this.data.properties.defaultHostname}`);
     }
 
     //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
