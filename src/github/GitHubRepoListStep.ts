@@ -20,7 +20,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         let repoData: gitHubRepoData | undefined;
         let quickPickItems: IAzureQuickPickItem<gitHubRepoData | undefined>[] = [];
         const picksCache: ICachedQuickPicks<gitHubRepoData> = { picks: [] };
-        quickPickItems.push({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, repos_url: createNewRepo, html_url: createNewRepo, url: createNewRepo } });
+        quickPickItems.push({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, html_url: createNewRepo, url: createNewRepo } });
         quickPickItems = quickPickItems.concat(await this.getRepositories(context, picksCache));
 
         do {
