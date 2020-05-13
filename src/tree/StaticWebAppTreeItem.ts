@@ -12,7 +12,9 @@ import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
 import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
+import { AppSettingsTreeItem } from './AppSettingsTreeItem';
 import { EnvironmentsTreeItem } from './EnvironmentsTreeItem';
+import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
 // using a custom defined type because the type provided by WebsiteManagementModels.StaticSiteARMResource doesn't match the actual payload
 export type StaticWebApp = {
@@ -42,16 +44,18 @@ type AzureAsyncOperationResponse = {
     };
 };
 
-export class StaticWebAppTreeItem extends AzureParentTreeItem {
+export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticWebApp';
     public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
     public readonly data: StaticWebApp;
 
+    public appSettingsTreeItem: AppSettingsTreeItem;
     public environmentsTreeItem: EnvironmentsTreeItem;
 
     constructor(parent: AzureParentTreeItem, ss: StaticWebApp) {
         super(parent);
         this.data = ss;
+        this.appSettingsTreeItem = new AppSettingsTreeItem(this);
         this.environmentsTreeItem = new EnvironmentsTreeItem(this);
     }
 
@@ -76,7 +80,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
-        return [this.environmentsTreeItem];
+        return [this.appSettingsTreeItem, this.environmentsTreeItem];
     }
     public hasMoreChildrenImpl(): boolean {
         return false;
