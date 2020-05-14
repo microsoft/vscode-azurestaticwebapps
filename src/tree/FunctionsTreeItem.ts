@@ -18,10 +18,6 @@ export class FunctionsTreeItem extends AzureParentTreeItem {
         super(parent);
     }
 
-    public get name(): string {
-        return '';
-    }
-
     public get id(): string {
         return 'functionsList';
     }
