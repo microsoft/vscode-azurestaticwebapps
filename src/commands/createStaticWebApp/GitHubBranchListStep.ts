@@ -14,7 +14,7 @@ import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         let branchData: gitHubBranchData | undefined;
-        const { owner, name } = await getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
+        const { owner, name } = getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
         const placeHolder: string = localize('chooseBranch', 'Choose branch for repository "{0}/{1}"', owner, name);
 
         const requestOption: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}/branches`);

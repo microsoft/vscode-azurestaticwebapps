@@ -6,3 +6,4 @@
 export const githubApiEndpoint: string = 'https://api.github.com';
 export const localSettingsFileName: string = 'local.settings.json';
 export const defaultApiName: string = 'api';
+export const productionEnvironmentName: string = 'Production';

@@ -138,7 +138,7 @@ export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise
             const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
 
             if (originUrl !== undefined) {
-                const { owner, name } = await getRepoFullname(originUrl);
+                const { owner, name } = getRepoFullname(originUrl);
                 const repoReq: requestUtils.Request = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}`);
                 const repoRes: IncomingMessage & { body: string } = await requestUtils.sendRequest(repoReq);
                 // the GitHub API response has a lot more properties than this, but these are the only ones we care about
@@ -157,7 +157,7 @@ export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise
     return;
 }
 
-export async function getRepoFullname(gitUrl: string): Promise<{ owner: string; name: string }> {
+export function getRepoFullname(gitUrl: string): { owner: string; name: string } {
     const parsedUrl: gitUrlParse.GitUrl = gitUrlParse(gitUrl);
     return { owner: parsedUrl.owner, name: parsedUrl.name };
 }

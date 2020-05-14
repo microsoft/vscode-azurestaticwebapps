@@ -4,17 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { productionEnvironmentName } from "../constants";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { AppSettingsTreeItem } from "./AppSettingsTreeItem";
-import { EnvironmentsTreeItem } from "./EnvironmentsTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
+import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
 export type StaticEnvironment = {
     buildId: string;
     id: string;
     name: string;
     properties: {
+        buildId: string;
         pullRequestTitle: string;
         sourceBranch: string;
         hostname: string;
@@ -28,14 +30,14 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public appSettingsTreeItem: AppSettingsTreeItem;
     public readonly data: StaticEnvironment;
 
-    constructor(parent: EnvironmentsTreeItem, env: StaticEnvironment) {
+    constructor(parent: StaticWebAppTreeItem, env: StaticEnvironment) {
         super(parent);
         this.data = env;
         this.appSettingsTreeItem = new AppSettingsTreeItem(this);
     }
 
     public get name(): string {
-        return this.data.buildId;
+        return this.data.name;
     }
 
     public get id(): string {
@@ -43,7 +45,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public get label(): string {
-        return this.data.properties.pullRequestTitle;
+        return this.data.properties.buildId === 'default' ? productionEnvironmentName : this.data.properties.pullRequestTitle;
     }
 
     public get description(): string | undefined {
@@ -51,7 +53,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('azure-staticwebapps');
+        return treeUtils.getIconPath('Azure-Static-Apps-Environment');
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzureParentTreeItem[]> {
