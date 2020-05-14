@@ -26,7 +26,7 @@ export class StaticWebAppNameStep extends AzureWizardPromptStep<IStaticWebAppWiz
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !wizardContext.newStaticWebAppName && !wizardContext.staticWebApp;
+        return !wizardContext.newStaticWebAppName;
     }
 
     private async validateStaticWebAppName(wizardContext: IStaticWebAppWizardContext, name: string | undefined): Promise<string | undefined> {
