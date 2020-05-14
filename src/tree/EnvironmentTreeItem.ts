@@ -8,6 +8,7 @@ import { productionEnvironmentName } from "../constants";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { AppSettingsTreeItem } from "./AppSettingsTreeItem";
+import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
@@ -28,12 +29,14 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
     public appSettingsTreeItem: AppSettingsTreeItem;
+    public functionsTreeItem: FunctionsTreeItem;
     public readonly data: StaticEnvironment;
 
     constructor(parent: StaticWebAppTreeItem, env: StaticEnvironment) {
         super(parent);
         this.data = env;
         this.appSettingsTreeItem = new AppSettingsTreeItem(this);
+        this.functionsTreeItem = new FunctionsTreeItem(this);
     }
 
     public get name(): string {
@@ -57,7 +60,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzureParentTreeItem[]> {
-        return [this.appSettingsTreeItem];
+        return [this.appSettingsTreeItem, this.functionsTreeItem];
     }
 
     public hasMoreChildrenImpl(): boolean {
