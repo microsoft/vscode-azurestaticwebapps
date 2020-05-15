@@ -49,6 +49,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     public static contextValue: string = 'azureStaticWebApp';
     public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
     public readonly data: StaticWebApp;
+    public readonly childTypeLabel: string = localize('environment', 'Environment');
 
     constructor(parent: AzureParentTreeItem, ss: StaticWebApp) {
         super(parent);

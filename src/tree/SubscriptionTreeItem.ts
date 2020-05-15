@@ -20,7 +20,7 @@ import { requestUtils } from '../utils/requestUtils';
 import { StaticWebApp, StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
-    public readonly childTypeLabel: string = localize('resourceGroup', 'Resource Group');
+    public readonly childTypeLabel: string = localize('staticWebApp', 'Static Web App');
 
     private readonly _nextLink: string | undefined;
 
