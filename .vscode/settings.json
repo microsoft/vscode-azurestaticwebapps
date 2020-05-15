@@ -16,9 +16,5 @@
     },
     "tslint.ignoreDefinitionFiles": true,
     "typescript.preferences.importModuleSpecifier": "relative",
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "appService.zipIgnorePattern": [
-        "node_modules{,/**}",
-        ".vscode{,/**}"
-    ]
+    "typescript.tsdk": "node_modules/typescript/lib"
 }
