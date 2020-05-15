@@ -12,7 +12,7 @@ export class AppArtifactLocationStep extends AzureWizardPromptStep<IStaticWebApp
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         wizardContext.appArtifactLocation = (await ext.ui.showInputBox({
             value: 'build',
-            prompt: localize('publishLocation', 'Enter the publish directory')
+            prompt: localize('publishLocation', "Enter the path of your build output relative to your app's location. For example, setting a value of 'build' when your app location is set to 'app' will cause the content at 'app/build' to be served.")
         })).trim();
     }
 

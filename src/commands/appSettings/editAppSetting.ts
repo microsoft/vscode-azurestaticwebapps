@@ -4,10 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext } from 'vscode-azureextensionui';
-import { gitHubOrgData } from './utils/gitHubUtils';
+import { ext } from '../../extensionVariables';
+import { AppSettingTreeItem } from '../../tree/AppSettingTreeItem';
 
-export interface IGitHubAccessTokenContext extends IActionContext {
-    accessToken?: string;
-    orgData?: gitHubOrgData;
-    repoHtmlUrl?: string;
+export async function editAppSetting(context: IActionContext, node?: AppSettingTreeItem): Promise<void> {
+    if (!node) {
+        node = await ext.tree.showTreeItemPicker<AppSettingTreeItem>(AppSettingTreeItem.contextValue, context);
+    }
+
+    await node.edit(context);
 }

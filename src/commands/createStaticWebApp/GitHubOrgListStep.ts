@@ -3,25 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { workspace } from 'vscode';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../constants';
-import { ext } from '../extensionVariables';
-import { IGitHubAccessTokenContext } from '../IGitHubAccessTokenContext';
-import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource, tryGetRemote } from '../utils/gitHubUtils';
-import { localize } from '../utils/localize';
+import { githubApiEndpoint } from '../../constants';
+import { ext } from '../../extensionVariables';
+import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource } from '../../utils/gitHubUtils';
+import { localize } from '../../utils/localize';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
-export class GitHubOrgListStep extends AzureWizardPromptStep<IGitHubAccessTokenContext> {
-    public async prompt(context: IGitHubAccessTokenContext): Promise<void> {
-
-        if (workspace.workspaceFolders && workspace.workspaceFolders.length > 0) {
-            // returns empty string if no remote
-            context.repoHtmlUrl = await tryGetRemote(workspace.workspaceFolders[0].uri.fsPath);
-            if (context.repoHtmlUrl) {
-                return;
-            }
-        }
-
+export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+    public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseOrg', 'Choose organization.');
         let orgData: gitHubOrgData | undefined;
 
@@ -32,11 +22,11 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IGitHubAccessTokenC
         context.orgData = orgData;
     }
 
-    public shouldPrompt(context: IGitHubAccessTokenContext): boolean {
-        return !context.repoHtmlUrl || !context.orgData;
+    public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
+        return !context.repoHtmlUrl;
     }
 
-    private async getOrganizations(context: IGitHubAccessTokenContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
+    private async getOrganizations(context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
         let requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/user`);
         let quickPickItems: IAzureQuickPickItem<gitHubOrgData>[] = createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login');
 

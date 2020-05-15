@@ -9,7 +9,7 @@ import { ext } from '../../extensionVariables';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
-import { openUrl } from '../../utils/openUrl';
+import { showActions } from '../showActions';
 
 export async function createStaticWebApp(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
     if (!node) {
@@ -21,11 +21,11 @@ export async function createStaticWebApp(context: IActionContext, node?: Subscri
     const createdSs: string = localize('createdSs', 'Created static web app "{0}".', ssNode.name);
     ext.outputChannel.appendLog(createdSs);
 
-    const showActions: MessageItem = { title: 'Show Actions' };
+    const showActionsMsg: MessageItem = { title: 'Show Actions' };
     // don't wait
-    window.showInformationMessage(createdSs, showActions).then(async (result) => {
-        if (result === showActions) {
-            await openUrl(`${ssNode.data.properties.repositoryUrl}/actions`);
+    window.showInformationMessage(createdSs, showActionsMsg).then(async (result) => {
+        if (result === showActionsMsg) {
+            await showActions(context, ssNode);
         }
     });
 

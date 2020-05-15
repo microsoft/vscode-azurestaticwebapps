@@ -7,7 +7,7 @@
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "engines": {
-        "vscode": "^1.41.0"
+        "vscode": "^1.46.0"
     },
     "repository": {
         "type": "git",
@@ -35,9 +35,14 @@
         "onCommand:staticWebApps.refresh",
         "onCommand:staticWebApps.selectSubscriptions",
         "onCommand:staticWebApps.viewProperties",
-        "onCommand:staticWebApps.createNewApi",
-        "onCommand:staticWebApps.createNewEndpoint",
+        "onCommand:staticWebApps.createHttpFunction",
         "onCommand:staticWebApps.browse",
+        "onCommand:staticWebApps.showActions",
+        "onCommand:staticWebApps.appSettings.add",
+        "onCommand:staticWebApps.appSettings.upload",
+        "onCommand:staticWebApps.appSettings.edit",
+        "onCommand:staticWebApps.appSettings.rename",
+        "onCommand:staticWebApps.appSettings.delete",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -90,17 +95,8 @@
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.createNewApi",
-                "title": "%staticWebApps.createNewApi%",
-                "category": "Azure Static Web Apps",
-                "icon": {
-                    "light": "resources/light/CreateNewProject.svg",
-                    "dark": "resources/dark/CreateNewProject.svg"
-                }
-            },
-            {
-                "command": "staticWebApps.createNewEndpoint",
-                "title": "%staticWebApps.createNewEndpoint%",
+                "command": "staticWebApps.createHttpFunction",
+                "title": "%staticWebApps.createHttpFunction%",
                 "category": "Azure Static Web Apps",
                 "icon": {
                     "light": "resources/light/AddFunction.svg",
@@ -111,6 +107,45 @@
                 "command": "staticWebApps.browse",
                 "title": "%staticWebApps.browse%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.showActions",
+                "title": "%staticWebApps.showActions%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.add",
+                "title": "%staticWebApps.appSettings.add%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.upload",
+                "title": "%staticWebApps.appSettings.upload%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.edit",
+                "title": "%staticWebApps.appSettings.edit%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.rename",
+                "title": "%staticWebApps.appSettings.rename%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.delete",
+                "title": "%staticWebApps.appSettings.delete%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.toggleAppSettingVisibility",
+                "title": "%staticWebApps.toggleAppSettingVisibility%",
+                "category": "Azure Static Web Apps",
+                "icon": {
+                    "light": "resources/light/Visible.svg",
+                    "dark": "resources/dark/Visible.svg"
+                }
             }
         ],
         "viewsContainers": {
@@ -138,19 +173,14 @@
                     "group": "navigation@1"
                 },
                 {
-                    "command": "staticWebApps.createNewApi",
+                    "command": "staticWebApps.createHttpFunction",
                     "when": "view == staticWebApps",
                     "group": "navigation@2"
                 },
                 {
-                    "command": "staticWebApps.createNewEndpoint",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@3"
-                },
-                {
                     "command": "staticWebApps.refresh",
                     "when": "view == staticWebApps",
-                    "group": "navigation@4"
+                    "group": "navigation@3"
                 }
             ],
             "view/item/context": [
@@ -180,19 +210,59 @@
                     "group": "3@1"
                 },
                 {
-                    "command": "staticWebApps.openInPortal",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environments)$/",
+                    "command": "staticWebApps.browse",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
                     "group": "1@1"
                 },
                 {
-                    "command": "staticWebApps.browse",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build)$/",
+                    "command": "staticWebApps.showActions",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "1@2"
                 },
                 {
+                    "command": "staticWebApps.viewProperties",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|AppSettings)$/",
+                    "group": "9@1"
+                },
+                {
+                    "command": "staticWebApps.openInPortal",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|AppSettings)$/",
+                    "group": "9@2"
+                },
+                {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Build|Environments)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|AppSettings)$/",
                     "group": "9@3"
+                },
+                {
+                    "command": "staticWebApps.appSettings.add",
+                    "when": "view == staticWebApps && viewItem == azureStaticAppSettings",
+                    "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.appSettings.upload",
+                    "when": "view == staticWebApps && viewItem == azureStaticAppSettings",
+                    "group": "1@3"
+                },
+                {
+                    "command": "staticWebApps.appSettings.edit",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.appSettings.rename",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@2"
+                },
+                {
+                    "command": "staticWebApps.appSettings.delete",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "1@3"
+                },
+                {
+                    "command": "staticWebApps.toggleAppSettingVisibility",
+                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "group": "inline"
                 }
             ],
             "commandPalette": [
@@ -206,6 +276,10 @@
                 },
                 {
                     "command": "staticWebApps.loadMore",
+                    "when": "never"
+                },
+                {
+                    "command": "staticWebApps.toggleAppSettingVisibility",
                     "when": "never"
                 }
             ]
@@ -244,12 +318,13 @@
     },
     "devDependencies": {
         "@types/fs-extra": "^8.1.0",
+        "@types/git-url-parse": "^9.0.0",
         "@types/gulp": "^4.0.6",
         "@types/mocha": "^7.0.2",
-        "@types/node": "^10.0.0",
+        "@types/node": "^12.0.0",
         "@types/request": "^2.48.4",
         "@types/request-promise": "4.1.46",
-        "@types/vscode": "1.41.0",
+        "@types/vscode": "1.45.0",
         "glob": "^7.1.6",
         "gulp": "^4.0.2",
         "mocha": "^7.1.2",
@@ -260,22 +335,24 @@
         "tslint-microsoft-contrib": "^6.2.0",
         "typescript": "^3.8.3",
         "vsce": "^1.71.0",
-        "vscode-azureextensiondev": "^0.3.3",
+        "vscode-azureextensiondev": "^0.4.0",
         "vscode-test": "^1.3.0",
         "webpack": "^4.39.3",
         "webpack-cli": "^3.3.7"
     },
     "dependencies": {
         "fs-extra": "^8.1.0",
+        "git-url-parse": "^11.1.2",
         "ms-rest": "^2.5.3",
+        "request": "^2.88.2",
         "request-promise": "^4.2.5",
         "simple-git": "^1.132.0",
-        "vscode-azureappservice": "^0.59.0",
-        "vscode-azureextensionui": "^0.32.0",
+        "vscode-azureextensionui": "^0.33.0",
         "vscode-nls": "^4.1.1"
     },
     "extensionDependencies": [
-        "ms-vscode.azure-account"
+        "ms-vscode.azure-account",
+        "ms-azuretools.vscode-azurefunctions"
     ],
     "enableProposedApi": true
 }

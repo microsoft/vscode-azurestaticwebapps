@@ -4,14 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { commands } from 'vscode';
-import { AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
+import { AzExtParentTreeItem, AzExtTreeItem, AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
+import { AppSettingsTreeItem } from '../tree/AppSettingsTreeItem';
+import { AppSettingTreeItem } from '../tree/AppSettingTreeItem';
+import { editAppSetting } from './appSettings/editAppSetting';
+import { renameAppSetting } from './appSettings/renameAppSetting';
+import { uploadAppSettings } from './appSettings/uploadAppSettings';
 import { browse } from './browse';
-import { createNewApi } from './createNewApi';
-import { createNewEndpoint } from './createNewEndpoint/createNewEndpoint';
+import { createChildNode } from './createChildNode';
+import { createHttpFunction } from './createHttpFunction';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
+import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
 import { openInPortal } from './openInPortal';
+import { showActions } from './showActions';
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
@@ -22,7 +29,13 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.refresh', async (_context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(node));
     registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('staticWebApps.viewProperties', viewProperties);
-    registerCommand('staticWebApps.createNewEndpoint', createNewEndpoint);
-    registerCommand('staticWebApps.createNewApi', createNewApi);
+    registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
     registerCommand('staticWebApps.browse', browse);
+    registerCommand('staticWebApps.showActions', showActions);
+    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, AppSettingsTreeItem.contextValue, node));
+    registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, AppSettingTreeItem.contextValue, node));
+    registerCommand('staticWebApps.appSettings.edit', editAppSetting);
+    registerCommand('staticWebApps.appSettings.rename', renameAppSetting);
+    registerCommand('staticWebApps.appSettings.upload', uploadAppSettings);
+    registerCommand('staticWebApps.toggleAppSettingVisibility', async (_context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(); }, 250);
 }
