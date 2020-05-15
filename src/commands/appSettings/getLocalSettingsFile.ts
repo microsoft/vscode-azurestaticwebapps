@@ -8,6 +8,7 @@ import * as path from 'path';
 import { workspace, WorkspaceFolder } from "vscode";
 import { defaultApiName, localSettingsFileName } from "../../constants";
 import { ext } from "../../extensionVariables";
+import { localize } from '../../utils/localize';
 
 /**
  * If only one project is open and the default local settings file exists, return that.
@@ -24,5 +25,10 @@ export async function getLocalSettingsFile(): Promise<string> {
         }
     }
 
-    return (await ext.ui.showOpenDialog({ filters: { '': ['settings.json'] } }))[0].fsPath;
+    return (await ext.ui.showOpenDialog({
+        canSelectFiles: true,
+        canSelectMany: false,
+        openLabel: localize('select', 'Select'),
+        filters: { '': ['json'] }
+    }))[0].fsPath;
 }
