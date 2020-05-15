@@ -13,7 +13,7 @@ import { renameAppSetting } from './appSettings/renameAppSetting';
 import { uploadAppSettings } from './appSettings/uploadAppSettings';
 import { browse } from './browse';
 import { createChildNode } from './createChildNode';
-import { createNewEndpoint } from './createNewEndpoint';
+import { createHttpFunction } from './createHttpFunction';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
 import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
@@ -29,7 +29,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.refresh', async (_context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(node));
     registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('staticWebApps.viewProperties', viewProperties);
-    registerCommand('staticWebApps.createNewEndpoint', createNewEndpoint);
+    registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
     registerCommand('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
     registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, AppSettingsTreeItem.contextValue, node));

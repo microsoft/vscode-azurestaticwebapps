@@ -13,7 +13,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         wizardContext.apiLocation = (await ext.ui.showInputBox({
             value: defaultApiName,
-            prompt: localize('apiLocation', "Enter the location of your Azure Functions code"),
+            prompt: localize('apiLocation', "Enter the location of your Azure Functions code (Leave blank for no Azure Functions code)"),
         })).trim();
     }
 

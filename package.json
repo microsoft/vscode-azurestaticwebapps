@@ -35,7 +35,7 @@
         "onCommand:staticWebApps.refresh",
         "onCommand:staticWebApps.selectSubscriptions",
         "onCommand:staticWebApps.viewProperties",
-        "onCommand:staticWebApps.createNewEndpoint",
+        "onCommand:staticWebApps.createHttpFunction",
         "onCommand:staticWebApps.browse",
         "onCommand:staticWebApps.showActions",
         "onCommand:staticWebApps.appSettings.add",
@@ -95,8 +95,8 @@
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.createNewEndpoint",
-                "title": "%staticWebApps.createNewEndpoint%",
+                "command": "staticWebApps.createHttpFunction",
+                "title": "%staticWebApps.createHttpFunction%",
                 "category": "Azure Static Web Apps",
                 "icon": {
                     "light": "resources/light/AddFunction.svg",
@@ -173,7 +173,7 @@
                     "group": "navigation@1"
                 },
                 {
-                    "command": "staticWebApps.createNewEndpoint",
+                    "command": "staticWebApps.createHttpFunction",
                     "when": "view == staticWebApps",
                     "group": "navigation@2"
                 },
