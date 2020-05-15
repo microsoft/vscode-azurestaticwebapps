@@ -14,7 +14,7 @@ import { localize } from '../utils/localize';
 import { nonNullValue } from '../utils/nonNull';
 import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
 
-export async function createNewEndpoint(_context: IActionContext): Promise<void> {
+export async function createHttpFunction(_context: IActionContext): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
         const noWorkspaceError: string = localize('noWorkspace', 'This action cannot be completed because there is no workspace opened.  Please open a workspace.');
         throw new Error(noWorkspaceError);
@@ -36,8 +36,8 @@ export async function createNewEndpoint(_context: IActionContext): Promise<void>
     }
 
     newName = await ext.ui.showInputBox({
-        value: newName, prompt: localize('enterEndpointName', 'Provide a unique endpoint name'), validateInput: async (value) => {
-            return await isNameAvailable(folderPath, value) ? undefined : localize('endpointNotAvailable', 'The endpoint name "{0}" is not available.', value);
+        value: newName, prompt: localize('enterHttpFuncName', 'Provide a unique HTTP Function name for your API'), validateInput: async (value) => {
+            return await isNameAvailable(folderPath, value) ? undefined : localize('httpFuncNameNotAvailable', 'The HTTP Function name "{0}" already exists in your API.', value);
         }
     });
 
