@@ -45,7 +45,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public get label(): string {
-        return this.data.properties.buildId === 'default' ? productionEnvironmentName : this.data.properties.pullRequestTitle;
+        return this.data.properties.buildId === 'default' ? productionEnvironmentName : `#${this.name} - ${this.data.properties.pullRequestTitle}`;
     }
 
     public get description(): string | undefined {
