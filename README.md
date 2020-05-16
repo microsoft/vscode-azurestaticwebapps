@@ -29,27 +29,27 @@ Use this extension to quickly create and manage Azure Static Web Apps (Preview) 
 1. Provide the build artifact folder name
     > The path of your build output relative to your apps location. For example, setting a value of 'build' when your app location is set to '/app' will cause the content at '/app/build' to be served.
 
-## Create a HTTP Function for your static web app
-This extension has a dependency on the [Azure Functions Extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) to create HTTP Functions.  Your static web apps project needs to have an "api" folder that contains a Functions project.
+## Updating your static web app
+
+Commit and push your changes to the GitHub repository that your static web app is configured to.  It will then use [GitHub Actions](https://github.com/features/actions) to update your app.
+
+If you create a pull request through GitHub, GitHub Actions will create a staging environment with your new changes live.  Your Production environment and staging environments are all listed within your Static Web App as well as application settings.
+
+> **IMPORTANT:** The application settings only apply to the backend API of an Azure Static Web App.
+
+![Static Web App Environments](resources/readme/static_web_app_environments.png)
+
+You can add a serverless API to your static web app by creating a HTTP Functions project.
 
 1. Open your static web app project in your Visual Studio Code workspace
 1. Select the button to create a new HTTP Function
 
-![Create HTTP Function](resources/readme/create_http_function.png)
+    ![Create HTTP Function](resources/readme/create_http_function.png)
+
 1. Provide a HTTP Function name that is unique to your API
 1. If this is your first HTTP Function, select a language for your API
 
 ![Select Language](resources/readme/select_language.png)
-
-## Updating your static web app
-
-1. Commit and push your changes to the GitHub repository that your static web app is configured to.  It will then use [GitHub Actions](https://github.com/features/actions) to update your app.
-    > If you create a pull request through GitHub, GitHub Actions will create a staging environment with your new changes live.  Your Production environment and staging environments are all listed within your Static Web App as well as application settings.
-    <br><br>
-    **IMPORTANT:**
-    The application settings only apply to the backend API of an Azure Static Web App.
-
-    ![Static Web App Environments](resources/readme/static_web_app_environments.png)
 
 
 ## Contributing
