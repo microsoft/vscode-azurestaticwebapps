@@ -53,7 +53,6 @@ You can add a serverless API to your static web app by creating a HTTP Functions
 
 ![Select Language](resources/readme/select_language.png)
 
-
 ## Contributing
 
 There are a couple of ways you can contribute to this repo:
