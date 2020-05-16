@@ -70,6 +70,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         wizardContext.accessToken = await getGitHubAccessToken();
         wizardContext.repoHtmlUrl = await tryGetRemote(wizardContext);
+        wizardContext.telemetry.properties.gotRemote = String(!!wizardContext.repoHtmlUrl);
 
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
