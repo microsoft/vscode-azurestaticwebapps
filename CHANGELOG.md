@@ -4,7 +4,6 @@
 
 ### Added
 - View, create, browse, and delete Azure Static Web Apps (Preview)
-- View a static web apps environments
-- Create JavaScript/TypeScript HTTP Functions to add serverless APIs
+- View a static web app's environments
+- Create JavaScript/TypeScript HTTP Functions
 - View, add, edit, and delete Application Settings
-    - Note: The application settings only apply to the backend API of an Azure Static Web App.
