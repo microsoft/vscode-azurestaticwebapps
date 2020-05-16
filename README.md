@@ -39,6 +39,8 @@ If you create a pull request through GitHub, GitHub Actions will create a stagin
 
 ![Static Web App Environments](resources/readme/static_web_app_environments.png)
 
+## Create a HTTP Function for your static web app
+
 You can add a serverless API to your static web app by creating a HTTP Functions project.
 
 1. Open your static web app project in your Visual Studio Code workspace
