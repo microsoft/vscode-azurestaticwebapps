@@ -20,8 +20,5 @@
     "appService.zipIgnorePattern": [
         "node_modules{,/**}",
         ".vscode{,/**}"
-    ],
-    "cSpell.enableFiletypes": [
-        "markdown"
     ]
 }
