@@ -15,7 +15,8 @@ import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStat
 import { githubApiEndpoint } from '../constants';
 import { requestUtils } from './requestUtils';
 
-export type gitHubOrgData = { login: string; repos_url: string };
+// tslint:disable-next-line:no-reserved-keywords
+export type gitHubOrgData = { login: string; repos_url: string; type: 'User' | 'Organization' };
 export type gitHubRepoData = { name: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
 export type gitHubBranchData = { name: string };
 export type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
