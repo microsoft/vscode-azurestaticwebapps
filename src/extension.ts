@@ -7,7 +7,8 @@
 
 import * as vscode from 'vscode';
 import { AzExtTreeDataProvider, AzureUserInput, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
-import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
+import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
+import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerCommands } from './commands/registerCommands';
 import { ext } from './extensionVariables';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
@@ -28,12 +29,16 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         const accountTreeItem: AzureAccountTreeItem = new AzureAccountTreeItem();
         context.subscriptions.push(accountTreeItem);
         ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'staticWebApps.loadMore');
-        context.subscriptions.push(vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true }));
+        ext.treeView = vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true });
+        context.subscriptions.push(ext.treeView);
 
         registerCommands();
     });
 
-    return createApiProvider([]);
+    return createApiProvider([<AzureExtensionApi>{
+        revealTreeItem,
+        apiVersion: '1.0.0'
+    }]);
 }
 
 // tslint:disable-next-line:no-empty
