@@ -13,14 +13,14 @@ import { GitHubRepoListStep } from '../commands/createStaticWebApp/GitHubRepoLis
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
-import { getGitHubAccessToken } from '../utils/gitHubUtils';
+import { getGitHubAccessToken, tryGetRemote } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { requestUtils } from '../utils/requestUtils';
 import { StaticWebApp, StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
-    public readonly childTypeLabel: string = localize('resourceGroup', 'Resource Group');
+    public readonly childTypeLabel: string = localize('staticWebApp', 'Static Web App');
 
     private readonly _nextLink: string | undefined;
 
@@ -69,6 +69,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         });
 
         wizardContext.accessToken = await getGitHubAccessToken();
+        wizardContext.repoHtmlUrl = await tryGetRemote(wizardContext);
+        wizardContext.telemetry.properties.gotRemote = String(!!wizardContext.repoHtmlUrl);
 
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');

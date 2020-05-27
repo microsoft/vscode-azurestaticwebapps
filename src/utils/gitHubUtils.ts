@@ -15,7 +15,8 @@ import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStat
 import { githubApiEndpoint } from '../constants';
 import { requestUtils } from './requestUtils';
 
-export type gitHubOrgData = { login: string; repos_url: string };
+// tslint:disable-next-line:no-reserved-keywords
+export type gitHubOrgData = { login: string; repos_url: string; type: 'User' | 'Organization' };
 export type gitHubRepoData = { name: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
 export type gitHubBranchData = { name: string };
 export type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
@@ -129,26 +130,29 @@ export async function getGitHubAccessToken(): Promise<string> {
     }
 }
 
-export async function tryGetRemote(context: IStaticWebAppWizardContext, fsPath: string): Promise<string | undefined> {
-    const localGit: git.SimpleGit = git(fsPath);
+export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise<string | undefined> {
+    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length === 1) {
+        // only try to get remote if there's only a single workspace opened
+        const localGit: git.SimpleGit = git(vscode.workspace.workspaceFolders[0].uri.fsPath);
 
-    try {
-        const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
+        try {
+            const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
 
-        if (originUrl !== undefined) {
-            const { owner, name } = getRepoFullname(originUrl);
-            const repoReq: requestUtils.Request = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}`);
-            const repoRes: IncomingMessage & { body: string } = await requestUtils.sendRequest(repoReq);
-            // the GitHub API response has a lot more properties than this, but these are the only ones we care about
-            const bodyJson: { html_url: string; permissions: { admin: boolean } } = <{ html_url: string; permissions: { admin: boolean } }>JSON.parse(repoRes.body);
-            // to create a workflow, the user needs admin access so if it's not true, it will fail
-            if (bodyJson.permissions.admin) {
-                return bodyJson.html_url;
+            if (originUrl !== undefined) {
+                const { owner, name } = getRepoFullname(originUrl);
+                const repoReq: requestUtils.Request = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}`);
+                const repoRes: IncomingMessage & { body: string } = await requestUtils.sendRequest(repoReq);
+                // the GitHub API response has a lot more properties than this, but these are the only ones we care about
+                const bodyJson: { html_url: string; permissions: { admin: boolean } } = <{ html_url: string; permissions: { admin: boolean } }>JSON.parse(repoRes.body);
+                // to create a workflow, the user needs admin access so if it's not true, it will fail
+                if (bodyJson.permissions.admin) {
+                    return bodyJson.html_url;
+                }
             }
-        }
 
-    } catch (error) {
-        // don't do anything for an error, this shouldn't prevent creation
+        } catch (error) {
+            // don't do anything for an error, this shouldn't prevent creation
+        }
     }
 
     return;

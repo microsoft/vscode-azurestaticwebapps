@@ -6,14 +6,17 @@
 import { AzureWizardPromptStep } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
+import { addLocationTelemetry } from "./addLocationTelemetry";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
+        const defaultLocation: string = 'app';
         wizardContext.appLocation = (await ext.ui.showInputBox({
-            value: 'app',
-            prompt: localize('appLocation', "Enter the location of your application code"),
+            value: defaultLocation,
+            prompt: localize('appLocation', "Enter the location of your application code")
         })).trim();
+        addLocationTelemetry(wizardContext, 'appLocation', defaultLocation);
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
