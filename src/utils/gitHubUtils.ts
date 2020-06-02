@@ -118,16 +118,8 @@ export async function createGitHubRequestOptions(context: IStaticWebAppWizardCon
 
 export async function getGitHubAccessToken(): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
+    return (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
 
-    let sessions: readonly vscode.AuthenticationSession[] = await vscode.authentication.getSessions('github', scopes);
-    if (sessions.length > 0) {
-        return await sessions[0].getAccessToken();
-
-    } else {
-        await vscode.authentication.login('github', scopes);
-        sessions = await vscode.authentication.getSessions('github', scopes);
-        return await sessions[0].getAccessToken();
-    }
 }
 
 export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise<string | undefined> {
