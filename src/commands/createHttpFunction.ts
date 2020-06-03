@@ -6,19 +6,20 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { IActionContext } from "vscode-azureextensionui";
+import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { defaultApiName } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
-import { nonNullValue } from '../utils/nonNull';
 import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
 
-export async function createHttpFunction(_context: IActionContext): Promise<void> {
+export async function createHttpFunction(context: IActionContext): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
         const noWorkspaceError: string = localize('noWorkspace', 'This action cannot be completed because there is no workspace opened.  Please open a workspace.');
         throw new Error(noWorkspaceError);
     }
+
+    const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
 
     const endpointName: string = 'endpoint';
     const folderPath: string = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, defaultApiName);
@@ -41,10 +42,6 @@ export async function createHttpFunction(_context: IActionContext): Promise<void
         }
     });
 
-    const funcExtensionId: string = 'ms-azuretools.vscode-azurefunctions';
-    const extension: vscode.Extension<AzureExtensionApiProvider> = nonNullValue(vscode.extensions.getExtension(funcExtensionId), funcExtensionId);
-    const funcApi: AzureFunctionsExtensionApi = extension.exports.getApi('^1.1.0');
-
     await funcApi.createFunction({
         folderPath,
         functionName: newName,
@@ -64,4 +61,25 @@ function generateSuffixedName(preferredName: string, i: number): string {
 
 async function isNameAvailable(folderPath: string, newName: string): Promise<boolean> {
     return !(await fse.pathExists(path.join(folderPath, newName)));
+}
+
+async function getFunctionsApi(context: IActionContext): Promise<AzureFunctionsExtensionApi> {
+    const funcExtensionId: string = 'ms-azuretools.vscode-azurefunctions';
+    const funcExtension: vscode.Extension<AzureExtensionApiProvider> | undefined = vscode.extensions.getExtension(funcExtensionId);
+
+    if (funcExtension) {
+        if (!funcExtension.isActive) {
+            await funcExtension.activate();
+        }
+
+        return funcExtension.exports.getApi<AzureFunctionsExtensionApi>('^1.1.0');
+    }
+
+    await ext.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install' });
+    const commandToRun: string = 'extension.open';
+    vscode.commands.executeCommand(commandToRun, funcExtensionId);
+
+    context.telemetry.properties.cancelStep = 'installFunctions';
+    // we still need to throw an error even if the user installs
+    throw new UserCancelledError();
 }
