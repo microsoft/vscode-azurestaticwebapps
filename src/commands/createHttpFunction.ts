@@ -6,7 +6,7 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { IActionContext } from "vscode-azureextensionui";
+import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { defaultApiName } from '../constants';
 import { ext } from '../extensionVariables';
@@ -72,19 +72,14 @@ async function getFunctionsApi(context: IActionContext): Promise<AzureFunctionsE
             await funcExtension.activate();
         }
 
-        // The Functions DB extension just recently added support for 'AzureExtensionApiProvider' so we should do an additional check just to makes sure it's defined
-        // tslint:disable-next-line: strict-boolean-expressions
-        if (funcExtension.exports) {
-            return funcExtension.exports.getApi<AzureFunctionsExtensionApi>('^1.0.0');
-        }
+        return funcExtension.exports.getApi<AzureFunctionsExtensionApi>('^1.1.0');
     }
 
     await ext.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install' });
     const commandToRun: string = 'extension.open';
     vscode.commands.executeCommand(commandToRun, funcExtensionId);
 
-    context.errorHandling.suppressDisplay = true;
-    context.telemetry.properties.installFunctions = 'true';
+    context.telemetry.properties.cancelStep = 'installFunctions';
     // we still need to throw an error even if the user installs
-    throw new Error();
+    throw new UserCancelledError();
 }
