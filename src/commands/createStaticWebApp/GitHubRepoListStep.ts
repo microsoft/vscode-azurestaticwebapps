@@ -6,7 +6,7 @@
 import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubOrgData, gitHubRepoData, gitHubWebResource, ICachedQuickPicks } from '../../utils/gitHubUtils';
+import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubOrgData, gitHubRepoData, gitHubWebResource, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
@@ -20,7 +20,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         const placeHolder: string = localize('chooseRepo', 'Choose repository');
         let repoData: gitHubRepoData | undefined;
         const orgData: gitHubOrgData = nonNullProp(context, 'orgData');
-        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, orgData.type === 'User' ? `${githubApiEndpoint}/user/repos?type=owner` : orgData.repos_url);
+        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, isUser(orgData) ? `${githubApiEndpoint}/user/repos?type=owner` : orgData.repos_url);
         const picksCache: ICachedQuickPicks<gitHubRepoData> = { picks: [] };
 
         do {
