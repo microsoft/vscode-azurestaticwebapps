@@ -7,8 +7,9 @@ import { Progress } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, gitHubRepoData, gitHubWebResource } from "../../utils/gitHubUtils";
+import { createGitHubRequestOptions, gitHubRepoData, gitHubWebResource, isUser } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
+import { nonNullProp } from '../../utils/nonNull';
 import { requestUtils } from '../../utils/requestUtils';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
@@ -20,7 +21,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         ext.outputChannel.appendLog(creatingGitHubRepo);
         progress.report({ message: creatingGitHubRepo });
 
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(wizardContext, `${githubApiEndpoint}/user/repos`, 'POST');
+        const requestOption: gitHubWebResource = await createGitHubRequestOptions(wizardContext, isUser(wizardContext.orgData) ? `${githubApiEndpoint}/user/repos` : nonNullProp(wizardContext, 'orgData').repos_url, 'POST');
         requestOption.body = JSON.stringify({ name: wizardContext.newRepoName });
 
         const gitHubRepoRes: gitHubRepoData = <gitHubRepoData>JSON.parse((await requestUtils.sendRequest<{ body: string }>(requestOption)).body);

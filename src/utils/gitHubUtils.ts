@@ -154,3 +154,8 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
     const parsedUrl: gitUrlParse.GitUrl = gitUrlParse(gitUrl);
     return { owner: parsedUrl.owner, name: parsedUrl.name };
 }
+
+export function isUser(orgData: gitHubOrgData | undefined): boolean {
+    // if there's no orgData, just assume that it's a user (but this shouldn't happen)
+    return orgData ? orgData.type === 'User' : true;
+}
