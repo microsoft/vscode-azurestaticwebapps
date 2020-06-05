@@ -11,10 +11,10 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const defaultLocation: string = 'app';
+        const defaultLocation: string = '/';
         wizardContext.appLocation = (await ext.ui.showInputBox({
             value: defaultLocation,
-            prompt: localize('appLocation', "Enter the location of your application code")
+            prompt: localize('appLocation', "Enter the location of your application code. For example, '/' represents the root of your app, while '/app' represents a directory called 'app'.")
         })).trim();
         addLocationTelemetry(wizardContext, 'appLocation', defaultLocation);
     }
