@@ -28,6 +28,8 @@ export type StaticEnvironment = {
 export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
+
+    public parent: StaticWebAppTreeItem;
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public readonly data: StaticEnvironment;

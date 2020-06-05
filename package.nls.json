@@ -19,5 +19,6 @@
     "staticWebApps.appSettings.edit": "Edit Setting...",
     "staticWebApps.appSettings.rename": "Rename Setting...",
     "staticWebApps.appSettings.delete": "Delete Setting...",
-    "staticWebApps.toggleAppSettingVisibility": "Toggle App Setting Visibility."
+    "staticWebApps.toggleAppSettingVisibility": "Toggle App Setting Visibility.",
+    "staticWebApps.openGitHubRepo": "Open Repo in GitHub"
 }

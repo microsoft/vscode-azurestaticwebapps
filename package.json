@@ -43,6 +43,7 @@
         "onCommand:staticWebApps.appSettings.edit",
         "onCommand:staticWebApps.appSettings.rename",
         "onCommand:staticWebApps.appSettings.delete",
+        "onCommand:staticWebApps.openGitHubRepo",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -146,6 +147,11 @@
                     "light": "resources/light/Visible.svg",
                     "dark": "resources/dark/Visible.svg"
                 }
+            },
+            {
+                "command": "staticWebApps.openGitHubRepo",
+                "title": "%staticWebApps.openGitHubRepo%",
+                "category": "Azure Static Web Apps"
             }
         ],
         "viewsContainers": {
@@ -213,6 +219,11 @@
                     "command": "staticWebApps.browse",
                     "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
                     "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.openGitHubRepo",
+                    "when": "view == staticWebApps && viewItem == azureStaticEnvironment",
+                    "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.showActions",
