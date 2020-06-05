@@ -8,7 +8,7 @@ import { ext } from '../extensionVariables';
 import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
 import { openUrl } from '../utils/openUrl';
 
-export async function viewGitHubRepo(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
+export async function openGitHubRepo(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
