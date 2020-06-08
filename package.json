@@ -232,27 +232,27 @@
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|AppSettings)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)/",
                     "group": "9@1"
                 },
                 {
                     "command": "staticWebApps.openInPortal",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|AppSettings|Functions)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Functions)|applicationSettings/",
                     "group": "9@2"
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|AppSettings|Functions)$/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions)|applicationSettings/",
                     "group": "9@3"
                 },
                 {
                     "command": "staticWebApps.appSettings.add",
-                    "when": "view == staticWebApps && viewItem == azureStaticAppSettings",
+                    "when": "view == staticWebApps && viewItem == applicationSettings",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.appSettings.upload",
-                    "when": "view == staticWebApps && viewItem == azureStaticAppSettings",
+                    "when": "view == staticWebApps && viewItem == applicationSettings",
                     "group": "1@3"
                 },
                 {

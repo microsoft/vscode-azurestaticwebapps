@@ -20,9 +20,9 @@ export class AppSettingsClient implements IAppSettingsClient {
         this.swaId = node.id;
         this.root = node.root;
 
-        // For AppSettingsClient, this value is used for app settings key validation.
+        // For IAppSettingsClient, isLinux is used for app settings key validation.
         // I'm unsure what the Functions Apps are under the hood, but the Linux app settings restrictions do not apply
-        // to the key values so isLinux should be considered false
+        // to the keys so isLinux should be considered false
         this.isLinux = false;
     }
 

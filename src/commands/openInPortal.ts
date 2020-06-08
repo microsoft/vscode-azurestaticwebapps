@@ -15,8 +15,10 @@ export async function openInPortal(context: ui.IActionContext, node?: ui.AzureTr
     }
 
     switch (node.contextValue) {
-        // since the parents of AppSettings & Functions are always an Environment, we need to get the parent to use the SWA id
+        // since the parents of AppSettings & Functions are always an Environment, we need to get the parent.parent to use the SWA id
         case AppSettingsTreeItem.contextValue:
+            await ui.openInPortal((<StaticWebAppTreeItem>node.parent?.parent).root, `${node.parent?.parent?.fullId}/configurations`);
+            return;
         case FunctionsTreeItem.contextValue:
             await ui.openInPortal(node.root, `${node.parent?.parent?.fullId}/${node.id}`);
             return;
