@@ -6,6 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import { registerAppServiceExtensionVariables } from 'vscode-azureappservice';
 import { AzExtTreeDataProvider, AzureUserInput, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { revealTreeItem } from './commands/api/revealTreeItem';
@@ -21,6 +22,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
     ext.ui = new AzureUserInput(context.globalState);
 
     registerUIExtensionVariables(ext);
+    registerAppServiceExtensionVariables(ext);
 
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';

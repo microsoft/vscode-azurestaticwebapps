@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fse from 'fs-extra';
+import { AppSettingsTreeItem } from 'vscode-azureappservice';
 import { IActionContext } from "vscode-azureextensionui";
 import { localSettingsFileName } from "../../constants";
 import { ext } from "../../extensionVariables";
-import { AppSettingsTreeItem, staticAppSettings } from '../../tree/AppSettingsTreeItem';
 import { localize } from "../../utils/localize";
 import { nonNullProp, nonNullValue } from '../../utils/nonNull';
+import { IStringDictionary } from './AppSettingsClient';
 import { confirmOverwriteSettings } from "./confirmOverwriteSettings";
 import { getLocalSettingsFile } from "./getLocalSettingsFile";
 
@@ -33,14 +34,14 @@ export async function uploadAppSettings(context: IActionContext, node?: AppSetti
         const localSettings: ILocalSettingsJson = <ILocalSettingsJson>await fse.readJson(localSettingsPath);
 
         if (localSettings.Values) {
-            const remoteSettings: staticAppSettings = await appSettingsNode.listApplicationSettings();
+            const remoteSettings: IStringDictionary = await appSettingsNode.client.listApplicationSettings();
             if (!remoteSettings.properties) {
                 remoteSettings.properties = {};
             }
 
             await confirmOverwriteSettings(localSettings.Values, remoteSettings.properties, nonNullProp(appSettingsNode, 'parent').label);
 
-            await appSettingsNode.updateApplicationSettings(remoteSettings);
+            await appSettingsNode.client.updateApplicationSettings(remoteSettings);
         } else {
             throw new Error(localize('noSettings', 'No settings found in "{0}".', localSettingsFileName));
         }

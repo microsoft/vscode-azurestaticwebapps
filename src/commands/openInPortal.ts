@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AppSettingsTreeItem } from 'vscode-azureappservice';
 import * as ui from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { AppSettingsTreeItem } from '../tree/AppSettingsTreeItem';
 import { FunctionsTreeItem } from '../tree/FunctionsTreeItem';
 import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
