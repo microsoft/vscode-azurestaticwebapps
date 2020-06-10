@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.1.1 - 2020-06-10
+
+### Added
+- Display Function triggers to tree
+
+### Changed
+- Visual Studio Code - Insiders is no longer a requirement
+- Azure Functions extension is no longer a direct dependency
+
+### Fixed
+- [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/6?closed=1)
+
 ## 0.1.0 - 2020-05-18
 
 ### Added
