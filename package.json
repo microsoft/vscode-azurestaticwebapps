@@ -363,6 +363,5 @@
     },
     "extensionDependencies": [
         "ms-vscode.azure-account"
-    ],
-    "enableProposedApi": true
+    ]
 }
