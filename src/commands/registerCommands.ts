@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { commands } from 'vscode';
+import { AppSettingsTreeItem, AppSettingTreeItem } from 'vscode-azureappservice';
 import { AzExtParentTreeItem, AzExtTreeItem, AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { AppSettingsTreeItem } from '../tree/AppSettingsTreeItem';
-import { AppSettingTreeItem } from '../tree/AppSettingTreeItem';
 import { editAppSetting } from './appSettings/editAppSetting';
 import { renameAppSetting } from './appSettings/renameAppSetting';
 import { uploadAppSettings } from './appSettings/uploadAppSettings';

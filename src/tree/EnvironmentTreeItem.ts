@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
+import { AzExtParentTreeItem, AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
-import { AppSettingsTreeItem } from "./AppSettingsTreeItem";
-import { AppSettingTreeItem } from "./AppSettingTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
@@ -37,7 +37,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     constructor(parent: StaticWebAppTreeItem, env: StaticEnvironment) {
         super(parent);
         this.data = env;
-        this.appSettingsTreeItem = new AppSettingsTreeItem(this);
+        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
         this.functionsTreeItem = new FunctionsTreeItem(this);
     }
 
@@ -61,7 +61,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return treeUtils.getIconPath('Azure-Static-Apps-Environment');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzureParentTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtParentTreeItem[]> {
         return [this.appSettingsTreeItem, this.functionsTreeItem];
     }
 
