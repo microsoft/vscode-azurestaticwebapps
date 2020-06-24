@@ -9,7 +9,7 @@ import { ext } from '../../extensionVariables';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
-import { showActions } from '../showActions';
+import { showActions } from '../github/showActions';
 
 export async function createStaticWebApp(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
     if (!node) {

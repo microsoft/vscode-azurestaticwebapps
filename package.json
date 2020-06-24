@@ -38,6 +38,7 @@
         "onCommand:staticWebApps.createHttpFunction",
         "onCommand:staticWebApps.browse",
         "onCommand:staticWebApps.showActions",
+        "onCommand:staticWebApps.cloneRepo",
         "onCommand:staticWebApps.appSettings.add",
         "onCommand:staticWebApps.appSettings.upload",
         "onCommand:staticWebApps.appSettings.edit",
@@ -112,6 +113,11 @@
             {
                 "command": "staticWebApps.showActions",
                 "title": "%staticWebApps.showActions%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.cloneRepo",
+                "title": "%staticWebApps.cloneRepo%",
                 "category": "Azure Static Web Apps"
             },
             {
@@ -229,6 +235,11 @@
                     "command": "staticWebApps.showActions",
                     "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "1@2"
+                },
+                {
+                    "command": "staticWebApps.cloneRepo",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
+                    "group": "1@3"
                 },
                 {
                     "command": "staticWebApps.viewProperties",
