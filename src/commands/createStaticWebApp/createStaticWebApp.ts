@@ -16,16 +16,19 @@ export async function createStaticWebApp(context: IActionContext, node?: Subscri
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 
-    const ssNode: StaticWebAppTreeItem = await node.createChild(context);
+    const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
-    const createdSs: string = localize('createdSs', 'Created static web app "{0}".', ssNode.name);
+    const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".', swaNode.name);
     ext.outputChannel.appendLog(createdSs);
 
-    const showActionsMsg: MessageItem = { title: 'Show Actions' };
+    const showActionsMsg: MessageItem = { title: localize('showActions', 'Show Actions') };
+    const viewOutput: MessageItem = { title: localize('viewOutput', 'View Output') };
     // don't wait
-    window.showInformationMessage(createdSs, showActionsMsg).then(async (result) => {
+    window.showInformationMessage(createdSs, showActionsMsg, viewOutput).then(async (result) => {
         if (result === showActionsMsg) {
-            await showActions(context, ssNode);
+            await showActions(context, swaNode);
+        } else if (result === viewOutput) {
+            ext.outputChannel.show();
         }
     });
 
