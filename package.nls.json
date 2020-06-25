@@ -14,6 +14,7 @@
     "staticWebApps.createHttpFunction": "Create HTTP Function...",
     "staticWebApps.browse": "Browse Site",
     "staticWebApps.showActions": "Show Actions",
+    "staticWebApps.cloneRepo": "Clone Repo...",
     "staticWebApps.appSettings.add": "Add New Setting...",
     "staticWebApps.appSettings.upload": "Upload Local Settings...",
     "staticWebApps.appSettings.edit": "Edit Setting...",
