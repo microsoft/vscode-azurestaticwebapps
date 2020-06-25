@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Progress } from "vscode";
-import { ext } from "vscode-azureappservice/out/src/extensionVariables";
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
+import { ext } from "../../extensionVariables";
 import { StaticWebApp } from "../../tree/StaticWebAppTreeItem";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from "../../utils/nonNull";
