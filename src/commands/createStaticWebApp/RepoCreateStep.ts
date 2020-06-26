@@ -27,7 +27,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         const gitHubRepoRes: gitHubRepoData = <gitHubRepoData>JSON.parse((await requestUtils.sendRequest<{ body: string }>(requestOption)).body);
         wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
 
-        const createdGitHubRepo: string = localize('createdGitHubRepo', 'Created new GitHub repository "{0}"', wizardContext.newRepoName);
+        const createdGitHubRepo: string = localize('createdGitHubRepo', 'Successfully created new GitHub repository "{0}"', wizardContext.newRepoName);
         ext.outputChannel.appendLog(createdGitHubRepo);
         progress.report({ message: createdGitHubRepo });
     }

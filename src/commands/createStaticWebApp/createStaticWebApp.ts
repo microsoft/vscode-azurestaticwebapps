@@ -9,6 +9,7 @@ import { ext } from '../../extensionVariables';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
+import { cloneRepo } from '../github/cloneRepo';
 import { showActions } from '../github/showActions';
 
 export async function createStaticWebApp(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
@@ -22,10 +23,20 @@ export async function createStaticWebApp(context: IActionContext, node?: Subscri
     ext.outputChannel.appendLog(createdSs);
 
     const showActionsMsg: MessageItem = { title: 'Show Actions' };
+    const cloneRepoMsg: MessageItem = { title: localize('cloneRepo', 'Clone Repo') };
+    const msgItems: MessageItem[] = [showActionsMsg];
+
+    if (context.telemetry.properties.gotRemote === 'false') {
+        // only ask to clone if we didn't detect the remote for creation
+        msgItems.unshift(cloneRepoMsg);
+    }
+
     // don't wait
-    window.showInformationMessage(createdSs, showActionsMsg).then(async (result) => {
+    window.showInformationMessage(createdSs, ...msgItems).then(async (result) => {
         if (result === showActionsMsg) {
             await showActions(context, ssNode);
+        } else if (result === cloneRepoMsg) {
+            await cloneRepo(context, ssNode);
         }
     });
 
