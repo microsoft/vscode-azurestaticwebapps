@@ -24,7 +24,7 @@ interface ILocalSettingsJson {
 export async function uploadAppSettings(context: IActionContext, node?: AppSettingsTreeItem): Promise<void> {
     const localSettingsPath: string = await getLocalSettingsFile();
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<AppSettingsTreeItem>(AppSettingsTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<AppSettingsTreeItem>(AppSettingsTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
     await node.runWithTemporaryDescription(localize('uploading', 'Uploading...'), async () => {
