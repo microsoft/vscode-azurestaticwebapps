@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MessageItem, window } from 'vscode';
-import { IActionContext } from 'vscode-azureextensionui';
+import { callWithTelemetryAndErrorHandling, IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
@@ -33,11 +33,14 @@ export async function createStaticWebApp(context: IActionContext, node?: Subscri
 
     // don't wait
     window.showInformationMessage(createdSs, ...msgItems).then(async (result) => {
-        if (result === showActionsMsg) {
-            await showActions(context, ssNode);
-        } else if (result === cloneRepoMsg) {
-            await cloneRepo(context, ssNode);
-        }
+        await callWithTelemetryAndErrorHandling('postCreateStaticWebApp', async (context2: IActionContext) => {
+            context2.telemetry.properties.dialogResult = result?.title;
+            if (result === showActionsMsg) {
+                await showActions(context2, ssNode);
+            } else if (result === cloneRepoMsg) {
+                await cloneRepo(context2, ssNode);
+            }
+        });
     });
 
 }
