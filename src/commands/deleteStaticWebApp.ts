@@ -10,7 +10,7 @@ import { localize } from '../utils/localize';
 
 export async function deleteStaticWebApp(context: IActionContext, node?: StaticWebAppTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
     const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete "{0}"?', node.name);
