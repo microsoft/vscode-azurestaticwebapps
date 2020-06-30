@@ -5,6 +5,7 @@
 
 import { Progress } from "vscode";
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
+import { ext } from "../../extensionVariables";
 import { StaticWebApp } from "../../tree/StaticWebAppTreeItem";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from "../../utils/nonNull";
@@ -40,9 +41,10 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
 
         requestOptions.body = JSON.stringify(requestBody);
 
-        progress.report({ message: localize('creatingStaticApp', 'Creating Static Web App "{0}"...', newName) });
+        const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
+        progress.report({ message: creatingSwa });
+        ext.outputChannel.appendLog(creatingSwa);
         wizardContext.staticWebApp = <StaticWebApp>JSON.parse(await requestUtils.sendRequest(requestOptions));
-        progress.report({ message: localize('creatingStaticApp', 'Created Static Web App "{0}".', newName) });
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {

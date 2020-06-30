@@ -106,13 +106,13 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
 
     public async deleteTreeItemImpl(): Promise<void> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}?api-version=2019-12-01-preview`, this.root, 'DELETE');
-        const deleting: string = localize('deleting', 'Deleting "{0}"...', this.name);
+        const deleting: string = localize('deleting', 'Deleting static web app "{0}"...', this.name);
 
         await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
             await this.pollAzureAsyncOperation(requestOptions);
 
-            const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted "{0}".', this.name);
+            const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
             vscode.window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);
         });
