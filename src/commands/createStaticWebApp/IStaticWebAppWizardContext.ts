@@ -13,6 +13,7 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext 
     repoData?: gitHubRepoData;
     branchData?: gitHubBranchData;
     repoHtmlUrl?: string;
+    fsPath?: string;
 
     newStaticWebAppName?: string;
     newRepoName?: string;

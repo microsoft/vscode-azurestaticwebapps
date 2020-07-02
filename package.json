@@ -321,6 +321,21 @@
                         "type": "boolean",
                         "description": "%staticWebApps.enableOutputTimestamps%",
                         "default": true
+                    },
+                    "staticWebApps.appSubpath": {
+                        "scope": "resource",
+                        "type": "string",
+                        "description": "%staticWebApps.appSubpath%"
+                    },
+                    "staticWebApps.apiSubpath": {
+                        "scope": "resource",
+                        "type": "string",
+                        "description": "%staticWebApps.apiSubpath%"
+                    },
+                    "staticWebApps.appArtifactSubpath": {
+                        "scope": "resource",
+                        "type": "string",
+                        "description": "%staticWebApps.appArtifactSubpath%"
                     }
                 }
             }
