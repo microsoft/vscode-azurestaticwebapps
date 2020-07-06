@@ -73,7 +73,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         wizardContext.accessToken = await getGitHubAccessToken();
         wizardContext.repoHtmlUrl = await tryGetRemote(wizardContext);
-        wizardContext.telemetry.properties.gotRemote = String(!!wizardContext.repoHtmlUrl);
+        const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
+        wizardContext.telemetry.properties.gotRemote = String(gotRemote);
 
         wizardContext.fsPath = getSingleRootFsPath();
 
@@ -84,7 +85,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         await wizard.execute();
         context.showCreatingTreeItem(newStaticWebAppName);
 
-        if (wizardContext.fsPath) {
+        if (wizardContext.fsPath && gotRemote) {
             await updateWorkspaceSetting(appSubpathSetting, wizardContext.appLocation, wizardContext.fsPath);
             await updateWorkspaceSetting(apiSubpathSetting, wizardContext.apiLocation, wizardContext.fsPath);
             await updateWorkspaceSetting(appArtifactSubpathSetting, wizardContext.appArtifactLocation, wizardContext.fsPath);
