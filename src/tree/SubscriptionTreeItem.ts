@@ -13,10 +13,13 @@ import { GitHubRepoListStep } from '../commands/createStaticWebApp/GitHubRepoLis
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
+import { apiSubpathSetting, appArtifactSubpathSetting, appSubpathSetting } from '../constants';
 import { getGitHubAccessToken, tryGetRemote } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { requestUtils } from '../utils/requestUtils';
+import { updateWorkspaceSetting } from '../utils/settingsUtils';
+import { getSingleRootFsPath } from '../utils/workspaceUtils';
 import { StaticWebApp, StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
@@ -70,7 +73,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         wizardContext.accessToken = await getGitHubAccessToken();
         wizardContext.repoHtmlUrl = await tryGetRemote(wizardContext);
-        wizardContext.telemetry.properties.gotRemote = String(!!wizardContext.repoHtmlUrl);
+        const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
+        wizardContext.telemetry.properties.gotRemote = String(gotRemote);
+
+        wizardContext.fsPath = getSingleRootFsPath();
 
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
@@ -78,6 +84,12 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         await wizard.execute();
         context.showCreatingTreeItem(newStaticWebAppName);
+
+        if (wizardContext.fsPath && gotRemote) {
+            await updateWorkspaceSetting(appSubpathSetting, wizardContext.appLocation, wizardContext.fsPath);
+            await updateWorkspaceSetting(apiSubpathSetting, wizardContext.apiLocation, wizardContext.fsPath);
+            await updateWorkspaceSetting(appArtifactSubpathSetting, wizardContext.appArtifactLocation, wizardContext.fsPath);
+        }
 
         return new StaticWebAppTreeItem(this, nonNullProp(wizardContext, 'staticWebApp'));
     }

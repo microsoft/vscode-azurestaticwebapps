@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep } from "vscode-azureextensionui";
+import { appSubpathSetting } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
+import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
@@ -13,7 +15,7 @@ export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         const defaultLocation: string = '/';
         wizardContext.appLocation = (await ext.ui.showInputBox({
-            value: defaultLocation,
+            value: getWorkspaceSetting(appSubpathSetting, wizardContext.fsPath) || defaultLocation,
             prompt: localize('appLocation', "Enter the location of your application code. For example, '/' represents the root of your app, while '/app' represents a directory called 'app'.")
         })).trim();
         addLocationTelemetry(wizardContext, 'appLocation', defaultLocation);
