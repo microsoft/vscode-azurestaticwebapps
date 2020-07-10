@@ -8,9 +8,10 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
-import { defaultApiName } from '../constants';
+import { apiSubpathSetting, defaultApiName } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
+import { getWorkspaceSetting } from '../utils/settingsUtils';
 import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
 
 export async function createHttpFunction(context: IActionContext): Promise<void> {
@@ -22,7 +23,8 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
     const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
 
     const endpointName: string = 'endpoint';
-    const folderPath: string = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, defaultApiName);
+    const apiLocation: string = getWorkspaceSetting(apiSubpathSetting, vscode.workspace.workspaceFolders[0].uri.fsPath) || defaultApiName;
+    const folderPath: string = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, apiLocation);
 
     const maxTries: number = 100;
     let count: number = 1;
