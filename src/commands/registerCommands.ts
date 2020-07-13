@@ -19,7 +19,7 @@ import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
 import { cloneRepo } from './github/cloneRepo';
 import { openGitHubRepo } from './github/openGitHubRepo';
-import { showAction, showActions } from './github/showActions';
+import { showActions } from './github/showActions';
 import { openInPortal } from './openInPortal';
 import { viewProperties } from './viewProperties';
 
@@ -34,7 +34,6 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
     registerCommand('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
-    registerCommand('staticWebApps.showAction', showAction);
     registerCommand('staticWebApps.action.rerun', async (context: IActionContext, node?: ActionTreeItem) => { await node?.rerunAction(context); });
     registerCommand('staticWebApps.action.cancel', async (context: IActionContext, node?: ActionTreeItem) => { await node?.cancelAction(context); });
     registerCommand('staticWebApps.cloneRepo', cloneRepo);
