@@ -71,7 +71,7 @@ export class ActionTreeItem extends AzureTreeItem {
         const rerunRunning: string = localize('rerunRunning', 'Rerun for action "{0}" has started.', this.data.id);
         ext.outputChannel.appendLog(rerunRunning);
 
-        await this.waitForJobToFinish(gitHubRequest);
+        await this.waitForRunToFinish(gitHubRequest);
         if (this.data.conclusion !== 'cancelled') {
             const rerunCompleted: string = localize('rerunCompleted', 'Rerun for action "{0}" has completed.', this.data.id);
             ext.outputChannel.appendLog(rerunCompleted);
@@ -83,12 +83,12 @@ export class ActionTreeItem extends AzureTreeItem {
         const cancelRunning: string = localize('cancelRunning', 'Cancel for action "{0}" has started.', this.data.id);
         ext.outputChannel.appendLog(cancelRunning);
 
-        await this.waitForJobToFinish(gitHubRequest);
+        await this.waitForRunToFinish(gitHubRequest);
         const cancelCompleted: string = localize('cancelCompleted', 'Cancel for action "{0}" has completed.', this.data.id);
         ext.outputChannel.appendLog(cancelCompleted);
     }
 
-    private async waitForJobToFinish(gitHubRequest: gitHubWebResource): Promise<void> {
+    private async waitForRunToFinish(gitHubRequest: gitHubWebResource): Promise<void> {
         await requestUtils.sendRequest(gitHubRequest);
         await this.refresh(); // need to refresh to update the data
 
