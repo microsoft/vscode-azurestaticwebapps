@@ -146,6 +146,16 @@
                 "category": "Azure Static Web Apps"
             },
             {
+                "command": "staticWebApps.action.rerun",
+                "title": "%staticWebApps.action.rerun%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.action.cancel",
+                "title": "%staticWebApps.action.cancel%",
+                "category": "Azure Static Web Apps"
+            },
+            {
                 "command": "staticWebApps.toggleAppSettingVisibility",
                 "title": "%staticWebApps.toggleAppSettingVisibility%",
                 "category": "Azure Static Web Apps",
@@ -233,17 +243,17 @@
                 },
                 {
                     "command": "staticWebApps.showActions",
-                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
-                    "group": "1@2"
+                    "when": "view == staticWebApps && viewItem == azureStaticActions",
+                    "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.cloneRepo",
                     "when": "view == staticWebApps && viewItem == azureStaticWebApp",
-                    "group": "1@3"
+                    "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Action$)/",
                     "group": "9@1"
                 },
                 {
@@ -253,7 +263,7 @@
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions)|applicationSettings/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?)|applicationSettings/",
                     "group": "9@3"
                 },
                 {
@@ -285,6 +295,16 @@
                     "command": "staticWebApps.toggleAppSettingVisibility",
                     "when": "view == staticWebApps && viewItem == applicationSettingItem",
                     "group": "inline"
+                },
+                {
+                    "command": "staticWebApps.action.rerun",
+                    "when": "view == staticWebApps && viewItem == azureStaticAction",
+                    "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.action.cancel",
+                    "when": "view == staticWebApps && viewItem == azureStaticAction",
+                    "group": "1@2"
                 }
             ],
             "commandPalette": [

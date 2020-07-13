@@ -11,7 +11,7 @@ import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
+import { IGitHubContext } from '../commands/github/IGitHubContext';
 import { githubApiEndpoint } from '../constants';
 import { requestUtils } from './requestUtils';
 
@@ -104,12 +104,14 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
     }
 }
 
-export async function createGitHubRequestOptions(context: IStaticWebAppWizardContext, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
-    if (!context.accessToken) {
-        context.accessToken = await getGitHubAccessToken();
+export async function createGitHubRequestOptions(context: IGitHubContext | undefined, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
+    const accessToken: string = context?.accessToken || await getGitHubAccessToken();
+
+    if (context && !context.accessToken) {
+        context.accessToken = accessToken;
     }
 
-    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(context.accessToken), method);
+    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(accessToken), method);
     requestOptions.headers.Accept = 'application/vnd.github.v3+json';
     requestOptions.resolveWithFullResponse = true;
 
@@ -122,7 +124,7 @@ export async function getGitHubAccessToken(): Promise<string> {
 
 }
 
-export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise<string | undefined> {
+export async function tryGetRemote(context: IGitHubContext): Promise<string | undefined> {
     if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length === 1) {
         // only try to get remote if there's only a single workspace opened
         const localGit: git.SimpleGit = git(vscode.workspace.workspaceFolders[0].uri.fsPath);

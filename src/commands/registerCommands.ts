@@ -7,6 +7,7 @@ import { commands } from 'vscode';
 import { AppSettingsTreeItem, AppSettingTreeItem } from 'vscode-azureappservice';
 import { AzExtParentTreeItem, AzExtTreeItem, AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
+import { ActionTreeItem } from '../tree/ActionTreeItem';
 import { editAppSetting } from './appSettings/editAppSetting';
 import { renameAppSetting } from './appSettings/renameAppSetting';
 import { uploadAppSettings } from './appSettings/uploadAppSettings';
@@ -18,7 +19,7 @@ import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
 import { cloneRepo } from './github/cloneRepo';
 import { openGitHubRepo } from './github/openGitHubRepo';
-import { showActions } from './github/showActions';
+import { showAction, showActions } from './github/showActions';
 import { openInPortal } from './openInPortal';
 import { viewProperties } from './viewProperties';
 
@@ -33,6 +34,9 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
     registerCommand('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
+    registerCommand('staticWebApps.showAction', showAction);
+    registerCommand('staticWebApps.action.rerun', async (context: IActionContext, node?: ActionTreeItem) => { await node?.rerunAction(context); });
+    registerCommand('staticWebApps.action.cancel', async (context: IActionContext, node?: ActionTreeItem) => { await node?.cancelAction(context); });
     registerCommand('staticWebApps.cloneRepo', cloneRepo);
     registerCommand('staticWebApps.openGitHubRepo', openGitHubRepo);
     registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, AppSettingsTreeItem.contextValue, node));
