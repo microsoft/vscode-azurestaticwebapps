@@ -5,11 +5,11 @@
 
 import { IncomingMessage } from 'ms-rest';
 import * as path from 'path';
-import { ext } from 'vscode-azureappservice/out/src/extensionVariables';
 import { gitHubWebResource } from 'vscode-azureappservice/out/src/github/connectToGitHub';
 import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { IGitHubContext } from '../commands/github/IGitHubContext';
+import { ext } from '../extensionVariables';
 import { delay } from '../utils/delay';
 import { createGitHubRequestOptions } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
