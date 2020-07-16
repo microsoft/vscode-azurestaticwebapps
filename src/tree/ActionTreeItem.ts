@@ -5,19 +5,16 @@
 
 import { IncomingMessage } from 'ms-rest';
 import * as path from 'path';
-import { gitHubWebResource } from 'vscode-azureappservice/out/src/github/connectToGitHub';
-import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { IGitHubContext } from '../commands/github/IGitHubContext';
-import { ext } from '../extensionVariables';
-import { delay } from '../utils/delay';
-import { createGitHubRequestOptions } from '../utils/gitHubUtils';
-import { localize } from '../utils/localize';
+import { createGitHubRequestOptions, gitHubWebResource } from '../utils/gitHubUtils';
+import { requestUtils } from '../utils/requestUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
+import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
 export type GitHubAction = {
-    id: string; conclusion: 'success' | 'failure' | 'skip' | 'cancelled' | null;
+    id: string;
+    conclusion: 'success' | 'failure' | 'skip' | 'cancelled' | null;
     event: string;
     head_branch: string;
     status: 'queued' | 'in-progress';
@@ -28,8 +25,7 @@ export type GitHubAction = {
     cancel_url: string;
 };
 
-export class ActionTreeItem extends AzureTreeItem {
-
+export class ActionTreeItem extends AzureTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticAction';
     public readonly contextValue: string = ActionTreeItem.contextValue;
     public parent: ActionsTreeItem;
@@ -45,7 +41,7 @@ export class ActionTreeItem extends AzureTreeItem {
     }
 
     public get id(): string {
-        return `${this.parent.parent.id}/${this.data.id}`;
+        return `${this.data.id}`;
     }
 
     public get name(): string {
@@ -64,37 +60,5 @@ export class ActionTreeItem extends AzureTreeItem {
         const gitHubRequest: gitHubWebResource = await createGitHubRequestOptions(undefined, this.data.url);
         const githubResponse: IncomingMessage & { body: string } = await requestUtils.sendRequest(gitHubRequest);
         this.data = <GitHubAction>JSON.parse(githubResponse.body);
-    }
-
-    public async rerunAction(context: IGitHubContext): Promise<void> {
-        const gitHubRequest: gitHubWebResource = await createGitHubRequestOptions(context, this.data.rerun_url, 'POST');
-        const rerunRunning: string = localize('rerunRunning', 'Rerun for action "{0}" has started.', this.data.id);
-        ext.outputChannel.appendLog(rerunRunning);
-
-        await this.waitForRunToFinish(gitHubRequest);
-        if (this.data.conclusion !== 'cancelled') {
-            const rerunCompleted: string = localize('rerunCompleted', 'Rerun for action "{0}" has completed.', this.data.id);
-            ext.outputChannel.appendLog(rerunCompleted);
-        }
-    }
-
-    public async cancelAction(context: IGitHubContext): Promise<void> {
-        const gitHubRequest: gitHubWebResource = await createGitHubRequestOptions(context, this.data.cancel_url, 'POST');
-        const cancelRunning: string = localize('cancelRunning', 'Cancel for action "{0}" has started.', this.data.id);
-        ext.outputChannel.appendLog(cancelRunning);
-
-        await this.waitForRunToFinish(gitHubRequest);
-        const cancelCompleted: string = localize('cancelCompleted', 'Cancel for action "{0}" has completed.', this.data.id);
-        ext.outputChannel.appendLog(cancelCompleted);
-    }
-
-    private async waitForRunToFinish(gitHubRequest: gitHubWebResource): Promise<void> {
-        await requestUtils.sendRequest(gitHubRequest);
-        await this.refresh(); // need to refresh to update the data
-
-        while (!this.data.conclusion) {
-            await delay(2000);
-            await this.refresh();
-        }
     }
 }

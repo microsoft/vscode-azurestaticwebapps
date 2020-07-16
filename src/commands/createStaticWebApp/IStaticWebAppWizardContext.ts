@@ -6,9 +6,10 @@
 import { IResourceGroupWizardContext } from 'vscode-azureextensionui';
 import { StaticWebApp } from '../../tree/StaticWebAppTreeItem';
 import { gitHubBranchData, gitHubOrgData, gitHubRepoData } from '../../utils/gitHubUtils';
-import { IGitHubContext } from '../github/IGitHubContext';
 
-export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, IGitHubContext {
+export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext {
+    accessToken: string;
+
     orgData?: gitHubOrgData;
     repoData?: gitHubRepoData;
     branchData?: gitHubBranchData;

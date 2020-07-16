@@ -11,7 +11,7 @@ import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { IGitHubContext } from '../commands/github/IGitHubContext';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { githubApiEndpoint } from '../constants';
 import { requestUtils } from './requestUtils';
 
@@ -104,27 +104,22 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
     }
 }
 
-export async function createGitHubRequestOptions(context: IGitHubContext | undefined, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
-    const accessToken: string = context?.accessToken || await getGitHubAccessToken();
-
-    if (context && !context.accessToken) {
-        context.accessToken = accessToken;
-    }
-
-    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(accessToken), method);
+// a context should be passed in if many subsequential GitHub requests are made (i.e. the create SWA wizard)
+export async function createGitHubRequestOptions(context: IStaticWebAppWizardContext | undefined, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
+    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(await getGitHubAccessToken(context)), method);
     requestOptions.headers.Accept = 'application/vnd.github.v3+json';
     requestOptions.resolveWithFullResponse = true;
 
     return requestOptions;
 }
 
-export async function getGitHubAccessToken(): Promise<string> {
+export async function getGitHubAccessToken(context?: IStaticWebAppWizardContext): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-    return (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
+    return context?.accessToken || (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
 
 }
 
-export async function tryGetRemote(context: IGitHubContext): Promise<string | undefined> {
+export async function tryGetRemote(): Promise<string | undefined> {
     if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length === 1) {
         // only try to get remote if there's only a single workspace opened
         const localGit: git.SimpleGit = git(vscode.workspace.workspaceFolders[0].uri.fsPath);
@@ -134,7 +129,7 @@ export async function tryGetRemote(context: IGitHubContext): Promise<string | un
 
             if (originUrl !== undefined) {
                 const { owner, name } = getRepoFullname(originUrl);
-                const repoReq: requestUtils.Request = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}`);
+                const repoReq: requestUtils.Request = await createGitHubRequestOptions(undefined, `${githubApiEndpoint}/repos/${owner}/${name}`);
                 const repoRes: IncomingMessage & { body: string } = await requestUtils.sendRequest(repoReq);
                 // the GitHub API response has a lot more properties than this, but these are the only ones we care about
                 const bodyJson: { html_url: string; permissions: { admin: boolean } } = <{ html_url: string; permissions: { admin: boolean } }>JSON.parse(repoRes.body);

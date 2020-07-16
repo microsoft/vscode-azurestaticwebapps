@@ -6,9 +6,9 @@
 import { IncomingMessage } from "ms-rest";
 import { ThemeIcon } from "vscode";
 import { AzExtTreeItem, AzureParentTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { IGitHubContext } from "../commands/github/IGitHubContext";
 import { githubApiEndpoint } from "../constants";
 import { createGitHubRequestOptions, getRepoFullname, gitHubWebResource } from '../utils/gitHubUtils';
+import { localize } from "../utils/localize";
 import { requestUtils } from "../utils/requestUtils";
 import { ActionTreeItem, GitHubAction } from './ActionTreeItem';
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
@@ -17,6 +17,7 @@ export class ActionsTreeItem extends AzureParentTreeItem {
 
     public static contextValue: string = 'azureStaticActions';
     public readonly contextValue: string = ActionsTreeItem.contextValue;
+    public readonly childTypeLabel: string = localize('action', 'action');
     public parent: EnvironmentTreeItem;
 
     constructor(parent: EnvironmentTreeItem) {
@@ -39,15 +40,19 @@ export class ActionsTreeItem extends AzureParentTreeItem {
         return this.parent.parent.repositoryUrl;
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, context: IGitHubContext): Promise<AzExtTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean): Promise<AzExtTreeItem[]> {
         const { owner, name } = getRepoFullname(this.repositoryUrl);
         const branch: string = this.parent.data.properties.sourceBranch;
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}/actions/runs?branch=${branch}`);
+        const requestOption: gitHubWebResource = await createGitHubRequestOptions(undefined, `${githubApiEndpoint}/repos/${owner}/${name}/actions/runs?branch=${branch}`);
         const githubResponse: IncomingMessage & { body: string } = await requestUtils.sendRequest(requestOption);
         const actions: { workflow_runs: GitHubAction[] } = <{ workflow_runs: GitHubAction[] }>JSON.parse(githubResponse.body);
-        return actions.workflow_runs.map((act => {
-            return new ActionTreeItem(this, act);
-        }));
+
+        return await this.createTreeItemsWithErrorHandling(
+            actions.workflow_runs,
+            'invalidActionTreeItem',
+            (act) => new ActionTreeItem(this, act),
+            act => act.head_commit.message
+        );
     }
 
     public hasMoreChildrenImpl(): boolean {

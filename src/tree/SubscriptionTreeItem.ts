@@ -45,7 +45,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     }
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
-        const wizardContext: IStaticWebAppWizardContext = { ...context, ...this.root };
+        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new StaticWebAppNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
 
@@ -72,7 +72,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         });
 
         wizardContext.accessToken = await getGitHubAccessToken();
-        wizardContext.repoHtmlUrl = await tryGetRemote(wizardContext);
+        wizardContext.repoHtmlUrl = await tryGetRemote();
         const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
         wizardContext.telemetry.properties.gotRemote = String(gotRemote);
 
