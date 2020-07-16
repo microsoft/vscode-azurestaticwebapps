@@ -45,6 +45,8 @@
         "onCommand:staticWebApps.appSettings.rename",
         "onCommand:staticWebApps.appSettings.delete",
         "onCommand:staticWebApps.openGitHubRepo",
+        "onCommand:staticWebApps.staticWebApps.action.rerun",
+        "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onView:staticWebApps"
     ],
     "main": "./main.js",

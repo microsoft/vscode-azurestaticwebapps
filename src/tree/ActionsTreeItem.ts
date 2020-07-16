@@ -55,6 +55,11 @@ export class ActionsTreeItem extends AzureParentTreeItem {
         );
     }
 
+    public compareChildrenImpl(_ti1: ActionTreeItem, _ti2: ActionTreeItem): number {
+        // the GitHub API returns the actions in ascending creation order so we can just return 1 to maintain that order
+        return 1;
+    }
+
     public hasMoreChildrenImpl(): boolean {
         return false;
     }
