@@ -13,5 +13,5 @@ export async function cloneRepo(context: IActionContext, node?: StaticWebAppTree
         node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
-    await commands.executeCommand('git.clone', node.data.properties.repositoryUrl);
+    await commands.executeCommand('git.clone', node.repositoryUrl);
 }

@@ -11,7 +11,6 @@ import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { githubApiEndpoint } from '../constants';
 import { requestUtils } from './requestUtils';
 import { getSingleRootFsPath } from './workspaceUtils';
@@ -105,12 +104,8 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
     }
 }
 
-export async function createGitHubRequestOptions(context: IStaticWebAppWizardContext, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
-    if (!context.accessToken) {
-        context.accessToken = await getGitHubAccessToken();
-    }
-
-    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(context.accessToken), method);
+export async function createGitHubRequestOptions(gitHubAccessToken: string, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
+    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(gitHubAccessToken), method);
     requestOptions.headers.Accept = 'application/vnd.github.v3+json';
     requestOptions.resolveWithFullResponse = true;
 
@@ -123,7 +118,7 @@ export async function getGitHubAccessToken(): Promise<string> {
 
 }
 
-export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise<string | undefined> {
+export async function tryGetRemote(): Promise<string | undefined> {
     const localProjectPath: string | undefined = getSingleRootFsPath();
     if (localProjectPath) {
         // only try to get remote if there's only a single workspace opened
@@ -134,10 +129,13 @@ export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise
 
             if (originUrl !== undefined) {
                 const { owner, name } = getRepoFullname(originUrl);
-                const repoReq: requestUtils.Request = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}`);
+                const token: string = await getGitHubAccessToken();
+                const repoReq: requestUtils.Request = await createGitHubRequestOptions(token, `${githubApiEndpoint}/repos/${owner}/${name}`);
                 const repoRes: IncomingMessage & { body: string } = await requestUtils.sendRequest(repoReq);
+
                 // the GitHub API response has a lot more properties than this, but these are the only ones we care about
                 const bodyJson: { html_url: string; permissions: { admin: boolean } } = <{ html_url: string; permissions: { admin: boolean } }>JSON.parse(repoRes.body);
+
                 // to create a workflow, the user needs admin access so if it's not true, it will fail
                 if (bodyJson.permissions.admin) {
                     return bodyJson.html_url;

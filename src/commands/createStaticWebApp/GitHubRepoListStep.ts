@@ -20,7 +20,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         const placeHolder: string = localize('chooseRepo', 'Choose repository');
         let repoData: gitHubRepoData | undefined;
         const orgData: gitHubOrgData = nonNullProp(context, 'orgData');
-        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, isUser(orgData) ? `${githubApiEndpoint}/user/repos?type=owner` : orgData.repos_url);
+        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, isUser(orgData) ? `${githubApiEndpoint}/user/repos?type=owner` : orgData.repos_url);
         const picksCache: ICachedQuickPicks<gitHubRepoData> = { picks: [] };
 
         do {

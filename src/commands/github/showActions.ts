@@ -3,18 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as ui from 'vscode-azureextensionui';
+import { IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
-import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
+import { ActionsTreeItem } from '../../tree/ActionsTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { openUrl } from '../../utils/openUrl';
 
-export async function showActions(context: ui.IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
-    if (node instanceof EnvironmentTreeItem) {
-        node = <StaticWebAppTreeItem>node.parent?.parent;
-    } else if (!node) {
+export async function showActions(context: IActionContext, node?: StaticWebAppTreeItem | ActionsTreeItem): Promise<void> {
+    if (!node) {
         node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
-    await openUrl(`${node.data.properties.repositoryUrl}/actions`);
+    await openUrl(`${node.repositoryUrl}/actions`);
 }
