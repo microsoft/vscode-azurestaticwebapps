@@ -14,6 +14,7 @@ import { IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { githubApiEndpoint } from '../constants';
 import { requestUtils } from './requestUtils';
+import { getSingleRootFsPath } from './workspaceUtils';
 
 // tslint:disable-next-line:no-reserved-keywords
 export type gitHubOrgData = { login: string; repos_url: string; type: 'User' | 'Organization' };
@@ -123,9 +124,10 @@ export async function getGitHubAccessToken(): Promise<string> {
 }
 
 export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise<string | undefined> {
-    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length === 1) {
+    const localProjectPath: string | undefined = getSingleRootFsPath();
+    if (localProjectPath) {
         // only try to get remote if there's only a single workspace opened
-        const localGit: git.SimpleGit = git(vscode.workspace.workspaceFolders[0].uri.fsPath);
+        const localGit: git.SimpleGit = git(localProjectPath);
 
         try {
             const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
@@ -142,6 +144,22 @@ export async function tryGetRemote(context: IStaticWebAppWizardContext): Promise
                 }
             }
 
+        } catch (error) {
+            // don't do anything for an error, this shouldn't prevent creation
+        }
+    }
+
+    return;
+}
+
+export async function tryGetBranch(): Promise<string | undefined> {
+    const localProjectPath: string | undefined = getSingleRootFsPath();
+    if (localProjectPath) {
+        // only try to get branch if there's only a single workspace opened
+        const localGit: git.SimpleGit = git(localProjectPath);
+
+        try {
+            return (await localGit.branch()).current;
         } catch (error) {
             // don't do anything for an error, this shouldn't prevent creation
         }

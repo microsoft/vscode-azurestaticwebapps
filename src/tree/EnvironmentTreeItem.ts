@@ -7,6 +7,7 @@ import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice"
 import { AzExtParentTreeItem, AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
+import { tryGetBranch, tryGetRemote } from "../utils/gitHubUtils";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
@@ -33,12 +34,14 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public readonly data: StaticEnvironment;
+    public inWorkspace: boolean;
 
-    constructor(parent: StaticWebAppTreeItem, env: StaticEnvironment) {
+    constructor(parent: StaticWebAppTreeItem, env: StaticEnvironment, inWorkspace: boolean) {
         super(parent);
         this.data = env;
         this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
         this.functionsTreeItem = new FunctionsTreeItem(this);
+        this.inWorkspace = inWorkspace;
     }
 
     public get name(): string {
@@ -53,8 +56,9 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return this.data.properties.buildId === 'default' ? productionEnvironmentName : `#${this.name} - ${this.data.properties.pullRequestTitle}`;
     }
 
-    public get description(): string | undefined {
-        return this.data.properties.sourceBranch;
+    public get description(): string {
+        const linkedTag: string = this.inWorkspace ? '(linked)' : '';
+        return `${this.data.properties.sourceBranch} ${linkedTag}`;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -84,5 +88,11 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         }
 
         return undefined;
+    }
+
+    public async refreshImpl(): Promise<void> {
+        const remote: string | undefined = await tryGetRemote(<IStaticWebAppWizardContext>context);
+        const branch: string | undefined = remote ? await tryGetBranch() : undefined;
+        this.inWorkspace = this.parent.data.properties.repositoryUrl === remote && this.data.properties.sourceBranch === branch;
     }
 }

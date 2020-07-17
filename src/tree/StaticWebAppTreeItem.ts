@@ -6,10 +6,11 @@
 import { IncomingMessage } from 'ms-rest';
 import * as vscode from 'vscode';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { delay } from '../utils/delay';
-import { getRepoFullname } from '../utils/gitHubUtils';
+import { getRepoFullname, tryGetBranch, tryGetRemote } from '../utils/gitHubUtils';
 import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
 import { requestUtils } from "../utils/requestUtils";
@@ -77,14 +78,19 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         return treeUtils.getThemedIconPath('azure-staticwebapps');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}/builds?api-version=2019-12-01-preview`, this.root);
         const envs: StaticEnvironment[] = (<{ value: StaticEnvironment[] }>JSON.parse(await requestUtils.sendRequest(requestOptions))).value;
+        const remote: string | undefined = await tryGetRemote(<IStaticWebAppWizardContext>context);
+        const branch: string | undefined = remote ? await tryGetBranch() : undefined;
 
         return await this.createTreeItemsWithErrorHandling(
             envs,
             'invalidStaticEnvironment',
-            env => new EnvironmentTreeItem(this, env),
+            env => {
+                const inWorkspace: boolean = this.data.properties.repositoryUrl === remote && env.properties.sourceBranch === branch;
+                return new EnvironmentTreeItem(this, env, inWorkspace);
+            },
             env => env.buildId
         );
     }
