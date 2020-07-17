@@ -8,7 +8,8 @@ import { StaticWebApp } from '../../tree/StaticWebAppTreeItem';
 import { gitHubBranchData, gitHubOrgData, gitHubRepoData } from '../../utils/gitHubUtils';
 
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext {
-    accessToken?: string;
+    accessToken: string;
+
     orgData?: gitHubOrgData;
     repoData?: gitHubRepoData;
     branchData?: gitHubBranchData;

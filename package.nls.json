@@ -24,5 +24,7 @@
     "staticWebApps.openGitHubRepo": "Open Repo in GitHub",
     "staticWebApps.appSubpath": "The default value for the location of the application code prompt",
     "staticWebApps.apiSubpath": "The default value for the location of your Azure Functions code",
-    "staticWebApps.appArtifactSubpath": "The default value for the location of your build output relative to your application code location"
+    "staticWebApps.appArtifactSubpath": "The default value for the location of your build output relative to your application code location",
+    "staticWebApps.action.rerun": "Rerun Action...",
+    "staticWebApps.action.cancel": "Cancel Action..."
 }

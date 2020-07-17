@@ -21,7 +21,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         ext.outputChannel.appendLog(creatingGitHubRepo);
         progress.report({ message: creatingGitHubRepo });
 
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(wizardContext, isUser(wizardContext.orgData) ? `${githubApiEndpoint}/user/repos` : nonNullProp(wizardContext, 'orgData').repos_url, 'POST');
+        const requestOption: gitHubWebResource = await createGitHubRequestOptions(wizardContext.accessToken, isUser(wizardContext.orgData) ? `${githubApiEndpoint}/user/repos` : nonNullProp(wizardContext, 'orgData').repos_url, 'POST');
         requestOption.body = JSON.stringify({ name: wizardContext.newRepoName });
 
         const gitHubRepoRes: gitHubRepoData = <gitHubRepoData>JSON.parse((await requestUtils.sendRequest<{ body: string }>(requestOption)).body);

@@ -9,7 +9,10 @@ import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
+import { ActionsTreeItem } from "./ActionsTreeItem";
+import { ActionTreeItem } from "./ActionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
+import { FunctionTreeItem } from "./FunctionTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
@@ -30,6 +33,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
     public parent: StaticWebAppTreeItem;
+    public actionsTreeItem: ActionsTreeItem;
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public readonly data: StaticEnvironment;
@@ -37,6 +41,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     constructor(parent: StaticWebAppTreeItem, env: StaticEnvironment) {
         super(parent);
         this.data = env;
+        this.actionsTreeItem = new ActionsTreeItem(this);
         this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
         this.functionsTreeItem = new FunctionsTreeItem(this);
     }
@@ -62,7 +67,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtParentTreeItem[]> {
-        return [this.appSettingsTreeItem, this.functionsTreeItem];
+        return [this.actionsTreeItem, this.appSettingsTreeItem, this.functionsTreeItem];
     }
 
     public hasMoreChildrenImpl(): boolean {
@@ -79,6 +84,12 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
                 case AppSettingsTreeItem.contextValue:
                 case AppSettingTreeItem.contextValue:
                     return this.appSettingsTreeItem;
+                case ActionsTreeItem.contextValue:
+                case ActionTreeItem.contextValue:
+                    return this.actionsTreeItem;
+                case FunctionsTreeItem.contextValue:
+                case FunctionTreeItem.contextValue:
+                    return this.functionsTreeItem;
                 default:
             }
         }

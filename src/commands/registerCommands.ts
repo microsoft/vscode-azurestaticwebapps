@@ -16,6 +16,7 @@ import { createHttpFunction } from './createHttpFunction';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
 import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
+import { cancelAction, rerunAction } from './github/actionCommands';
 import { cloneRepo } from './github/cloneRepo';
 import { openGitHubRepo } from './github/openGitHubRepo';
 import { showActions } from './github/showActions';
@@ -33,6 +34,8 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
     registerCommand('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
+    registerCommand('staticWebApps.action.rerun', rerunAction);
+    registerCommand('staticWebApps.action.cancel', cancelAction);
     registerCommand('staticWebApps.cloneRepo', cloneRepo);
     registerCommand('staticWebApps.openGitHubRepo', openGitHubRepo);
     registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, AppSettingsTreeItem.contextValue, node));
