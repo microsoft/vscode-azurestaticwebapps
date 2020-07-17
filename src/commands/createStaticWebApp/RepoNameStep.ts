@@ -25,7 +25,7 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
     }
 
     protected async isRepoAvailable(context: IStaticWebAppWizardContext, name: string): Promise<boolean> {
-        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${nonNullProp(context, 'orgData').login}/${name}`);
+        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/repos/${nonNullProp(context, 'orgData').login}/${name}`);
         try {
             await requestUtils.sendRequest(requestOptions);
         } catch (err) {

@@ -27,10 +27,10 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
     }
 
     private async getOrganizations(context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
-        let requestOptions: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/user`);
+        let requestOptions: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/user`);
         let quickPickItems: IAzureQuickPickItem<gitHubOrgData>[] = createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login');
 
-        requestOptions = await createGitHubRequestOptions(context, `${githubApiEndpoint}/user/orgs`);
+        requestOptions = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/user/orgs`);
         quickPickItems = quickPickItems.concat(createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login'));
 
         return quickPickItems;

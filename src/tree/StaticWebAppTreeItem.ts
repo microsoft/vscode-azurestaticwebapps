@@ -69,12 +69,16 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     }
 
     public get description(): string | undefined {
-        const { owner, name } = getRepoFullname(this.data.properties.repositoryUrl);
+        const { owner, name } = getRepoFullname(this.repositoryUrl);
         return `${owner}/${name}`;
     }
 
     public get iconPath(): TreeItemIconPath {
         return treeUtils.getThemedIconPath('azure-staticwebapps');
+    }
+
+    public get repositoryUrl(): string {
+        return this.data.properties.repositoryUrl;
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {

@@ -17,7 +17,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
         const { owner, name } = getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
         const placeHolder: string = localize('chooseBranch', 'Choose branch for repository "{0}/{1}"', owner, name);
 
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(context, `${githubApiEndpoint}/repos/${owner}/${name}/branches`);
+        const requestOption: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/repos/${owner}/${name}/branches`);
         const picksCache: ICachedQuickPicks<gitHubBranchData> = { picks: [] };
         do {
             branchData = (await ext.ui.showQuickPick(this.getBranchPicks(requestOption, picksCache), { placeHolder })).data;
