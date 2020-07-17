@@ -6,7 +6,7 @@
 import { IncomingMessage } from 'ms-rest';
 import * as path from 'path';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { createGitHubRequestOptions, gitHubWebResource } from '../utils/gitHubUtils';
+import { createGitHubRequestOptions, getGitHubAccessToken, gitHubWebResource } from '../utils/gitHubUtils';
 import { requestUtils } from '../utils/requestUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
@@ -41,7 +41,7 @@ export class ActionTreeItem extends AzureTreeItem implements IAzureResourceTreeI
     }
 
     public get id(): string {
-        return `${this.data.id}`;
+        return this.data.id;
     }
 
     public get name(): string {
@@ -57,7 +57,8 @@ export class ActionTreeItem extends AzureTreeItem implements IAzureResourceTreeI
     }
 
     public async refreshImpl(): Promise<void> {
-        const gitHubRequest: gitHubWebResource = await createGitHubRequestOptions(undefined, this.data.url);
+        const token: string = await getGitHubAccessToken();
+        const gitHubRequest: gitHubWebResource = await createGitHubRequestOptions(token, this.data.url);
         const githubResponse: IncomingMessage & { body: string } = await requestUtils.sendRequest(gitHubRequest);
         this.data = <GitHubAction>JSON.parse(githubResponse.body);
     }
