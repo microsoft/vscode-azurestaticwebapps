@@ -161,7 +161,7 @@ export async function tryGetBranch(): Promise<string | undefined> {
         try {
             return (await localGit.branch()).current;
         } catch (error) {
-            // don't do anything for an error, this shouldn't prevent creation
+            // an error here should be ignored, it probably means that they don't have git installed
         }
     }
 
