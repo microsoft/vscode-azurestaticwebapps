@@ -13,7 +13,7 @@ import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
 export type GitHubAction = {
-    id: string;
+    id: number;
     conclusion: 'success' | 'failure' | 'skip' | 'cancelled' | null;
     event: string;
     head_branch: string;
@@ -41,7 +41,7 @@ export class ActionTreeItem extends AzureTreeItem implements IAzureResourceTreeI
     }
 
     public get id(): string {
-        return this.data.id;
+        return this.data.id.toString();
     }
 
     public get name(): string {
