@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { OctokitResponse, OrgsListForAuthenticatedUserResponseData } from "@octokit/types";
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
@@ -31,7 +32,8 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
         let quickPickItems: IAzureQuickPickItem<gitHubOrgData>[] = createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login');
 
         requestOptions = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/user/orgs`);
-        quickPickItems = quickPickItems.concat(createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login'));
+        const orgData: OctokitResponse<OrgsListForAuthenticatedUserResponseData> = await ext.octokit.orgs.listForAuthenticatedUser();
+        quickPickItems = quickPickItems.concat(createQuickPickFromJsons<OrgsListForAuthenticatedUserResponseData>(orgData.data, 'login'));
 
         return quickPickItems;
     }

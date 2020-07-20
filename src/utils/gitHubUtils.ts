@@ -40,21 +40,19 @@ export async function getGitHubJsonResponse<T>(requestOptions: gitHubWebResource
  * @param description Optional property of JSOsN that will be used as QuickPicks description
  * @param data Optional property of JSON that will be used as QuickPicks data saved as a NameValue pair
  */
-export function createQuickPickFromJsons<T>(jsons: T[], label: string): IAzureQuickPickItem<T>[] {
+export function createQuickPickFromJsons<T>(data: T | T[], label: string): IAzureQuickPickItem<T>[] {
     const quickPicks: IAzureQuickPickItem<T>[] = [];
-    if (!isArray(jsons)) {
-        jsons = [jsons];
-    }
+    const dataArray: T[] = isArray(data) ? data : [data];
 
-    for (const json of jsons) {
-        if (!json[label]) {
+    for (const data of dataArray) {
+        if (!data[label]) {
             // skip this JSON if it doesn't have this label
             continue;
         }
 
         quickPicks.push({
-            label: <string>json[label],
-            data: json
+            label: <string>data[label],
+            data: data
         });
     }
 

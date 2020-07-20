@@ -401,6 +401,7 @@
     },
     "dependencies": {
         "@octokit/rest": "^18.0.1",
+        "@octokit/types": "^5.1.0",
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "ms-rest": "^2.5.3",

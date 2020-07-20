@@ -10,9 +10,11 @@ import { registerAppServiceExtensionVariables } from 'vscode-azureappservice';
 import { AzExtTreeDataProvider, AzureUserInput, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { revealTreeItem } from './commands/api/revealTreeItem';
+import { createOctokitClient } from './commands/github/createOctokitClient';
 import { registerCommands } from './commands/registerCommands';
 import { ext } from './extensionVariables';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
+import { getGitHubAccessToken } from './utils/gitHubUtils';
 
 export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<AzureExtensionApiProvider> {
     ext.context = context;
@@ -23,6 +25,8 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
 
     registerUIExtensionVariables(ext);
     registerAppServiceExtensionVariables(ext);
+    const token: string = await getGitHubAccessToken();
+    ext.octokit = createOctokitClient(token);
 
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
