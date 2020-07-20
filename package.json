@@ -255,7 +255,7 @@
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Action$)/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Action|Job|Step$)/",
                     "group": "9@1"
                 },
                 {
@@ -265,7 +265,7 @@
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?)|applicationSettings/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?|Job|Step)|applicationSettings/",
                     "group": "9@3"
                 },
                 {
@@ -402,6 +402,7 @@
     "dependencies": {
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
+        "moment": "^2.24.0",
         "ms-rest": "^2.5.3",
         "request": "^2.88.2",
         "request-promise": "^4.2.5",

@@ -11,7 +11,8 @@ import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../constants';
+import { Conclusion, githubApiEndpoint, Status } from '../constants';
+import { localize } from './localize';
 import { requestUtils } from './requestUtils';
 
 // tslint:disable-next-line:no-reserved-keywords
@@ -156,4 +157,30 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 export function isUser(orgData: gitHubOrgData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return orgData ? orgData.type === 'User' : true;
+}
+
+export function convertConclusionToVerb(conclusion: Conclusion): string {
+    switch (conclusion) {
+        case 'success':
+            return localize('succeeded', 'succeeded');
+        case 'cancelled':
+            return localize('cancelled', 'cancelled');
+        case 'failure':
+            return localize('failed', 'failed');
+        case 'skipped':
+            return localize('skipped', 'skipped');
+        default:
+            return '';
+    }
+}
+
+export function convertStatusToVerb(status: Status): string {
+    switch (status) {
+        case 'in_progress':
+            return localize('started', 'started');
+        case 'queued':
+            return localize('queued', 'queued');
+        default:
+            return '';
+    }
 }

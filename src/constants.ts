@@ -11,3 +11,8 @@ export const productionEnvironmentName: string = 'Production';
 export const appSubpathSetting: string = 'appSubpath';
 export const apiSubpathSetting: string = 'apiSubpath';
 export const appArtifactSubpathSetting: string = 'appArtifactSubpath';
+
+// Doc for these parameter values: https://developer.github.com/v3/checks/runs/#parameters
+export type Conclusion = 'success' | 'failure' | 'skipped' | 'cancelled' | null;
+
+export type Status = 'queued' | 'in_progress';
