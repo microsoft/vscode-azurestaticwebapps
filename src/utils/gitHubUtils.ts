@@ -180,6 +180,8 @@ export function convertStatusToVerb(status: Status): string {
             return localize('started', 'started');
         case Status.Queued:
             return localize('queued', 'queued');
+        case Status.Completed:
+            return localize('completed', 'completed');
         default:
             return '';
     }

@@ -23,5 +23,6 @@ export enum Conclusion {
 
 export enum Status {
     Queued = 'queued',
-    InProgress = 'in_progress'
+    InProgress = 'in_progress',
+    Completed = 'completed'
 }
