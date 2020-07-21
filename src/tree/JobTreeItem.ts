@@ -62,8 +62,7 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     }
 
     public get description(): string {
-        // tslint:disable-next-line: strict-boolean-expressions
-        if (this.data.conclusion) {
+        if (this.data.conclusion !== null) {
             const elapsedTime: string = getTimeElapsedString(this.startedDate, this.completedDate);
             return `${convertConclusionToVerb(this.data.conclusion)} ${moment(this.completedDate).fromNow()} in ${elapsedTime}`;
         } else {
@@ -80,9 +79,12 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
-        return this.data.steps.map((step => {
-            return new StepTreeItem(this, step);
-        }));
+        return await this.createTreeItemsWithErrorHandling(
+            this.data.steps,
+            'invalidStepTreeItem',
+            (step) => new StepTreeItem(this, step),
+            step => step.name
+        );
     }
 
     public hasMoreChildrenImpl(): boolean {

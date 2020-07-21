@@ -51,8 +51,7 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
     }
 
     public get description(): string {
-        // tslint:disable-next-line: strict-boolean-expressions
-        if (this.data.conclusion) {
+        if (this.data.conclusion !== null) {
             const elapsedTime: string = getTimeElapsedString(this.startedDate, this.completedDate);
             return `${convertConclusionToVerb(this.data.conclusion)} in ${elapsedTime}`;
         } else {

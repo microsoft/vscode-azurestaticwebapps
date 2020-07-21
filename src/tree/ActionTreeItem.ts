@@ -62,10 +62,14 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
         const token: string = await getGitHubAccessToken();
         const requestOption: gitHubWebResource = await createGitHubRequestOptions(token, `${githubApiEndpoint}/repos/${owner}/${name}/actions/runs/${this.data.id}/jobs`);
         const githubResponse: IncomingMessage & { body: string } = await requestUtils.sendRequest(requestOption);
+
         const gitHubJobs: { jobs: GitHubJob[] } = <{ jobs: GitHubJob[] }>JSON.parse(githubResponse.body);
-        return gitHubJobs.jobs.map((job => {
-            return new JobTreeItem(this, job);
-        }));
+        return await this.createTreeItemsWithErrorHandling(
+            gitHubJobs.jobs,
+            'invalidJobTreeItem',
+            (job) => new JobTreeItem(this, job),
+            job => job.name
+        );
     }
 
     public hasMoreChildrenImpl(): boolean {
