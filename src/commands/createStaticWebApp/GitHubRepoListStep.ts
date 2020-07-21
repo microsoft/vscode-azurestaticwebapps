@@ -3,10 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { OrgsListForAuthenticatedUserResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubOrgData, gitHubRepoData, gitHubWebResource, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
+import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
@@ -19,7 +20,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseRepo', 'Choose repository');
         let repoData: gitHubRepoData | undefined;
-        const orgData: gitHubOrgData = nonNullProp(context, 'orgData');
+        const orgData: UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserResponseData = nonNullProp(context, 'orgData');
         const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, isUser(orgData) ? `${githubApiEndpoint}/user/repos?type=owner` : orgData.repos_url);
         const picksCache: ICachedQuickPicks<gitHubRepoData> = { picks: [] };
 

@@ -3,18 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OctokitResponse, OrgsListForAuthenticatedUserResponseData } from "@octokit/types";
+import { OctokitResponse, OrgsListForAuthenticatedUserResponseData, UsersGetAuthenticatedResponseData } from "@octokit/types";
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, createQuickPickFromJsons, getGitHubJsonResponse, gitHubOrgData, gitHubWebResource } from '../../utils/gitHubUtils';
+import { createQuickPickFromJsons } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseOrg', 'Choose organization.');
-        let orgData: gitHubOrgData | undefined;
+        let orgData: UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserResponseData | undefined;
 
         do {
             orgData = (await ext.ui.showQuickPick(this.getOrganizations(context), { placeHolder })).data;
@@ -27,13 +26,12 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
         return !context.repoHtmlUrl;
     }
 
-    private async getOrganizations(context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<gitHubOrgData | undefined>[]> {
-        let requestOptions: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/user`);
-        let quickPickItems: IAzureQuickPickItem<gitHubOrgData>[] = createQuickPickFromJsons<gitHubOrgData>(await getGitHubJsonResponse<gitHubOrgData[]>(requestOptions), 'login');
+    private async getOrganizations(_context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserResponseData | undefined>[]> {
+        const userRes: OctokitResponse<UsersGetAuthenticatedResponseData> = await ext.octokit.users.getAuthenticated();
+        let quickPickItems: IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserResponseData>[] = createQuickPickFromJsons<UsersGetAuthenticatedResponseData>(userRes.data, 'login');
 
-        requestOptions = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/user/orgs`);
-        const orgData: OctokitResponse<OrgsListForAuthenticatedUserResponseData> = await ext.octokit.orgs.listForAuthenticatedUser();
-        quickPickItems = quickPickItems.concat(createQuickPickFromJsons<OrgsListForAuthenticatedUserResponseData>(orgData.data, 'login'));
+        const orgRes: OctokitResponse<OrgsListForAuthenticatedUserResponseData> = await ext.octokit.orgs.listForAuthenticatedUser();
+        quickPickItems = quickPickItems.concat(createQuickPickFromJsons<OrgsListForAuthenticatedUserResponseData>(orgRes.data, 'login'));
 
         return quickPickItems;
     }

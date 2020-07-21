@@ -4,18 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 // tslint:disable-next-line:no-require-imports
-import gitUrlParse = require('git-url-parse');
+import { OrgsListForAuthenticatedUserResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
 import { Response } from 'request';
 import * as git from 'simple-git/promise';
 import { isArray } from 'util';
 import * as vscode from 'vscode';
-import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { IAzureQuickPickItem, parseError } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../constants';
+import { delay } from './delay';
 import { requestUtils } from './requestUtils';
+import gitUrlParse = require('git-url-parse');
 
 // tslint:disable-next-line:no-reserved-keywords
-export type gitHubOrgData = { login: string; repos_url: string; type: 'User' | 'Organization' };
 export type gitHubRepoData = { name: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
 export type gitHubBranchData = { name: string };
 export type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
@@ -40,19 +41,19 @@ export async function getGitHubJsonResponse<T>(requestOptions: gitHubWebResource
  * @param description Optional property of JSOsN that will be used as QuickPicks description
  * @param data Optional property of JSON that will be used as QuickPicks data saved as a NameValue pair
  */
-export function createQuickPickFromJsons<T>(data: T | T[], label: string): IAzureQuickPickItem<T>[] {
+export function createQuickPickFromJsons<T>(data: T, label: string): IAzureQuickPickItem<T>[] {
     const quickPicks: IAzureQuickPickItem<T>[] = [];
     const dataArray: T[] = isArray(data) ? data : [data];
 
-    for (const data of dataArray) {
-        if (!data[label]) {
+    for (const d of dataArray) {
+        if (!d[label]) {
             // skip this JSON if it doesn't have this label
             continue;
         }
 
         quickPicks.push({
-            label: <string>data[label],
-            data: data
+            label: <string>d[label],
+            data: d
         });
     }
 
@@ -111,8 +112,19 @@ export async function createGitHubRequestOptions(gitHubAccessToken: string, url:
 
 export async function getGitHubAccessToken(): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-    return (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
-
+    // https://github.com/microsoft/vscode-azurestaticwebapps/issues/153
+    // tslint:disable-next-line:no-constant-condition
+    while (true) {
+        try {
+            return (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
+        } catch (err) {
+            // this error will pop up if the authentication provider hasn't activated yet
+            if (parseError(err).message !== `No authentication provider 'github' is currently registered.`) {
+                throw err;
+            }
+            await delay(1000);
+        }
+    }
 }
 
 export async function tryGetRemote(): Promise<string | undefined> {
@@ -151,7 +163,7 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
     return { owner: parsedUrl.owner, name: parsedUrl.name };
 }
 
-export function isUser(orgData: gitHubOrgData | undefined): boolean {
+export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserResponseData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
-    return orgData ? orgData.type === 'User' : true;
+    return orgData ? && orgData.type === 'User' : true;
 }
