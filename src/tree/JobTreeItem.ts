@@ -9,29 +9,11 @@ import * as prettyMs from 'pretty-ms';
 import { gitHubWebResource } from 'vscode-azureappservice/out/src/github/connectToGitHub';
 import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { Conclusion, Status } from '../constants';
 import { convertConclusionToVerb, convertStatusToVerb, createGitHubRequestOptions, getGitHubAccessToken } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
-import { ActionTreeItem } from './ActionTreeItem';
+import { ActionTreeItem, GitHubJob } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
-import { GitHubStep, StepTreeItem } from './StepTreeItem';
-
-export type GitHubJob = {
-    id: number;
-    run_id: number;
-    run_url: string;
-    node_id: string;
-    head_sha: string;
-    url: string;
-    html_url: string;
-    status: Status;
-    conclusion: Conclusion | null;
-    started_at: Date;
-    completed_at: Date;
-    name: string;
-    steps: GitHubStep[];
-    check_run_url: string;
-};
+import { StepTreeItem } from './StepTreeItem';
 
 export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
 

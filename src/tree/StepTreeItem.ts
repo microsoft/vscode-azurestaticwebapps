@@ -6,21 +6,11 @@
 import * as moment from 'moment';
 import * as prettyMs from 'pretty-ms';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { Conclusion, Status } from '../constants';
 import { convertConclusionToVerb, convertStatusToVerb } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
+import { GitHubStep } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
-
-export type GitHubStep = {
-    name: string;
-    status: Status;
-    conclusion: Conclusion | null;
-    // tslint:disable-next-line: no-reserved-keywords
-    number: number;
-    started_at: string;
-    completed_at: string;
-};
 
 export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeItem {
 
