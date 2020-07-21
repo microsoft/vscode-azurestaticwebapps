@@ -25,7 +25,7 @@ export type GitHubJob = {
     url: string;
     html_url: string;
     status: Status;
-    conclusion: Conclusion;
+    conclusion: Conclusion | null;
     started_at: Date;
     completed_at: Date;
     name: string;
@@ -62,6 +62,7 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     }
 
     public get description(): string {
+        // tslint:disable-next-line: strict-boolean-expressions
         if (this.data.conclusion) {
             const elapsedTime: string = getTimeElapsedString(this.startedDate, this.completedDate);
             return `${convertConclusionToVerb(this.data.conclusion)} ${moment(this.completedDate).fromNow()} in ${elapsedTime}`;

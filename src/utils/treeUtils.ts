@@ -9,7 +9,7 @@ import { Conclusion, Status } from '../constants';
 import { ext } from '../extensionVariables';
 
 export namespace treeUtils {
-    export function getActionIconPath(status: Status, conclusion: Conclusion): TreeItemIconPath {
+    export function getActionIconPath(status: Status, conclusion: Conclusion | null): TreeItemIconPath {
         return conclusion !== null ? getThemedIconPath(path.join('conclusions', conclusion)) : getThemedIconPath(path.join('statuses', status));
     }
 

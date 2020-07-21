@@ -15,7 +15,7 @@ import { JobTreeItem } from './JobTreeItem';
 export type GitHubStep = {
     name: string;
     status: Status;
-    conclusion: Conclusion;
+    conclusion: Conclusion | null;
     // tslint:disable-next-line: no-reserved-keywords
     number: number;
     started_at: string;
@@ -51,6 +51,7 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
     }
 
     public get description(): string {
+        // tslint:disable-next-line: strict-boolean-expressions
         if (this.data.conclusion) {
             const elapsedTime: string = getTimeElapsedString(this.startedDate, this.completedDate);
             return `${convertConclusionToVerb(this.data.conclusion)} in ${elapsedTime}`;

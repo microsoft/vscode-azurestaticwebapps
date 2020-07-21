@@ -13,6 +13,15 @@ export const apiSubpathSetting: string = 'apiSubpath';
 export const appArtifactSubpathSetting: string = 'appArtifactSubpath';
 
 // Doc for these parameter values: https://developer.github.com/v3/checks/runs/#parameters
-export type Conclusion = 'success' | 'failure' | 'skipped' | 'cancelled' | null;
 
-export type Status = 'queued' | 'in_progress';
+export enum Conclusion {
+    Success = 'success',
+    Failure = 'failure',
+    Skipped = 'skipped',
+    Cancelled = 'cancelled'
+}
+
+export enum Status {
+    Queued = 'queued',
+    InProgress = 'in_progress'
+}

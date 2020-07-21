@@ -161,13 +161,13 @@ export function isUser(orgData: gitHubOrgData | undefined): boolean {
 
 export function convertConclusionToVerb(conclusion: Conclusion): string {
     switch (conclusion) {
-        case 'success':
+        case Conclusion.Success:
             return localize('succeeded', 'succeeded');
-        case 'cancelled':
+        case Conclusion.Cancelled:
             return localize('cancelled', 'cancelled');
-        case 'failure':
+        case Conclusion.Failure:
             return localize('failed', 'failed');
-        case 'skipped':
+        case Conclusion.Skipped:
             return localize('skipped', 'skipped');
         default:
             return '';
@@ -176,9 +176,9 @@ export function convertConclusionToVerb(conclusion: Conclusion): string {
 
 export function convertStatusToVerb(status: Status): string {
     switch (status) {
-        case 'in_progress':
+        case Status.InProgress:
             return localize('started', 'started');
-        case 'queued':
+        case Status.Queued:
             return localize('queued', 'queued');
         default:
             return '';
