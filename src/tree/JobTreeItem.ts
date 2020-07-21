@@ -50,7 +50,7 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     }
 
     public get id(): string {
-        return `${this.parent.id}/${this.data.id}`;
+        return this.data.id.toString();
     }
 
     public get name(): string {
