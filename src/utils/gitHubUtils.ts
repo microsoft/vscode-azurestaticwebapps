@@ -3,18 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 // tslint:disable-next-line:no-require-imports
-import { OrgsListForAuthenticatedUserResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
+import gitUrlParse = require('git-url-parse');
 import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
 import { Response } from 'request';
 import * as git from 'simple-git/promise';
-import { isArray } from 'util';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem, parseError } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../constants';
+import { OrgsListForAuthenticatedUserData } from '../gitHubTypings';
 import { delay } from './delay';
 import { requestUtils } from './requestUtils';
-import gitUrlParse = require('git-url-parse');
 
 // tslint:disable-next-line:no-reserved-keywords
 export type gitHubRepoData = { name: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
@@ -38,14 +38,13 @@ export async function getGitHubJsonResponse<T>(requestOptions: gitHubWebResource
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
- * @param description Optional property of JSOsN that will be used as QuickPicks description
+ * @param description Optional property of JSON that will be used as QuickPicks description
  * @param data Optional property of JSON that will be used as QuickPicks data saved as a NameValue pair
  */
-export function createQuickPickFromJsons<T>(data: T, label: string): IAzureQuickPickItem<T>[] {
+export function createQuickPickFromJsons<T>(data: T[], label: string): IAzureQuickPickItem<T>[] {
     const quickPicks: IAzureQuickPickItem<T>[] = [];
-    const dataArray: T[] = isArray(data) ? data : [data];
 
-    for (const d of dataArray) {
+    for (const d of data) {
         if (!d[label]) {
             // skip this JSON if it doesn't have this label
             continue;
@@ -163,7 +162,7 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
     return { owner: parsedUrl.owner, name: parsedUrl.name };
 }
 
-export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserResponseData | undefined): boolean {
+export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
-    return orgData ? && orgData.type === 'User' : true;
+    return !!orgData && 'type' in orgData && orgData.type === 'User';
 }
