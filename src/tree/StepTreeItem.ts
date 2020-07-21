@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as moment from 'moment';
+import * as prettyMs from 'pretty-ms';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { Conclusion, Status } from '../constants';
 import { convertConclusionToVerb, convertStatusToVerb } from '../utils/gitHubUtils';
-import { getTimeElapsedString } from '../utils/timeUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
@@ -52,8 +52,8 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
 
     public get description(): string {
         if (this.data.conclusion !== null) {
-            const elapsedTime: string = getTimeElapsedString(this.startedDate, this.completedDate);
-            return `${convertConclusionToVerb(this.data.conclusion)} in ${elapsedTime}`;
+            const elapsedMs: number = this.completedDate.getTime() - this.startedDate.getTime();
+            return `${convertConclusionToVerb(this.data.conclusion)} in ${prettyMs(elapsedMs)}`;
         } else {
             return `${convertStatusToVerb(this.data.status)} ${this.startedDate.getTime() === 0 ? '' : moment(this.startedDate).fromNow()}`;
         }

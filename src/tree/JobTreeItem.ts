@@ -5,12 +5,12 @@
 
 import * as moment from 'moment';
 import { IncomingMessage } from 'ms-rest';
+import * as prettyMs from 'pretty-ms';
 import { gitHubWebResource } from 'vscode-azureappservice/out/src/github/connectToGitHub';
 import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { Conclusion, Status } from '../constants';
 import { convertConclusionToVerb, convertStatusToVerb, createGitHubRequestOptions, getGitHubAccessToken } from '../utils/gitHubUtils';
-import { getTimeElapsedString } from '../utils/timeUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionTreeItem } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
@@ -63,8 +63,8 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
 
     public get description(): string {
         if (this.data.conclusion !== null) {
-            const elapsedTime: string = getTimeElapsedString(this.startedDate, this.completedDate);
-            return `${convertConclusionToVerb(this.data.conclusion)} ${moment(this.completedDate).fromNow()} in ${elapsedTime}`;
+            const elapsedMs: number = this.completedDate.getTime() - this.startedDate.getTime();
+            return `${convertConclusionToVerb(this.data.conclusion)} ${moment(this.completedDate).fromNow()} in ${prettyMs(elapsedMs)}`;
         } else {
             return `${convertStatusToVerb(this.data.status)} ${moment(this.startedDate).fromNow()}`;
         }
