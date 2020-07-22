@@ -6,7 +6,6 @@
 import { IncomingMessage } from 'ms-rest';
 import * as vscode from 'vscode';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { isWorkspaceInAzure } from '../commands/isWorkspaceInAzure';
 import { productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { delay } from '../utils/delay';
@@ -90,7 +89,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
             envs,
             'invalidStaticEnvironment',
             async (env: StaticEnvironment) => {
-                return new EnvironmentTreeItem(this, env, await isWorkspaceInAzure(this.data, env));
+                return await EnvironmentTreeItem.createEnvironmentTreeItem(this, env);
             },
             env => env.buildId
         );
