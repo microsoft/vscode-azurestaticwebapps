@@ -119,12 +119,11 @@ export async function getGitHubAccessToken(): Promise<string> {
 }
 
 export async function tryGetRemote(): Promise<string | undefined> {
-    const localProjectPath: string | undefined = getSingleRootFsPath();
-    if (localProjectPath) {
-        // only try to get remote if there's only a single workspace opened
-        const localGit: git.SimpleGit = git(localProjectPath);
-
-        try {
+    try {
+        const localProjectPath: string | undefined = getSingleRootFsPath();
+        if (localProjectPath) {
+            // only try to get remote if there's only a single workspace opened
+            const localGit: git.SimpleGit = git(localProjectPath);
             const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
 
             if (originUrl !== undefined) {
@@ -141,28 +140,25 @@ export async function tryGetRemote(): Promise<string | undefined> {
                     return bodyJson.html_url;
                 }
             }
-
-        } catch (error) {
-            // don't do anything for an error, this shouldn't prevent creation
         }
+    } catch (error) {
+        // don't do anything for an error, this shouldn't prevent creation
     }
-
     return;
 }
 
 export async function tryGetBranch(): Promise<string | undefined> {
-    const localProjectPath: string | undefined = getSingleRootFsPath();
-    if (localProjectPath) {
-        // only try to get branch if there's only a single workspace opened
-        const localGit: git.SimpleGit = git(localProjectPath);
+    try {
+        const localProjectPath: string | undefined = getSingleRootFsPath();
+        if (localProjectPath) {
+            // only try to get branch if there's only a single workspace opened
+            const localGit: git.SimpleGit = git(localProjectPath);
 
-        try {
             return (await localGit.branch()).current;
-        } catch (error) {
-            // an error here should be ignored, it probably means that they don't have git installed
         }
+    } catch (error) {
+        // an error here should be ignored, it probably means that they don't have git installed
     }
-
     return;
 }
 

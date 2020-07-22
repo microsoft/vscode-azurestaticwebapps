@@ -6,8 +6,9 @@
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
 import { AzExtParentTreeItem, AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
+import { isWorkspaceInAzure } from "../commands/isWorkspaceInAzure";
 import { productionEnvironmentName } from "../constants";
-import { tryGetBranch, tryGetRemote } from "../utils/gitHubUtils";
+import { localize } from "../utils/localize";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
@@ -62,7 +63,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public get description(): string {
-        const linkedTag: string = this.inWorkspace ? '(linked)' : '';
+        const linkedTag: string = this.inWorkspace ? localize('linkedTag', '(linked)') : '';
         return `${this.data.properties.sourceBranch} ${linkedTag}`;
     }
 
@@ -102,8 +103,6 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async refreshImpl(): Promise<void> {
-        const remote: string | undefined = await tryGetRemote();
-        const branch: string | undefined = remote ? await tryGetBranch() : undefined;
-        this.inWorkspace = this.parent.data.properties.repositoryUrl === remote && this.data.properties.sourceBranch === branch;
+        this.inWorkspace = await isWorkspaceInAzure(this.parent.data, this.data);
     }
 }
