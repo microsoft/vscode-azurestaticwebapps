@@ -5,9 +5,14 @@
 
 import * as path from 'path';
 import { TreeItemIconPath } from 'vscode-azureextensionui';
+import { Conclusion, Status } from '../constants';
 import { ext } from '../extensionVariables';
 
 export namespace treeUtils {
+    export function getActionIconPath(status: Status, conclusion: Conclusion | null): TreeItemIconPath {
+        return conclusion !== null ? getThemedIconPath(path.join('conclusions', conclusion)) : getThemedIconPath(path.join('statuses', status));
+    }
+
     export function getIconPath(iconName: string): TreeItemIconPath {
         return path.join(getResourcesPath(), `${iconName}.svg`);
     }

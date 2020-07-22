@@ -11,8 +11,9 @@ import { Response } from 'request';
 import * as git from 'simple-git/promise';
 import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../constants';
+import { Conclusion, githubApiEndpoint, Status } from '../constants';
 import { OrgForAuthenticatedUserData } from '../gitHubTypings';
+import { localize } from './localize';
 import { requestUtils } from './requestUtils';
 import { getSingleRootFsPath } from './workspaceUtils';
 
@@ -166,4 +167,32 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
+}
+
+export function convertConclusionToVerb(conclusion: Conclusion): string {
+    switch (conclusion) {
+        case Conclusion.Success:
+            return localize('succeeded', 'succeeded');
+        case Conclusion.Cancelled:
+            return localize('cancelled', 'cancelled');
+        case Conclusion.Failure:
+            return localize('failed', 'failed');
+        case Conclusion.Skipped:
+            return localize('skipped', 'skipped');
+        default:
+            return '';
+    }
+}
+
+export function convertStatusToVerb(status: Status): string {
+    switch (status) {
+        case Status.InProgress:
+            return localize('started', 'started');
+        case Status.Queued:
+            return localize('queued', 'queued');
+        case Status.Completed:
+            return localize('completed', 'completed');
+        default:
+            return '';
+    }
 }
