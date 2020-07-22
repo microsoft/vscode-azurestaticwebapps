@@ -88,7 +88,9 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         return await this.createTreeItemsWithErrorHandling(
             envs,
             'invalidStaticEnvironment',
-            env => new EnvironmentTreeItem(this, env),
+            async (env: StaticEnvironment) => {
+                return await EnvironmentTreeItem.createEnvironmentTreeItem(this, env);
+            },
             env => env.buildId
         );
     }

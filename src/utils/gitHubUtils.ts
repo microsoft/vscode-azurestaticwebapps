@@ -13,6 +13,7 @@ import * as vscode from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../constants';
 import { requestUtils } from './requestUtils';
+import { getSingleRootFsPath } from './workspaceUtils';
 
 // tslint:disable-next-line:no-reserved-keywords
 export type gitHubOrgData = { login: string; repos_url: string; type: 'User' | 'Organization' };
@@ -118,11 +119,11 @@ export async function getGitHubAccessToken(): Promise<string> {
 }
 
 export async function tryGetRemote(): Promise<string | undefined> {
-    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length === 1) {
-        // only try to get remote if there's only a single workspace opened
-        const localGit: git.SimpleGit = git(vscode.workspace.workspaceFolders[0].uri.fsPath);
-
-        try {
+    try {
+        const localProjectPath: string | undefined = getSingleRootFsPath();
+        if (localProjectPath) {
+            // only try to get remote if there's only a single workspace opened
+            const localGit: git.SimpleGit = git(localProjectPath);
             const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
 
             if (originUrl !== undefined) {
@@ -139,12 +140,25 @@ export async function tryGetRemote(): Promise<string | undefined> {
                     return bodyJson.html_url;
                 }
             }
-
-        } catch (error) {
-            // don't do anything for an error, this shouldn't prevent creation
         }
+    } catch (error) {
+        // don't do anything for an error, this shouldn't prevent creation
     }
+    return;
+}
 
+export async function tryGetBranch(): Promise<string | undefined> {
+    try {
+        const localProjectPath: string | undefined = getSingleRootFsPath();
+        if (localProjectPath) {
+            // only try to get branch if there's only a single workspace opened
+            const localGit: git.SimpleGit = git(localProjectPath);
+
+            return (await localGit.branch()).current;
+        }
+    } catch (error) {
+        // an error here should be ignored, it probably means that they don't have git installed
+    }
     return;
 }
 

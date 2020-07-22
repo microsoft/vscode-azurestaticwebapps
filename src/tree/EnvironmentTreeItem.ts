@@ -7,6 +7,8 @@ import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice"
 import { AzExtParentTreeItem, AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
+import { tryGetBranch, tryGetRemote } from "../utils/gitHubUtils";
+import { localize } from "../utils/localize";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
@@ -37,6 +39,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public readonly data: StaticEnvironment;
+    public inWorkspace: boolean;
 
     constructor(parent: StaticWebAppTreeItem, env: StaticEnvironment) {
         super(parent);
@@ -44,6 +47,13 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         this.actionsTreeItem = new ActionsTreeItem(this);
         this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
         this.functionsTreeItem = new FunctionsTreeItem(this);
+    }
+
+    public static async createEnvironmentTreeItem(parent: StaticWebAppTreeItem, env: StaticEnvironment): Promise<EnvironmentTreeItem> {
+        const ti: EnvironmentTreeItem = new EnvironmentTreeItem(parent, env);
+        // initialize inWorkspace property
+        await ti.refreshImpl();
+        return ti;
     }
 
     public get name(): string {
@@ -58,8 +68,9 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return this.data.properties.buildId === 'default' ? productionEnvironmentName : `#${this.name} - ${this.data.properties.pullRequestTitle}`;
     }
 
-    public get description(): string | undefined {
-        return this.data.properties.sourceBranch;
+    public get description(): string {
+        const linkedDesc: string = localize('linkedTag', '{0} (linked)', this.data.properties.sourceBranch);
+        return this.inWorkspace ? linkedDesc : this.data.properties.sourceBranch;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -95,5 +106,11 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         }
 
         return undefined;
+    }
+
+    public async refreshImpl(): Promise<void> {
+        const remote: string | undefined = await tryGetRemote();
+        const branch: string | undefined = remote ? await tryGetBranch() : undefined;
+        this.inWorkspace = this.parent.data.properties.repositoryUrl === remote && this.data.properties.sourceBranch === branch;
     }
 }
