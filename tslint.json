@@ -56,7 +56,8 @@
         "no-implicit-dependencies": [
             true,
             [
-                "vscode"
+                "vscode",
+                "@octokit/types"
             ]
         ],
         "switch-final-break": false,
