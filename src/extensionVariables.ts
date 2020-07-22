@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Octokit } from '@octokit/rest';
 import { ExtensionContext, TreeView } from "vscode";
 import { AzExtTreeDataProvider, AzExtTreeItem, IAzExtOutputChannel, IAzureUserInput } from "vscode-azureextensionui";
 
@@ -20,5 +19,4 @@ export namespace ext {
     // tslint:disable-next-line: strict-boolean-expressions
     export let ignoreBundle: boolean | undefined;
     export let prefix: string = 'staticWebApps';
-    export let octokit: Octokit;
 }

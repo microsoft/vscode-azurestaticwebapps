@@ -5,8 +5,10 @@
 
 import { Octokit } from "@octokit/rest";
 import { appendExtensionUserAgent } from "vscode-azureextensionui";
+import { getGitHubAccessToken } from "../../utils/gitHubUtils";
 
-export function createOctokitClient(token: string): Octokit {
+export async function createOctokitClient(): Promise<Octokit> {
+    const token: string = await getGitHubAccessToken();
     return new Octokit(
         {
             userAgent: appendExtensionUserAgent(),

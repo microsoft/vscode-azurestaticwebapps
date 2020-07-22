@@ -3,12 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Octokit } from "@octokit/rest";
 import { OctokitResponse, OrgsListForAuthenticatedUserResponseData, UsersGetAuthenticatedResponseData } from "@octokit/types";
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
 import { OrgsListForAuthenticatedUserData } from "../../gitHubTypings";
 import { createQuickPickFromJsons } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
+import { createOctokitClient } from "../github/createOctokitClient";
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
@@ -28,10 +30,11 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
     }
 
     private async getOrganizations(_context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserData | undefined>[]> {
-        const userRes: OctokitResponse<UsersGetAuthenticatedResponseData> = await ext.octokit.users.getAuthenticated();
+        const octokitClient: Octokit = await createOctokitClient();
+        const userRes: OctokitResponse<UsersGetAuthenticatedResponseData> = await octokitClient.users.getAuthenticated();
         let quickPickItems: IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserData>[] = createQuickPickFromJsons<UsersGetAuthenticatedResponseData>([userRes.data], 'login');
 
-        const orgRes: OctokitResponse<OrgsListForAuthenticatedUserResponseData> = await ext.octokit.orgs.listForAuthenticatedUser();
+        const orgRes: OctokitResponse<OrgsListForAuthenticatedUserResponseData> = await octokitClient.orgs.listForAuthenticatedUser();
         quickPickItems = quickPickItems.concat(createQuickPickFromJsons<OrgsListForAuthenticatedUserData>(orgRes.data, 'login'));
 
         return quickPickItems;
