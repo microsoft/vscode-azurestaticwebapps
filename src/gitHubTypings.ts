@@ -6,4 +6,4 @@
 import { OrgsListForAuthenticatedUserResponseData } from "@octokit/types";
 
 // we'll export the types until this is merged: https://github.com/octokit/types.ts/issues/120
-export type OrgsListForAuthenticatedUserData = OrgsListForAuthenticatedUserResponseData[0];
+export type OrgForAuthenticatedUserData = OrgsListForAuthenticatedUserResponseData[0];

@@ -10,10 +10,9 @@ import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
 import { Response } from 'request';
 import * as git from 'simple-git/promise';
 import * as vscode from 'vscode';
-import { IAzureQuickPickItem, parseError } from 'vscode-azureextensionui';
+import { IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../constants';
-import { OrgsListForAuthenticatedUserData } from '../gitHubTypings';
-import { delay } from './delay';
+import { OrgForAuthenticatedUserData } from '../gitHubTypings';
 import { requestUtils } from './requestUtils';
 
 // tslint:disable-next-line:no-reserved-keywords
@@ -111,19 +110,7 @@ export async function createGitHubRequestOptions(gitHubAccessToken: string, url:
 
 export async function getGitHubAccessToken(): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-    // https://github.com/microsoft/vscode-azurestaticwebapps/issues/153
-    // tslint:disable-next-line:no-constant-condition
-    while (true) {
-        try {
-            return (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
-        } catch (err) {
-            // this error will pop up if the authentication provider hasn't activated yet
-            if (parseError(err).message !== `No authentication provider 'github' is currently registered.`) {
-                throw err;
-            }
-            await delay(1000);
-        }
-    }
+    return (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
 }
 
 export async function tryGetRemote(): Promise<string | undefined> {
@@ -162,7 +149,7 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
     return { owner: parsedUrl.owner, name: parsedUrl.name };
 }
 
-export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserData | undefined): boolean {
+export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
 }

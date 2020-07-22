@@ -7,7 +7,7 @@ import { Octokit } from "@octokit/rest";
 import { OctokitResponse, OrgsListForAuthenticatedUserResponseData, UsersGetAuthenticatedResponseData } from "@octokit/types";
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
-import { OrgsListForAuthenticatedUserData } from "../../gitHubTypings";
+import { OrgForAuthenticatedUserData } from "../../gitHubTypings";
 import { createQuickPickFromJsons } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { createOctokitClient } from "../github/createOctokitClient";
@@ -16,7 +16,7 @@ import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseOrg', 'Choose organization.');
-        let orgData: UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserData | undefined;
+        let orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined;
 
         do {
             orgData = (await ext.ui.showQuickPick(this.getOrganizations(context), { placeHolder })).data;
@@ -29,13 +29,13 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
         return !context.repoHtmlUrl;
     }
 
-    private async getOrganizations(_context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserData | undefined>[]> {
+    private async getOrganizations(_context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined>[]> {
         const octokitClient: Octokit = await createOctokitClient();
         const userRes: OctokitResponse<UsersGetAuthenticatedResponseData> = await octokitClient.users.getAuthenticated();
-        let quickPickItems: IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserData>[] = createQuickPickFromJsons<UsersGetAuthenticatedResponseData>([userRes.data], 'login');
+        let quickPickItems: IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData>[] = createQuickPickFromJsons<UsersGetAuthenticatedResponseData>([userRes.data], 'login');
 
         const orgRes: OctokitResponse<OrgsListForAuthenticatedUserResponseData> = await octokitClient.orgs.listForAuthenticatedUser();
-        quickPickItems = quickPickItems.concat(createQuickPickFromJsons<OrgsListForAuthenticatedUserData>(orgRes.data, 'login'));
+        quickPickItems = quickPickItems.concat(createQuickPickFromJsons<OrgForAuthenticatedUserData>(orgRes.data, 'login'));
 
         return quickPickItems;
     }

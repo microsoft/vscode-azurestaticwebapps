@@ -5,14 +5,14 @@
 
 import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { IResourceGroupWizardContext } from 'vscode-azureextensionui';
-import { OrgsListForAuthenticatedUserData } from '../../gitHubTypings';
+import { OrgForAuthenticatedUserData } from '../../gitHubTypings';
 import { StaticWebApp } from '../../tree/StaticWebAppTreeItem';
 import { gitHubBranchData, gitHubRepoData } from '../../utils/gitHubUtils';
 
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext {
     accessToken: string;
 
-    orgData?: UsersGetAuthenticatedResponseData | OrgsListForAuthenticatedUserData;
+    orgData?: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData;
     repoData?: gitHubRepoData;
     branchData?: gitHubBranchData;
     repoHtmlUrl?: string;
