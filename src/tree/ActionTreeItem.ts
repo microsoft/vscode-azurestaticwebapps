@@ -14,46 +14,6 @@ import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
 
-export type GitHubAction = {
-    id: number;
-    conclusion: Conclusion;
-    event: string;
-    head_branch: string;
-    status: Status;
-    head_commit: { message: string };
-    url: string;
-    html_url: string;
-    rerun_url: string;
-    cancel_url: string;
-};
-
-export type GitHubJob = {
-    id: number;
-    run_id: number;
-    run_url: string;
-    node_id: string;
-    head_sha: string;
-    url: string;
-    html_url: string;
-    status: Status;
-    conclusion: Conclusion | null;
-    started_at: Date;
-    completed_at: Date;
-    name: string;
-    steps: GitHubStep[];
-    check_run_url: string;
-};
-
-export type GitHubStep = {
-    name: string;
-    status: Status;
-    conclusion: Conclusion | null;
-    // tslint:disable-next-line: no-reserved-keywords
-    number: number;
-    started_at: string;
-    completed_at: string;
-};
-
 export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticAction';
     public readonly contextValue: string = ActionTreeItem.contextValue;
