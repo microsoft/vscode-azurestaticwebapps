@@ -3,16 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { UsersGetAuthenticatedResponseData } from '@octokit/types';
+import { Octokit } from '@octokit/rest';
+import { GitGetTreeResponseData, OctokitResponse, ReposGetBranchResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
 // tslint:disable-next-line:no-require-imports
 import gitUrlParse = require('git-url-parse');
 import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
 import { Response } from 'request';
 import * as git from 'simple-git/promise';
-import * as vscode from 'vscode';
+import { authentication, QuickPickItem } from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../constants';
-import { OrgForAuthenticatedUserData } from '../gitHubTypings';
+import { createOctokitClient } from '../commands/github/createOctokitClient';
+import { githubApiEndpoint, skipForNowQuickPickItem } from '../constants';
+import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
 import { requestUtils } from './requestUtils';
 import { getSingleRootFsPath } from './workspaceUtils';
 
@@ -88,7 +90,7 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
     } while (requestOptions.nextLink && startTime + timeoutMs > Date.now());
 
     cache.picks = cache.picks.concat(createQuickPickFromJsons(gitHubQuickPicks, labelName));
-    cache.picks.sort((a: vscode.QuickPickItem, b: vscode.QuickPickItem) => a.label.localeCompare(b.label));
+    cache.picks.sort((a: QuickPickItem, b: QuickPickItem) => a.label.localeCompare(b.label));
 
     if (requestOptions.nextLink) {
         return (<IAzureQuickPickItem<T | undefined>[]>[{
@@ -111,7 +113,7 @@ export async function createGitHubRequestOptions(gitHubAccessToken: string, url:
 
 export async function getGitHubAccessToken(): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-    return (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
+    return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
 }
 
 export async function tryGetRemote(): Promise<string | undefined> {
@@ -166,4 +168,39 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
+}
+
+export async function getGitHubTree(repositoryUrl: string, branch: string): Promise<GitTreeData[]> {
+    const octokitClient: Octokit = await createOctokitClient();
+    const { owner, name } = getRepoFullname(repositoryUrl);
+    const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch({ owner, repo: name, branch });
+    const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree({ owner, repo: name, tree_sha: branchRes.data.commit.sha, recursive: 'true' });
+
+    return getTreeRes.data.tree.filter(file => file.type === 'tree').sort((f1, f2) => {
+        // sort descending by the depth of subfolder
+        // tslint:disable-next-line: strict-boolean-expressions
+        return (f1.path.match(/\//g) || []).length > (f2.path.match(/\//g) || []).length ? 1 : -1;
+    });
+}
+
+export async function getGitTreeQuickPicks(gitTreeData: GitTreeData[], subpathSetting: string | undefined, isSkippable?: boolean): Promise<QuickPickItem[]> {
+    const quickPicks: QuickPickItem[] = createQuickPickFromJsons(gitTreeData, 'path');
+    // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
+    quickPicks.unshift({ label: '/' });
+
+    if (isSkippable) {
+        quickPicks.unshift(skipForNowQuickPickItem);
+    }
+
+    // if there is a subpath setting, move it to the top so the user can just hit enter
+    if (subpathSetting) {
+        quickPicks.forEach((qp, i) => {
+            if (qp.label === subpathSetting) {
+                quickPicks.splice(i, 1);
+                quickPicks.unshift(qp);
+            }
+        });
+    }
+
+    return quickPicks;
 }
