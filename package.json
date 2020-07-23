@@ -235,7 +235,7 @@
                 },
                 {
                     "command": "staticWebApps.browse",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
+                    "when": "view == staticWebApps && viewItem == azureStaticEnvironment",
                     "group": "1@1"
                 },
                 {
