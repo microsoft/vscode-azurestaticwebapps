@@ -3,15 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Octokit } from '@octokit/rest';
+import { ActionsGetJobForWorkflowRunResponseData } from '@octokit/types';
 import * as moment from 'moment';
-import { IncomingMessage } from 'ms-rest';
 import * as prettyMs from 'pretty-ms';
-import { gitHubWebResource } from 'vscode-azureappservice/out/src/github/connectToGitHub';
-import { requestUtils } from 'vscode-azureappservice/out/src/utils/requestUtils';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { convertConclusionToVerb, convertStatusToVerb, createGitHubRequestOptions, getGitHubAccessToken } from '../utils/gitHubUtils';
+import { createOctokitClient } from '../commands/github/createOctokitClient';
+import { Conclusion, Status } from '../constants';
+import { convertConclusionToVerb, convertStatusToVerb, getRepoFullname } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
-import { ActionTreeItem, GitHubJob } from './ActionTreeItem';
+import { ActionTreeItem } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { StepTreeItem } from './StepTreeItem';
 
@@ -20,15 +21,15 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     public static contextValue: string = 'azureStaticJob';
     public readonly contextValue: string = JobTreeItem.contextValue;
     public parent: ActionTreeItem;
-    public data: GitHubJob;
+    public data: ActionsGetJobForWorkflowRunResponseData;
 
-    constructor(parent: ActionTreeItem, data: GitHubJob) {
+    constructor(parent: ActionTreeItem, data: ActionsGetJobForWorkflowRunResponseData) {
         super(parent);
         this.data = data;
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(this.data.status, this.data.conclusion);
+        return treeUtils.getActionIconPath(<Status>this.data.status, <Conclusion>this.data.conclusion);
     }
 
     public get id(): string {
@@ -46,9 +47,9 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     public get description(): string {
         if (this.data.conclusion !== null) {
             const elapsedMs: number = this.completedDate.getTime() - this.startedDate.getTime();
-            return `${convertConclusionToVerb(this.data.conclusion)} ${moment(this.completedDate).fromNow()} in ${prettyMs(elapsedMs)}`;
+            return `${convertConclusionToVerb(<Conclusion>this.data.conclusion)} ${moment(this.completedDate).fromNow()} in ${prettyMs(elapsedMs)}`;
         } else {
-            return `${convertStatusToVerb(this.data.status)} ${moment(this.startedDate).fromNow()}`;
+            return `${convertStatusToVerb(<Status>this.data.status)} ${moment(this.startedDate).fromNow()}`;
         }
     }
 
@@ -74,10 +75,9 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     }
 
     public async refreshImpl(): Promise<void> {
-        const token: string = await getGitHubAccessToken();
-        const gitHubRequest: gitHubWebResource = await createGitHubRequestOptions(token, this.data.url);
-        const githubResponse: IncomingMessage & { body: string } = await requestUtils.sendRequest(gitHubRequest);
-        this.data = <GitHubJob>JSON.parse(githubResponse.body);
+        const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
+        const octokitClient: Octokit = await createOctokitClient();
+        this.data = (await octokitClient.actions.getJobForWorkflowRun({ job_id: this.parent.data.id, owner: owner, repo: name })).data;
     }
 
     public compareChildrenImpl(ti1: StepTreeItem, ti2: StepTreeItem): number {

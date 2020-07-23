@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IncomingMessage } from 'ms-rest';
+import { Octokit } from '@octokit/rest';
+import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunResponseData, OctokitResponse } from '@octokit/types';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { Conclusion, githubApiEndpoint, Status } from '../constants';
-import { createGitHubRequestOptions, getGitHubAccessToken, getRepoFullname, gitHubWebResource } from '../utils/gitHubUtils';
-import { requestUtils } from '../utils/requestUtils';
+import { createOctokitClient } from '../commands/github/createOctokitClient';
+import { Conclusion, Status } from '../constants';
+import { getRepoFullname } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
@@ -57,15 +58,15 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
     public static contextValue: string = 'azureStaticAction';
     public readonly contextValue: string = ActionTreeItem.contextValue;
     public parent: ActionsTreeItem;
-    public data: GitHubAction;
+    public data: ActionsGetWorkflowRunResponseData;
 
-    constructor(parent: ActionsTreeItem, data: GitHubAction) {
+    constructor(parent: ActionsTreeItem, data: ActionsGetWorkflowRunResponseData) {
         super(parent);
         this.data = data;
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(this.data.status, this.data.conclusion);
+        return treeUtils.getActionIconPath(<Status>this.data.status, <Conclusion>this.data.conclusion);
     }
 
     public get id(): string {
@@ -86,13 +87,11 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
         const { owner, name } = getRepoFullname(this.parent.repositoryUrl);
-        const token: string = await getGitHubAccessToken();
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(token, `${githubApiEndpoint}/repos/${owner}/${name}/actions/runs/${this.data.id}/jobs`);
-        const githubResponse: IncomingMessage & { body: string } = await requestUtils.sendRequest(requestOption);
+        const octokitClient: Octokit = await createOctokitClient();
+        const response: OctokitResponse<ActionsListJobsForWorkflowRunResponseData> = await octokitClient.actions.listJobsForWorkflowRun({ owner: owner, repo: name, run_id: this.data.id });
 
-        const gitHubJobs: { jobs: GitHubJob[] } = <{ jobs: GitHubJob[] }>JSON.parse(githubResponse.body);
         return await this.createTreeItemsWithErrorHandling(
-            gitHubJobs.jobs,
+            response.data.jobs,
             'invalidJobTreeItem',
             (job) => new JobTreeItem(this, job),
             job => job.name
@@ -104,9 +103,9 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
     }
 
     public async refreshImpl(): Promise<void> {
-        const token: string = await getGitHubAccessToken();
-        const gitHubRequest: gitHubWebResource = await createGitHubRequestOptions(token, this.data.url);
-        const githubResponse: IncomingMessage & { body: string } = await requestUtils.sendRequest(gitHubRequest);
-        this.data = <GitHubAction>JSON.parse(githubResponse.body);
+        const { owner, name } = getRepoFullname(this.parent.repositoryUrl);
+        const octokitClient: Octokit = await createOctokitClient();
+        const response: OctokitResponse<ActionsGetWorkflowRunResponseData> = await octokitClient.actions.getWorkflowRun({ owner: owner, repo: name, run_id: this.data.id });
+        this.data = response.data;
     }
 }

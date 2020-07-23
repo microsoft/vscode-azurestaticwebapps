@@ -6,9 +6,10 @@
 import * as moment from 'moment';
 import * as prettyMs from 'pretty-ms';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import { Conclusion, Status } from '../constants';
+import { ActionWorkflowStepData } from '../gitHubTypings';
 import { convertConclusionToVerb, convertStatusToVerb } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
-import { GitHubStep } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
 
@@ -17,15 +18,15 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
     public static contextValue: string = 'azureStaticStep';
     public readonly contextValue: string = StepTreeItem.contextValue;
     public parent: JobTreeItem;
-    public data: GitHubStep;
+    public data: ActionWorkflowStepData;
 
-    constructor(parent: JobTreeItem, data: GitHubStep) {
+    constructor(parent: JobTreeItem, data: ActionWorkflowStepData) {
         super(parent);
         this.data = data;
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(this.data.status, this.data.conclusion);
+        return treeUtils.getActionIconPath(<Status>this.data.status, <Conclusion>this.data.conclusion);
     }
 
     public get id(): string {
@@ -43,9 +44,9 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
     public get description(): string {
         if (this.data.conclusion !== null) {
             const elapsedMs: number = this.completedDate.getTime() - this.startedDate.getTime();
-            return `${convertConclusionToVerb(this.data.conclusion)} in ${prettyMs(elapsedMs)}`;
+            return `${convertConclusionToVerb(<Conclusion>this.data.conclusion)} in ${prettyMs(elapsedMs)}`;
         } else {
-            return `${convertStatusToVerb(this.data.status)} ${this.startedDate.getTime() === 0 ? '' : moment(this.startedDate).fromNow()}`;
+            return `${convertStatusToVerb(<Status>this.data.status)} ${this.startedDate.getTime() === 0 ? '' : moment(this.startedDate).fromNow()}`;
         }
     }
 
