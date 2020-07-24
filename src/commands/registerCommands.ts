@@ -7,6 +7,7 @@ import { commands } from 'vscode';
 import { AppSettingsTreeItem, AppSettingTreeItem } from 'vscode-azureappservice';
 import { AzExtParentTreeItem, AzExtTreeItem, AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
+import { openUrl } from '../utils/openUrl';
 import { editAppSetting } from './appSettings/editAppSetting';
 import { renameAppSetting } from './appSettings/renameAppSetting';
 import { uploadAppSettings } from './appSettings/uploadAppSettings';
@@ -46,4 +47,5 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.appSettings.rename', renameAppSetting);
     registerCommand('staticWebApps.appSettings.upload', uploadAppSettings);
     registerCommand('staticWebApps.toggleAppSettingVisibility', async (_context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(); }, 250);
+    registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
 }
