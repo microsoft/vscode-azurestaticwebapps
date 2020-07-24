@@ -5,8 +5,8 @@
 
 import * as path from 'path';
 import { TreeItemIconPath } from 'vscode-azureextensionui';
-import { Conclusion, Status } from '../constants';
 import { ext } from '../extensionVariables';
+import { Conclusion, Status } from '../gitHubTypings';
 
 export namespace treeUtils {
     export function getActionIconPath(status: Status, conclusion: Conclusion | null): TreeItemIconPath {

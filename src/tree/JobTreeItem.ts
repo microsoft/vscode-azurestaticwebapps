@@ -9,7 +9,7 @@ import * as moment from 'moment';
 import * as prettyMs from 'pretty-ms';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { Conclusion, Status } from '../constants';
+import { Conclusion, Status } from '../gitHubTypings';
 import { convertConclusionToVerb, convertStatusToVerb, getRepoFullname } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionTreeItem } from './ActionTreeItem';

@@ -6,8 +6,7 @@
 import * as moment from 'moment';
 import * as prettyMs from 'pretty-ms';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { Conclusion, Status } from '../constants';
-import { ActionWorkflowStepData } from '../gitHubTypings';
+import { ActionWorkflowStepData, Conclusion, Status } from '../gitHubTypings';
 import { convertConclusionToVerb, convertStatusToVerb } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';

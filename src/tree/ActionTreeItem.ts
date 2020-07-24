@@ -7,7 +7,7 @@ import { Octokit } from '@octokit/rest';
 import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunResponseData, OctokitResponse } from '@octokit/types';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { Conclusion, Status } from '../constants';
+import { Conclusion, Status } from '../gitHubTypings';
 import { getRepoFullname } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
