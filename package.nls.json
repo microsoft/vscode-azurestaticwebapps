@@ -26,5 +26,6 @@
     "staticWebApps.apiSubpath": "The default value for the location of your Azure Functions code",
     "staticWebApps.appArtifactSubpath": "The default value for the location of your build output relative to your application code location",
     "staticWebApps.action.rerun": "Rerun Action...",
-    "staticWebApps.action.cancel": "Cancel Action..."
+    "staticWebApps.action.cancel": "Cancel Action...",
+    "staticWebApps.showDocumentation": "Documentation"
 }

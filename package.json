@@ -62,6 +62,15 @@
                 }
             },
             {
+                "command": "staticWebApps.showDocumentation",
+                "title": "%staticWebApps.showDocumentation%",
+                "category": "Azure Static Web Apps",
+                "icon": {
+                    "light": "resources/light/book.svg",
+                    "dark": "resources/dark/book.svg"
+                }
+            },
+            {
                 "command": "staticWebApps.deleteStaticWebApp",
                 "title": "%staticWebApps.deleteStaticWebApp%",
                 "category": "Azure Static Web Apps"
@@ -205,6 +214,11 @@
                     "command": "staticWebApps.refresh",
                     "when": "view == staticWebApps",
                     "group": "navigation@3"
+                },
+                {
+                    "command": "staticWebApps.showDocumentation",
+                    "when": "view == staticWebApps",
+                    "group": "navigation@4"
                 }
             ],
             "view/item/context": [
