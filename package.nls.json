@@ -1,6 +1,7 @@
 {
     "staticWebApps.createStaticWebApp": "Create Static Web App...",
     "staticWebApps.deleteStaticWebApp": "Delete...",
+    "staticWebApps.deletedeleteEnvironment": "Delete Environment...",
     "staticWebApps.description": "An Azure Static Web Apps (Preview) extension for Visual Studio Code.",
     "staticWebApps.enableOutputTimestamps": "Prepends each line displayed in the output channel with a timestamp.",
     "staticWebApps.loadMore": "Load More",

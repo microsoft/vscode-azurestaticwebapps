@@ -3,12 +3,21 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { HttpMethods, ServiceClientCredentials, WebResource } from "ms-rest";
+import { HttpMethods, IncomingMessage, ServiceClientCredentials, WebResource } from "ms-rest";
 import * as requestP from 'request-promise';
 import { appendExtensionUserAgent, ISubscriptionContext } from "vscode-azureextensionui";
+import { delay } from "./delay";
 
 export namespace requestUtils {
     export type Request = WebResource & requestP.RequestPromiseOptions;
+    type AzureAsyncOperationResponse = {
+        id?: string;
+        status: string;
+        error?: {
+            code: string;
+            message: string;
+        };
+    };
 
     export async function getDefaultRequest(url: string, credentials?: ServiceClientCredentials, method: HttpMethods = 'GET'): Promise<Request> {
         const request: WebResource = new WebResource();
@@ -52,5 +61,35 @@ export namespace requestUtils {
                 }
             });
         });
+    }
+
+    //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
+    export async function pollAzureAsyncOperation(asyncOperationRequest: Request, cred: ServiceClientCredentials): Promise<void> {
+        asyncOperationRequest.resolveWithFullResponse = true;
+        const asyncAzureRes: IncomingMessage = await sendRequest(asyncOperationRequest);
+        const monitorStatusUrl: string = <string>asyncAzureRes.headers['azure-asyncoperation'];
+        // the url already includes resourceManagerEndpointUrl, so just use getDefaultRequest instead
+        const monitorStatusReq: Request = await getDefaultRequest(monitorStatusUrl, cred);
+
+        const timeoutInSeconds: number = 60;
+        const maxTime: number = Date.now() + timeoutInSeconds * 1000;
+        while (Date.now() < maxTime) {
+            const statusJsonString: string = await sendRequest(monitorStatusReq);
+            let operationResponse: AzureAsyncOperationResponse | undefined;
+            try {
+                operationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
+            } catch {
+                // swallow JSON parsing errors
+            }
+
+            if (operationResponse?.status !== 'InProgress') {
+                if (operationResponse?.error) {
+                    throw operationResponse.error;
+                }
+                return;
+            }
+
+            await delay(2000);
+        }
     }
 }
