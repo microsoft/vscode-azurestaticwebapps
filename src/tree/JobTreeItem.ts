@@ -11,6 +11,7 @@ import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } 
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { Conclusion, Status } from '../gitHubTypings';
 import { convertConclusionToVerb, convertStatusToVerb, getRepoFullname } from '../utils/gitHubUtils';
+import { localize } from '../utils/localize';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionTreeItem } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
@@ -29,7 +30,7 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(<Status>this.data.status, <Conclusion>this.data.conclusion);
+        return treeUtils.getActionIconPath(this.status, this.conclusion);
     }
 
     public get id(): string {
@@ -47,9 +48,9 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     public get description(): string {
         if (this.data.conclusion !== null) {
             const elapsedMs: number = this.completedDate.getTime() - this.startedDate.getTime();
-            return `${convertConclusionToVerb(<Conclusion>this.data.conclusion)} ${moment(this.completedDate).fromNow()} in ${prettyMs(elapsedMs)}`;
+            return `${convertConclusionToVerb(this.conclusion)} ${moment(this.completedDate).fromNow()} in ${prettyMs(elapsedMs)}`;
         } else {
-            return `${convertStatusToVerb(<Status>this.data.status)} ${moment(this.startedDate).fromNow()}`;
+            return `${convertStatusToVerb(this.status)} ${moment(this.startedDate).fromNow()}`;
         }
     }
 
@@ -59,6 +60,22 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
 
     private get completedDate(): Date {
         return new Date(this.data.completed_at);
+    }
+
+    private get status(): Status {
+        if (this.data.status in Status) {
+            return <Status>this.data.conclusion;
+        } else {
+            throw new Error(localize('statusNotRecognized', 'Status not recognized.'));
+        }
+    }
+
+    private get conclusion(): Conclusion {
+        if (this.data.conclusion in Conclusion) {
+            return <Conclusion>this.data.conclusion;
+        } else {
+            throw new Error(localize('conclusionNotRecognized', 'Conclusion not recognized.'));
+        }
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
