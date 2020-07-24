@@ -14,6 +14,7 @@ import { browse } from './browse';
 import { createChildNode } from './createChildNode';
 import { createHttpFunction } from './createHttpFunction';
 import { createStaticWebApp } from './createStaticWebApp/createStaticWebApp';
+import { deleteEnvironment } from './deleteEnvironment';
 import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
 import { cancelAction, rerunAction } from './github/actionCommands';
@@ -26,6 +27,7 @@ import { viewProperties } from './viewProperties';
 export function registerCommands(): void {
     registerCommand('staticWebApps.createStaticWebApp', createStaticWebApp);
     registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
+    registerCommand('staticWebApps.deleteEnvironment', deleteEnvironment);
     registerCommand('staticWebApps.loadMore', async (context: IActionContext, node: AzureTreeItem) => await ext.tree.loadMore(node, context));
     registerCommand('staticWebApps.openInPortal', openInPortal);
     registerCommand('staticWebApps.refresh', async (_context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(node));
