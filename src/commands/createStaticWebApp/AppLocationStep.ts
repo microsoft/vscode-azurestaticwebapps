@@ -3,19 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep } from "vscode-azureextensionui";
-import { appSubpathSetting } from "../../constants";
+import { AzureWizardPromptStep, IWizardOptions } from "vscode-azureextensionui";
+import { appSubpathSetting, defaultAppLocation, enterInputQuickPickItem } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { getGitTreeQuickPicks } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from "../../utils/nonNull";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
+import { EnterAppLocationStep } from "./EnterAppLocationStep";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const defaultLocation: string = '/';
 
         const placeHolder: string = localize('appLocation', "Select the location of your application code");
         wizardContext.appLocation = (await ext.ui.showQuickPick(
@@ -24,10 +24,15 @@ export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
                 getWorkspaceSetting(appSubpathSetting, wizardContext.fsPath)),
             { placeHolder, suppressPersistence: true })).label.trim();
 
-        addLocationTelemetry(wizardContext, 'appLocation', defaultLocation);
+        wizardContext.manuallyEnterApp = wizardContext.appLocation === enterInputQuickPickItem.label;
+        addLocationTelemetry(wizardContext, 'appLocation', defaultAppLocation);
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
         return !wizardContext.appLocation;
+    }
+
+    public async getSubWizard(context: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
+        return context.manuallyEnterApp ? { promptSteps: [new EnterAppLocationStep()] } : undefined;
     }
 }

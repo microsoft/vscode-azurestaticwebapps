@@ -8,7 +8,9 @@ import { localize } from "./utils/localize";
 
 export const githubApiEndpoint: string = 'https://api.github.com';
 export const localSettingsFileName: string = 'local.settings.json';
-export const defaultApiName: string = 'api';
+
+export const defaultAppLocation: string = '/';
+export const defaultApiLocation: string = 'api';
 export const productionEnvironmentName: string = 'Production';
 
 export const appSubpathSetting: string = 'appSubpath';
@@ -16,3 +18,4 @@ export const apiSubpathSetting: string = 'apiSubpath';
 export const appArtifactSubpathSetting: string = 'appArtifactSubpath';
 
 export const skipForNowQuickPickItem: QuickPickItem = { label: localize('skipForNow', '$(clock) Skip for now') };
+export const enterInputQuickPickItem: QuickPickItem = { label: localize('input', '$(keyboard) Manually enter location') };

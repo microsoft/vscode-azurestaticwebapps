@@ -3,14 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep } from "vscode-azureextensionui";
-import { apiSubpathSetting, defaultApiName, skipForNowQuickPickItem } from "../../constants";
+import { AzureWizardPromptStep, IWizardOptions } from "vscode-azureextensionui";
+import { apiSubpathSetting, defaultApiLocation, enterInputQuickPickItem, skipForNowQuickPickItem } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { getGitTreeQuickPicks } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from "../../utils/nonNull";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
+import { EnterApiLocationStep } from "./EnterApiLocationStep";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
@@ -25,11 +26,17 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
 
         // entering a blank in the request is the same as skipping this step
         wizardContext.apiLocation = input === skipForNowQuickPickItem.label ? '' : input;
-        addLocationTelemetry(wizardContext, 'apiLocation', defaultApiName);
+        wizardContext.manuallyEnterApi = wizardContext.apiLocation === enterInputQuickPickItem.label;
+        addLocationTelemetry(wizardContext, 'apiLocation', defaultApiLocation);
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
         return !wizardContext.apiLocation;
+    }
+
+    public async getSubWizard(context: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
+        return context.manuallyEnterApi ? { promptSteps: [new EnterApiLocationStep()] } : undefined;
+
     }
 
 }

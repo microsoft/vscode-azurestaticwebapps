@@ -24,7 +24,9 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext 
 
     gitTreeData?: GitTreeData[];
     appLocation?: string;
+    manuallyEnterApp?: boolean;
     apiLocation?: string;
+    manuallyEnterApi?: boolean;
     appArtifactLocation?: string;
 
     // created when the wizard is done executing

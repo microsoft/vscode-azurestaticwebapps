@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { enterInputQuickPickItem } from "../../constants";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export function addLocationTelemetry(wizardContext: IStaticWebAppWizardContext, key: 'appLocation' | 'apiLocation' | 'appArtifactLocation', defaultValue: string): void {
@@ -12,8 +13,11 @@ export function addLocationTelemetry(wizardContext: IStaticWebAppWizardContext, 
         telemValue = 'empty';
     } else if (value === defaultValue) {
         telemValue = 'default';
+    } else if (value === enterInputQuickPickItem.label) {
+        telemValue = 'manuallyEnter';
     } else {
         telemValue = 'nonDefault';
     }
+
     wizardContext.telemetry.properties[key] = telemValue;
 }

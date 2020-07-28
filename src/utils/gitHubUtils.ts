@@ -13,7 +13,7 @@ import * as git from 'simple-git/promise';
 import { authentication, QuickPickItem } from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { githubApiEndpoint, skipForNowQuickPickItem } from '../constants';
+import { enterInputQuickPickItem, githubApiEndpoint, skipForNowQuickPickItem } from '../constants';
 import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
 import { requestUtils } from './requestUtils';
 import { getSingleRootFsPath } from './workspaceUtils';
@@ -187,9 +187,10 @@ export async function getGitTreeQuickPicks(gitTreeData: GitTreeData[], subpathSe
     const quickPicks: QuickPickItem[] = createQuickPickFromJsons(gitTreeData, 'path');
     // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
     quickPicks.unshift({ label: '/' });
+    quickPicks.push(enterInputQuickPickItem);
 
     if (isSkippable) {
-        quickPicks.unshift(skipForNowQuickPickItem);
+        quickPicks.push(skipForNowQuickPickItem);
     }
 
     // if there is a subpath setting, move it to the top so the user can just hit enter

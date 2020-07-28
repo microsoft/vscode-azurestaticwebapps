@@ -6,7 +6,7 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import { workspace, WorkspaceFolder } from "vscode";
-import { defaultApiName, localSettingsFileName } from "../../constants";
+import { defaultApiLocation, localSettingsFileName } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { localize } from '../../utils/localize';
 
@@ -18,7 +18,7 @@ export async function getLocalSettingsFile(): Promise<string> {
     // tslint:disable-next-line: strict-boolean-expressions
     const folders: readonly WorkspaceFolder[] = workspace.workspaceFolders || [];
     if (folders.length === 1) {
-        const workspacePath: string = path.join(folders[0].uri.fsPath, defaultApiName) || folders[0].uri.fsPath;
+        const workspacePath: string = path.join(folders[0].uri.fsPath, defaultApiLocation) || folders[0].uri.fsPath;
         const localSettingsFile: string = path.join(workspacePath, localSettingsFileName);
         if (await fse.pathExists(localSettingsFile)) {
             return localSettingsFile;
