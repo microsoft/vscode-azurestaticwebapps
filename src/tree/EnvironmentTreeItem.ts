@@ -30,6 +30,7 @@ export type StaticEnvironment = {
         pullRequestTitle: string;
         sourceBranch: string;
         hostname: string;
+        status: string;
     };
 };
 
@@ -68,12 +69,17 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public get label(): string {
-        return this.isProduction ? productionEnvironmentName : `#${this.name} - ${this.data.properties.pullRequestTitle}`;
+        return this.isProduction ? productionEnvironmentName : `${this.data.properties.pullRequestTitle}`;
     }
 
     public get description(): string {
-        const linkedDesc: string = localize('linkedTag', '{0} (linked)', this.data.properties.sourceBranch);
-        return this.inWorkspace ? linkedDesc : this.data.properties.sourceBranch;
+        if (this.data.properties.status !== 'Ready') {
+            // if the environment isn't ready, the status has priority over displaying its linked
+            return localize('statusTag', '{0} ({1})', this.data.properties.sourceBranch, this.data.properties.status);
+        }
+
+        const linkedTag: string = localize('linkedTag', '{0} (linked)', this.data.properties.sourceBranch);
+        return this.inWorkspace ? linkedTag : this.data.properties.sourceBranch;
     }
 
     public get iconPath(): TreeItemIconPath {
