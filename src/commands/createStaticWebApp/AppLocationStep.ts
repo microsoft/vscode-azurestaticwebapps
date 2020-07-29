@@ -25,6 +25,6 @@ export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     }
 
     public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
-        return !wizardContext.appLocation ? { promptSteps: [new EnterAppLocationStep()] } : undefined;
+        return wizardContext.appLocation === undefined ? { promptSteps: [new EnterAppLocationStep()] } : undefined;
     }
 }
