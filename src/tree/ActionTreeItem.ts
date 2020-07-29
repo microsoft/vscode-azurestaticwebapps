@@ -8,6 +8,7 @@ import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunRespons
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { Conclusion, Status } from '../gitHubTypings';
+import { ensureConclusion, ensureStatus } from '../utils/actionUtils';
 import { getRepoFullname } from '../utils/gitHubUtils';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
@@ -26,7 +27,7 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(<Status>this.data.status, <Conclusion>this.data.conclusion);
+        return treeUtils.getActionIconPath(this._status, this._conclusion);
     }
 
     public get id(): string {
@@ -43,6 +44,14 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
 
     public get description(): string {
         return this.data.event;
+    }
+
+    private get _status(): Status {
+        return ensureStatus(this.data.status);
+    }
+
+    private get _conclusion(): Conclusion {
+        return ensureConclusion(this.data.conclusion);
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
