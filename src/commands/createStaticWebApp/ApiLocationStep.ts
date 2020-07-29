@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep, IWizardOptions } from "vscode-azureextensionui";
-import { defaultApiLocation, enterInputQuickPickItem } from "../../constants";
+import { defaultApiLocation } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { getGitTreeQuickPicks } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
@@ -15,9 +15,8 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('apiLocation', "Select the location of your Azure Functions code");
-        (await ext.ui.showQuickPick(getGitTreeQuickPicks(wizardContext, true), { placeHolder, suppressPersistence: true })).data.trim();
+        wizardContext.apiLocation = (await ext.ui.showQuickPick(getGitTreeQuickPicks(wizardContext, true), { placeHolder, suppressPersistence: true })).data;
 
-        wizardContext.manuallyEnterApi = wizardContext.apiLocation === enterInputQuickPickItem.data;
         addLocationTelemetry(wizardContext, 'apiLocation', defaultApiLocation);
     }
 
@@ -26,7 +25,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     }
 
     public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
-        return wizardContext.manuallyEnterApi ? { promptSteps: [new EnterApiLocationStep()] } : undefined;
+        return !wizardContext.apiLocation ? { promptSteps: [new EnterApiLocationStep()] } : undefined;
 
     }
 

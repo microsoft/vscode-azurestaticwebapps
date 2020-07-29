@@ -19,6 +19,6 @@ export class EnterAppLocationStep extends AzureWizardPromptStep<IStaticWebAppWiz
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
-        return !!context.manuallyEnterApp;
+        return context.appLocation === undefined;
     }
 }

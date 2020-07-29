@@ -22,13 +22,10 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext 
     newStaticWebAppName?: string;
     newRepoName?: string;
 
-    gitTreeData?: GitTreeData[];
     gitTreeDataTask?: Promise<GitTreeData[]>;
 
     appLocation?: string;
-    manuallyEnterApp?: boolean;
     apiLocation?: string;
-    manuallyEnterApi?: boolean;
     appArtifactLocation?: string;
 
     // created when the wizard is done executing
