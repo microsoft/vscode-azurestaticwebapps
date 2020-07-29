@@ -3,16 +3,21 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { UsersGetAuthenticatedResponseData } from '@octokit/types';
+import { Octokit } from '@octokit/rest';
+import { GitGetTreeResponseData, OctokitResponse, ReposGetBranchResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
 // tslint:disable-next-line:no-require-imports
 import gitUrlParse = require('git-url-parse');
 import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
 import { Response } from 'request';
 import * as git from 'simple-git/promise';
-import * as vscode from 'vscode';
+import { authentication, QuickPickItem } from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
+import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { githubApiEndpoint } from '../constants';
-import { OrgForAuthenticatedUserData } from '../gitHubTypings';
+import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
+import { localize } from './localize';
+import { nonNullProp } from './nonNull';
 import { requestUtils } from './requestUtils';
 import { getSingleRootFsPath } from './workspaceUtils';
 
@@ -88,7 +93,7 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
     } while (requestOptions.nextLink && startTime + timeoutMs > Date.now());
 
     cache.picks = cache.picks.concat(createQuickPickFromJsons(gitHubQuickPicks, labelName));
-    cache.picks.sort((a: vscode.QuickPickItem, b: vscode.QuickPickItem) => a.label.localeCompare(b.label));
+    cache.picks.sort((a: QuickPickItem, b: QuickPickItem) => a.label.localeCompare(b.label));
 
     if (requestOptions.nextLink) {
         return (<IAzureQuickPickItem<T | undefined>[]>[{
@@ -111,7 +116,7 @@ export async function createGitHubRequestOptions(gitHubAccessToken: string, url:
 
 export async function getGitHubAccessToken(): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-    return (await vscode.authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
+    return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
 }
 
 export async function tryGetRemote(): Promise<string | undefined> {
@@ -166,4 +171,35 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
+}
+
+export async function getGitHubTree(repositoryUrl: string, branch: string): Promise<GitTreeData[]> {
+    const octokitClient: Octokit = await createOctokitClient();
+    const { owner, name } = getRepoFullname(repositoryUrl);
+    const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch({ owner, repo: name, branch });
+    const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree({ owner, repo: name, tree_sha: branchRes.data.commit.sha, recursive: 'true' });
+
+    // sort descending by the depth of subfolder
+    return getTreeRes.data.tree.filter(file => file.type === 'tree').sort((f1, f2) => {
+        // tslint:disable-next-line: strict-boolean-expressions
+        function getFolderDepth(path: string): number { return (path.match(/\//g) || []).length; }
+        return getFolderDepth(f1.path) - getFolderDepth(f2.path);
+    });
+}
+
+export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardContext, isSkippable?: boolean): Promise<IAzureQuickPickItem<string | undefined>[]> {
+    const gitTreeData: GitTreeData[] = await nonNullProp(wizardContext, 'gitTreeDataTask');
+
+    const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => { return { label: d.path, data: d.path }; });
+    // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
+    quickPicks.unshift({ label: '/', data: '/' });
+    const enterInputQuickPickItem: IAzureQuickPickItem = { label: localize('input', '$(keyboard) Manually enter location'), data: undefined };
+    quickPicks.push(enterInputQuickPickItem);
+
+    const skipForNowQuickPickItem: IAzureQuickPickItem<string> = { label: localize('skipForNow', '$(clock) Skip for now'), data: '' };
+    if (isSkippable) {
+        quickPicks.push(skipForNowQuickPickItem);
+    }
+
+    return quickPicks;
 }
