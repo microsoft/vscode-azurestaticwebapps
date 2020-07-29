@@ -6,9 +6,9 @@
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, getRepoFullname, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from '../../utils/gitHubUtils';
+import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, getGitHubTree, getRepoFullname, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
-import { nonNullProp } from '../../utils/nonNull';
+import { nonNullProp, nonNullValueAndProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
@@ -23,6 +23,8 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
         } while (!branchData);
 
         context.branchData = branchData;
+
+        context.gitTreeDataTask = getGitHubTree(nonNullProp(context, 'repoHtmlUrl'), nonNullValueAndProp(context.branchData, 'name'));
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
