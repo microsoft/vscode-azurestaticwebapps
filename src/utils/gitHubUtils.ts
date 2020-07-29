@@ -178,15 +178,12 @@ export async function getGitHubTree(repositoryUrl: string, branch: string): Prom
     const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch({ owner, repo: name, branch });
     const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree({ owner, repo: name, tree_sha: branchRes.data.commit.sha, recursive: 'true' });
 
+    // sort descending by the depth of subfolder
     return getTreeRes.data.tree.filter(file => file.type === 'tree').sort((f1, f2) => {
-        // sort descending by the depth of subfolder
-        return getFolderDepth(f1) - getFolderDepth(f2);
+        // tslint:disable-next-line: strict-boolean-expressions
+        function getFolderDepth(path: string): number { return (path.match(/\//g) || []).length; }
+        return getFolderDepth(f1.path) - getFolderDepth(f2.path);
     });
-}
-
-function getFolderDepth(gitTreeData: GitTreeData): number {
-    // tslint:disable-next-line: strict-boolean-expressions
-    return (gitTreeData.path.match(/\//g) || []).length;
 }
 
 export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardContext, isSkippable?: boolean): Promise<IAzureQuickPickItem<string>[]> {
