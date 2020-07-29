@@ -24,8 +24,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
 
         context.branchData = branchData;
 
-        // load the gitTree data now as it is used for the next two steps
-        context.gitTreeData = await getGitHubTree(nonNullProp(context, 'repoHtmlUrl'), nonNullValueAndProp(context.branchData, 'name'));
+        context.gitTreeDataTask = getGitHubTree(nonNullProp(context, 'repoHtmlUrl'), nonNullValueAndProp(context.branchData, 'name'));
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {

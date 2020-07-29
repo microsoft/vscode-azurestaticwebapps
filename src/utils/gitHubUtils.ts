@@ -12,9 +12,11 @@ import { Response } from 'request';
 import * as git from 'simple-git/promise';
 import { authentication, QuickPickItem } from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { enterInputQuickPickItem, githubApiEndpoint, skipForNowQuickPickItem } from '../constants';
 import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
+import { nonNullProp } from './nonNull';
 import { requestUtils } from './requestUtils';
 import { getSingleRootFsPath } from './workspaceUtils';
 
@@ -178,29 +180,27 @@ export async function getGitHubTree(repositoryUrl: string, branch: string): Prom
 
     return getTreeRes.data.tree.filter(file => file.type === 'tree').sort((f1, f2) => {
         // sort descending by the depth of subfolder
-        // tslint:disable-next-line: strict-boolean-expressions
-        return (f1.path.match(/\//g) || []).length > (f2.path.match(/\//g) || []).length ? 1 : -1;
+        return getFolderDepth(f1) - getFolderDepth(f2);
     });
 }
 
-export async function getGitTreeQuickPicks(gitTreeData: GitTreeData[], subpathSetting: string | undefined, isSkippable?: boolean): Promise<QuickPickItem[]> {
-    const quickPicks: QuickPickItem[] = createQuickPickFromJsons(gitTreeData, 'path');
+function getFolderDepth(gitTreeData: GitTreeData): number {
+    // tslint:disable-next-line: strict-boolean-expressions
+    return (gitTreeData.path.match(/\//g) || []).length;
+}
+
+export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardContext, isSkippable?: boolean): Promise<IAzureQuickPickItem<string>[]> {
+    if (!wizardContext.gitTreeData) {
+        wizardContext.gitTreeData = await wizardContext.gitTreeDataTask;
+    }
+
+    const quickPicks: IAzureQuickPickItem<string>[] = nonNullProp(wizardContext, 'gitTreeData').map((d) => { return { label: d.path, data: d.path }; });
     // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
-    quickPicks.unshift({ label: '/' });
+    quickPicks.unshift({ label: '/', data: '/' });
     quickPicks.push(enterInputQuickPickItem);
 
     if (isSkippable) {
         quickPicks.push(skipForNowQuickPickItem);
-    }
-
-    // if there is a subpath setting, move it to the top so the user can just hit enter
-    if (subpathSetting) {
-        quickPicks.forEach((qp, i) => {
-            if (qp.label === subpathSetting) {
-                quickPicks.splice(i, 1);
-                quickPicks.unshift(qp);
-            }
-        });
     }
 
     return quickPicks;

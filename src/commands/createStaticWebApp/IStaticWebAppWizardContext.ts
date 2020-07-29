@@ -23,6 +23,8 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext 
     newRepoName?: string;
 
     gitTreeData?: GitTreeData[];
+    gitTreeDataTask?: Promise<GitTreeData[]>;
+
     appLocation?: string;
     manuallyEnterApp?: boolean;
     apiLocation?: string;
