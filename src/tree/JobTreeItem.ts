@@ -6,11 +6,11 @@
 import { Octokit } from '@octokit/rest';
 import { ActionsGetJobForWorkflowRunResponseData } from '@octokit/types';
 import * as moment from 'moment';
-import * as prettyMs from 'pretty-ms';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { Conclusion, Status } from '../gitHubTypings';
-import { convertConclusionToVerb, convertStatusToVerb, getRepoFullname } from '../utils/gitHubUtils';
+import { convertConclusionToVerb, convertStatusToVerb, ensureConclusion, ensureStatus } from '../utils/actionUtils';
+import { getRepoFullname } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { treeUtils } from "../utils/treeUtils";
 import { ActionTreeItem } from './ActionTreeItem';
@@ -30,7 +30,7 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(this.status, this.conclusion);
+        return treeUtils.getActionIconPath(this._status, this._conclusion);
     }
 
     public get id(): string {
@@ -47,35 +47,26 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
 
     public get description(): string {
         if (this.data.conclusion !== null) {
-            const elapsedMs: number = this.completedDate.getTime() - this.startedDate.getTime();
-            return `${convertConclusionToVerb(this.conclusion)} ${moment(this.completedDate).fromNow()} in ${prettyMs(elapsedMs)}`;
+            return localize('conclusionDescription', '{0} {1}', convertConclusionToVerb(this._conclusion), moment(this._completedDate).fromNow());
         } else {
-            return `${convertStatusToVerb(this.status)} ${moment(this.startedDate).fromNow()}`;
+            return localize('statusDescription', '{0} {1}', convertStatusToVerb(this._status), moment(this.startedDate).fromNow());
         }
     }
 
-    private get startedDate(): Date {
+    public get startedDate(): Date {
         return new Date(this.data.started_at);
     }
 
-    private get completedDate(): Date {
+    private get _completedDate(): Date {
         return new Date(this.data.completed_at);
     }
 
-    private get status(): Status {
-        if (this.data.status in Status) {
-            return <Status>this.data.conclusion;
-        } else {
-            throw new Error(localize('statusNotRecognized', 'Status not recognized.'));
-        }
+    private get _status(): Status {
+        return ensureStatus(this.data.status);
     }
 
-    private get conclusion(): Conclusion {
-        if (this.data.conclusion in Conclusion) {
-            return <Conclusion>this.data.conclusion;
-        } else {
-            throw new Error(localize('conclusionNotRecognized', 'Conclusion not recognized.'));
-        }
+    private get _conclusion(): Conclusion {
+        return ensureConclusion(this.data.conclusion);
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
@@ -98,6 +89,6 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
     }
 
     public compareChildrenImpl(ti1: StepTreeItem, ti2: StepTreeItem): number {
-        return ti1.data.number < ti2.data.number ? -1 : 1;
+        return ti1.data.number - ti2.data.number;
     }
 }

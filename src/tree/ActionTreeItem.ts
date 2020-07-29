@@ -68,4 +68,9 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
         const response: OctokitResponse<ActionsGetWorkflowRunResponseData> = await octokitClient.actions.getWorkflowRun({ owner: owner, repo: name, run_id: this.data.id });
         this.data = response.data;
     }
+
+    public compareChildrenImpl(ti1: JobTreeItem, ti2: JobTreeItem): number {
+        // sort by the jobs that started first
+        return ti1.startedDate.getTime() - ti2.startedDate.getTime();
+    }
 }

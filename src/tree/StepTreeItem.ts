@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as moment from 'moment';
-import * as prettyMs from 'pretty-ms';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { ActionWorkflowStepData, Conclusion, Status } from '../gitHubTypings';
-import { convertConclusionToVerb, convertStatusToVerb } from '../utils/gitHubUtils';
+import { convertConclusionToVerb, convertStatusToVerb, ensureConclusion, ensureStatus } from '../utils/actionUtils';
 import { localize } from '../utils/localize';
 import { treeUtils } from "../utils/treeUtils";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
@@ -26,11 +25,11 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(this.status, this.conclusion);
+        return treeUtils.getActionIconPath(this._status, this._conclusion);
     }
 
     public get id(): string {
-        return `${this.parent.id}/${this.data.name}`;
+        return this.data.number.toString();
     }
 
     public get name(): string {
@@ -43,33 +42,26 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
 
     public get description(): string {
         if (this.data.conclusion !== null) {
-            const elapsedMs: number = this.completedDate.getTime() - this.startedDate.getTime();
-            return `${convertConclusionToVerb(this.conclusion)} in ${prettyMs(elapsedMs)}`;
+            return localize('conclusionDescription', '{0} {1}', convertConclusionToVerb(this._conclusion), moment(this._completedDate).fromNow());
         } else {
-            return `${convertStatusToVerb(this.status)} ${this.startedDate.getTime() === 0 ? 'now' : moment(this.startedDate).fromNow()}`;
+            const nowStr: string = localize('now', 'now');
+            return localize('statusDescription', '{0} {1}', convertStatusToVerb(this._status), this._startedDate.getTime() === 0 ? nowStr : moment(this._startedDate).fromNow());
         }
     }
 
-    private get startedDate(): Date {
+    private get _startedDate(): Date {
         return new Date(this.data.started_at);
     }
 
-    private get completedDate(): Date {
+    private get _completedDate(): Date {
         return new Date(this.data.completed_at);
     }
-    private get status(): Status {
-        if (this.data.status in Status) {
-            return <Status>this.data.conclusion;
-        } else {
-            throw new Error(localize('statusNotRecognized', 'Status not recognized.'));
-        }
+
+    private get _status(): Status {
+        return ensureStatus(this.data.status);
     }
 
-    private get conclusion(): Conclusion {
-        if (this.data.conclusion in Conclusion) {
-            return <Conclusion>this.data.conclusion;
-        } else {
-            throw new Error(localize('conclusionNotRecognized', 'Conclusion not recognized.'));
-        }
+    private get _conclusion(): Conclusion {
+        return ensureConclusion(this.data.conclusion);
     }
 }

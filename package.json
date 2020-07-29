@@ -431,7 +431,6 @@
         "git-url-parse": "^11.1.2",
         "moment": "^2.24.0",
         "ms-rest": "^2.5.3",
-        "pretty-ms": "^7.0.0",
         "request": "^2.88.2",
         "request-promise": "^4.2.5",
         "simple-git": "^1.132.0",

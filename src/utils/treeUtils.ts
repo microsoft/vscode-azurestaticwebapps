@@ -9,10 +9,6 @@ import { ext } from '../extensionVariables';
 import { Conclusion, Status } from '../gitHubTypings';
 
 export namespace treeUtils {
-    export function getActionIconPath(status: Status, conclusion: Conclusion | null): TreeItemIconPath {
-        return conclusion !== null ? getThemedIconPath(path.join('conclusions', conclusion)) : getThemedIconPath(path.join('statuses', status));
-    }
-
     export function getIconPath(iconName: string): TreeItemIconPath {
         return path.join(getResourcesPath(), `${iconName}.svg`);
     }
@@ -26,5 +22,9 @@ export namespace treeUtils {
 
     function getResourcesPath(): string {
         return ext.context.asAbsolutePath('resources');
+    }
+
+    export function getActionIconPath(status: Status, conclusion: Conclusion | null): TreeItemIconPath {
+        return conclusion !== null ? getThemedIconPath(path.join('conclusions', conclusion)) : getThemedIconPath(path.join('statuses', status));
     }
 }
