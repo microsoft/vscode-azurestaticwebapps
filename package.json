@@ -408,7 +408,7 @@
         "request": "^2.88.2",
         "request-promise": "^4.2.5",
         "simple-git": "^1.132.0",
-        "vscode-azureappservice": "^0.61.0",
+        "vscode-azureappservice": "^0.64.1",
         "vscode-azureextensionui": "^0.33.4",
         "vscode-nls": "^4.1.1"
     },
