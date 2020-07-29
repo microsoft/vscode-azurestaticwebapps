@@ -90,6 +90,14 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return this.data.properties.buildId === 'default';
     }
 
+    public get repositoryUrl(): string {
+        return this.parent.repositoryUrl;
+    }
+
+    public get branch(): string {
+        return this.data.properties.sourceBranch;
+    }
+
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtParentTreeItem[]> {
         return [this.actionsTreeItem, this.appSettingsTreeItem, this.functionsTreeItem];
     }

@@ -48,6 +48,7 @@
         "onCommand:staticWebApps.openGitHubRepo",
         "onCommand:staticWebApps.staticWebApps.action.rerun",
         "onCommand:staticWebApps.staticWebApps.action.cancel",
+        "onCommand:staticWebApps.openYAMLConfigFile",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -185,6 +186,11 @@
                 "command": "staticWebApps.openGitHubRepo",
                 "title": "%staticWebApps.openGitHubRepo%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.openYAMLConfigFile",
+                "title": "%staticWebApps.openYAMLConfigFile%",
+                "category": "Azure Static Web Apps"
             }
         ],
         "viewsContainers": {
@@ -269,14 +275,19 @@
                     "group": "1@2"
                 },
                 {
+                    "command": "staticWebApps.openYAMLConfigFile",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
+                    "group": "3@1"
+                },
+                {
                     "command": "staticWebApps.deleteStaticWebApp",
                     "when": "view == staticWebApps && viewItem == azureStaticWebApp",
-                    "group": "3@1"
+                    "group": "3@2"
                 },
                 {
                     "command": "staticWebApps.deleteEnvironment",
                     "when": "view == staticWebApps && viewItem == azureStaticEnvironment",
-                    "group": "3@1"
+                    "group": "3@2"
                 },
                 {
                     "command": "staticWebApps.viewProperties",
