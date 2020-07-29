@@ -39,9 +39,8 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
     }
 
     newName = await ext.ui.showInputBox({
-        value: newName, prompt: localize('enterHttpFuncName', 'Provide a unique HTTP Function name for your API'), validateInput: async (value) => {
-            return await isNameAvailable(folderPath, value) ? undefined : localize('httpFuncNameNotAvailable', 'The HTTP Function name "{0}" already exists in your API.', value);
-        }
+        value: newName, prompt: localize('enterHttpFuncName', 'Provide a unique HTTP Function name for your API'),
+        validateInput: async value => await validateFunctionName(folderPath, value)
     });
 
     await funcApi.createFunction({
@@ -63,6 +62,18 @@ function generateSuffixedName(preferredName: string, i: number): string {
 
 async function isNameAvailable(folderPath: string, newName: string): Promise<boolean> {
     return !(await fse.pathExists(path.join(folderPath, newName)));
+}
+
+async function validateFunctionName(folderPath: string, newName: string | undefined): Promise<string | undefined> {
+    if (!newName) {
+        return localize('emptyTemplateNameError', 'The function name cannot be empty.');
+    } else if (!/^[a-z][a-z\d_\-]*$/i.test(newName)) {
+        return localize('functionNameInvalidMessage', 'Function name must start with a letter and can only contain letters, digits, "_" and "-".');
+    } else if (!await isNameAvailable(folderPath, newName)) {
+        return localize('httpFuncNameNotAvailable', 'The HTTP Function name "{0}" already exists in your API.', newName);
+    } else {
+        return undefined;
+    }
 }
 
 async function getFunctionsApi(context: IActionContext): Promise<AzureFunctionsExtensionApi> {

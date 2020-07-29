@@ -1,6 +1,7 @@
 {
     "staticWebApps.createStaticWebApp": "Create Static Web App...",
     "staticWebApps.deleteStaticWebApp": "Delete...",
+    "staticWebApps.deleteEnvironment": "Delete Environment...",
     "staticWebApps.description": "An Azure Static Web Apps (Preview) extension for Visual Studio Code.",
     "staticWebApps.enableOutputTimestamps": "Prepends each line displayed in the output channel with a timestamp.",
     "staticWebApps.loadMore": "Load More",
@@ -26,5 +27,6 @@
     "staticWebApps.apiSubpath": "The default value for the location of your Azure Functions code",
     "staticWebApps.appArtifactSubpath": "The default value for the location of your build output relative to your application code location",
     "staticWebApps.action.rerun": "Rerun Action...",
-    "staticWebApps.action.cancel": "Cancel Action..."
+    "staticWebApps.action.cancel": "Cancel Action...",
+    "staticWebApps.showDocumentation": "Documentation"
 }

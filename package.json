@@ -30,6 +30,7 @@
     "activationEvents": [
         "onCommand:staticWebApps.createStaticWebApp",
         "onCommand:staticWebApps.deleteStaticWebApp",
+        "onCommand:staticWebApps.deleteEnvironment",
         "onCommand:staticWebApps.loadMore",
         "onCommand:staticWebApps.openInPortal",
         "onCommand:staticWebApps.refresh",
@@ -62,8 +63,22 @@
                 }
             },
             {
+                "command": "staticWebApps.showDocumentation",
+                "title": "%staticWebApps.showDocumentation%",
+                "category": "Azure Static Web Apps",
+                "icon": {
+                    "light": "resources/light/book.svg",
+                    "dark": "resources/dark/book.svg"
+                }
+            },
+            {
                 "command": "staticWebApps.deleteStaticWebApp",
                 "title": "%staticWebApps.deleteStaticWebApp%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.deleteEnvironment",
+                "title": "%staticWebApps.deleteEnvironment%",
                 "category": "Azure Static Web Apps"
             },
             {
@@ -205,6 +220,11 @@
                     "command": "staticWebApps.refresh",
                     "when": "view == staticWebApps",
                     "group": "navigation@3"
+                },
+                {
+                    "command": "staticWebApps.showDocumentation",
+                    "when": "view == staticWebApps",
+                    "group": "navigation@4"
                 }
             ],
             "view/item/context": [
@@ -229,11 +249,6 @@
                     "group": "9@2"
                 },
                 {
-                    "command": "staticWebApps.deleteStaticWebApp",
-                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
-                    "group": "3@1"
-                },
-                {
                     "command": "staticWebApps.browse",
                     "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
                     "group": "1@1"
@@ -252,6 +267,16 @@
                     "command": "staticWebApps.cloneRepo",
                     "when": "view == staticWebApps && viewItem == azureStaticWebApp",
                     "group": "1@2"
+                },
+                {
+                    "command": "staticWebApps.deleteStaticWebApp",
+                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
+                    "group": "3@1"
+                },
+                {
+                    "command": "staticWebApps.deleteEnvironment",
+                    "when": "view == staticWebApps && viewItem == azureStaticEnvironment",
+                    "group": "3@1"
                 },
                 {
                     "command": "staticWebApps.viewProperties",

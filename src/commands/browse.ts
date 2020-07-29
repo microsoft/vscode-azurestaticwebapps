@@ -5,11 +5,11 @@
 
 import { IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
+import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
 
-export async function browse(context: IActionContext, node?: StaticWebAppTreeItem): Promise<void> {
+export async function browse(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
     await node.browse();

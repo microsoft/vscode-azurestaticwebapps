@@ -3,12 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IncomingMessage } from 'ms-rest';
-import * as vscode from 'vscode';
+import { ProgressLocation, window } from "vscode";
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
-import { delay } from '../utils/delay';
 import { getRepoFullname } from '../utils/gitHubUtils';
 import { localize } from "../utils/localize";
 import { openUrl } from '../utils/openUrl';
@@ -34,15 +32,6 @@ export type StaticWebApp = {
     };
     // tslint:disable-next-line:no-reserved-keywords
     type: string;
-};
-
-type AzureAsyncOperationResponse = {
-    id?: string;
-    status: string;
-    error?: {
-        code: string;
-        message: string;
-    };
 };
 
 export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
@@ -114,47 +103,17 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}?api-version=2019-12-01-preview`, this.root, 'DELETE');
         const deleting: string = localize('deleting', 'Deleting static web app "{0}"...', this.name);
 
-        await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
+        await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
-            await this.pollAzureAsyncOperation(requestOptions);
+            await requestUtils.pollAzureAsyncOperation(requestOptions, this.root.credentials);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
-            vscode.window.showInformationMessage(deleteSucceeded);
+            window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);
         });
     }
 
     public async browse(): Promise<void> {
         await openUrl(`https://${this.data.properties.defaultHostname}`);
-    }
-
-    //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
-    private async pollAzureAsyncOperation(asyncOperationRequest: requestUtils.Request): Promise<void> {
-        asyncOperationRequest.resolveWithFullResponse = true;
-        const asyncAzureRes: IncomingMessage = await requestUtils.sendRequest(asyncOperationRequest);
-        const monitorStatusUrl: string = <string>asyncAzureRes.headers['azure-asyncoperation'];
-        // the url already includes resourceManagerEndpointUrl, so just use getDefaultRequest instead
-        const monitorStatusReq: requestUtils.Request = await requestUtils.getDefaultRequest(monitorStatusUrl, this.root.credentials);
-
-        const timeoutInSeconds: number = 60;
-        const maxTime: number = Date.now() + timeoutInSeconds * 1000;
-        while (Date.now() < maxTime) {
-            const statusJsonString: string = await requestUtils.sendRequest(monitorStatusReq);
-            let operationResponse: AzureAsyncOperationResponse | undefined;
-            try {
-                operationResponse = <AzureAsyncOperationResponse>JSON.parse(statusJsonString);
-            } catch {
-                // swallow JSON parsing errors
-            }
-
-            if (operationResponse?.status !== 'InProgress') {
-                if (operationResponse?.error) {
-                    throw operationResponse.error;
-                }
-                return;
-            }
-
-            await delay(2000);
-        }
     }
 }
