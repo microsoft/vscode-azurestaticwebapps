@@ -7,10 +7,8 @@ import { Octokit } from '@octokit/rest';
 import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunResponseData, OctokitResponse } from '@octokit/types';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { Conclusion, Status } from '../gitHubTypings';
-import { ensureConclusion, ensureStatus } from '../utils/actionUtils';
+import { getActionIconPath } from '../utils/actionUtils';
 import { getRepoFullname } from '../utils/gitHubUtils';
-import { treeUtils } from "../utils/treeUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
@@ -27,7 +25,7 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(this._status, this._conclusion);
+        return getActionIconPath(this.data);
     }
 
     public get id(): string {
@@ -44,14 +42,6 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
 
     public get description(): string {
         return this.data.event;
-    }
-
-    private get _status(): Status {
-        return ensureStatus(this.data.status);
-    }
-
-    private get _conclusion(): Conclusion {
-        return ensureConclusion(this.data.conclusion);
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {

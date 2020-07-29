@@ -6,7 +6,6 @@
 import * as path from 'path';
 import { TreeItemIconPath } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
-import { Conclusion, Status } from '../gitHubTypings';
 
 export namespace treeUtils {
     export function getIconPath(iconName: string): TreeItemIconPath {
@@ -22,9 +21,5 @@ export namespace treeUtils {
 
     function getResourcesPath(): string {
         return ext.context.asAbsolutePath('resources');
-    }
-
-    export function getActionIconPath(status: Status, conclusion: Conclusion | null): TreeItemIconPath {
-        return conclusion !== null ? getThemedIconPath(path.join('conclusions', conclusion)) : getThemedIconPath(path.join('statuses', status));
     }
 }

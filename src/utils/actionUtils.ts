@@ -3,18 +3,38 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Conclusion, Status } from "../gitHubTypings";
+import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData } from '@octokit/types';
+import * as moment from 'moment';
+import * as path from 'path';
+import { TreeItemIconPath } from 'vscode-azureextensionui';
+import { ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
 import { localize } from "./localize";
+import { treeUtils } from "./treeUtils";
 
-export function ensureConclusion(conclusion: string): Conclusion {
-    if (Object.values(Conclusion).includes(<Conclusion>conclusion)) {
-        return <Conclusion>conclusion;
+export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData | ActionsGetWorkflowRunResponseData): TreeItemIconPath {
+    return data.conclusion !== null ?
+        treeUtils.getThemedIconPath(path.join('conclusions', ensureConclusion(data))) :
+        treeUtils.getThemedIconPath(path.join('statuses', ensureStatus(data)));
+}
+
+export function getActionDescription(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData): string {
+    if (data.conclusion !== null) {
+        return localize('conclusionDescription', '{0} {1}', convertConclusionToVerb(ensureConclusion(data)), moment(data.completed_at).fromNow());
     } else {
-        throw new RangeError(localize('invalidConclusion', 'Invalid conclusion "{0}".', conclusion));
+        const nowStr: string = localize('now', 'now');
+        return localize('statusDescription', '{0} {1}', convertStatusToVerb(ensureStatus(data)), new Date(data.started_at).getTime() === 0 ? nowStr : moment(data.started_at).fromNow());
     }
 }
 
-export function convertConclusionToVerb(conclusion: Conclusion): string {
+function ensureConclusion(data: { conclusion: string }): Conclusion {
+    if (Object.values(Conclusion).includes(<Conclusion>data.conclusion)) {
+        return <Conclusion>data.conclusion;
+    } else {
+        throw new RangeError(localize('invalidConclusion', 'Invalid conclusion "{0}".', data.conclusion));
+    }
+}
+
+function convertConclusionToVerb(conclusion: Conclusion): string {
     switch (conclusion) {
         case Conclusion.Success:
             return localize('succeeded', 'succeeded');
@@ -29,15 +49,15 @@ export function convertConclusionToVerb(conclusion: Conclusion): string {
     }
 }
 
-export function ensureStatus(status: string): Status {
-    if (Object.values(Status).includes(<Status>status)) {
-        return <Status>status;
+function ensureStatus(data: { status: string }): Status {
+    if (Object.values(Status).includes(<Status>data.status)) {
+        return <Status>data.status;
     } else {
-        throw new RangeError(localize('invalidStatus', 'Invalid status "{0}".', status));
+        throw new RangeError(localize('invalidStatus', 'Invalid status "{0}".', data.status));
     }
 }
 
-export function convertStatusToVerb(status: Status): string {
+function convertStatusToVerb(status: Status): string {
     switch (status) {
         case Status.InProgress:
             return localize('started', 'started');

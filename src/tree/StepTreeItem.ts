@@ -3,17 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as moment from 'moment';
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { ActionWorkflowStepData, Conclusion, Status } from '../gitHubTypings';
-import { convertConclusionToVerb, convertStatusToVerb, ensureConclusion, ensureStatus } from '../utils/actionUtils';
-import { localize } from '../utils/localize';
-import { treeUtils } from "../utils/treeUtils";
+import { ActionWorkflowStepData } from '../gitHubTypings';
+import { getActionDescription, getActionIconPath } from '../utils/actionUtils';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
 
 export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeItem {
-
     public static contextValue: string = 'azureStaticStep';
     public readonly contextValue: string = StepTreeItem.contextValue;
     public parent: JobTreeItem;
@@ -25,7 +21,7 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getActionIconPath(this._status, this._conclusion);
+        return getActionIconPath(this.data);
     }
 
     public get id(): string {
@@ -41,27 +37,6 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
     }
 
     public get description(): string {
-        if (this.data.conclusion !== null) {
-            return localize('conclusionDescription', '{0} {1}', convertConclusionToVerb(this._conclusion), moment(this._completedDate).fromNow());
-        } else {
-            const nowStr: string = localize('now', 'now');
-            return localize('statusDescription', '{0} {1}', convertStatusToVerb(this._status), this._startedDate.getTime() === 0 ? nowStr : moment(this._startedDate).fromNow());
-        }
-    }
-
-    private get _startedDate(): Date {
-        return new Date(this.data.started_at);
-    }
-
-    private get _completedDate(): Date {
-        return new Date(this.data.completed_at);
-    }
-
-    private get _status(): Status {
-        return ensureStatus(this.data.status);
-    }
-
-    private get _conclusion(): Conclusion {
-        return ensureConclusion(this.data.conclusion);
+        return getActionDescription(this.data);
     }
 }
