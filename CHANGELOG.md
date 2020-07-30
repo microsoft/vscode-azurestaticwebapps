@@ -8,7 +8,7 @@
     - Rerun and cancel actions from the tree
     - View individual jobs and their statuses
 - Edit configuration file
-- Documentation button on the Azure: Static Web Apps (Preview) ribbon
+- Show documentation from the Azure Static Web Apps (Preview) ribbon
 - `Delete Environment...` context menu on environments
 
 ## 0.2.0 - 2020-06-10
