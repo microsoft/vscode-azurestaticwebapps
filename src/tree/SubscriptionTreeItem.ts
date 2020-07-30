@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
@@ -63,7 +63,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         LocationListStep.addStep(wizardContext, promptSteps);
 
-        const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [new ResourceGroupCreateStep(), new StaticWebAppCreateStep()];
+        const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [
+            new ResourceGroupCreateStep(),
+            new VerifyProvidersStep(['Microsoft.Web']),
+            new StaticWebAppCreateStep()];
 
         const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
             title,
