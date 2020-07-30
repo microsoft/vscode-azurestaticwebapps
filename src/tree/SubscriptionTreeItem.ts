@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
@@ -77,9 +78,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         wizardContext.accessToken = await getGitHubAccessToken();
         wizardContext.repoHtmlUrl = await tryGetRemote();
         const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
-        wizardContext.telemetry.properties.gotRemote = String(gotRemote);
 
         wizardContext.fsPath = getSingleRootFsPath();
+
+        await addWorkspaceTelemetry(wizardContext);
 
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
