@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IncomingMessage } from "ms-rest";
+import { Octokit } from "@octokit/rest";
+import { ActionsListWorkflowRunsForRepoResponseData, OctokitResponse } from "@octokit/types";
 import { ThemeIcon } from "vscode";
 import { AzExtTreeItem, AzureParentTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { githubApiEndpoint } from "../constants";
-import { createGitHubRequestOptions, getGitHubAccessToken, getRepoFullname, gitHubWebResource } from '../utils/gitHubUtils';
+import { createOctokitClient } from "../commands/github/createOctokitClient";
+import { getRepoFullname } from '../utils/gitHubUtils';
 import { localize } from "../utils/localize";
-import { requestUtils } from "../utils/requestUtils";
-import { ActionTreeItem, GitHubAction } from './ActionTreeItem';
+import { ActionTreeItem } from './ActionTreeItem';
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 
 export class ActionsTreeItem extends AzureParentTreeItem {
@@ -44,13 +44,11 @@ export class ActionsTreeItem extends AzureParentTreeItem {
         const { owner, name } = getRepoFullname(this.repositoryUrl);
         const branch: string = this.parent.data.properties.sourceBranch;
 
-        const token: string = await getGitHubAccessToken();
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(token, `${githubApiEndpoint}/repos/${owner}/${name}/actions/runs?branch=${branch}`);
-        const githubResponse: IncomingMessage & { body: string } = await requestUtils.sendRequest(requestOption);
+        const octokitClient: Octokit = await createOctokitClient();
+        const response: OctokitResponse<ActionsListWorkflowRunsForRepoResponseData> = await octokitClient.actions.listWorkflowRunsForRepo({ owner: owner, repo: name, branch: branch });
 
-        const actions: { workflow_runs: GitHubAction[] } = <{ workflow_runs: GitHubAction[] }>JSON.parse(githubResponse.body);
         return await this.createTreeItemsWithErrorHandling(
-            actions.workflow_runs,
+            response.data.workflow_runs,
             'invalidActionTreeItem',
             (act) => new ActionTreeItem(this, act),
             act => act.head_commit.message

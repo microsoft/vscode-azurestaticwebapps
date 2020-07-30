@@ -3,25 +3,30 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep } from "vscode-azureextensionui";
-import { apiSubpathSetting, defaultApiName } from "../../constants";
+import { AzureWizardPromptStep, IWizardOptions } from "vscode-azureextensionui";
+import { defaultApiLocation } from "../../constants";
 import { ext } from "../../extensionVariables";
+import { getGitTreeQuickPicks } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
-import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
+import { EnterApiLocationStep } from "./EnterApiLocationStep";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        wizardContext.apiLocation = (await ext.ui.showInputBox({
-            value: getWorkspaceSetting(apiSubpathSetting, wizardContext.fsPath) || defaultApiName,
-            prompt: localize('apiLocation', "Enter the location of your Azure Functions code (Leave blank for no Azure Functions code)"),
-        })).trim();
-        addLocationTelemetry(wizardContext, 'apiLocation', defaultApiName);
+        const placeHolder: string = localize('apiLocation', "Select the location of your Azure Functions code");
+        wizardContext.apiLocation = (await ext.ui.showQuickPick(getGitTreeQuickPicks(wizardContext, true), { placeHolder, suppressPersistence: true })).data;
+
+        addLocationTelemetry(wizardContext, 'apiLocation', defaultApiLocation);
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
         return !wizardContext.apiLocation;
+    }
+
+    public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
+        return wizardContext.apiLocation === undefined ? { promptSteps: [new EnterApiLocationStep()] } : undefined;
+
     }
 
 }
