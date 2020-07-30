@@ -7,22 +7,25 @@ import * as git from 'simple-git/promise';
 import { workspace } from 'vscode';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export async function addWorkspaceTelemetry(wizardContext: IStaticWebAppWizardContext): Promise<void> {
+export function addWorkspaceTelemetry(wizardContext: IStaticWebAppWizardContext): void {
     try {
         wizardContext.telemetry.properties.isGitInstalled = 'true';
 
         const localGit: git.SimpleGit = git(wizardContext.fsPath);
-        await localGit.status();
-        wizardContext.telemetry.properties.isGitProject = 'true';
-    } catch (error) {
-        // tslint:disable: no-unsafe-any
-        if (error.message.indexOf('spawn git ENOENT') >= 0) {
-            wizardContext.telemetry.properties.isGitInstalled = 'false';
-        } else if (error.message.indexOf('fatal: Not a git repository') >= 0) {
-            wizardContext.telemetry.properties.isGitProject = 'false';
-        }
-    } finally {
-        wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
-        wizardContext.telemetry.properties.gotRemote = String(!!wizardContext.repoHtmlUrl);
+
+        // tslint:disable-next-line:no-floating-promises
+        localGit.status().then(() => {
+            wizardContext.telemetry.properties.isGitProject = 'true';
+        }).catch((error) => {
+            // tslint:disable: no-unsafe-any
+            if (error.message.indexOf('spawn git ENOENT') >= 0) {
+                wizardContext.telemetry.properties.isGitInstalled = 'false';
+            } else if (error.message.indexOf('fatal: Not a git repository') >= 0) {
+                wizardContext.telemetry.properties.isGitProject = 'false';
+            }
+        }).finally(() => {
+            wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
+            wizardContext.telemetry.properties.gotRemote = String(!!wizardContext.repoHtmlUrl);
+        });
     }
 }
