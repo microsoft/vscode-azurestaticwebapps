@@ -70,6 +70,10 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         return this.data.properties.repositoryUrl;
     }
 
+    public get branch(): string {
+        return this.data.properties.branch;
+    }
+
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
         const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.id}/builds?api-version=2019-12-01-preview`, this.root);
         const envs: StaticEnvironment[] = (<{ value: StaticEnvironment[] }>JSON.parse(await requestUtils.sendRequest(requestOptions))).value;

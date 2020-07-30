@@ -28,5 +28,6 @@
     "staticWebApps.appArtifactSubpath": "The default value for the location of your build output relative to your application code location",
     "staticWebApps.action.rerun": "Rerun Action...",
     "staticWebApps.action.cancel": "Cancel Action...",
-    "staticWebApps.showDocumentation": "Documentation"
+    "staticWebApps.showDocumentation": "Documentation",
+    "staticWebApps.openYAMLConfigFile": "Edit Configuration..."
 }
