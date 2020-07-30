@@ -29,5 +29,5 @@
     "staticWebApps.action.rerun": "Rerun Action...",
     "staticWebApps.action.cancel": "Cancel Action...",
     "staticWebApps.showDocumentation": "Documentation",
-    "staticWebApps.openYAMLConfigFile": "Edit YAML Configuration File..."
+    "staticWebApps.openYAMLConfigFile": "Edit Configuration..."
 }

@@ -3,12 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, window, workspace } from "vscode";
+import * as fse from 'fs-extra';
+import * as path from 'path';
+import { window, workspace } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
 import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { openUrl } from "../utils/openUrl";
+import { getSingleRootFsPath } from '../utils/workspaceUtils';
 
 export async function openYAMLConfigFile(context: IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
     if (!node) {
@@ -16,16 +19,19 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
     }
 
     const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.data.properties.defaultHostname : node.parent.data.properties.defaultHostname;
-    const ymlFileName: string = `.github/workflows/azure-static-web-apps-${defaultHostname.replace('.azurestaticapps.net', '')}.yml`;
+    const ymlFileName: string = `.github/workflows/azure-static-web-apps-${defaultHostname.split('.')[0]}.yml`;
 
     if (node instanceof EnvironmentTreeItem && node.inWorkspace) {
-        const ymlUri: Uri[] = await workspace.findFiles(ymlFileName);
-        // if we couldn't find it, then try opening it in GitHub
-        if (ymlUri.length > 0) {
-            await window.showTextDocument(await workspace.openTextDocument(ymlUri[0]));
-            return;
+        const fsPath: string | undefined = getSingleRootFsPath();
+        if (fsPath) {
+            const ymlFsPath: string = path.join(fsPath, ymlFileName);
+            // if we couldn't find it, then try opening it in GitHub
+            if (await fse.pathExists(ymlFsPath)) {
+                await window.showTextDocument(await workspace.openTextDocument(ymlFsPath));
+                return;
+            }
         }
     }
 
-    await openUrl(`${node.repositoryUrl}/edit/${node.branch}/.github/workflows/azure-static-web-apps-${defaultHostname.replace('.azurestaticapps.net', '')}.yml`);
+    await openUrl(`${node.repositoryUrl}/edit/${node.branch}/${ymlFileName}`);
 }
