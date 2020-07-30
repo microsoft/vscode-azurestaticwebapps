@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.3.0 - 2020-07-31
+
+### Added
+- Folder structure will be displayed for the app and api location steps when creating static web apps
+- Display GitHub Actions in tree
+    - Rerun and cancel actions from the tree
+    - View individual jobs and their statuses
+- Edit configuration file
+- Documentation button on the Azure: Static Web Apps (Preview) ribbon
+- `Delete Environment...` context menu on environments
+
 ## 0.2.0 - 2020-06-10
 
 ### Added
