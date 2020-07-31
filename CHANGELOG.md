@@ -1,5 +1,19 @@
 # Change Log
 
+## 0.3.0 - 2020-07-31
+
+### Added
+- Folder structure will be displayed for the app and api location steps when creating static web apps
+- Display GitHub Actions under environments
+    - Rerun and cancel actions
+    - View individual jobs and their statuses
+- Edit configuration file
+- Show documentation from the Azure Static Web Apps (Preview) ribbon
+- Delete environments
+
+### Fixed
+- [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/2?closed=1)
+
 ## 0.2.0 - 2020-06-10
 
 ### Added
