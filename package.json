@@ -402,6 +402,7 @@
     "scripts": {
         "vscode:prepublish": "npm run webpack-prod",
         "build": "tsc",
+        "cleanReadme": "gulp cleanReadme",
         "compile": "tsc -watch",
         "package": "vsce package",
         "lint": "tslint --project tsconfig.json -e src/*.d.ts -t verbose",
