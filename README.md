@@ -1,6 +1,10 @@
 # Azure Static Web Apps (Preview) for Visual Studio Code
 
+<!-- region exclude-from-marketplace -->
+
 [![Version](https://vsmarketplacebadge.apphb.com/version/ms-azuretools.vscode-azurestaticwebapps.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/ms-azuretools.vscode-azurestaticwebapps.svg)](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurestaticwebapps) [![Build Status](https://dev.azure.com/ms-azuretools/AzCode/_apis/build/status/vscode-azurestaticwebapps)](https://dev.azure.com/ms-azuretools/AzCode/_build?definitionId=31)
+
+<!-- endregion exclude-from-marketplace -->
 
 Use this extension to quickly create and manage Azure Static Web Apps (Preview) directly from VS Code.
 
@@ -51,6 +55,8 @@ You can add a serverless API to your static web app by creating a HTTP Functions
 
 ![Select Language](resources/readme/select_language.png)
 
+<!-- region exclude-from-marketplace -->
+
 ## Contributing
 
 There are a couple of ways you can contribute to this repo:
@@ -71,6 +77,8 @@ Before we can accept your pull request you will need to sign a **Contribution Li
 ### Code of Conduct
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+<!-- endregion exclude-from-marketplace -->
 
 ## Telemetry
 
