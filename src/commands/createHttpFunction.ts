@@ -6,8 +6,7 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
-import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
+import { IActionContext } from "vscode-azureextensionui";
 import { apiSubpathSetting, defaultApiLocation } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
@@ -48,7 +47,7 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
         functionName: newName,
         suppressCreateProjectPrompt: true,
         templateId: 'HttpTrigger',
-        languageFilter: /^(Java|Type)Script$/i,
+        languageFilter: /Python|C\#|^(Java|Type)Script$/i,
         functionSettings: { authLevel: 'anonymous' }
     });
 }
@@ -61,7 +60,18 @@ function generateSuffixedName(preferredName: string, i: number): string {
 }
 
 async function isNameAvailable(folderPath: string, newName: string): Promise<boolean> {
-    return !(await fse.pathExists(path.join(folderPath, newName)));
+    // if the file or folder doesn't exist, it will throw an error so we have to wrap these in try/catches
+    try {
+        await fse.access(path.join(folderPath, newName));
+    } catch (error) {
+        try {
+            return !(await fse.readdir(folderPath)).find(file => { return file.includes(`${newName}.`); });
+        } catch (error) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 async function validateFunctionName(folderPath: string, newName: string | undefined): Promise<string | undefined> {
