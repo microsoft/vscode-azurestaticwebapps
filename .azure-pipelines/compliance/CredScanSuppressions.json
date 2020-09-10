@@ -1,0 +1,13 @@
+{
+    "tool": "Credential Scanner",
+    "suppressions": [
+        {
+            "folder": "node_modules\\",
+            "_justification": "No need to scan external node modules."
+        },
+        {
+            "file": "node_modules\\@octokit\\plugin-rest-endpoint-methods\\dist-types\\generated\\method-types.d.ts",
+            "_justification": "This should be covered by the above folder suppression - not sure why it isn't."
+        }
+    ]
+}
