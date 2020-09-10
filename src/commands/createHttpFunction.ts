@@ -6,7 +6,8 @@
 import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { IActionContext } from "vscode-azureextensionui";
+import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
+import { AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { apiSubpathSetting, defaultApiLocation } from '../constants';
 import { ext } from '../extensionVariables';
 import { localize } from '../utils/localize';
