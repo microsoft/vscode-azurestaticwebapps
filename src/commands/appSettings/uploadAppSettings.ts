@@ -4,21 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fse from 'fs-extra';
-import { AppSettingsTreeItem } from 'vscode-azureappservice';
+import { AppSettingsTreeItem, confirmOverwriteSettings, ILocalSettingsJson } from 'vscode-azureappservice';
 import { IActionContext } from "vscode-azureextensionui";
 import { localSettingsFileName } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
 import { nonNullProp, nonNullValue } from '../../utils/nonNull';
 import { IStringDictionary } from './AppSettingsClient';
-import { confirmOverwriteSettings } from "./confirmOverwriteSettings";
 import { getLocalSettingsFile } from "./getLocalSettingsFile";
-
-interface ILocalSettingsJson {
-    IsEncrypted?: boolean;
-    Values?: { [key: string]: string };
-    ConnectionStrings?: { [key: string]: string };
-}
 
 // https://github.com/microsoft/vscode-azurestaticwebapps/issues/62
 export async function uploadAppSettings(context: IActionContext, node?: AppSettingsTreeItem): Promise<void> {
