@@ -42,7 +42,7 @@ async function getFunctionsApi(context: IActionContext): Promise<AzureFunctionsE
             await funcExtension.activate();
         }
 
-        return funcExtension.exports.getApi<AzureFunctionsExtensionApi>('^1.1.0');
+        return funcExtension.exports.getApi<AzureFunctionsExtensionApi>('^1.2.0');
     }
 
     await ext.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install' });
