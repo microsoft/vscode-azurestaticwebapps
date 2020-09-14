@@ -14,6 +14,7 @@ export async function deleteEnvironment(context: IActionContext, node?: Environm
     }
 
     if (node.isProduction) {
+        context.errorHandling.suppressReportIssue = true;
         throw new Error(localize('cantDeletePro', 'Cannot delete the production environment directly. Delete the static web app.'));
     }
 

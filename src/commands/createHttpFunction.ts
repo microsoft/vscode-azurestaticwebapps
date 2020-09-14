@@ -17,6 +17,7 @@ import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
 export async function createHttpFunction(context: IActionContext): Promise<void> {
     if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
         const noWorkspaceError: string = localize('noWorkspace', 'This action cannot be completed because there is no workspace opened.  Please open a workspace.');
+        context.errorHandling.suppressReportIssue = true;
         throw new Error(noWorkspaceError);
     }
 
