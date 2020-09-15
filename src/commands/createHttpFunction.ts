@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fse from 'fs-extra';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
@@ -23,58 +22,16 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
 
     const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
 
-    const endpointName: string = 'endpoint';
     const apiLocation: string = getWorkspaceSetting(apiSubpathSetting, vscode.workspace.workspaceFolders[0].uri.fsPath) || defaultApiLocation;
     const folderPath: string = path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, apiLocation);
 
-    const maxTries: number = 100;
-    let count: number = 1;
-    let newName: string = endpointName;
-
-    while (count < maxTries) {
-        newName = generateSuffixedName(endpointName, count);
-        if (await isNameAvailable(folderPath, newName)) {
-            break;
-        }
-        count += 1;
-    }
-
-    newName = await ext.ui.showInputBox({
-        value: newName, prompt: localize('enterHttpFuncName', 'Provide a unique HTTP Function name for your API'),
-        validateInput: async value => await validateFunctionName(folderPath, value)
-    });
-
     await funcApi.createFunction({
         folderPath,
-        functionName: newName,
         suppressCreateProjectPrompt: true,
         templateId: 'HttpTrigger',
-        languageFilter: /^(Java|Type)Script$/i,
+        languageFilter: /Python|C\#|^(Java|Type)Script$/i,
         functionSettings: { authLevel: 'anonymous' }
     });
-}
-
-function generateSuffixedName(preferredName: string, i: number): string {
-    const suffix: string = i.toString();
-
-    const unsuffixedName: string = preferredName;
-    return unsuffixedName + suffix;
-}
-
-async function isNameAvailable(folderPath: string, newName: string): Promise<boolean> {
-    return !(await fse.pathExists(path.join(folderPath, newName)));
-}
-
-async function validateFunctionName(folderPath: string, newName: string | undefined): Promise<string | undefined> {
-    if (!newName) {
-        return localize('emptyTemplateNameError', 'The function name cannot be empty.');
-    } else if (!/^[a-z][a-z\d_\-]*$/i.test(newName)) {
-        return localize('functionNameInvalidMessage', 'Function name must start with a letter and can only contain letters, digits, "_" and "-".');
-    } else if (!await isNameAvailable(folderPath, newName)) {
-        return localize('httpFuncNameNotAvailable', 'The HTTP Function name "{0}" already exists in your API.', newName);
-    } else {
-        return undefined;
-    }
 }
 
 async function getFunctionsApi(context: IActionContext): Promise<AzureFunctionsExtensionApi> {
@@ -86,7 +43,7 @@ async function getFunctionsApi(context: IActionContext): Promise<AzureFunctionsE
             await funcExtension.activate();
         }
 
-        return funcExtension.exports.getApi<AzureFunctionsExtensionApi>('^1.1.0');
+        return funcExtension.exports.getApi<AzureFunctionsExtensionApi>('^1.2.0');
     }
 
     await ext.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install' });
