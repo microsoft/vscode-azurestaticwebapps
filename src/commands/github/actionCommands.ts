@@ -12,7 +12,7 @@ import { requestUtils } from "../../utils/requestUtils";
 
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
     const token: string = await getGitHubAccessToken();
@@ -26,7 +26,7 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
 
 export async function cancelAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
     const token: string = await getGitHubAccessToken();
