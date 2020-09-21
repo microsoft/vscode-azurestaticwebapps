@@ -191,15 +191,21 @@ export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardCon
     const gitTreeData: GitTreeData[] = await nonNullProp(wizardContext, 'gitTreeDataTask');
 
     const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => { return { label: d.path, data: d.path }; });
+
+    // the "skip for now" should appear after the root, so we add that first.
+    // the "skip for now" should appear near the top, so the user can see it.
+    const skipForNowQuickPickItem: IAzureQuickPickItem<string> = {
+      label: localize('skipForNow', '$(clock) Skip for now'),
+      data: '',
+    };
+    if (isSkippable) {
+      quickPicks.unshift(skipForNowQuickPickItem);
+    }
+
     // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
     quickPicks.unshift({ label: '/', data: '/' });
     const enterInputQuickPickItem: IAzureQuickPickItem = { label: localize('input', '$(keyboard) Manually enter location'), data: undefined };
     quickPicks.push(enterInputQuickPickItem);
-
-    const skipForNowQuickPickItem: IAzureQuickPickItem<string> = { label: localize('skipForNow', '$(clock) Skip for now'), data: '' };
-    if (isSkippable) {
-        quickPicks.push(skipForNowQuickPickItem);
-    }
 
     return quickPicks;
 }
