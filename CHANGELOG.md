@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.4.0 - 2020-09-21
+
+### Added
+- Support for Python and C# API endpoints
+
+### Fixed
+- [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/4?closed=1)
+
 ## 0.3.0 - 2020-07-31
 
 ### Added
