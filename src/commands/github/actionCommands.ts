@@ -8,7 +8,7 @@ import { ext } from "../../extensionVariables";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
 import { createGitHubRequestOptions, getGitHubAccessToken, gitHubWebResource } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
-import { requestUtils } from "../../utils/requestUtils";
+import { requestUtils } from "../../utils/pollAzureAsyncOperation";
 
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     if (!node) {

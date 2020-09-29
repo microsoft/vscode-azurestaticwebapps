@@ -6,7 +6,7 @@
 import { AzureWizardPromptStep, IAzureNamingRules } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
-import { requestUtils } from "../../utils/requestUtils";
+import { requestUtils } from "../../utils/pollAzureAsyncOperation";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {

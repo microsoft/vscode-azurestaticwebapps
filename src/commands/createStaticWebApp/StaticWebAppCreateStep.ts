@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { WebSiteManagementModels } from "@azure/arm-appservice";
 import { Progress } from "vscode";
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
-import { StaticWebApp } from "../../tree/StaticWebAppTreeItem";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from "../../utils/nonNull";
-import { requestUtils } from "../../utils/requestUtils";
+import { requestUtils } from "../../utils/pollAzureAsyncOperation";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
@@ -44,7 +44,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
-        wizardContext.staticWebApp = <StaticWebApp>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        wizardContext.staticWebApp = <WebSiteManagementModels.StaticSiteARMResource>JSON.parse(await requestUtils.sendRequest(requestOptions));
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {

@@ -3,7 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { WebSiteManagementModels } from "@azure/arm-appservice";
 import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import { nonNullProp } from "../utils/nonNull";
 import { treeUtils } from "../utils/treeUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 
@@ -11,19 +13,19 @@ export class FunctionTreeItem extends AzureTreeItem {
 
     public static contextValue: string = 'azureStaticFunction';
     public readonly contextValue: string = FunctionTreeItem.contextValue;
-    public data: { id: string; name: string };
+    public data: WebSiteManagementModels.StaticSiteFunctionOverviewARMResource;
 
-    constructor(parent: FunctionsTreeItem, func: { id: string; name: string }) {
+    constructor(parent: FunctionsTreeItem, func: WebSiteManagementModels.StaticSiteFunctionOverviewARMResource) {
         super(parent);
         this.data = func;
     }
 
     public get name(): string {
-        return this.data.name;
+        return nonNullProp(this.data, 'functionName');
     }
 
     public get id(): string {
-        return this.data.id;
+        return nonNullProp(this.data, 'id');
     }
 
     public get label(): string {

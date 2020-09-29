@@ -3,23 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as msRest from '@azure/ms-rest-js';
 import { Octokit } from '@octokit/rest';
 import { GitGetTreeResponseData, OctokitResponse, ReposGetBranchResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
-// tslint:disable-next-line:no-require-imports
-import gitUrlParse = require('git-url-parse');
-import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
+import { HttpMethods, IncomingMessage } from 'ms-rest';
 import { Response } from 'request';
 import * as git from 'simple-git/promise';
 import { authentication, QuickPickItem } from 'vscode';
-import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { createGenericClient, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { githubApiEndpoint } from '../constants';
 import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
 import { localize } from './localize';
 import { nonNullProp } from './nonNull';
-import { requestUtils } from './requestUtils';
 import { getSingleRootFsPath } from './workspaceUtils';
+// tslint:disable-next-line:no-require-imports
+import gitUrlParse = require('git-url-parse');
 
 // tslint:disable-next-line:no-reserved-keywords
 export type gitHubRepoData = { name: string; url: string; html_url: string; clone_url?: string; default_branch?: string };
@@ -107,7 +107,12 @@ export async function getGitHubQuickPicksWithLoadMore<T>(cache: ICachedQuickPick
 }
 
 export async function createGitHubRequestOptions(gitHubAccessToken: string, url: string, method: HttpMethods = 'GET'): Promise<gitHubWebResource> {
-    const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(url, new TokenCredentials(gitHubAccessToken), method);
+    const request: msRest.WebResource = new msRest.WebResource();
+    request.prepare({ method, url });
+    await new msRest.TokenCredentials(gitHubAccessToken).signRequest(request);
+
+    const client: msRest.ServiceClient = createGenericClient();
+    const requestOptions: gitHubWebResource = await client.sendRequest(request);
     requestOptions.headers.Accept = 'application/vnd.github.v3+json';
     requestOptions.resolveWithFullResponse = true;
 

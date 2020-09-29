@@ -10,7 +10,7 @@ import { ext } from '../../extensionVariables';
 import { createGitHubRequestOptions, gitHubRepoData, gitHubWebResource, isUser } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
-import { requestUtils } from '../../utils/requestUtils';
+import { requestUtils } from '../../utils/pollAzureAsyncOperation';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {

@@ -7,7 +7,7 @@
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "engines": {
-        "vscode": "^1.46.0"
+        "vscode": "^1.48.0"
     },
     "repository": {
         "type": "git",
@@ -422,7 +422,7 @@
         "@types/node": "^12.12.53",
         "@types/request": "^2.48.5",
         "@types/request-promise": "4.1.46",
-        "@types/vscode": "1.45.0",
+        "@types/vscode": "1.48.0",
         "glob": "^7.1.6",
         "gulp": "^4.0.2",
         "mocha": "^7.2.0",
@@ -433,13 +433,17 @@
         "tslint-microsoft-contrib": "^6.2.0",
         "typescript": "^3.9.7",
         "vsce": "^1.77.0",
-        "vscode-azureextensiondev": "^0.4.1",
+        "vscode-azureextensiondev": "^0.5.0",
         "vscode-test": "^1.4.0",
         "webpack": "^4.44.1",
         "webpack-cli": "^3.3.12"
     },
     "dependencies": {
+        "@azure/arm-appservice": "^6.0.0",
+        "@azure/ms-rest-js": "^2.0.8",
         "@octokit/rest": "^18.0.3",
+        "azure-arm-resource": "^7.4.0",
+        "azure-arm-website": "^5.7.0",
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
@@ -447,8 +451,8 @@
         "request": "^2.88.2",
         "request-promise": "^4.2.6",
         "simple-git": "^1.132.0",
-        "vscode-azureappservice": "^0.64.1",
-        "vscode-azureextensionui": "^0.33.9",
+        "vscode-azureappservice": "^0.65.0",
+        "vscode-azureextensionui": "^0.35.1",
         "vscode-nls": "^4.1.1"
     },
     "extensionDependencies": [

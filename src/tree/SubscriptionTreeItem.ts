@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
@@ -18,10 +19,9 @@ import { apiSubpathSetting, appArtifactSubpathSetting, appSubpathSetting } from 
 import { getGitHubAccessToken, tryGetRemote } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
-import { requestUtils } from '../utils/requestUtils';
 import { updateWorkspaceSetting } from '../utils/settingsUtils';
 import { getSingleRootFsPath } from '../utils/workspaceUtils';
-import { StaticWebApp, StaticWebAppTreeItem } from './StaticWebAppTreeItem';
+import { StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public readonly childTypeLabel: string = localize('staticWebApp', 'Static Web App');
@@ -33,8 +33,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean): Promise<AzExtTreeItem[]> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`subscriptions/${this.root.subscriptionId}/providers/Microsoft.Web/staticSites?api-version=2019-12-01-preview`, this.root);
-        const staticWebApps: StaticWebApp[] = (<{ value: StaticWebApp[] }>JSON.parse(await requestUtils.sendRequest(requestOptions))).value;
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const staticWebApps: WebSiteManagementModels.StaticSitesListResponse = await client.staticSites.list();
 
         return await this.createTreeItemsWithErrorHandling(
             staticWebApps,
@@ -46,7 +46,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     }
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
-        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), ...context, ...this.root };
+        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client: createAzureClient(this.root, WebSiteManagementClient), ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new StaticWebAppNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
 

@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { WebSiteManagementClient } from '@azure/arm-appservice';
 import { IAppSettingsClient } from 'vscode-azureappservice';
-import { ISubscriptionContext } from 'vscode-azureextensionui';
+import { createAzureClient, ISubscriptionContext } from 'vscode-azureextensionui';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
-import { requestUtils } from '../../utils/requestUtils';
 
 export class AppSettingsClient implements IAppSettingsClient {
 
@@ -27,15 +27,13 @@ export class AppSettingsClient implements IAppSettingsClient {
     }
 
     public async listApplicationSettings(): Promise<IStringDictionary> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.swaId}/listFunctionAppSettings?api-version=2019-12-01-preview`, this.root, 'POST');
-        return <IStringDictionary>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        return client.staticSites.listStaticSiteFunctionAppSettings(this);
     }
 
     public async updateApplicationSettings(appSettings: IStringDictionary): Promise<IStringDictionary> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.swaId}/config/functionappsettings?api-version=2019-12-01-preview`, this.root, 'PUT');
-        requestOptions.headers['Content-Type'] = 'application/json';
-        requestOptions.body = JSON.stringify({ properties: appSettings.properties });
-        return <IStringDictionary>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        return <IStringDictionary>client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this);
     }
 }
 
