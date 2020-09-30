@@ -14,7 +14,6 @@ import { createOctokitClient } from '../github/createOctokitClient';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 type ReposListBranchesParameters = RestEndpointMethodTypes['repos']['listBranches']['parameters'];
-type ReposListBranchesResponse = RestEndpointMethodTypes['repos']['listBranches']['response'];
 
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
