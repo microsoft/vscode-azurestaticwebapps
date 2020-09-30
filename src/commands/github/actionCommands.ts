@@ -13,7 +13,6 @@ import { createOctokitClient } from "./createOctokitClient";
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValue, { ...context, suppressCreatePick: true });
-
     }
 
     const rerunRunning: string = localize('rerunRunning', 'Rerun for action "{0}" has started.', node.data.id);

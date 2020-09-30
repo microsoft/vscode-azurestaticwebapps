@@ -39,7 +39,6 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
 
     private async getBranchPicks(params: ReposListBranchesParameters, picksCache: ICachedQuickPicks<BranchData>): Promise<IAzureQuickPickItem<BranchData | undefined>[]> {
         const client: Octokit = await createOctokitClient();
-        const callback: (params?: ReposListBranchesParameters) => Promise<ReposListBranchesResponse> = client.repos.listBranches;
-        return await getGitHubQuickPicksWithLoadMore<BranchData, ReposListBranchesParameters>(picksCache, callback, params, 'name');
+        return await getGitHubQuickPicksWithLoadMore<BranchData, ReposListBranchesParameters>(picksCache, client.repos.listBranches, params, 'name');
     }
 }

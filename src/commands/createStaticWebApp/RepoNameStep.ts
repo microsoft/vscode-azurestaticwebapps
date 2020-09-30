@@ -24,8 +24,8 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
     }
 
     protected async isRepoAvailable(context: IStaticWebAppWizardContext, repo: string): Promise<boolean> {
+        const client: Octokit = await createOctokitClient();
         try {
-            const client: Octokit = await createOctokitClient();
             await client.repos.get({ owner: nonNullProp(context, 'orgData').login, repo });
         } catch (err) {
             const parsedError: IParsedError = parseError(err);

@@ -27,7 +27,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         let repoData: RepoData | CreateNewResource | undefined;
         const orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData = nonNullProp(context, 'orgData');
         const picksCache: ICachedQuickPicks<RepoData> = { picks: [] };
-        const params: RepoParameters = isUser(orgData) ? { username: orgData.login, type: 'owner' } : { org: orgData.login };
+        const params: RepoParameters = isUser(orgData) ? { username: orgData.login, type: 'owner' } : { org: orgData.login, type: 'member' };
 
         do {
             repoData = (await ext.ui.showQuickPick(this.getRepoPicks(params, orgData, picksCache), { placeHolder })).data;
