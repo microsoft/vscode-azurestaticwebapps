@@ -3,23 +3,29 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, getGitHubTree, getRepoFullname, gitHubBranchData, gitHubWebResource, ICachedQuickPicks } from '../../utils/gitHubUtils';
+import { BranchData } from '../../gitHubTypings';
+import { getGitHubQuickPicksWithLoadMore, getGitHubTree, getRepoFullname, ICachedQuickPicks } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp, nonNullValueAndProp } from '../../utils/nonNull';
+import { createOctokitClient } from '../github/createOctokitClient';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+
+type ReposListBranchesParameters = RestEndpointMethodTypes['repos']['listBranches']['parameters'];
+type ReposListBranchesResponse = RestEndpointMethodTypes['repos']['listBranches']['response'];
 
 export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        let branchData: gitHubBranchData | undefined;
+        let branchData: BranchData | undefined;
         const { owner, name } = getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
         const placeHolder: string = localize('chooseBranch', 'Choose branch for repository "{0}/{1}"', owner, name);
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/repos/${owner}/${name}/branches`);
-        const picksCache: ICachedQuickPicks<gitHubBranchData> = { picks: [] };
+        const picksCache: ICachedQuickPicks<BranchData> = { picks: [] };
+        const params: ReposListBranchesParameters = { repo: name, owner };
+
         do {
-            branchData = (await ext.ui.showQuickPick(this.getBranchPicks(requestOption, picksCache), { placeHolder })).data;
+            branchData = (await ext.ui.showQuickPick(this.getBranchPicks(params, picksCache), { placeHolder })).data;
         } while (!branchData);
 
         context.branchData = branchData;
@@ -31,7 +37,9 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
         return !context.branchData;
     }
 
-    private async getBranchPicks(requestOption: gitHubWebResource, picksCache: ICachedQuickPicks<gitHubBranchData>): Promise<IAzureQuickPickItem<gitHubBranchData | undefined>[]> {
-        return await getGitHubQuickPicksWithLoadMore<gitHubBranchData>(picksCache, requestOption, 'name');
+    private async getBranchPicks(params: ReposListBranchesParameters, picksCache: ICachedQuickPicks<BranchData>): Promise<IAzureQuickPickItem<BranchData | undefined>[]> {
+        const client: Octokit = await createOctokitClient();
+        const callback: (params?: ReposListBranchesParameters) => Promise<ReposListBranchesResponse> = client.repos.listBranches;
+        return await getGitHubQuickPicksWithLoadMore<BranchData, ReposListBranchesParameters>(picksCache, callback, params, 'name');
     }
 }

@@ -3,30 +3,34 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { OrgForAuthenticatedUserData } from '../../gitHubTypings';
-import { createGitHubRequestOptions, getGitHubQuickPicksWithLoadMore, gitHubRepoData, gitHubWebResource, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
+import { OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
+import { getGitHubQuickPicksWithLoadMore, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
-import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { createOctokitClient } from '../github/createOctokitClient';
+import { CreateNewResource, IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { RepoCreateStep } from './RepoCreateStep';
 import { RepoNameStep } from './RepoNameStep';
 
 const createNewRepo: string = 'createNewRepo';
+type RepoParameters = RestEndpointMethodTypes['repos']['listForUser']['parameters'] | RestEndpointMethodTypes['repos']['listForOrg']['parameters'];
+type RepoResponse = RestEndpointMethodTypes['repos']['listForOrg']['response'] | RestEndpointMethodTypes['repos']['listForUser']['response'];
+
 export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseRepo', 'Choose repository');
-        let repoData: gitHubRepoData | undefined;
+        let repoData: RepoData | CreateNewResource | undefined;
         const orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData = nonNullProp(context, 'orgData');
-        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, isUser(orgData) ? `${githubApiEndpoint}/user/repos?type=owner` : orgData.repos_url);
-        const picksCache: ICachedQuickPicks<gitHubRepoData> = { picks: [] };
+        const picksCache: ICachedQuickPicks<RepoData> = { picks: [] };
+        const params: RepoParameters = isUser(orgData) ? { username: orgData.login, type: 'owner' } : { org: orgData.login };
 
         do {
-            repoData = (await ext.ui.showQuickPick(this.getRepoPicks(requestOptions, picksCache), { placeHolder })).data;
+            repoData = (await ext.ui.showQuickPick(this.getRepoPicks(params, orgData, picksCache), { placeHolder })).data;
         } while (!repoData);
 
         context.repoData = repoData;
@@ -47,10 +51,12 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         }
     }
 
-    private async getRepoPicks(requestOptions: gitHubWebResource, picksCache: ICachedQuickPicks<gitHubRepoData>): Promise<IAzureQuickPickItem<gitHubRepoData | undefined>[]> {
-        const quickPickItems: IAzureQuickPickItem<gitHubRepoData | undefined>[] =
-            await getGitHubQuickPicksWithLoadMore<gitHubRepoData>(picksCache, requestOptions, 'name');
-        quickPickItems.unshift({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, html_url: createNewRepo, url: createNewRepo } });
+    private async getRepoPicks(params: RepoParameters, orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData, picksCache: ICachedQuickPicks<RepoData>): Promise<IAzureQuickPickItem<RepoData | CreateNewResource | undefined>[]> {
+        const client: Octokit = await createOctokitClient();
+        const callback: (params?: RepoParameters) => Promise<RepoResponse> = isUser(orgData) ? client.repos.listForUser : client.repos.listForOrg;
+        const quickPickItems: IAzureQuickPickItem<RepoData | CreateNewResource | undefined>[] =
+            await getGitHubQuickPicksWithLoadMore<RepoData, RepoParameters>(picksCache, callback, params, 'name');
+        quickPickItems.unshift({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, html_url: createNewRepo } });
 
         return quickPickItems;
     }

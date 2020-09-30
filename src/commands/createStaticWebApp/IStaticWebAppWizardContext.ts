@@ -5,16 +5,17 @@
 
 import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { IResourceGroupWizardContext } from 'vscode-azureextensionui';
-import { GitTreeData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
+import { BranchData, GitTreeData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
 import { StaticWebApp } from '../../tree/StaticWebAppTreeItem';
-import { gitHubBranchData, gitHubRepoData } from '../../utils/gitHubUtils';
 
+// creating a dummy repoData/branchData would be an annoying amount of work, so use this type to recognize when users have selected create new repo
+export type CreateNewResource = { name?: string; html_url?: string };
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext {
     accessToken: string;
 
     orgData?: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData;
-    repoData?: gitHubRepoData;
-    branchData?: gitHubBranchData;
+    repoData?: RepoData | CreateNewResource;
+    branchData?: BranchData | CreateNewResource;
 
     repoHtmlUrl?: string;
     fsPath?: string;
