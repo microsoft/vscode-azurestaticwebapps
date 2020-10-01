@@ -7,8 +7,9 @@ import { Octokit } from "@octokit/rest";
 import { appendExtensionUserAgent } from "vscode-azureextensionui";
 import { getGitHubAccessToken } from "../../utils/gitHubUtils";
 
-export async function createOctokitClient(): Promise<Octokit> {
-    const token: string = await getGitHubAccessToken();
+// token should only be passed in during a wizard; otherwise retrieve a new token for the request
+export async function createOctokitClient(token?: string): Promise<Octokit> {
+    token = token || await getGitHubAccessToken();
     return new Octokit(
         {
             userAgent: appendExtensionUserAgent(),

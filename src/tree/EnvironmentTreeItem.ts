@@ -9,7 +9,7 @@ import { AzExtParentTreeItem, AzExtTreeItem, AzureParentTreeItem, IActionContext
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
-import { tryGetBranch, tryGetRemote } from "../utils/gitHubUtils";
+import { tryGetLocalBranch, tryGetRemote } from "../utils/gitHubUtils";
 import { localize } from "../utils/localize";
 import { openUrl } from "../utils/openUrl";
 import { requestUtils } from "../utils/requestUtils";
@@ -145,7 +145,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async refreshImpl(): Promise<void> {
         const remote: string | undefined = await tryGetRemote();
-        const branch: string | undefined = remote ? await tryGetBranch() : undefined;
+        const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.data.properties.repositoryUrl === remote && this.data.properties.sourceBranch === branch;
     }
 }
