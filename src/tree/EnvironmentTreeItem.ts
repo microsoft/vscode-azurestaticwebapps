@@ -11,7 +11,7 @@ import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { pollAzureAsyncOperation } from "../utils/azureUtils";
-import { tryGetBranch, tryGetRemote } from "../utils/gitHubUtils";
+import { tryGetLocalBranch, tryGetRemote } from "../utils/gitHubUtils";
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from "../utils/openUrl";
@@ -64,11 +64,11 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public get description(): string | undefined {
         if (this.data.status !== 'Ready') {
             // if the environment isn't ready, the status has priority over displaying its linked
-            return localize('statusTag', '{0} ({1})', this.data.sourceBranch, this.data.status);
+            return localize('statusTag', '{0} ({1})', this.branch, this.data.status);
         }
 
-        const linkedTag: string = localize('linkedTag', '{0} (linked)', this.data.sourceBranch);
-        return this.inWorkspace ? linkedTag : this.data.sourceBranch;
+        const linkedTag: string = localize('linkedTag', '{0} (linked)', this.branch);
+        return this.inWorkspace ? linkedTag : this.data.branch;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -137,7 +137,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async refreshImpl(): Promise<void> {
         const remote: string | undefined = await tryGetRemote();
-        const branch: string | undefined = remote ? await tryGetBranch() : undefined;
-        this.inWorkspace = this.parent.data.repositoryUrl === remote && this.data.sourceBranch === branch;
+        const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
+        this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
     }
 }

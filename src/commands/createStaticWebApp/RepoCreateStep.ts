@@ -3,16 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Octokit } from '@octokit/rest';
+import { ReposCreateForAuthenticatedUserResponseData, ReposCreateInOrgResponseData } from '@octokit/types';
 import { Progress } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
-import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, gitHubRepoData, gitHubWebResource, isUser } from "../../utils/gitHubUtils";
+import { isUser } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
-import { requestUtils } from '../../utils/pollAzureAsyncOperation';
+import { createOctokitClient } from '../github/createOctokitClient';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
+type RepoCreateData = ReposCreateForAuthenticatedUserResponseData | ReposCreateInOrgResponseData;
 export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     public priority: number = 200;
 
@@ -21,10 +23,10 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         ext.outputChannel.appendLog(creatingGitHubRepo);
         progress.report({ message: creatingGitHubRepo });
 
-        const requestOption: gitHubWebResource = await createGitHubRequestOptions(wizardContext.accessToken, isUser(wizardContext.orgData) ? `${githubApiEndpoint}/user/repos` : nonNullProp(wizardContext, 'orgData').repos_url, 'POST');
-        requestOption.body = JSON.stringify({ name: wizardContext.newRepoName });
+        const name: string = nonNullProp(wizardContext, 'newRepoName');
 
-        const gitHubRepoRes: gitHubRepoData = <gitHubRepoData>JSON.parse((await requestUtils.sendRequest<{ body: string }>(requestOption)).body);
+        const client: Octokit = await createOctokitClient(wizardContext.accessToken);
+        const gitHubRepoRes: RepoCreateData = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name }) : await client.repos.createInOrg({ org: nonNullProp(wizardContext, 'orgData').login, name })).data;
         wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
 
         const createdGitHubRepo: string = localize('createdGitHubRepo', 'Created new GitHub repository "{0}"', wizardContext.newRepoName);
