@@ -20,20 +20,6 @@ import { getSingleRootFsPath } from './workspaceUtils';
 
 type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
 
-// tslint:disable:no-any no-unsafe-any
-export async function getGitHubJsonResponse<T, U>(gitHubApiCb: (params: U) => Promise<OctokitResponse<any>>, params: U & { page?: number }): Promise<T> {
-    // Reference for GitHub REST routes
-    // https://developer.github.com/v3/
-    const res: OctokitResponse<any> = await gitHubApiCb(params);
-    if (res.headers.link) {
-        const linkObject: gitHubLink = parseLinkHeaderToGitHubLinkObject(res.headers.link);
-        const page: string | null | undefined = linkObject.next ? new URL(linkObject.next).searchParams.get('page') : undefined;
-        params.page = page ? Number(page) : undefined;
-    }
-    return res.data;
-}
-// tslint:enable:no-any no-unsafe-any
-
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
  * @param description Optional property of JSON that will be used as QuickPicks description
@@ -73,13 +59,30 @@ export interface ICachedQuickPicks<T> {
     picks: IAzureQuickPickItem<T>[];
 }
 
-// tslint:disable-next-line:no-any
-export async function getGitHubQuickPicksWithLoadMore<T, U>(cache: ICachedQuickPicks<T>, gitHubApiCb: (params: U) => Promise<OctokitResponse<any>>, params: U & { page?: number }, labelName: string, timeoutSeconds: number = 10): Promise<IAzureQuickPickItem<T | undefined>[]> {
+export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
+    cache: ICachedQuickPicks<TResult>,
+    // tslint:disable-next-line:no-any
+    gitHubApiCb: (params: TParams) => Promise<OctokitResponse<any>>,
+    params: TParams & { page?: number },
+    labelName: string,
+    timeoutSeconds: number = 10): Promise<IAzureQuickPickItem<TResult | undefined>[]> {
+
     const timeoutMs: number = timeoutSeconds * 1000;
     const startTime: number = Date.now();
-    let gitHubQuickPicks: T[] = [];
+    let gitHubQuickPicks: TResult[] = [];
     do {
-        gitHubQuickPicks = gitHubQuickPicks.concat(await getGitHubJsonResponse<T, U>(gitHubApiCb, params));
+        // tslint:disable-next-line:no-any
+        const res: OctokitResponse<any> = await gitHubApiCb(params);
+        if (res.headers.link) {
+            // Reference for GitHub REST routes
+            // https://developer.github.com/v3/
+            const linkObject: gitHubLink = parseLinkHeaderToGitHubLinkObject(res.headers.link);
+            const page: string | null | undefined = linkObject.next ? new URL(linkObject.next).searchParams.get('page') : undefined;
+            params.page = page ? Number(page) : undefined;
+        }
+
+        // tslint:disable-next-line: no-unsafe-any
+        gitHubQuickPicks = gitHubQuickPicks.concat(res.data);
         if (params.page === undefined) {
             // if there is no page, that means it has retrieved all of the branches
             break;
@@ -90,7 +93,7 @@ export async function getGitHubQuickPicksWithLoadMore<T, U>(cache: ICachedQuickP
     cache.picks.sort((a: QuickPickItem, b: QuickPickItem) => a.label.localeCompare(b.label));
 
     if (params.page !== undefined) {
-        return (<IAzureQuickPickItem<T | undefined>[]>[{
+        return (<IAzureQuickPickItem<TResult | undefined>[]>[{
             label: '$(sync) Load More',
             suppressPersistence: true,
             data: undefined

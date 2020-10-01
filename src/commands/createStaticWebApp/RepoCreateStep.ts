@@ -25,7 +25,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
 
         const name: string = nonNullProp(wizardContext, 'newRepoName');
 
-        const client: Octokit = await createOctokitClient();
+        const client: Octokit = await createOctokitClient(wizardContext.accessToken);
         const gitHubRepoRes: RepoCreateData = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name }) : await client.repos.createInOrg({ org: nonNullProp(wizardContext, 'orgData').login, name })).data;
         wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
 

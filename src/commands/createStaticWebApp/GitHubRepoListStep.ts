@@ -30,7 +30,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         const params: RepoParameters = isUser(orgData) ? { username: orgData.login, type: 'owner' } : { org: orgData.login, type: 'member' };
 
         do {
-            repoData = (await ext.ui.showQuickPick(this.getRepoPicks(params, orgData, picksCache), { placeHolder })).data;
+            repoData = (await ext.ui.showQuickPick(this.getRepoPicks(context, params, orgData, picksCache), { placeHolder })).data;
         } while (!repoData);
 
         context.repoData = repoData;
@@ -51,8 +51,8 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         }
     }
 
-    private async getRepoPicks(params: RepoParameters, orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData, picksCache: ICachedQuickPicks<RepoData>): Promise<IAzureQuickPickItem<RepoData | CreateNewResource | undefined>[]> {
-        const client: Octokit = await createOctokitClient();
+    private async getRepoPicks(context: IStaticWebAppWizardContext, params: RepoParameters, orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData, picksCache: ICachedQuickPicks<RepoData>): Promise<IAzureQuickPickItem<RepoData | CreateNewResource | undefined>[]> {
+        const client: Octokit = await createOctokitClient(context.accessToken);
         const callback: (params?: RepoParameters) => Promise<RepoResponse> = isUser(orgData) ? client.repos.listForUser : client.repos.listForOrg;
         const quickPickItems: IAzureQuickPickItem<RepoData | CreateNewResource | undefined>[] =
             await getGitHubQuickPicksWithLoadMore<RepoData, RepoParameters>(picksCache, callback, params, 'name');
