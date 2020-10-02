@@ -32,6 +32,15 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public readonly data: WebSiteManagementModels.StaticSiteBuildARMResource;
+
+    public name: string;
+    public id: string;
+    public label: string;
+    public repositoryUrl: string;
+    public branch: string;
+    public buildId: string;
+
+    public isProduction: boolean;
     public inWorkspace: boolean;
 
     constructor(parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource) {
@@ -40,6 +49,16 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         this.actionsTreeItem = new ActionsTreeItem(this);
         this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
         this.functionsTreeItem = new FunctionsTreeItem(this);
+
+        this.name = nonNullProp(this.data, 'name');
+        this.id = nonNullProp(this.data, 'id');
+        this.buildId = nonNullProp(this.data, 'buildId');
+
+        this.repositoryUrl = this.parent.repositoryUrl;
+        this.branch = nonNullProp(this.data, 'sourceBranch');
+
+        this.isProduction = this.buildId === 'default';
+        this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
     public static async createEnvironmentTreeItem(parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
@@ -47,18 +66,6 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         // initialize inWorkspace property
         await ti.refreshImpl();
         return ti;
-    }
-
-    public get name(): string {
-        return nonNullProp(this.data, 'name');
-    }
-
-    public get id(): string {
-        return nonNullProp(this.data, 'id');
-    }
-
-    public get label(): string {
-        return this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
     public get description(): string | undefined {
@@ -73,22 +80,6 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public get iconPath(): TreeItemIconPath {
         return treeUtils.getIconPath('Azure-Static-Apps-Environment');
-    }
-
-    public get isProduction(): boolean {
-        return this.data.buildId === 'default';
-    }
-
-    public get repositoryUrl(): string {
-        return this.parent.repositoryUrl;
-    }
-
-    public get branch(): string {
-        return nonNullProp(this.data, 'sourceBranch');
-    }
-
-    public get buildId(): string {
-        return nonNullProp(this.data, 'buildId');
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtParentTreeItem[]> {

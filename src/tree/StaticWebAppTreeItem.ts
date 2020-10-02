@@ -23,25 +23,24 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     public readonly data: WebSiteManagementModels.StaticSiteARMResource;
     public readonly childTypeLabel: string = localize('environment', 'Environment');
 
+    public name: string;
+    public id: string;
+    public resourceGroup: string;
+    public label: string;
+    public repositoryUrl: string;
+    public branch: string;
+    public defaultHostname: string;
+
     constructor(parent: AzureParentTreeItem, ss: WebSiteManagementModels.StaticSiteARMResource) {
         super(parent);
         this.data = ss;
-    }
-
-    public get name(): string {
-        return nonNullProp(this.data, 'name');
-    }
-
-    public get id(): string {
-        return nonNullProp(this.data, 'id');
-    }
-
-    public get resourceGroup(): string {
-        return getResourceGroupFromId(this.id);
-    }
-
-    public get label(): string {
-        return nonNullProp(this.data, 'name');
+        this.name = nonNullProp(this.data, 'name');
+        this.id = nonNullProp(this.data, 'id');
+        this.resourceGroup = getResourceGroupFromId(this.id);
+        this.label = this.name;
+        this.repositoryUrl = nonNullProp(this.data, 'repositoryUrl');
+        this.branch = nonNullProp(this.data, 'branch');
+        this.defaultHostname = nonNullProp(this.data, 'defaultHostname');
     }
 
     public get description(): string | undefined {
@@ -51,18 +50,6 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
 
     public get iconPath(): TreeItemIconPath {
         return treeUtils.getThemedIconPath('azure-staticwebapps');
-    }
-
-    public get repositoryUrl(): string {
-        return nonNullProp(this.data, 'repositoryUrl');
-    }
-
-    public get branch(): string {
-        return nonNullProp(this.data, 'branch');
-    }
-
-    public get defaultHostname(): string {
-        return nonNullProp(this.data, 'defaultHostname');
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
@@ -110,6 +97,6 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     }
 
     public async browse(): Promise<void> {
-        await openUrl(`https://${this.data.defaultHostname}`);
+        await openUrl(`https://${this.defaultHostname}`);
     }
 }

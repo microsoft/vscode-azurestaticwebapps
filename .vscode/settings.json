@@ -16,8 +16,5 @@
     },
     "tslint.ignoreDefinitionFiles": true,
     "typescript.preferences.importModuleSpecifier": "relative",
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "staticWebApps.appSubpath": "/",
-    "staticWebApps.apiSubpath": "/",
-    "staticWebApps.appArtifactSubpath": "build"
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

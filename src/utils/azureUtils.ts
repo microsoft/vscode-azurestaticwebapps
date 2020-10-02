@@ -22,14 +22,6 @@ export function getResourceGroupFromId(id: string): string {
     return parseResourceId(id)[2];
 }
 
-export function getSubscriptionFromId(id: string): string {
-    return parseResourceId(id)[1];
-}
-
-export function getNameFromId(id: string): string {
-    return parseResourceId(id)[4];
-}
-
 type AzureAsyncOperationResponse = {
     id?: string;
     status: string;

@@ -3,11 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from '@azure/arm-appservice';
+import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { IAppSettingsClient } from 'vscode-azureappservice';
 import { createAzureClient, ISubscriptionContext } from 'vscode-azureextensionui';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
-import { getResourceGroupFromId } from '../../utils/azureUtils';
 
 export class AppSettingsClient implements IAppSettingsClient {
 
@@ -20,7 +19,7 @@ export class AppSettingsClient implements IAppSettingsClient {
     constructor(node: EnvironmentTreeItem) {
         this.ssId = node.id;
         this.fullName = node.parent.name;
-        this.resourceGroup = getResourceGroupFromId(this.ssId);
+        this.resourceGroup = node.parent.resourceGroup;
         this.root = node.root;
 
         // For IAppSettingsClient, isLinux is used for app settings key validation.
@@ -29,17 +28,13 @@ export class AppSettingsClient implements IAppSettingsClient {
         this.isLinux = false;
     }
 
-    public async listApplicationSettings(): Promise<IStringDictionary> {
+    public async listApplicationSettings(): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
         const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
-        return client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName);
+        return await client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName);
     }
 
-    public async updateApplicationSettings(appSettings: IStringDictionary): Promise<IStringDictionary> {
+    public async updateApplicationSettings(appSettings: WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
         const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
-        return <IStringDictionary>client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName, appSettings);
+        return await client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName, appSettings);
     }
-}
-
-export interface IStringDictionary {
-    properties?: { [propertyName: string]: string };
 }

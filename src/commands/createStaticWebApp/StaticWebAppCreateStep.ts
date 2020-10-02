@@ -16,7 +16,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
 
     public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const newName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
-        const properties: WebSiteManagementModels.StaticSiteARMResource = {
+        const siteEnvelope: WebSiteManagementModels.StaticSiteARMResource = {
             repositoryUrl: wizardContext.repoHtmlUrl,
             branch: wizardContext.branchData?.name,
             repositoryToken: wizardContext.accessToken,
@@ -32,7 +32,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
-        wizardContext.staticWebApp = await wizardContext.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(wizardContext.resourceGroup, 'name'), newName, properties);
+        wizardContext.staticWebApp = await wizardContext.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(wizardContext.resourceGroup, 'name'), newName, siteEnvelope);
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {
