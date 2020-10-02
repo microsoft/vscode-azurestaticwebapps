@@ -18,7 +18,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
-    const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.data.properties.defaultHostname : node.parent.data.properties.defaultHostname;
+    const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
     const ymlFileName: string = `.github/workflows/azure-static-web-apps-${defaultHostname.split('.')[0]}.yml`;
 
     if (node instanceof EnvironmentTreeItem && node.inWorkspace) {

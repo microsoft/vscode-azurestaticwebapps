@@ -7,17 +7,20 @@ import { WebSiteManagementClient } from '@azure/arm-appservice';
 import { IAppSettingsClient } from 'vscode-azureappservice';
 import { createAzureClient, ISubscriptionContext } from 'vscode-azureextensionui';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
+import { getResourceGroupFromId } from '../../utils/azureUtils';
 
 export class AppSettingsClient implements IAppSettingsClient {
 
-    public fullName: string;
     public isLinux: boolean;
-    public swaId: string;
+    public ssId: string;
+    public fullName: string;
+    public resourceGroup: string;
     public root: ISubscriptionContext;
 
     constructor(node: EnvironmentTreeItem) {
-        this.fullName = node.name;
-        this.swaId = node.id;
+        this.ssId = node.id;
+        this.fullName = node.parent.name;
+        this.resourceGroup = getResourceGroupFromId(this.ssId);
         this.root = node.root;
 
         // For IAppSettingsClient, isLinux is used for app settings key validation.
@@ -28,12 +31,12 @@ export class AppSettingsClient implements IAppSettingsClient {
 
     public async listApplicationSettings(): Promise<IStringDictionary> {
         const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
-        return client.staticSites.listStaticSiteFunctionAppSettings(this);
+        return client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName);
     }
 
     public async updateApplicationSettings(appSettings: IStringDictionary): Promise<IStringDictionary> {
         const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
-        return <IStringDictionary>client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this);
+        return <IStringDictionary>client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName, appSettings);
     }
 }
 

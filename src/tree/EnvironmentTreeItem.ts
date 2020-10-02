@@ -68,7 +68,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         }
 
         const linkedTag: string = localize('linkedTag', '{0} (linked)', this.branch);
-        return this.inWorkspace ? linkedTag : this.data.branch;
+        return this.inWorkspace ? linkedTag : this.branch;
     }
 
     public get iconPath(): TreeItemIconPath {

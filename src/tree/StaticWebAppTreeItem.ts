@@ -61,6 +61,10 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         return nonNullProp(this.data, 'branch');
     }
 
+    public get defaultHostname(): string {
+        return nonNullProp(this.data, 'defaultHostname');
+    }
+
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
 

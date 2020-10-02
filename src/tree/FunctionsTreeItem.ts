@@ -35,7 +35,7 @@ export class FunctionsTreeItem extends AzureParentTreeItem {
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
-        const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.parent.resourceGroup, this.parent.name, this.parent.buildId);
+        const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.parent.resourceGroup, this.parent.parent.name, this.parent.buildId);
         const treeItems: AzExtTreeItem[] = await this.createTreeItemsWithErrorHandling(
             functions,
             'invalidFunction',

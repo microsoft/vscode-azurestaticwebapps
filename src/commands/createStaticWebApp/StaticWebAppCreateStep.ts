@@ -8,8 +8,7 @@ import { Progress } from "vscode";
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
-import { nonNullProp } from "../../utils/nonNull";
-import { requestUtils } from "../../utils/pollAzureAsyncOperation";
+import { nonNullProp, nonNullValueAndProp } from "../../utils/nonNull";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
@@ -17,14 +16,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
 
     public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const newName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${nonNullProp(wizardContext, 'resourceGroup').id}/providers/Microsoft.Web/staticSites/${newName}?api-version=2019-12-01-preview`, wizardContext, 'PUT');
-        requestOptions.headers['Content-Type'] = 'application/json';
-        // tslint:disable-next-line:no-any
-        const requestBody: any = {};
-        // tslint:disable: no-unsafe-any
-        requestBody.location = wizardContext.location?.name;
-
-        const properties: {} = {
+        const properties: WebSiteManagementModels.StaticSiteARMResource = {
             repositoryUrl: wizardContext.repoHtmlUrl,
             branch: wizardContext.branchData?.name,
             repositoryToken: wizardContext.accessToken,
@@ -32,19 +24,15 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
                 appLocation: wizardContext.appLocation,
                 apiLocation: wizardContext.apiLocation,
                 appArtifactLocation: wizardContext.appArtifactLocation
-            }
+            },
+            sku: { name: 'Free', tier: 'Free' },
+            location: nonNullValueAndProp(wizardContext.location, 'name')
         };
-        requestBody.properties = properties;
-
-        const standard: string = 'Free';
-        requestBody.sku = { Name: standard, Tier: standard };
-
-        requestOptions.body = JSON.stringify(requestBody);
 
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
-        wizardContext.staticWebApp = <WebSiteManagementModels.StaticSiteARMResource>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        wizardContext.staticWebApp = await wizardContext.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(wizardContext.resourceGroup, 'name'), newName, properties);
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {
