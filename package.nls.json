@@ -17,6 +17,7 @@
     "staticWebApps.showActions": "Show Actions",
     "staticWebApps.cloneRepo": "Clone Repo...",
     "staticWebApps.appSettings.add": "Add New Setting...",
+    "staticWebApps.appSettings.download": "Download Remote Settings...",
     "staticWebApps.appSettings.upload": "Upload Local Settings...",
     "staticWebApps.appSettings.edit": "Edit Setting...",
     "staticWebApps.appSettings.rename": "Rename Setting...",
