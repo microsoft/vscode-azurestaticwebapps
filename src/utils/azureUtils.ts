@@ -35,7 +35,7 @@ type AzureAsyncOperationResponse = {
 export async function pollAzureAsyncOperation(restResponse: msRest.RestResponse, credentials: msRest.ServiceClientCredentials): Promise<void> {
     const url: string | undefined = restResponse._response.headers.get('azure-asyncoperation');
     if (!url) {
-        // if there is no asynoperation url, just return as the delete was still initiated
+        // if there is no asyncoperation url, just return as the delete was still initiated
         return;
     }
 
