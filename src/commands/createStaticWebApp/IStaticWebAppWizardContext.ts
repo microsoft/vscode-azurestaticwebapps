@@ -3,15 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { IResourceGroupWizardContext } from 'vscode-azureextensionui';
 import { BranchData, GitTreeData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
-import { StaticWebApp } from '../../tree/StaticWebAppTreeItem';
 
 // creating a dummy repoData/branchData would be an annoying amount of work, so use this type to recognize when users have selected create new repo
 export type CreateNewResource = { name?: string; html_url?: string };
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext {
     accessToken: string;
+    client: WebSiteManagementClient;
 
     orgData?: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData;
     repoData?: RepoData | CreateNewResource;
@@ -30,5 +31,5 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext 
     appArtifactLocation?: string;
 
     // created when the wizard is done executing
-    staticWebApp?: StaticWebApp;
+    staticWebApp?: WebSiteManagementModels.StaticSiteARMResource;
 }

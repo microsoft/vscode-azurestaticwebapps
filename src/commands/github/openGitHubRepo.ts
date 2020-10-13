@@ -13,5 +13,5 @@ export async function openGitHubRepo(context: IActionContext, node?: Environment
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
-    await openUrl(`${node.parent.repositoryUrl}/tree/${node.data.properties.sourceBranch}`);
+    await openUrl(`${node.parent.repositoryUrl}/tree/${node.branch}`);
 }

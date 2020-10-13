@@ -6,7 +6,6 @@
 import { AzureWizardPromptStep, IAzureNamingRules } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
-import { requestUtils } from "../../utils/requestUtils";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
@@ -46,9 +45,9 @@ export class StaticWebAppNameStep extends AzureWizardPromptStep<IStaticWebAppWiz
     private async isSwaNameAvailable(wizardContext: IStaticWebAppWizardContext, resourceName: string): Promise<boolean> {
         // Static Web app names must be unique to the current resource group.
         try {
-            const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`subscriptions/${wizardContext.subscriptionId}/resourceGroups/${resourceName}/providers/Microsoft.Web/staticSites/${resourceName}?api-version=2019-12-01-preview`, wizardContext);
-            await requestUtils.sendRequest(requestOptions);
+            await wizardContext.client.staticSites.getStaticSite(resourceName, resourceName);
             return false;
+
         } catch (error) {
             // if an error is thrown, it means the SWA name is available
             return true;
