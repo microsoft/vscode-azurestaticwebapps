@@ -42,6 +42,7 @@
         "onCommand:staticWebApps.cloneRepo",
         "onCommand:staticWebApps.appSettings.add",
         "onCommand:staticWebApps.appSettings.upload",
+        "onCommand:staticWebApps.appSettings.download",
         "onCommand:staticWebApps.appSettings.edit",
         "onCommand:staticWebApps.appSettings.rename",
         "onCommand:staticWebApps.appSettings.delete",
@@ -146,6 +147,11 @@
             {
                 "command": "staticWebApps.appSettings.upload",
                 "title": "%staticWebApps.appSettings.upload%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.appSettings.download",
+                "title": "%staticWebApps.appSettings.download%",
                 "category": "Azure Static Web Apps"
             },
             {
@@ -308,6 +314,11 @@
                     "command": "staticWebApps.appSettings.add",
                     "when": "view == staticWebApps && viewItem == applicationSettings",
                     "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.appSettings.download",
+                    "when": "view == staticWebApps && viewItem == applicationSettings",
+                    "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.appSettings.upload",
