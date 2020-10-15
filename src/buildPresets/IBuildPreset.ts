@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 /**
- * Describes the preset builds used for the app/api/app artifact locations
+ * Describes the build presets used for the app/api/app artifact locations
  */
 
-export interface IPresetBuild {
+export interface IBuildPreset {
     id: string;
     displayName: string;
     appLocation: string;

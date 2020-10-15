@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IPresetBuild } from "./IPresetBuild";
+import { IBuildPreset } from "./IBuildPreset";
 
-// hard-coded defaults for preset builds until there is an API that supports this
-export const presetBuilds: IPresetBuild[] = [
+// hard-coded defaults for build presets until there is an API that supports this
+export const buildPresets: IBuildPreset[] = [
     {
         id: 'angular',
         displayName: 'Angular',

@@ -6,11 +6,11 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
+import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
 import { GitHubBranchListStep } from '../commands/createStaticWebApp/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
 import { GitHubRepoListStep } from '../commands/createStaticWebApp/GitHubRepoListStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
-import { PresetBuildListStep } from '../commands/createStaticWebApp/PresetBuildListStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { apiSubpathSetting, appArtifactSubpathSetting, appSubpathSetting } from '../constants';
@@ -46,7 +46,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
         const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client: createAzureClient(this.root, WebSiteManagementClient), ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
-        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new StaticWebAppNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new PresetBuildListStep()];
+        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new StaticWebAppNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new BuildPresetListStep()];
 
         // hard-coding locations available during preview
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18

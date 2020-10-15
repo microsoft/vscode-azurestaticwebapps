@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
+import { buildPresets } from '../../buildPresets/buildPresets';
+import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { ext } from '../../extensionVariables';
-import { IPresetBuild } from '../../presetBuilds/IPresetBuild';
-import { presetBuilds } from '../../presetBuilds/presetBuilds';
 import { localize } from '../../utils/localize';
 import { openUrl } from '../../utils/openUrl';
 import { ApiLocationStep } from './ApiLocationStep';
@@ -14,20 +14,20 @@ import { AppArtifactLocationStep } from './AppArtifactLocationStep';
 import { AppLocationStep } from './AppLocationStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
-export class PresetBuildListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const placeHolder: string = localize('choosePreset', 'Choose preset build to configure default project structure');
-        const picks: IAzureQuickPickItem<IPresetBuild | undefined>[] = presetBuilds.map((pb) => { return { label: pb.displayName, data: pb }; });
+        const placeHolder: string = localize('choosePreset', 'Choose build preset to configure default project structure');
+        const picks: IAzureQuickPickItem<IBuildPreset | undefined>[] = buildPresets.map((pb) => { return { label: pb.displayName, data: pb }; });
         picks.push({ label: 'Custom', data: undefined });
         const learnMore: IAzureQuickPickItem = { label: localize('learnMore', '$(link-external) Learn more...'), description: '', data: undefined };
         picks.push(learnMore);
-        let pick: IAzureQuickPickItem<IPresetBuild | undefined>;
+        let pick: IAzureQuickPickItem<IBuildPreset | undefined>;
 
         do {
             pick = await ext.ui.showQuickPick(picks, { placeHolder, suppressPersistence: true });
             if (pick === learnMore) {
-                await openUrl('https://docs.microsoft.com/en-us/azure/static-web-apps/front-end-frameworks');
+                await openUrl('https://aka.ms/SWABuildPresets');
             }
         } while (pick === learnMore);
 
@@ -45,7 +45,7 @@ export class PresetBuildListStep extends AzureWizardPromptStep<IStaticWebAppWiza
 
     public async getSubWizard(context: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
         if (!context.appLocation) {
-            return { promptSteps: [new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()], executeSteps: [] };
+            return { promptSteps: [new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()] };
         } else {
             return undefined;
         }
