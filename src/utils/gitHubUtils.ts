@@ -8,49 +8,23 @@ import {
   GitGetTreeResponseData,
   OctokitResponse,
   ReposGetBranchResponseData,
+  ReposGetResponseData,
   UsersGetAuthenticatedResponseData,
 } from '@octokit/types';
-import { HttpMethods, IncomingMessage, TokenCredentials } from 'ms-rest';
-import { Response } from 'request';
 import * as git from 'simple-git/promise';
+import { URL } from 'url';
 import { authentication, QuickPickItem } from 'vscode';
 import { IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { githubApiEndpoint } from '../constants';
 import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
 import { localize } from './localize';
 import { nonNullProp } from './nonNull';
-import { requestUtils } from './requestUtils';
 import { getSingleRootFsPath } from './workspaceUtils';
 // tslint:disable-next-line:no-require-imports
 import gitUrlParse = require('git-url-parse');
 
-// tslint:disable-next-line:no-reserved-keywords
-export type gitHubRepoData = {
-  name: string;
-  url: string;
-  html_url: string;
-  clone_url?: string;
-  default_branch?: string;
-};
-export type gitHubBranchData = { name: string };
-export type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
-export type gitHubWebResource = requestUtils.Request & { nextLink?: string };
-
-export async function getGitHubJsonResponse<T>(requestOptions: gitHubWebResource): Promise<T> {
-  // Reference for GitHub REST routes
-  // https://developer.github.com/v3/
-  // Note: blank after user implies look up authorized user
-  const gitHubResponse: Response = await requestUtils.sendRequest(requestOptions);
-  if (gitHubResponse.headers.link) {
-    const headerLink: string = <string>gitHubResponse.headers.link;
-    const linkObject: gitHubLink = parseLinkHeaderToGitHubLinkObject(headerLink);
-    requestOptions.nextLink = linkObject.next;
-  }
-  // tslint:disable-next-line:no-unsafe-any
-  return <T>JSON.parse(gitHubResponse.body);
-}
+type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
@@ -94,28 +68,43 @@ export interface ICachedQuickPicks<T> {
   picks: IAzureQuickPickItem<T>[];
 }
 
-export async function getGitHubQuickPicksWithLoadMore<T>(
-  cache: ICachedQuickPicks<T>,
-  requestOptions: gitHubWebResource,
+export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
+  cache: ICachedQuickPicks<TResult>,
+  // tslint:disable-next-line:no-any
+  gitHubApiCb: (params: TParams) => Promise<OctokitResponse<any>>,
+  params: TParams & { page?: number },
   labelName: string,
   timeoutSeconds: number = 10
-): Promise<IAzureQuickPickItem<T | undefined>[]> {
+): Promise<IAzureQuickPickItem<TResult | undefined>[]> {
   const timeoutMs: number = timeoutSeconds * 1000;
   const startTime: number = Date.now();
-  let gitHubQuickPicks: T[] = [];
+  let gitHubQuickPicks: TResult[] = [];
   do {
-    gitHubQuickPicks = gitHubQuickPicks.concat(await getGitHubJsonResponse<T[]>(requestOptions));
-    if (requestOptions.nextLink) {
-      // if there is another link, set the next request url to point at that
-      requestOptions.url = requestOptions.nextLink;
+    // tslint:disable-next-line:no-any
+    const res: OctokitResponse<any> = await gitHubApiCb(params);
+    if (res.headers.link) {
+      // Reference for GitHub REST routes
+      // https://developer.github.com/v3/
+      const linkObject: gitHubLink = parseLinkHeaderToGitHubLinkObject(res.headers.link);
+      const page: string | null | undefined = linkObject.next
+        ? new URL(linkObject.next).searchParams.get('page')
+        : undefined;
+      params.page = page ? Number(page) : undefined;
     }
-  } while (requestOptions.nextLink && startTime + timeoutMs > Date.now());
+
+    // tslint:disable-next-line: no-unsafe-any
+    gitHubQuickPicks = gitHubQuickPicks.concat(res.data);
+    if (params.page === undefined) {
+      // if there is no page, that means it has retrieved all of the branches
+      break;
+    }
+  } while (params.page !== undefined && startTime + timeoutMs > Date.now());
 
   cache.picks = cache.picks.concat(createQuickPickFromJsons(gitHubQuickPicks, labelName));
   cache.picks.sort((a: QuickPickItem, b: QuickPickItem) => a.label.localeCompare(b.label));
 
-  if (requestOptions.nextLink) {
-    return (<IAzureQuickPickItem<T | undefined>[]>[
+  if (params.page !== undefined) {
+    return (<IAzureQuickPickItem<TResult | undefined>[]>[
       {
         label: '$(sync) Load More',
         suppressPersistence: true,
@@ -127,22 +116,6 @@ export async function getGitHubQuickPicksWithLoadMore<T>(
   }
 }
 
-export async function createGitHubRequestOptions(
-  gitHubAccessToken: string,
-  url: string,
-  method: HttpMethods = 'GET'
-): Promise<gitHubWebResource> {
-  const requestOptions: gitHubWebResource = await requestUtils.getDefaultRequest(
-    url,
-    new TokenCredentials(gitHubAccessToken),
-    method
-  );
-  requestOptions.headers.Accept = 'application/vnd.github.v3+json';
-  requestOptions.resolveWithFullResponse = true;
-
-  return requestOptions;
-}
-
 export async function getGitHubAccessToken(): Promise<string> {
   const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
   return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
@@ -151,28 +124,19 @@ export async function getGitHubAccessToken(): Promise<string> {
 export async function tryGetRemote(): Promise<string | undefined> {
   try {
     const localProjectPath: string | undefined = getSingleRootFsPath();
+    // only try to get remote if there's only a single workspace opened
     if (localProjectPath) {
-      // only try to get remote if there's only a single workspace opened
       const localGit: git.SimpleGit = git(localProjectPath);
       const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
 
       if (originUrl !== undefined) {
         const { owner, name } = getRepoFullname(originUrl);
-        const token: string = await getGitHubAccessToken();
-        const repoReq: requestUtils.Request = await createGitHubRequestOptions(
-          token,
-          `${githubApiEndpoint}/repos/${owner}/${name}`
-        );
-        const repoRes: IncomingMessage & { body: string } = await requestUtils.sendRequest(repoReq);
-
-        // the GitHub API response has a lot more properties than this, but these are the only ones we care about
-        const bodyJson: { html_url: string; permissions: { admin: boolean } } = <
-          { html_url: string; permissions: { admin: boolean } }
-        >JSON.parse(repoRes.body);
+        const client: Octokit = await createOctokitClient();
+        const repoData: ReposGetResponseData = (await client.repos.get({ owner, repo: name })).data;
 
         // to create a workflow, the user needs admin access so if it's not true, it will fail
-        if (bodyJson.permissions.admin) {
-          return bodyJson.html_url;
+        if (repoData.permissions.admin) {
+          return repoData.html_url;
         }
       }
     }
@@ -182,7 +146,7 @@ export async function tryGetRemote(): Promise<string | undefined> {
   return;
 }
 
-export async function tryGetBranch(): Promise<string | undefined> {
+export async function tryGetLocalBranch(): Promise<string | undefined> {
   try {
     const localProjectPath: string | undefined = getSingleRootFsPath();
     if (localProjectPath) {
@@ -239,40 +203,25 @@ export async function getGitTreeQuickPicks(
   isSkippable?: boolean
 ): Promise<IAzureQuickPickItem<string | undefined>[]> {
   const gitTreeData: GitTreeData[] = await nonNullProp(wizardContext, 'gitTreeDataTask');
-  /**
-   * Add the quick pick items so they appear to the user in the following sequence:
-   * 1. Skip for now
-   * 2. Manually enter
-   * 3. Root
-   * 4. Project folders
-   */
 
-  const quickPicks: IAzureQuickPickItem<string | undefined>[] = [];
-
-  // 1. Skip for now
-  if (isSkippable) {
-    const skipForNowQuickPickItem: IAzureQuickPickItem<string> = {
-      label: localize('skipForNow', '$(clock) Skip for now'),
-      data: '',
-    };
-    quickPicks.unshift(skipForNowQuickPickItem);
-  }
-
-  // 2. Manually enter
+  const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => {
+    return { label: d.path, data: d.path };
+  });
+  // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
+  quickPicks.unshift({ label: '/', data: '/' });
   const enterInputQuickPickItem: IAzureQuickPickItem = {
     label: localize('input', '$(keyboard) Manually enter location'),
     data: undefined,
   };
   quickPicks.push(enterInputQuickPickItem);
 
-  // 3. Root - Add the root directory as it is not listed in the gitTreeData from GitHub,
-  quickPicks.push({ label: '/', data: '/' });
-
-  // 4. Project folders - Add the list of folders in the project
-  const folderQuickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => {
-    return { label: d.path, data: d.path };
-  });
-  quickPicks.push(...folderQuickPicks);
+  const skipForNowQuickPickItem: IAzureQuickPickItem<string> = {
+    label: localize('skipForNow', '$(clock) Skip for now'),
+    data: '',
+  };
+  if (isSkippable) {
+    quickPicks.push(skipForNowQuickPickItem);
+  }
 
   return quickPicks;
 }

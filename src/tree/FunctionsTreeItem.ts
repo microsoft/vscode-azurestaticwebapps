@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import { AzExtTreeItem, AzureParentTreeItem, createAzureClient, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { localize } from '../utils/localize';
-import { requestUtils } from "../utils/requestUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
@@ -14,9 +14,11 @@ export class FunctionsTreeItem extends AzureParentTreeItem {
 
     public static contextValue: string = 'azureStaticFunctions';
     public readonly contextValue: string = FunctionsTreeItem.contextValue;
+    public parent: EnvironmentTreeItem;
 
     constructor(parent: EnvironmentTreeItem) {
         super(parent);
+        this.parent = parent;
     }
 
     public get id(): string {
@@ -32,10 +34,10 @@ export class FunctionsTreeItem extends AzureParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.parent?.id}/functions?api-version=2019-12-01-preview`, this.root);
-        const functions: { value: { id: string; name: string }[] } = <{ value: { id: string; name: string }[] }>JSON.parse(await requestUtils.sendRequest(requestOptions));
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.parent.resourceGroup, this.parent.parent.name, this.parent.buildId);
         const treeItems: AzExtTreeItem[] = await this.createTreeItemsWithErrorHandling(
-            functions.value,
+            functions,
             'invalidFunction',
             func => new FunctionTreeItem(this, func),
             func => func.name);

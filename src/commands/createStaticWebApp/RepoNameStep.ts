@@ -3,13 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Octokit } from '@octokit/rest';
 import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureextensionui';
-import { githubApiEndpoint } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { createGitHubRequestOptions, gitHubWebResource } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
-import { requestUtils } from '../../utils/requestUtils';
+import { createOctokitClient } from '../github/createOctokitClient';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
@@ -24,10 +23,10 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
         return !wizardContext.newRepoName;
     }
 
-    protected async isRepoAvailable(context: IStaticWebAppWizardContext, name: string): Promise<boolean> {
-        const requestOptions: gitHubWebResource = await createGitHubRequestOptions(context.accessToken, `${githubApiEndpoint}/repos/${nonNullProp(context, 'orgData').login}/${name}`);
+    protected async isRepoAvailable(context: IStaticWebAppWizardContext, repo: string): Promise<boolean> {
+        const client: Octokit = await createOctokitClient(context.accessToken);
         try {
-            await requestUtils.sendRequest(requestOptions);
+            await client.repos.get({ owner: nonNullProp(context, 'orgData').login, repo });
         } catch (err) {
             const parsedError: IParsedError = parseError(err);
             // if the repo doesn't exist, it throws a 404 Not Found error

@@ -3,21 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { IAppSettingsClient } from 'vscode-azureappservice';
-import { ISubscriptionContext } from 'vscode-azureextensionui';
+import { createAzureClient, ISubscriptionContext } from 'vscode-azureextensionui';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
-import { requestUtils } from '../../utils/requestUtils';
 
 export class AppSettingsClient implements IAppSettingsClient {
 
-    public fullName: string;
     public isLinux: boolean;
-    public swaId: string;
+    public ssId: string;
+    public fullName: string;
+    public resourceGroup: string;
     public root: ISubscriptionContext;
 
     constructor(node: EnvironmentTreeItem) {
-        this.fullName = node.name;
-        this.swaId = node.id;
+        this.ssId = node.id;
+        this.fullName = node.parent.name;
+        this.resourceGroup = node.parent.resourceGroup;
         this.root = node.root;
 
         // For IAppSettingsClient, isLinux is used for app settings key validation.
@@ -26,19 +28,13 @@ export class AppSettingsClient implements IAppSettingsClient {
         this.isLinux = false;
     }
 
-    public async listApplicationSettings(): Promise<IStringDictionary> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.swaId}/listFunctionAppSettings?api-version=2019-12-01-preview`, this.root, 'POST');
-        return <IStringDictionary>JSON.parse(await requestUtils.sendRequest(requestOptions));
+    public async listApplicationSettings(): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        return await client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName);
     }
 
-    public async updateApplicationSettings(appSettings: IStringDictionary): Promise<IStringDictionary> {
-        const requestOptions: requestUtils.Request = await requestUtils.getDefaultAzureRequest(`${this.swaId}/config/functionappsettings?api-version=2019-12-01-preview`, this.root, 'PUT');
-        requestOptions.headers['Content-Type'] = 'application/json';
-        requestOptions.body = JSON.stringify({ properties: appSettings.properties });
-        return <IStringDictionary>JSON.parse(await requestUtils.sendRequest(requestOptions));
+    public async updateApplicationSettings(appSettings: WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        return await client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName, appSettings);
     }
-}
-
-export interface IStringDictionary {
-    properties?: { [propertyName: string]: string };
 }
