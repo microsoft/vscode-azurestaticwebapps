@@ -203,25 +203,40 @@ export async function getGitTreeQuickPicks(
   isSkippable?: boolean
 ): Promise<IAzureQuickPickItem<string | undefined>[]> {
   const gitTreeData: GitTreeData[] = await nonNullProp(wizardContext, 'gitTreeDataTask');
+  /**
+   * Add the quick pick items so they appear to the user in the following sequence:
+   * 1. Skip for now
+   * 2. Manually enter
+   * 3. Root
+   * 4. Project folders
+   */
 
-  const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => {
-    return { label: d.path, data: d.path };
-  });
-  // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
-  quickPicks.unshift({ label: '/', data: '/' });
+  const quickPicks: IAzureQuickPickItem<string | undefined>[] = [];
+
+  // 1. Skip for now
+  if (isSkippable) {
+    const skipForNowQuickPickItem: IAzureQuickPickItem<string> = {
+      label: localize('skipForNow', '$(clock) Skip for now'),
+      data: '',
+    };
+    quickPicks.unshift(skipForNowQuickPickItem);
+  }
+
+  // 2. Manually enter
   const enterInputQuickPickItem: IAzureQuickPickItem = {
     label: localize('input', '$(keyboard) Manually enter location'),
     data: undefined,
   };
   quickPicks.push(enterInputQuickPickItem);
 
-  const skipForNowQuickPickItem: IAzureQuickPickItem<string> = {
-    label: localize('skipForNow', '$(clock) Skip for now'),
-    data: '',
-  };
-  if (isSkippable) {
-    quickPicks.push(skipForNowQuickPickItem);
-  }
+  // 3. Root - Add the root directory as it is not listed in the gitTreeData from GitHub,
+  quickPicks.push({ label: '/', data: '/' });
+
+  // 4. Project folders - Add the list of folders in the project
+  const folderQuickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => {
+    return { label: d.path, data: d.path };
+  });
+  quickPicks.push(...folderQuickPicks);
 
   return quickPicks;
 }
