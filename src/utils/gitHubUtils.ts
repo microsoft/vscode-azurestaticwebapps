@@ -4,13 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import {
-    GitGetTreeResponseData,
-    OctokitResponse,
-    ReposGetBranchResponseData,
-    ReposGetResponseData,
-    UsersGetAuthenticatedResponseData,
-} from '@octokit/types';
+import { GitGetTreeResponseData, OctokitResponse, ReposGetBranchResponseData, ReposGetResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
 import * as git from 'simple-git/promise';
 import { URL } from 'url';
 import { authentication, QuickPickItem } from 'vscode';
@@ -36,10 +30,7 @@ type gitHubLink = {
  * @param description Optional property of JSON that will be used as QuickPicks description
  * @param data Optional property of JSON that will be used as QuickPicks data saved as a NameValue pair
  */
-export function createQuickPickFromJsons<T>(
-    data: T[],
-    label: string,
-): IAzureQuickPickItem<T>[] {
+export function createQuickPickFromJsons<T>(data: T[], label: string): IAzureQuickPickItem<T>[] {
     const quickPicks: IAzureQuickPickItem<T>[] = [];
 
     for (const d of data) {
@@ -64,12 +55,7 @@ function parseLinkHeaderToGitHubLinkObject(linkHeader: string): gitHubLink {
     // link header response is "<https://api.github.com/organizations/6154722/repos?page=2>; rel="prev", <https://api.github.com/organizations/6154722/repos?page=4>; rel="next""
     const relative: string = 'rel=';
     for (const url of linkUrls) {
-        linkMap[
-            url.substring(
-                url.indexOf(relative) + relative.length + 1,
-                url.length - 1,
-            )
-        ] = url.substring(url.indexOf('<') + 1, url.indexOf('>'));
+        linkMap[url.substring(url.indexOf(relative) + relative.length + 1, url.length - 1)] = url.substring(url.indexOf('<') + 1, url.indexOf('>'));
     }
     return linkMap;
 }
@@ -95,12 +81,8 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
         if (res.headers.link) {
             // Reference for GitHub REST routes
             // https://developer.github.com/v3/
-            const linkObject: gitHubLink = parseLinkHeaderToGitHubLinkObject(
-                res.headers.link,
-            );
-            const page: string | null | undefined = linkObject.next
-                ? new URL(linkObject.next).searchParams.get('page')
-                : undefined;
+            const linkObject: gitHubLink = parseLinkHeaderToGitHubLinkObject(res.headers.link);
+            const page: string | null | undefined = linkObject.next ? new URL(linkObject.next).searchParams.get('page') : undefined;
             params.page = page ? Number(page) : undefined;
         }
 
@@ -112,12 +94,8 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
         }
     } while (params.page !== undefined && startTime + timeoutMs > Date.now());
 
-    cache.picks = cache.picks.concat(
-        createQuickPickFromJsons(gitHubQuickPicks, labelName),
-    );
-    cache.picks.sort((a: QuickPickItem, b: QuickPickItem) =>
-        a.label.localeCompare(b.label),
-    );
+    cache.picks = cache.picks.concat(createQuickPickFromJsons(gitHubQuickPicks, labelName));
+    cache.picks.sort((a: QuickPickItem, b: QuickPickItem) => a.label.localeCompare(b.label));
 
     if (params.page !== undefined) {
         return (<IAzureQuickPickItem<TResult | undefined>[]>[
@@ -147,17 +125,12 @@ export async function tryGetRemote(): Promise<string | undefined> {
         // only try to get remote if there's only a single workspace opened
         if (localProjectPath) {
             const localGit: git.SimpleGit = git(localProjectPath);
-            const originUrl: string | void = await localGit.remote([
-                'get-url',
-                'origin',
-            ]);
+            const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
 
             if (originUrl !== undefined) {
                 const { owner, name } = getRepoFullname(originUrl);
                 const client: Octokit = await createOctokitClient();
-                const repoData: ReposGetResponseData = (
-                    await client.repos.get({ owner, repo: name })
-                ).data;
+                const repoData: ReposGetResponseData = (await client.repos.get({ owner, repo: name })).data;
 
                 // to create a workflow, the user needs admin access so if it's not true, it will fail
                 if (repoData.permissions.admin) {
@@ -186,44 +159,30 @@ export async function tryGetLocalBranch(): Promise<string | undefined> {
     return;
 }
 
-export function getRepoFullname(
-    gitUrl: string,
-): { owner: string; name: string } {
+export function getRepoFullname(gitUrl: string): { owner: string; name: string } {
     const parsedUrl: gitUrlParse.GitUrl = gitUrlParse(gitUrl);
     return { owner: parsedUrl.owner, name: parsedUrl.name };
 }
 
-export function isUser(
-    orgData:
-        | UsersGetAuthenticatedResponseData
-        | OrgForAuthenticatedUserData
-        | undefined,
-): boolean {
+export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
 }
 
-export async function getGitHubTree(
-    repositoryUrl: string,
-    branch: string,
-): Promise<GitTreeData[]> {
+export async function getGitHubTree(repositoryUrl: string, branch: string): Promise<GitTreeData[]> {
     const octokitClient: Octokit = await createOctokitClient();
     const { owner, name } = getRepoFullname(repositoryUrl);
-    const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch(
-        {
-            owner,
-            repo: name,
-            branch,
-        },
-    );
-    const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree(
-        {
-            owner,
-            repo: name,
-            tree_sha: branchRes.data.commit.sha,
-            recursive: 'true',
-        },
-    );
+    const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch({
+        owner,
+        repo: name,
+        branch,
+    });
+    const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree({
+        owner,
+        repo: name,
+        tree_sha: branchRes.data.commit.sha,
+        recursive: 'true',
+    });
 
     // sort descending by the depth of subfolder
     return getTreeRes.data.tree
@@ -237,14 +196,8 @@ export async function getGitHubTree(
         });
 }
 
-export async function getGitTreeQuickPicks(
-    wizardContext: IStaticWebAppWizardContext,
-    isSkippable?: boolean,
-): Promise<IAzureQuickPickItem<string | undefined>[]> {
-    const gitTreeData: GitTreeData[] = await nonNullProp(
-        wizardContext,
-        'gitTreeDataTask',
-    );
+export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardContext, isSkippable?: boolean): Promise<IAzureQuickPickItem<string | undefined>[]> {
+    const gitTreeData: GitTreeData[] = await nonNullProp(wizardContext, 'gitTreeDataTask');
     /**
      * Add the quick pick items so they appear to the user in the following sequence:
      * 1. Skip for now
@@ -275,9 +228,7 @@ export async function getGitTreeQuickPicks(
     quickPicks.push({ label: '/', data: '/' });
 
     // 4. Project folders - Add the list of folders in the project
-    const folderQuickPicks: IAzureQuickPickItem<
-        string | undefined
-    >[] = gitTreeData.map((d) => {
+    const folderQuickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => {
         return { label: d.path, data: d.path };
     });
     quickPicks.push(...folderQuickPicks);
