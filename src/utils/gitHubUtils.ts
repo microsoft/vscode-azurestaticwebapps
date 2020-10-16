@@ -18,12 +18,7 @@ import { getSingleRootFsPath } from './workspaceUtils';
 // tslint:disable-next-line:no-require-imports
 import gitUrlParse = require('git-url-parse');
 
-type gitHubLink = {
-    prev?: string;
-    next?: string;
-    last?: string;
-    first?: string;
-};
+type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
@@ -41,7 +36,7 @@ export function createQuickPickFromJsons<T>(data: T[], label: string): IAzureQui
 
         quickPicks.push({
             label: <string>d[label],
-            data: d,
+            data: d
         });
     }
 
@@ -70,7 +65,7 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
     gitHubApiCb: (params: TParams) => Promise<OctokitResponse<any>>,
     params: TParams & { page?: number },
     labelName: string,
-    timeoutSeconds: number = 10,
+    timeoutSeconds: number = 10
 ): Promise<IAzureQuickPickItem<TResult | undefined>[]> {
     const timeoutMs: number = timeoutSeconds * 1000;
     const startTime: number = Date.now();
@@ -102,8 +97,8 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
             {
                 label: '$(sync) Load More',
                 suppressPersistence: true,
-                data: undefined,
-            },
+                data: undefined
+            }
         ]).concat(cache.picks);
     } else {
         return cache.picks;
@@ -112,11 +107,7 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
 
 export async function getGitHubAccessToken(): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-    return (
-        await authentication.getSession('github', scopes, {
-            createIfNone: true,
-        })
-    ).accessToken;
+    return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
 }
 
 export async function tryGetRemote(): Promise<string | undefined> {
@@ -172,17 +163,8 @@ export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthen
 export async function getGitHubTree(repositoryUrl: string, branch: string): Promise<GitTreeData[]> {
     const octokitClient: Octokit = await createOctokitClient();
     const { owner, name } = getRepoFullname(repositoryUrl);
-    const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch({
-        owner,
-        repo: name,
-        branch,
-    });
-    const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree({
-        owner,
-        repo: name,
-        tree_sha: branchRes.data.commit.sha,
-        recursive: 'true',
-    });
+    const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch({ owner, repo: name, branch });
+    const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree({ owner, tree_sha: branchRes.data.commit.sha, recursive: 'true' });
 
     // sort descending by the depth of subfolder
     return getTreeRes.data.tree
@@ -212,7 +194,7 @@ export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardCon
     if (isSkippable) {
         const skipForNowQuickPickItem: IAzureQuickPickItem<string> = {
             label: localize('skipForNow', '$(clock) Skip for now'),
-            data: '',
+            data: ''
         };
         quickPicks.unshift(skipForNowQuickPickItem);
     }
@@ -220,7 +202,7 @@ export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardCon
     // 2. Manually enter
     const enterInputQuickPickItem: IAzureQuickPickItem = {
         label: localize('input', '$(keyboard) Manually enter location'),
-        data: undefined,
+        data: undefined
     };
     quickPicks.push(enterInputQuickPickItem);
 
