@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
@@ -48,7 +48,19 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
         const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client: createAzureClient(this.root, WebSiteManagementClient), ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
-        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new StaticWebAppNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()];
+        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
+
+        promptSteps.push(new StaticWebAppNameStep());
+        if (context.advancedCreation) {
+            promptSteps.push(new ResourceGroupListStep());
+        }
+
+        promptSteps.push(new GitHubOrgListStep());
+        promptSteps.push(new GitHubRepoListStep());
+        promptSteps.push(new GitHubBranchListStep());
+        promptSteps.push(new AppLocationStep());
+        promptSteps.push(new ApiLocationStep());
+        promptSteps.push(new AppArtifactLocationStep());
 
         // hard-coding locations available during preview
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
