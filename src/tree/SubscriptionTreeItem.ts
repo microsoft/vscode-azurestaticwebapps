@@ -6,9 +6,7 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
-import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
-import { AppArtifactLocationStep } from '../commands/createStaticWebApp/AppArtifactLocationStep';
-import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
+import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
 import { GitHubBranchListStep } from '../commands/createStaticWebApp/GitHubBranchListStep';
 import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
 import { GitHubRepoListStep } from '../commands/createStaticWebApp/GitHubRepoListStep';
@@ -58,9 +56,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         promptSteps.push(new GitHubOrgListStep());
         promptSteps.push(new GitHubRepoListStep());
         promptSteps.push(new GitHubBranchListStep());
-        promptSteps.push(new AppLocationStep());
-        promptSteps.push(new ApiLocationStep());
-        promptSteps.push(new AppArtifactLocationStep());
+        promptSteps.push(new BuildPresetListStep());
 
         // hard-coding locations available during preview
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
@@ -76,10 +72,13 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         LocationListStep.addStep(wizardContext, promptSteps);
 
-        const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [
-            new ResourceGroupCreateStep(),
-            new VerifyProvidersStep(['Microsoft.Web']),
-            new StaticWebAppCreateStep()];
+        const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
+        if (!context.advancedCreation) {
+            executeSteps.push(new ResourceGroupCreateStep());
+        }
+
+        executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
+        executeSteps.push(new StaticWebAppCreateStep());
 
         const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
             title,
