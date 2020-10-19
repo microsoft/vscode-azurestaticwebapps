@@ -29,6 +29,7 @@
     "preview": true,
     "activationEvents": [
         "onCommand:staticWebApps.createStaticWebApp",
+        "onCommand:staticWebApps.createStaticWebAppAdvanced",
         "onCommand:staticWebApps.deleteStaticWebApp",
         "onCommand:staticWebApps.deleteEnvironment",
         "onCommand:staticWebApps.loadMore",
@@ -72,6 +73,11 @@
                     "light": "resources/light/book.svg",
                     "dark": "resources/dark/book.svg"
                 }
+            },
+            {
+                "command": "staticWebApps.createStaticWebAppAdvanced",
+                "title": "%staticWebApps.createStaticWebAppAdvanced%",
+                "category": "Azure Static Web Apps"
             },
             {
                 "command": "staticWebApps.deleteStaticWebApp",
@@ -249,6 +255,11 @@
                     "command": "staticWebApps.createStaticWebApp",
                     "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
                     "group": "1@1"
+                },
+                {
+                    "command": "staticWebApps.createStaticWebAppAdvanced",
+                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
+                    "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.openInPortal",

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
 import { GitHubBranchListStep } from '../commands/createStaticWebApp/GitHubBranchListStep';
@@ -23,6 +23,7 @@ import { StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public readonly childTypeLabel: string = localize('staticWebApp', 'Static Web App');
+    public supportsAdvancedCreation: boolean = true;
 
     private readonly _nextLink: string | undefined;
 
@@ -46,7 +47,24 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
         const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client: createAzureClient(this.root, WebSiteManagementClient), ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
-        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new StaticWebAppNameStep(), new GitHubOrgListStep(), new GitHubRepoListStep(), new GitHubBranchListStep(), new BuildPresetListStep()];
+        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
+        const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
+
+        promptSteps.push(new StaticWebAppNameStep());
+        if (context.advancedCreation) {
+            promptSteps.push(new ResourceGroupListStep());
+        } else {
+            wizardContext.repoHtmlUrl = await tryGetRemote();
+            executeSteps.push(new ResourceGroupCreateStep());
+        }
+
+        promptSteps.push(new GitHubOrgListStep());
+        promptSteps.push(new GitHubRepoListStep());
+        promptSteps.push(new GitHubBranchListStep());
+        promptSteps.push(new BuildPresetListStep());
+
+        executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
+        executeSteps.push(new StaticWebAppCreateStep());
 
         // hard-coding locations available during preview
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
@@ -61,28 +79,22 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         });
 
         LocationListStep.addStep(wizardContext, promptSteps);
-
-        const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [
-            new ResourceGroupCreateStep(),
-            new VerifyProvidersStep(['Microsoft.Web']),
-            new StaticWebAppCreateStep()];
-
         const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
             title,
             promptSteps,
             executeSteps
         });
 
-        wizardContext.accessToken = await getGitHubAccessToken();
-        wizardContext.repoHtmlUrl = await tryGetRemote();
         const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
-
         wizardContext.fsPath = getSingleRootFsPath();
         addWorkspaceTelemetry(wizardContext);
 
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
-        wizardContext.newResourceGroupName = newStaticWebAppName;
+
+        if (!context.advancedCreation) {
+            wizardContext.newResourceGroupName = newStaticWebAppName;
+        }
 
         await wizard.execute();
         context.showCreatingTreeItem(newStaticWebAppName);

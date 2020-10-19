@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MessageItem, window } from 'vscode';
-import { IActionContext } from 'vscode-azureextensionui';
+import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
 import { showActions } from '../github/showActions';
 
-export async function createStaticWebApp(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
+export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
@@ -32,4 +32,9 @@ export async function createStaticWebApp(context: IActionContext, node?: Subscri
         }
     });
 
+    return swaNode;
+}
+
+export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
+    return await createStaticWebApp({ ...context, advancedCreation: true }, node);
 }
