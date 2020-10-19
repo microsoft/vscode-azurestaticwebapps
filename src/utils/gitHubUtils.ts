@@ -175,15 +175,20 @@ export async function getGitHubTree(repositoryUrl: string, branch: string): Prom
 export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardContext, isSkippable?: boolean): Promise<IAzureQuickPickItem<string | undefined>[]> {
     const gitTreeData: GitTreeData[] = await nonNullProp(wizardContext, 'gitTreeDataTask');
 
-    const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => { return { label: d.path, data: d.path }; });
-    // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
-    quickPicks.unshift({ label: '/', data: '/' });
-    const enterInputQuickPickItem: IAzureQuickPickItem = { label: localize('input', '$(keyboard) Manually enter location'), data: undefined };
-    quickPicks.push(enterInputQuickPickItem);
+    // Have quick pick items be in this following order: Skip for Now => Manually Enter => Root => Project folders
+    // If a user has more than 30+ folders, it's arduous for users to find the skip/manual button, so put it near the top
 
-    const skipForNowQuickPickItem: IAzureQuickPickItem<string> = { label: localize('skipForNow', '$(clock) Skip for now'), data: '' };
+    const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => { return { label: d.path, data: d.path }; });
+
+    // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
+    quickPicks.unshift({ label: './', data: '/' });
+
+    const enterInputQuickPickItem: IAzureQuickPickItem = { label: localize('input', '$(keyboard) Manually enter location'), data: undefined };
+    quickPicks.unshift(enterInputQuickPickItem);
+
     if (isSkippable) {
-        quickPicks.push(skipForNowQuickPickItem);
+        const skipForNowQuickPickItem: IAzureQuickPickItem<string> = { label: localize('skipForNow', '$(clock) Skip for now'), data: '' };
+        quickPicks.unshift(skipForNowQuickPickItem);
     }
 
     return quickPicks;
