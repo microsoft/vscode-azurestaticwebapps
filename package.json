@@ -427,7 +427,7 @@
         "build": "tsc",
         "cleanReadme": "gulp cleanReadme",
         "compile": "tsc -watch",
-        "package": "vsce package",
+        "package": "vsce package --githubBranch main",
         "lint": "tslint --project tsconfig.json -e src/*.d.ts -t verbose",
         "pretest": "npm run webpack-prod && gulp preTest",
         "test": "node ./out/test/runTest.js",
