@@ -58,6 +58,12 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         this.branch = nonNullProp(this.data, 'sourceBranch');
 
         this.isProduction = this.buildId === 'default';
+
+        // StaticSiteBuild source branch is formatted as GitHubAccount:branch name for non-production builds
+        // split the : because branch names cannot contain colons
+        if (!this.isProduction) {
+            this.branch = this.branch.split(':')[1];
+        }
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
