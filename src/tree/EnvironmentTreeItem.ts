@@ -62,7 +62,10 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         // StaticSiteBuild source branch is formatted as GitHubAccount:branch name for non-production builds
         // split the : because branch names cannot contain colons
         if (!this.isProduction) {
-            this.branch = this.branch.split(':')[1];
+            const colon: string = ':';
+            if (this.branch.includes(colon)) {
+                this.branch = this.branch.split(colon)[1];
+            }
         }
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
