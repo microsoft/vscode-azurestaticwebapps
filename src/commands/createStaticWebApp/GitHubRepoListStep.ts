@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import { UsersGetAuthenticatedResponseData } from '@octokit/types';
+import { ReposGetResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
-import { OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
-import { getGitHubQuickPicksWithLoadMore, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
+import { BranchData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
+import { getGitHubQuickPicksWithLoadMore, getRepoFullname, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { createOctokitClient } from '../github/createOctokitClient';
@@ -35,8 +35,11 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
 
         context.repoData = repoData;
         context.repoHtmlUrl = repoData.html_url;
-        // if this is a new repo, the only branch that will have been created is 'main'
-        context.branchData = repoData.name === createNewRepo ? { name: 'main' } : undefined;
+        // if this is a new repo, the only branch that will have been created is 'main', if it's basic create, use the default branch
+        context.branchData = repoData.name === createNewRepo ?
+            { name: 'main' } : !context.advancedCreation ?
+                await this.getDefaultBranchForRepo(context) : undefined;
+
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
@@ -59,5 +62,12 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         quickPickItems.unshift({ label: localize(createNewRepo, '$(plus) Create a new GitHub repository...'), data: { name: createNewRepo, html_url: createNewRepo } });
 
         return quickPickItems;
+    }
+
+    private async getDefaultBranchForRepo(context: IStaticWebAppWizardContext): Promise<BranchData> {
+        const client: Octokit = await createOctokitClient(context.accessToken);
+        const { owner, name } = getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
+        const remoteRepo: ReposGetResponseData = (await client.repos.get({ owner, repo: name })).data;
+        return (await client.repos.getBranch({ owner, repo: name, branch: remoteRepo.default_branch })).data;
     }
 }

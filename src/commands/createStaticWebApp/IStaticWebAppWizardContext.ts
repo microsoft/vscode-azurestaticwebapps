@@ -13,6 +13,7 @@ export type CreateNewResource = { name?: string; html_url?: string };
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext {
     accessToken: string;
     client: WebSiteManagementClient;
+    advancedCreation?: boolean;
 
     orgData?: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData;
     repoData?: RepoData | CreateNewResource;

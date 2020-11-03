@@ -108,7 +108,7 @@ export async function getGitHubAccessToken(): Promise<string> {
     return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
 }
 
-export async function tryGetRemote(): Promise<string | undefined> {
+export async function tryGetRemote(): Promise<ReposGetResponseData | undefined> {
     try {
         const localProjectPath: string | undefined = getSingleRootFsPath();
         // only try to get remote if there's only a single workspace opened
@@ -123,7 +123,7 @@ export async function tryGetRemote(): Promise<string | undefined> {
 
                 // to create a workflow, the user needs admin access so if it's not true, it will fail
                 if (repoData.permissions.admin) {
-                    return repoData.html_url;
+                    return repoData;
                 }
             }
         }
