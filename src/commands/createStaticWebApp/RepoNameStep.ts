@@ -35,6 +35,7 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
 
         repo?.state.onDidChange((e) => {
             console.log(e);
+            console.log(repo?.state);
         });
 
         repo?.ui.onDidChange((e) => {
@@ -46,6 +47,10 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
         } catch (err) {
             console.log(err);
         }
+
+        git?.onDidChangeState((e) => {
+            console.log(e);
+        });
 
         wizardContext.newRepoName = (await ext.ui.showInputBox({
             prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository.'),
