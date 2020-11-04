@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
+import { commands, extensions, Uri } from 'vscode';
 import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
+import { GitExtension } from '../../git';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { createOctokitClient } from '../github/createOctokitClient';
@@ -13,6 +15,38 @@ import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
+        const gitExtension = extensions.getExtension<GitExtension>('vscode.git')?.exports;
+        const git = gitExtension?.getAPI(1);
+
+        // needs to be initialized
+        // needs to have a commit
+        // if it has a remote already, might screw things up
+        // if remote exists, it tries to push to it
+        // if remote doesn't exist, it throws an error
+        // if its awaited, then have to interact with hard to see notification dialog
+        // maybe see if repo state has changed?
+        // try to get repo
+        // use repo API calls?
+        const uri: Uri = Uri.file(wizardContext.fsPath!);
+        let repo = git?.getRepository(uri);
+        if (!repo) {
+            repo = await git?.init(uri);
+        }
+
+        repo?.state.onDidChange((e) => {
+            console.log(e);
+        });
+
+        repo?.ui.onDidChange((e) => {
+            console.log(e);
+        });
+
+        try {
+            await commands.executeCommand('git.publish');
+        } catch (err) {
+            console.log(err);
+        }
+
         wizardContext.newRepoName = (await ext.ui.showInputBox({
             prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository.'),
             validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value)
