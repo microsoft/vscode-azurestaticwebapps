@@ -136,7 +136,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async refreshImpl(): Promise<void> {
-        const remote: string | undefined = await tryGetRemote();
+        const remote: string | undefined = (await tryGetRemote())?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
     }
