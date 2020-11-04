@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
+import { ReposGetResponseData } from '@octokit/types';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
@@ -54,13 +55,20 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         if (context.advancedCreation) {
             promptSteps.push(new ResourceGroupListStep());
         } else {
-            wizardContext.repoHtmlUrl = await tryGetRemote();
+            const remoteRepo: ReposGetResponseData | undefined = await tryGetRemote();
+            if (remoteRepo) {
+                wizardContext.repoHtmlUrl = remoteRepo.html_url;
+                wizardContext.branchData = { name: remoteRepo.default_branch };
+            }
             executeSteps.push(new ResourceGroupCreateStep());
         }
 
         promptSteps.push(new GitHubOrgListStep());
         promptSteps.push(new GitHubRepoListStep());
-        promptSteps.push(new GitHubBranchListStep());
+        if (context.advancedCreation) {
+            promptSteps.push(new GitHubBranchListStep());
+        }
+
         promptSteps.push(new BuildPresetListStep());
 
         executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
