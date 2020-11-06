@@ -38,6 +38,8 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
 
     private async getBranchPicks(context: IStaticWebAppWizardContext, params: ReposListBranchesParameters, picksCache: ICachedQuickPicks<BranchData>): Promise<IAzureQuickPickItem<BranchData | undefined>[]> {
         const client: Octokit = await createOctokitClient(context.accessToken);
-        return await getGitHubQuickPicksWithLoadMore<BranchData, ReposListBranchesParameters>(picksCache, client.repos.listBranches, params, 'name');
+        const picks: IAzureQuickPickItem<BranchData | undefined>[] = await getGitHubQuickPicksWithLoadMore<BranchData, ReposListBranchesParameters>(picksCache, client.repos.listBranches, params, 'name');
+        const noBranch: string = localize('noBranch', ' $(stop) No branches detected. Go back to select a different repository or create a remote branch');
+        return picks.length > 0 ? picks : [{ label: noBranch, data: undefined }];
     }
 }
