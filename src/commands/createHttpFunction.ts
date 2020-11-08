@@ -7,7 +7,7 @@ import * as path from 'path';
 import { workspace } from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
 import { apiSubpathSetting, defaultApiLocation } from '../constants';
-import { getFunctionsApi } from '../getFunctionsApi';
+import { getFunctionsApi } from '../getExtensionApi';
 import { localize } from '../utils/localize';
 import { getWorkspaceSetting } from '../utils/settingsUtils';
 import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
