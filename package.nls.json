@@ -15,7 +15,7 @@
     "staticWebApps.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete.",
     "staticWebApps.createHttpFunction": "Create HTTP Function...",
     "staticWebApps.browse": "Browse Site",
-    "staticWebApps.showActions": "Show Actions",
+    "staticWebApps.showActions": "Show in GitHub",
     "staticWebApps.cloneRepo": "Clone Repo...",
     "staticWebApps.appSettings.add": "Add New Setting...",
     "staticWebApps.appSettings.download": "Download Remote Settings...",

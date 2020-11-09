@@ -21,7 +21,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".', swaNode.name);
     ext.outputChannel.appendLog(createdSs);
 
-    const showActionsMsg: MessageItem = { title: localize('showActions', 'Show Actions') };
+    const showActionsMsg: MessageItem = { title: localize('openActions', 'Open Actions in GitHub') };
     const viewOutput: MessageItem = { title: localize('viewOutput', 'View Output') };
     // don't wait
     window.showInformationMessage(createdSs, showActionsMsg, viewOutput).then(async (result) => {
