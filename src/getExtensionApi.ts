@@ -7,6 +7,7 @@ import { commands, Extension, extensions } from "vscode";
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { AzureExtensionApiProvider } from "vscode-azureextensionui/api";
 import { ext } from "./extensionVariables";
+import { API, GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
 
@@ -30,3 +31,15 @@ export async function getFunctionsApi(context: IActionContext): Promise<AzureFun
     // we still need to throw an error even if the user installs
     throw new UserCancelledError();
 }
+
+export async function getGitApi(): Promise<API> {
+    try {
+        const gitExtension: Extension<GitExtension> | undefined = extensions.getExtension<GitExtension>('vscode.git');
+        if (gitExtension) {
+            return gitExtension.exports.getAPI(1);
+        }
+    } catch (err) {
+        // the getExtension error is very vague and unactionable so swallow and throw our own error
+    }
+
+    throw new Error(localize('gitEnabled', 'If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D). To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).'));
