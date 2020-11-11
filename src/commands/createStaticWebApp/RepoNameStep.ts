@@ -8,6 +8,7 @@ import { basename } from 'path';
 import { Disposable, QuickPick, QuickPickItem, window } from 'vscode';
 import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureextensionui';
 import { getGitApi } from '../../getExtensionApi';
+import { generateGitignore } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp, nonNullValue } from '../../utils/nonNull';
 import { selectWorkspaceFolder } from '../../utils/workspaceUtils';
@@ -116,6 +117,8 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
         }
 
         quickpick.dispose();
+        await generateGitignore(fsPath);
+
         return { name: nonNullValue(repoName), isPrivate };
 
     }
