@@ -25,7 +25,6 @@
     "exclude": [
         "node_modules",
         ".vscode-test",
-        "gulpfile.ts",
-        "src/vscode-azurefunctions.api.d.ts"
+        "gulpfile.ts"
     ]
 }

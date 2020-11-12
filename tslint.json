@@ -1,5 +1,10 @@
 {
     "extends": "tslint-microsoft-contrib",
+    "linterOptions": {
+        "exclude": [
+            "src/vscode-azurefunctions.api.d.ts"
+        ]
+    },
     "rules": {
         "await-promise": [
             true,
