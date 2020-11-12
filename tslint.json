@@ -1,5 +1,10 @@
 {
     "extends": "tslint-microsoft-contrib",
+    "linterOptions": {
+        "exclude": [
+            "**/*.d.ts"
+        ]
+    },
     "rules": {
         "await-promise": [
             true,

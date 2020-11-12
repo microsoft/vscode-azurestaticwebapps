@@ -31,7 +31,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public actionsTreeItem: ActionsTreeItem;
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
-    public readonly data: WebSiteManagementModels.StaticSiteBuildARMResource;
+    public data: WebSiteManagementModels.StaticSiteBuildARMResource;
 
     public name: string;
     public id: string;
@@ -104,7 +104,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
             const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
-            await pollAzureAsyncOperation(await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.name, this.buildId), this.root.credentials);
+            await pollAzureAsyncOperation(await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId), this.root.credentials);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted environment "{0}".', this.label);
             window.showInformationMessage(deleteSucceeded);
@@ -136,6 +136,9 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async refreshImpl(): Promise<void> {
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
+
         const remote: string | undefined = (await tryGetRemote())?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
