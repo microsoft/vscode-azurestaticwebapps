@@ -6,7 +6,7 @@
 import { AppSettingsTreeItem, IAppSettingsClient } from 'vscode-azureappservice';
 import { IActionContext } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
-import { getFunctionsApi } from '../../getFunctionsApi';
+import { getFunctionsApi } from '../../getExtensionApi';
 import { localize } from "../../utils/localize";
 import { AzureFunctionsExtensionApi } from '../../vscode-azurefunctions.api';
 
