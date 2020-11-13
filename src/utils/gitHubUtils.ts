@@ -103,9 +103,19 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
     }
 }
 
+const githubProviderId: string = 'github';
+const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
+
 export async function getGitHubAccessToken(): Promise<string> {
-    const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-    return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
+    return (await authentication.getSession(githubProviderId, scopes, { createIfNone: true })).accessToken;
+}
+
+export async function logoutOfGitHubSession(): Promise<void> {
+    const sessionId: string | undefined = (await authentication.getSession(githubProviderId, scopes))?.id;
+
+    if (sessionId) {
+        await authentication.logout(githubProviderId, sessionId);
+    }
 }
 
 export async function tryGetRemote(): Promise<ReposGetResponseData | undefined> {
