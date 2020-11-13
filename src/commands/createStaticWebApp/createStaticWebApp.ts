@@ -6,9 +6,11 @@
 import { MessageItem, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
+import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
+import { revealTreeItem } from '../api/revealTreeItem';
 import { showActions } from '../github/showActions';
 
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
@@ -18,7 +20,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
-    const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".', swaNode.name);
+    const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  The GitHub Action must complete before your Static Web App will receive the deployed content.', swaNode.name);
     ext.outputChannel.appendLog(createdSs);
 
     const showActionsMsg: MessageItem = { title: localize('openActions', 'Open Actions in GitHub') };
@@ -31,6 +33,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             ext.outputChannel.show();
         }
     });
+    const children: EnvironmentTreeItem = <EnvironmentTreeItem>(await swaNode.loadAllChildren(context))[0]; // since it's newly created, should only have the environment tree node
+    await revealTreeItem(children.actionsTreeItem.fullId);
 
     return swaNode;
 }
