@@ -10,6 +10,7 @@ import { CancellationToken, CancellationTokenSource, window } from "vscode";
 import { IActionContext, parseError, UserCancelledError } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
+import { ensureStatus } from "../../utils/actionUtils";
 import { localize } from "../../utils/localize";
 import { createOctokitClient } from "./createOctokitClient";
 
@@ -66,7 +67,7 @@ async function checkActionStatus(context: IActionContext, node: ActionTreeItem, 
 
                 const client: Octokit = await createOctokitClient();
                 const workflowRun: ActionsGetWorkflowRunResponseData = (await client.actions.getWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
-                if (workflowRun.status === 'completed') {
+                if (ensureStatus(workflowRun) === 'completed') {
                     const actionCompleted: string = localize('actionCompleted', 'Action "{0}" has completed with the conclusion "{1}".', node.data.id, workflowRun.conclusion);
                     ext.outputChannel.appendLog(actionCompleted);
                     window.showInformationMessage(actionCompleted);
