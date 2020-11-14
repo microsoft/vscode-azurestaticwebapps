@@ -123,7 +123,8 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
                 case AppSettingTreeItem.contextValue:
                     return this.appSettingsTreeItem;
                 case ActionsTreeItem.contextValue:
-                case ActionTreeItem.contextValue:
+                case ActionTreeItem.contextValueCompleted:
+                case ActionTreeItem.contextValueInProgress:
                     return this.actionsTreeItem;
                 case FunctionsTreeItem.contextValue:
                 case FunctionTreeItem.contextValue:

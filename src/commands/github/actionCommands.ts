@@ -12,7 +12,7 @@ import { createOctokitClient } from "./createOctokitClient";
 
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValueCompleted, { ...context, suppressCreatePick: true });
     }
 
     const rerunRunning: string = localize('rerunRunning', 'Rerun for action "{0}" has started.', node.data.id);
@@ -25,7 +25,7 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
 
 export async function cancelAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValueInProgress, { ...context, suppressCreatePick: true });
     }
 
     const cancelRunning: string = localize('cancelRunning', 'Cancel for action "{0}" has started.', node.data.id);

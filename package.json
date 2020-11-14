@@ -358,12 +358,12 @@
                 },
                 {
                     "command": "staticWebApps.action.rerun",
-                    "when": "view == staticWebApps && viewItem == azureStaticAction",
+                    "when": "view == staticWebApps && viewItem == azureStaticActionCompleted",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.action.cancel",
-                    "when": "view == staticWebApps && viewItem == azureStaticAction",
+                    "when": "view == staticWebApps && viewItem == azureStaticActionInProgress",
                     "group": "1@2"
                 }
             ],

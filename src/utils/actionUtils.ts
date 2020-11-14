@@ -49,7 +49,7 @@ function convertConclusionToVerb(conclusion: Conclusion): string {
     }
 }
 
-function ensureStatus(data: { status: string }): Status {
+export function ensureStatus(data: { status: string }): Status {
     if (Object.values(Status).includes(<Status>data.status)) {
         return <Status>data.status;
     } else {
