@@ -467,6 +467,7 @@
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
+        "p-retry": "^4.2.0",
         "simple-git": "^1.132.0",
         "vscode-azureappservice": "^0.65.0",
         "vscode-azureextensionui": "^0.35.1",
