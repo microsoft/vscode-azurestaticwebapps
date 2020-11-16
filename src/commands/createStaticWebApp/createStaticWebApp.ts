@@ -6,11 +6,9 @@
 import { MessageItem, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
-import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
-import { revealTreeItem } from '../api/revealTreeItem';
 import { showActions } from '../github/showActions';
 
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
@@ -33,8 +31,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             ext.outputChannel.show();
         }
     });
-    const children: EnvironmentTreeItem = <EnvironmentTreeItem>(await swaNode.loadAllChildren(context))[0]; // since it's newly created, should only have the environment tree node
-    await revealTreeItem(children.actionsTreeItem.fullId);
 
     return swaNode;
 }
