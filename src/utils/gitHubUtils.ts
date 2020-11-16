@@ -10,7 +10,7 @@ import gitUrlParse = require('git-url-parse');
 import * as git from 'simple-git/promise';
 import { URL } from 'url';
 import { authentication, QuickPickItem } from 'vscode';
-import { IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
@@ -103,9 +103,20 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
     }
 }
 
-export async function getGitHubAccessToken(): Promise<string> {
+export async function getGitHubAccessToken(context?: IActionContext): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
-    return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
+    try {
+        return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
+    } catch (error) {
+        if (parseError(error).message === 'User did not consent to login.') {
+            if (context) {
+                context.telemetry.properties.cancelStep = 'getGitHubToken';
+            }
+            throw new UserCancelledError();
+        }
+
+        throw error;
+    }
 }
 
 export async function tryGetRemote(): Promise<ReposGetResponseData | undefined> {
