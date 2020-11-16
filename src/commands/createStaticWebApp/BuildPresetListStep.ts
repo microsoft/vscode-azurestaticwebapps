@@ -10,9 +10,9 @@ import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
 import { openUrl } from '../../utils/openUrl';
 import { ApiLocationStep } from './ApiLocationStep';
-import { AppArtifactLocationStep } from './AppArtifactLocationStep';
 import { AppLocationStep } from './AppLocationStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { AppArtifactLocationStep } from './OutputLocationStep';
 
 export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 

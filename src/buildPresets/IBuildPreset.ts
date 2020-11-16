@@ -12,5 +12,5 @@ export interface IBuildPreset {
     displayName: string;
     appLocation: string;
     apiLocation: string;
-    appArtifactLocation: string;
+    outputLocationSubpath: string;
 }

@@ -417,6 +417,11 @@
                         "scope": "resource",
                         "type": "string",
                         "description": "%staticWebApps.appArtifactSubpath%"
+                    },
+                    "staticWebApps.outputLocationSubpath": {
+                        "scope": "resource",
+                        "type": "string",
+                        "description": "%staticWebApps.outputLocationSubpath%"
                     }
                 }
             }

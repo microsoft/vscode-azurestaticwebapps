@@ -11,7 +11,7 @@ import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export class AppArtifactLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         const defaultLocation: string = 'build';
         wizardContext.appArtifactLocation = (await ext.ui.showInputBox({
