@@ -76,4 +76,8 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
         // sort by the jobs that started first
         return ti1.startedDate.getTime() - ti2.startedDate.getTime();
     }
+
+    public isAncestorOfImpl(contextValue: string | RegExp): boolean {
+        return contextValue !== ActionTreeItem.contextValueCompleted && contextValue !== ActionTreeItem.contextValueInProgress;
+    }
 }
