@@ -18,7 +18,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
-    const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".', swaNode.name);
+    const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);
     ext.outputChannel.appendLog(createdSs);
 
     const showActionsMsg: MessageItem = { title: localize('openActions', 'Open Actions in GitHub') };
