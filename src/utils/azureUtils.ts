@@ -23,8 +23,6 @@ export function getResourceGroupFromId(id: string): string {
     return parseResourceId(id)[2];
 }
 
-const activeActionTokens: { [key: string]: CancellationTokenSource | undefined } = {};
-
 type AzureAsyncOperationResponse = {
     id?: string;
     status: string;
@@ -34,14 +32,15 @@ type AzureAsyncOperationResponse = {
     };
 };
 
+const activeAsyncTokens: { [key: string]: CancellationTokenSource | undefined } = {};
 export async function pollAsyncOperation(pollingOperation: () => Promise<boolean>, pollIntervalInSeconds: number, timeoutInSeconds: number, id: string): Promise<boolean> {
     const tokenSource: CancellationTokenSource = new CancellationTokenSource();
     const token: CancellationToken = tokenSource.token;
-    if (activeActionTokens[id]) {
-        activeActionTokens[id]?.cancel();
+    if (activeAsyncTokens[id]) {
+        activeAsyncTokens[id]?.cancel();
     }
 
-    activeActionTokens[id] = tokenSource;
+    activeAsyncTokens[id] = tokenSource;
     const maxTime: number = Date.now() + timeoutInSeconds * 1000;
     let pollingComplete: boolean = false;
     try {
@@ -54,7 +53,7 @@ export async function pollAsyncOperation(pollingOperation: () => Promise<boolean
             await delay(pollIntervalInSeconds * 1000);
         }
     } finally {
-        activeActionTokens[id] = undefined;
+        activeAsyncTokens[id] = undefined;
         tokenSource.dispose();
     }
 
