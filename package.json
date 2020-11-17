@@ -416,7 +416,8 @@
                     "staticWebApps.appArtifactSubpath": {
                         "scope": "resource",
                         "type": "string",
-                        "description": "%staticWebApps.appArtifactSubpath%"
+                        "description": "%staticWebApps.appArtifactSubpath%",
+                        "deprecationMessage": "%staticWebApps.appArtifactSubpathDeprecated%"
                     },
                     "staticWebApps.outputLocationSubpath": {
                         "scope": "resource",
@@ -466,7 +467,7 @@
         "webpack-cli": "^3.3.12"
     },
     "dependencies": {
-        "@azure/arm-appservice": "^6.0.0",
+        "@azure/arm-appservice": "^6.1.0",
         "@azure/ms-rest-js": "^2.0.8",
         "@octokit/rest": "^18.0.3",
         "fs-extra": "^8.1.0",

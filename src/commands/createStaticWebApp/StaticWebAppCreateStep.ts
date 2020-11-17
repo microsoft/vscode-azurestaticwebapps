@@ -23,7 +23,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
             buildProperties: {
                 appLocation: wizardContext.appLocation,
                 apiLocation: wizardContext.apiLocation,
-                appArtifactLocation: wizardContext.appArtifactLocation
+                outputLocation: wizardContext.outputLocation
             },
             sku: { name: 'Free', tier: 'Free' },
             location: nonNullValueAndProp(wizardContext.location, 'name')
