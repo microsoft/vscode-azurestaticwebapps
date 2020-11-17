@@ -25,7 +25,7 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
     const client: Octokit = await createOctokitClient();
     await client.actions.reRunWorkflow({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id });
     await node.refresh(); // need to refresh to update the data
-    await checkActionStatus(context, node, 'rerun');
+    await checkActionStatus(context, node);
 }
 
 export async function cancelAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
@@ -39,10 +39,10 @@ export async function cancelAction(context: IActionContext, node?: ActionTreeIte
     const client: Octokit = await createOctokitClient();
     await client.actions.cancelWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id });
     await node.refresh(); // need to refresh to update the data
-    await checkActionStatus(context, node, 'cancel');
+    await checkActionStatus(context, node);
 }
 
-async function checkActionStatus(context: IActionContext, node: ActionTreeItem, action: 'rerun' | 'cancel'): Promise<void> {
+async function checkActionStatus(context: IActionContext, node: ActionTreeItem): Promise<void> {
     const startTime: number = Date.now();
     const client: Octokit = await createOctokitClient();
     const pollingOperation: () => Promise<boolean> = async () => {
@@ -54,7 +54,6 @@ async function checkActionStatus(context: IActionContext, node: ActionTreeItem, 
             await node.refresh();
             context.telemetry.properties.secToReport = String((Date.now() - startTime) / 1000);
             context.telemetry.properties.conclusion = workflowRun.conclusion;
-            context.telemetry.properties.action = action;
             return true;
         }
 
