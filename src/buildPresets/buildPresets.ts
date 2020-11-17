@@ -12,35 +12,35 @@ export const buildPresets: IBuildPreset[] = [
         displayName: 'Angular',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocationSubpath: 'dist'
+        outputLocation: 'dist'
     },
     {
         id: 'react',
         displayName: 'React',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocationSubpath: 'build'
+        outputLocation: 'build'
     },
     {
         id: 'svelte',
         displayName: 'Svelte',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocationSubpath: 'public'
+        outputLocation: 'public'
     },
     {
         id: 'vuejs',
         displayName: 'Vue.js',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocationSubpath: 'dist'
+        outputLocation: 'dist'
     },
     {
         id: 'blazor',
         displayName: 'Blazor',
         appLocation: 'Client',
         apiLocation: 'Api',
-        outputLocationSubpath: 'wwwroot'
+        outputLocation: 'wwwroot'
     },
 
     {
@@ -48,20 +48,20 @@ export const buildPresets: IBuildPreset[] = [
         displayName: 'Gatsby',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocationSubpath: 'public'
+        outputLocation: 'public'
     },
     {
         id: 'hugo',
         displayName: 'Hugo',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocationSubpath: 'public'
+        outputLocation: 'public'
     },
     {
         id: 'vuepress',
         displayName: 'VuePress',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocationSubpath: '.vuepress/dist'
+        outputLocation: '.vuepress/dist'
     }
 ];
