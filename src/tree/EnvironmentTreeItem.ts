@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
-import { ProgressLocation, window } from "vscode";
+import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
-import { AzExtParentTreeItem, AzExtTreeItem, AzureParentTreeItem, createAzureClient, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, createAzureClient, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
@@ -91,7 +91,18 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return treeUtils.getIconPath('Azure-Static-Apps-Environment');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtParentTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
+        if (functions.length === 0) {
+            return [this.actionsTreeItem, new GenericTreeItem(this, {
+                label: localize('noFunctions', 'Learn more about Functions in Azure Static Web Apps...'),
+                contextValue: 'noFunctions',
+                commandId: 'staticWebApps.showFunctionsDocumentation',
+                iconPath: new ThemeIcon('question')
+            })];
+        }
+
         return [this.actionsTreeItem, this.appSettingsTreeItem, this.functionsTreeItem];
     }
 
@@ -133,6 +144,16 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         }
 
         return undefined;
+    }
+
+    public compareChildrenImpl(item1: AzExtTreeItem, item2: AzExtTreeItem): number {
+        if (item1 instanceof GenericTreeItem) {
+            return 1;
+        } else if (item2 instanceof GenericTreeItem) {
+            return -1;
+        } else {
+            return super.compareChildrenImpl(item1, item2);
+        }
     }
 
     public async refreshImpl(): Promise<void> {

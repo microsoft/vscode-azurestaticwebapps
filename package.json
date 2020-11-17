@@ -203,6 +203,11 @@
                 "command": "staticWebApps.openYAMLConfigFile",
                 "title": "%staticWebApps.openYAMLConfigFile%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.showFunctionsDocumentation",
+                "title": "%staticWebApps.showFunctionsDocumentation%",
+                "category": "Azure Static Web Apps"
             }
         ],
         "viewsContainers": {

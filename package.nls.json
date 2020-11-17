@@ -31,5 +31,6 @@
     "staticWebApps.action.rerun": "Rerun Action...",
     "staticWebApps.action.cancel": "Cancel Action...",
     "staticWebApps.showDocumentation": "Documentation",
-    "staticWebApps.openYAMLConfigFile": "Edit Configuration..."
+    "staticWebApps.openYAMLConfigFile": "Edit Configuration...",
+    "staticWebApps.showFunctionsDocumentation": "Learn more about Functions in Azure Static Web Apps"
 }
