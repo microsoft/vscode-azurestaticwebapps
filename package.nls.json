@@ -28,8 +28,10 @@
     "staticWebApps.appSubpath": "The default value for the location of the application code prompt",
     "staticWebApps.apiSubpath": "The default value for the location of your Azure Functions code",
     "staticWebApps.appArtifactSubpath": "The default value for the location of your build output relative to your application code location",
+    "staticWebApps.appArtifactSubpathDeprecated": "Deprecated.  Use the staticWebApps.outputSubpath setting instead.",
     "staticWebApps.action.rerun": "Rerun Action...",
     "staticWebApps.action.cancel": "Cancel Action...",
     "staticWebApps.showDocumentation": "Documentation",
-    "staticWebApps.openYAMLConfigFile": "Edit Configuration..."
+    "staticWebApps.openYAMLConfigFile": "Edit Configuration...",
+    "staticWebApps.outputSubpath": "The default value for the location of your build output relative to your application code location"
 }

@@ -10,9 +10,9 @@ import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
 import { openUrl } from '../../utils/openUrl';
 import { ApiLocationStep } from './ApiLocationStep';
-import { AppArtifactLocationStep } from './AppArtifactLocationStep';
 import { AppLocationStep } from './AppLocationStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { OutputLocationStep } from './OutputLocationStep';
 
 export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
@@ -34,7 +34,7 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
         if (pick.data) {
             context.appLocation = pick.data.appLocation;
             context.apiLocation = pick.data.apiLocation;
-            context.appArtifactLocation = pick.data.appArtifactLocation;
+            context.outputLocation = pick.data.outputLocation;
         }
 
     }
@@ -45,7 +45,7 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
 
     public async getSubWizard(context: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
         if (!context.appLocation) {
-            return { promptSteps: [new AppLocationStep(), new ApiLocationStep(), new AppArtifactLocationStep()] };
+            return { promptSteps: [new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep()] };
         } else {
             return undefined;
         }

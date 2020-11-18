@@ -5,7 +5,7 @@
 
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export function addLocationTelemetry(wizardContext: IStaticWebAppWizardContext, key: 'appLocation' | 'apiLocation' | 'appArtifactLocation', defaultValue: string): void {
+export function addLocationTelemetry(wizardContext: IStaticWebAppWizardContext, key: 'appLocation' | 'apiLocation' | 'outputLocation', defaultValue: string): void {
     const value: string | undefined = wizardContext[key];
     let telemValue: string;
     if (value === undefined) {
