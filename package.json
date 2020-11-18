@@ -419,10 +419,10 @@
                         "description": "%staticWebApps.appArtifactSubpath%",
                         "deprecationMessage": "%staticWebApps.appArtifactSubpathDeprecated%"
                     },
-                    "staticWebApps.outputLocationSubpath": {
+                    "staticWebApps.outputSubpath": {
                         "scope": "resource",
                         "type": "string",
-                        "description": "%staticWebApps.outputLocationSubpath%"
+                        "description": "%staticWebApps.outputSubpath%"
                     }
                 }
             }

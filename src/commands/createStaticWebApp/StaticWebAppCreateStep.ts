@@ -20,6 +20,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
             repositoryUrl: wizardContext.repoHtmlUrl,
             branch: wizardContext.branchData?.name,
             repositoryToken: wizardContext.accessToken,
+            // The SDK hasn't updated to reflect the outputLocation property and platform will continue supporting appArtifactLocation, but will update as soon as available
             buildProperties: {
                 appLocation: wizardContext.appLocation,
                 apiLocation: wizardContext.apiLocation,

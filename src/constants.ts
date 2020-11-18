@@ -12,4 +12,4 @@ export const productionEnvironmentName: string = 'Production';
 export const appSubpathSetting: string = 'appSubpath';
 export const apiSubpathSetting: string = 'apiSubpath';
 export const appArtifactSubpathSetting: string = 'appArtifactSubpath';
-export const outputLocationSubpathSetting: string = 'outputLocationSubpath';
+export const outputSubpathSetting: string = 'outputSubpath';
