@@ -94,6 +94,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
+        client.staticSites.listStatuc;
         if (functions.length === 0) {
             return [this.actionsTreeItem, new GenericTreeItem(this, {
                 label: localize('noFunctions', 'Learn more about Functions in Azure Static Web Apps...'),
@@ -146,14 +147,8 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return undefined;
     }
 
-    public compareChildrenImpl(item1: AzExtTreeItem, item2: AzExtTreeItem): number {
-        if (item1 instanceof GenericTreeItem) {
-            return 1;
-        } else if (item2 instanceof GenericTreeItem) {
-            return -1;
-        } else {
-            return super.compareChildrenImpl(item1, item2);
-        }
+    public compareChildrenImpl(): number {
+        return 0; // already sorted
     }
 
     public async refreshImpl(): Promise<void> {
