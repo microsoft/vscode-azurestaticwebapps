@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as msRest from "@azure/ms-rest-js";
-import { createGenericClient } from "vscode-azureextensionui";
+import { CancellationToken, CancellationTokenSource } from "vscode";
+import { createGenericClient, UserCancelledError } from "vscode-azureextensionui";
 import { delay } from "./delay";
 import { localize } from './localize';
 
@@ -31,6 +32,34 @@ type AzureAsyncOperationResponse = {
     };
 };
 
+const activeAsyncTokens: { [key: string]: CancellationTokenSource | undefined } = {};
+export async function pollAsyncOperation(pollingOperation: () => Promise<boolean>, pollIntervalInSeconds: number, timeoutInSeconds: number, id: string): Promise<boolean> {
+    const tokenSource: CancellationTokenSource = new CancellationTokenSource();
+    const token: CancellationToken = tokenSource.token;
+    if (activeAsyncTokens[id]) {
+        activeAsyncTokens[id]?.cancel();
+    }
+
+    activeAsyncTokens[id] = tokenSource;
+    const maxTime: number = Date.now() + timeoutInSeconds * 1000;
+    let pollingComplete: boolean = false;
+    try {
+        while (!pollingComplete && Date.now() < maxTime) {
+            if (token.isCancellationRequested) {
+                throw new UserCancelledError();
+            }
+
+            pollingComplete = await pollingOperation();
+            await delay(pollIntervalInSeconds * 1000);
+        }
+    } finally {
+        activeAsyncTokens[id] = undefined;
+        tokenSource.dispose();
+    }
+
+    return pollingComplete;
+}
+
 //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
 export async function pollAzureAsyncOperation(restResponse: msRest.RestResponse, credentials: msRest.ServiceClientCredentials): Promise<void> {
     const url: string | undefined = restResponse._response.headers.get('azure-asyncoperation');
@@ -43,10 +72,8 @@ export async function pollAzureAsyncOperation(restResponse: msRest.RestResponse,
     request.prepare({ method: 'GET', url });
     await credentials.signRequest(request);
 
-    const timeoutInSeconds: number = 60;
-    const maxTime: number = Date.now() + timeoutInSeconds * 1000;
     const client: msRest.ServiceClient = createGenericClient();
-    while (Date.now() < maxTime) {
+    const pollingOperation: () => Promise<boolean> = async () => {
         const statusJsonString: msRest.HttpOperationResponse = await client.sendRequest(request);
         const operationResponse: AzureAsyncOperationResponse | undefined = <AzureAsyncOperationResponse>statusJsonString.parsedBody;
         if (operationResponse?.status !== 'InProgress') {
@@ -54,9 +81,11 @@ export async function pollAzureAsyncOperation(restResponse: msRest.RestResponse,
                 throw operationResponse.error;
             }
 
-            return;
+            return true;
         }
 
-        await delay(2000);
-    }
+        return false;
+    };
+
+    await pollAsyncOperation(pollingOperation, 2, 60, url);
 }
