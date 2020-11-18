@@ -91,19 +91,20 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return treeUtils.getIconPath('Azure-Static-Apps-Environment');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
-        client.staticSites.listStatuc;
         if (functions.length === 0) {
+            context.telemetry.properties.hasFunctions = 'false';
             return [this.actionsTreeItem, new GenericTreeItem(this, {
-                label: localize('noFunctions', 'Learn more about Functions in Azure Static Web Apps...'),
+                label: localize('noFunctions', 'Learn how to add an API with Azure Functions...'),
                 contextValue: 'noFunctions',
                 commandId: 'staticWebApps.showFunctionsDocumentation',
-                iconPath: new ThemeIcon('question')
+                iconPath: new ThemeIcon('book')
             })];
         }
 
+        context.telemetry.properties.hasFunctions = 'true';
         return [this.actionsTreeItem, this.appSettingsTreeItem, this.functionsTreeItem];
     }
 
