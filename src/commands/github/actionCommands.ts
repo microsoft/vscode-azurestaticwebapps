@@ -60,7 +60,7 @@ async function checkActionStatus(context: IActionContext, node: ActionTreeItem):
         return false;
     };
 
-    if (!await pollAsyncOperation(pollingOperation, 15, 20 * 60, String(node.data.id))) {
+    if (!await pollAsyncOperation(pollingOperation, 15, 20 * 60, node.fullId)) {
         const operationTimedOut: string = localize('timedOut', 'The action "{0}" is still running.  Check "{1}" for its status', node.data.id, node.data.html_url);
         ext.outputChannel.appendLog(operationTimedOut);
         window.showInformationMessage(operationTimedOut);
