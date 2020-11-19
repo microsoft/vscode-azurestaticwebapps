@@ -26,7 +26,7 @@ export function getActionDescription(data: ActionWorkflowStepData | ActionsGetJo
     }
 }
 
-export function ensureConclusion(data: { conclusion: string }): Conclusion {
+function ensureConclusion(data: { conclusion: string }): Conclusion {
     if (Object.values(Conclusion).includes(<Conclusion>data.conclusion)) {
         return <Conclusion>data.conclusion;
     } else {
