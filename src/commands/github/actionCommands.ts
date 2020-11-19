@@ -8,6 +8,7 @@ import { ActionsGetWorkflowRunResponseData } from "@octokit/types";
 import { window } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
+import { Status } from "../../gitHubTypings";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
 import { ensureStatus } from "../../utils/actionUtils";
 import { pollAsyncOperation } from "../../utils/azureUtils";
@@ -49,7 +50,7 @@ async function checkActionStatus(context: IActionContext, node: ActionTreeItem):
     const client: Octokit = await createOctokitClient();
     const pollingOperation: () => Promise<boolean> = async () => {
         const workflowRun: ActionsGetWorkflowRunResponseData = (await client.actions.getWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
-        if (ensureStatus(workflowRun) === 'completed') {
+        if (ensureStatus(workflowRun) === Status.Completed) {
             const actionCompleted: string = localize('actionCompleted', 'Action "{0}" has completed with the conclusion "{1}".', node.data.id, workflowRun.conclusion);
             ext.outputChannel.appendLog(actionCompleted);
             window.showInformationMessage(actionCompleted);
