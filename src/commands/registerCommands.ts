@@ -52,5 +52,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.appSettings.upload', uploadAppSettings);
     registerCommand('staticWebApps.toggleAppSettingVisibility', async (_context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(); }, 250);
     registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
+    registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
     registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
+
 }
