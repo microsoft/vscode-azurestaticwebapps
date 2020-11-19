@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
-import { ProgressLocation, window } from "vscode";
+import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
-import { AzExtParentTreeItem, AzExtTreeItem, AzureParentTreeItem, createAzureClient, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, createAzureClient, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
@@ -91,7 +91,20 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return treeUtils.getIconPath('Azure-Static-Apps-Environment');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtParentTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
+        if (functions.length === 0) {
+            context.telemetry.properties.hasFunctions = 'false';
+            return [this.actionsTreeItem, new GenericTreeItem(this, {
+                label: localize('noFunctions', 'Learn how to add an API with Azure Functions...'),
+                contextValue: 'noFunctions',
+                commandId: 'staticWebApps.showFunctionsDocumentation',
+                iconPath: new ThemeIcon('book')
+            })];
+        }
+
+        context.telemetry.properties.hasFunctions = 'true';
         return [this.actionsTreeItem, this.appSettingsTreeItem, this.functionsTreeItem];
     }
 
@@ -123,7 +136,8 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
                 case AppSettingTreeItem.contextValue:
                     return this.appSettingsTreeItem;
                 case ActionsTreeItem.contextValue:
-                case ActionTreeItem.contextValue:
+                case ActionTreeItem.contextValueCompleted:
+                case ActionTreeItem.contextValueInProgress:
                     return this.actionsTreeItem;
                 case FunctionsTreeItem.contextValue:
                 case FunctionTreeItem.contextValue:
@@ -133,6 +147,10 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         }
 
         return undefined;
+    }
+
+    public compareChildrenImpl(): number {
+        return 0; // already sorted
     }
 
     public async refreshImpl(): Promise<void> {

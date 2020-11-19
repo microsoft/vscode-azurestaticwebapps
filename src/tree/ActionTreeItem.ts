@@ -7,21 +7,25 @@ import { Octokit } from '@octokit/rest';
 import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunResponseData, OctokitResponse } from '@octokit/types';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { getActionIconPath } from '../utils/actionUtils';
+import { ensureStatus, getActionIconPath } from '../utils/actionUtils';
 import { getRepoFullname } from '../utils/gitHubUtils';
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
 
 export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
-    public static contextValue: string = 'azureStaticAction';
-    public readonly contextValue: string = ActionTreeItem.contextValue;
+    public static contextValueCompleted: string = 'azureStaticActionCompleted';
+    public static contextValueInProgress: string = 'azureStaticActionInProgress';
     public parent: ActionsTreeItem;
     public data: ActionsGetWorkflowRunResponseData;
 
     constructor(parent: ActionsTreeItem, data: ActionsGetWorkflowRunResponseData) {
         super(parent);
         this.data = data;
+    }
+
+    public get contextValue(): string {
+        return ensureStatus(this.data) === 'completed' ? ActionTreeItem.contextValueCompleted : ActionTreeItem.contextValueInProgress;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -71,5 +75,9 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
     public compareChildrenImpl(ti1: JobTreeItem, ti2: JobTreeItem): number {
         // sort by the jobs that started first
         return ti1.startedDate.getTime() - ti2.startedDate.getTime();
+    }
+
+    public isAncestorOfImpl(contextValue: string | RegExp): boolean {
+        return contextValue !== ActionTreeItem.contextValueCompleted && contextValue !== ActionTreeItem.contextValueInProgress;
     }
 }

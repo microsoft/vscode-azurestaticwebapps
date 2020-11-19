@@ -14,7 +14,7 @@ export class EnterApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWiz
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         context.apiLocation = (await ext.ui.showInputBox({
             value: getWorkspaceSetting(apiSubpathSetting, context.fsPath) || defaultApiLocation,
-            prompt: localize('enterApiLocation', "Enter the location of your Azure Functions code"),
+            prompt: localize('enterApiLocation', "Enter the location of your Azure Functions code. For example, '/api' represents a folder called 'api'. Leave blank to skip this step."),
         })).trim();
     }
 

@@ -30,7 +30,7 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     appLocation?: string;
     apiLocation?: string;
-    appArtifactLocation?: string;
+    outputLocation?: string;
 
     // created when the wizard is done executing
     staticWebApp?: WebSiteManagementModels.StaticSiteARMResource;
