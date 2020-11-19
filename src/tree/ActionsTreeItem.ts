@@ -6,7 +6,7 @@
 import { Octokit } from "@octokit/rest";
 import { ActionsListWorkflowRunsForRepoResponseData, OctokitResponse } from "@octokit/types";
 import { ThemeIcon } from "vscode";
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from "../commands/github/createOctokitClient";
 import { getRepoFullname } from '../utils/gitHubUtils';
 import { localize } from "../utils/localize";
@@ -62,11 +62,5 @@ export class ActionsTreeItem extends AzureParentTreeItem {
 
     public hasMoreChildrenImpl(): boolean {
         return false;
-    }
-
-    public async getMostRecentAction(context: IActionContext): Promise<ActionTreeItem> {
-        await this.refresh();
-        return <ActionTreeItem>(await this.getCachedChildren(context))[0];
-
     }
 }
