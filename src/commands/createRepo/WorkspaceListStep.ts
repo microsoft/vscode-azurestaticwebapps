@@ -31,7 +31,6 @@ export class WorkspaceListStep extends AzureWizardPromptStep<IStaticWebAppWizard
         // calling to verify the user has git enabled so they don't go through the whole process and then it fails
         const git: API = await getGitApi();
         const uri: Uri = Uri.file(wizardContext.fsPath);
-        // potentially undefined, but it will get initialized in RepoCreateStep if it doesn't exist
 
         // this command doesn't work if the project is not in the workspace, however after running "init" on it, it will generate the Repository object without affecting the repo itself
         // the downside to this is that it is creating a repo if it didn't exist already
