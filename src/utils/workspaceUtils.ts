@@ -29,21 +29,20 @@ export async function selectWorkspaceFolder(placeHolder: string, getSubPath?: (f
 }
 
 export async function selectWorkspaceItem(placeHolder: string, options: OpenDialogOptions, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {
-    let folder: IAzureQuickPickItem<string | undefined> | undefined;
-    if (workspace.workspaceFolders) {
-        const folderPicks: IAzureQuickPickItem<string | undefined>[] = await Promise.all(workspace.workspaceFolders.map(async (f: WorkspaceFolder) => {
-            let subpath: string | undefined;
-            if (getSubPath) {
-                subpath = await getSubPath(f);
-            }
+    // tslint:disable-next-line: strict-boolean-expressions
+    const folders: readonly WorkspaceFolder[] = workspace.workspaceFolders || [];
+    const folderPicks: IAzureQuickPickItem<string | undefined>[] = await Promise.all(folders.map(async (f: WorkspaceFolder) => {
+        let subpath: string | undefined;
+        if (getSubPath) {
+            subpath = await getSubPath(f);
+        }
 
-            const fsPath: string = subpath ? path.join(f.uri.fsPath, subpath) : f.uri.fsPath;
-            return { label: path.basename(fsPath), description: fsPath, data: fsPath };
-        }));
+        const fsPath: string = subpath ? path.join(f.uri.fsPath, subpath) : f.uri.fsPath;
+        return { label: path.basename(fsPath), description: fsPath, data: fsPath };
+    }));
 
-        folderPicks.push({ label: localize('browse', '$(file-directory) Browse...'), description: '', data: undefined });
-        folder = await ext.ui.showQuickPick(folderPicks, { placeHolder });
-    }
+    folderPicks.push({ label: localize('browse', '$(file-directory) Browse...'), description: '', data: undefined });
+    const folder: IAzureQuickPickItem<string | undefined> = await ext.ui.showQuickPick(folderPicks, { placeHolder });
 
-    return folder && folder.data ? folder.data : (await ext.ui.showOpenDialog(options))[0].fsPath;
+    return folder.data ? folder.data : (await ext.ui.showOpenDialog(options))[0].fsPath;
 }

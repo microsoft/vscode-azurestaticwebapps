@@ -15,7 +15,7 @@ import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const placeHolder: string = localize('chooseOrg', 'Choose organization.');
+        const placeHolder: string = context.deploymentMethod === 'existingRepo' ? localize('chooseOrg', 'Choose organization.') : localize('chooseOrg', 'Choose organization to create repository.');
         let orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined;
 
         do {

@@ -21,12 +21,11 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !wizardContext.apiLocation && !wizardContext.newRepo;
+        return !wizardContext.apiLocation;
     }
 
     public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
         return wizardContext.apiLocation === undefined ? { promptSteps: [new EnterApiLocationStep()] } : undefined;
-
     }
 
 }

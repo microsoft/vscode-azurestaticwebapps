@@ -5,21 +5,16 @@
 
 import { Octokit } from '@octokit/rest';
 import { GitGetTreeResponseData, OctokitResponse, ReposGetBranchResponseData, ReposGetResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
-import * as fse from 'fs-extra';
 // tslint:disable-next-line:no-require-imports
 import gitUrlParse = require('git-url-parse');
-import * as os from 'os';
-import { join } from 'path';
 import * as git from 'simple-git/promise';
 import { URL } from 'url';
 import { authentication, QuickPickItem } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { ext } from '../extensionVariables';
 import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
 import { localize } from './localize';
-import { nonNullProp } from './nonNull';
 import { getSingleRootFsPath } from './workspaceUtils';
 
 type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
@@ -188,12 +183,12 @@ export async function getGitHubTree(repositoryUrl: string, branch: string): Prom
 }
 
 export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardContext, isSkippable?: boolean): Promise<IAzureQuickPickItem<string | undefined>[]> {
-    const gitTreeData: GitTreeData[] = await nonNullProp(wizardContext, 'gitTreeDataTask');
+    const gitTreeData: GitTreeData[] | undefined = await wizardContext.gitTreeDataTask;
 
     // Have quick pick items be in this following order: Skip for Now => Manually Enter => Root => Project folders
     // If a user has more than 30+ folders, it's arduous for users to find the skip/manual button, so put it near the top
 
-    const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => { return { label: d.path, data: d.path }; });
+    const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData ? gitTreeData.map((d) => { return { label: d.path, data: d.path }; }) : [];
 
     // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
     quickPicks.unshift({ label: './', data: '/' });
@@ -207,24 +202,4 @@ export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardCon
     }
 
     return quickPicks;
-}
-
-// implementation copied from https://github.com/microsoft/vscode/blob/373ea1b9694c584af60c5581ead9be56cf9f2996/extensions/github/src/publish.ts#L120-L168
-export async function generateGitignore(fsPath: string): Promise<void> {
-    const gitignorePath: string = join(fsPath, '.gitignore');
-
-    if (!await fse.pathExists(gitignorePath)) {
-        const children: string[] = (await fse.readdir(fsPath))
-            .filter(name => name !== '.git');
-        const placeHolder: string = localize('ignore', 'Select which files should be included in the repository.');
-        const result: { label: string }[] = await ext.ui.showQuickPick(children.map(name => ({ label: name })), { placeHolder, canPickMany: true });
-
-        const ignored: Set<string> = new Set(children);
-        result.forEach(c => ignored.delete(c.label));
-
-        if (ignored.size > 0) {
-            const data: string = [...ignored].map(i => `/${i}`).join(os.EOL);
-            await fse.writeFile(gitignorePath, data);
-        }
-    }
 }
