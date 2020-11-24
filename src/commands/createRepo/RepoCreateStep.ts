@@ -35,6 +35,11 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
             await client.repos.createInOrg({ org: nonNullProp(wizardContext, 'orgData').login, name: newRepoName, private: newRepoIsPrivate })).data;
         wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
 
+        const createdGitHubRepo: string = newRepoIsPrivate ? localize('createdPrivateGitHubRepo', 'Created new private GitHub repository "{0}".', newRepoName) :
+            localize('createdPublicGitHubRepo', 'Created new public GitHub repository "{0}".', newRepoName);
+        ext.outputChannel.appendLog(createdGitHubRepo);
+        progress.report({ message: createdGitHubRepo });
+
         const git: API = await getGitApi();
         const fsPath: string = nonNullProp(wizardContext, 'fsPath');
         const uri: Uri = Uri.file(fsPath);
@@ -62,10 +67,9 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         progress.report({ message: pushingBranch });
         await repo.push(remoteName, branch.name, true);
 
-        const createdGitHubRepo: string = newRepoIsPrivate ? localize('createdPrivateGitHubRepo', 'Created new private GitHub repository "{0}".', newRepoName) :
-            localize('createdPublicGitHubRepo', 'Created new public GitHub repository "{0}".', newRepoName);
-        ext.outputChannel.appendLog(createdGitHubRepo);
-        progress.report({ message: createdGitHubRepo });
+        const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, wizardContext.newRepoName);
+        ext.outputChannel.appendLog(pushedBranch);
+        progress.report({ message: pushedBranch });
 
         wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
     }

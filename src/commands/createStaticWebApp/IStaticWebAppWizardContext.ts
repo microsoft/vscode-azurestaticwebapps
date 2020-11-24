@@ -29,7 +29,8 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     newRepoName?: string;
     newRepoIsPrivate?: boolean;
     newRemoteShortname?: string;
-    hasOrigin?: boolean;
+    originExists?: boolean;
+    gitignoreExists?: boolean;
 
     gitTreeDataTask?: Promise<GitTreeData[]>;
 

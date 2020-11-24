@@ -3,32 +3,31 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IWizardOptions } from 'vscode-azureextensionui';
+import * as fse from 'fs-extra';
+import { join } from 'path';
+import { AzureWizardPromptStep } from 'vscode-azureextensionui';
 import { remoteShortnameExists } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { selectWorkspaceFolder } from '../../utils/workspaceUtils';
-import { GitHubOrgListStep } from '../createStaticWebApp/GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
-import { GitignoreListStep } from './GitignoreListStep';
-import { RemoteShortnameStep } from './RemoteShortnameStep';
-import { RepoNameStep } from './RepoNameStep';
-import { RepoPrivacyStep } from './RepoPrivacyStep';
 
 export class WorkspaceListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+    public hideStepCount: boolean = true;
+
+    public static async setWorkspaceContexts(wizardContext: IStaticWebAppWizardContext, fsPath: string): Promise<void> {
+        wizardContext.originExists = await remoteShortnameExists(fsPath, 'origin');
+        const gitignorePath: string = join(fsPath, '.gitignore');
+        wizardContext.gitignoreExists = await fse.pathExists(gitignorePath);
+    }
+
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         const selectProject: string = localize('selectProject', 'Select a project to create the new repository');
         wizardContext.fsPath = await selectWorkspaceFolder(selectProject);
-        wizardContext.hasOrigin = await remoteShortnameExists(wizardContext.fsPath, 'origin');
+        await WorkspaceListStep.setWorkspaceContexts(wizardContext, wizardContext.fsPath);
+
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
         return !wizardContext.fsPath || !!wizardContext.advancedCreation;
-    }
-
-    public async getSubWizard(_wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
-        // some shouldPrompts depend on having a workspace, so put all of the steps as a subwizard instead
-        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
-        promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep(), new GitignoreListStep());
-        return { promptSteps };
     }
 }

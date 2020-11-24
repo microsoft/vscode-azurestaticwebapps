@@ -15,11 +15,11 @@ import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppW
 export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const placeHolder: string = wizardContext.hasOrigin ? localize('enterRemote', 'Remote "origin" already exists in the local repository. Enter a unique shortname for the new remote') :
+        const prompt: string = wizardContext.originExists ? localize('enterRemote', 'Remote "origin" already exists in the local repository. Enter a unique shortname for the new remote') :
             localize('enterRemote', 'Enter a unique shortname for the remote Git repository');
         wizardContext.newRemoteShortname = await ext.ui.showInputBox({
-            placeHolder,
-            value: wizardContext.hasOrigin ? undefined : 'origin',
+            prompt,
+            value: wizardContext.originExists ? undefined : 'origin',
             validateInput: async (value) => {
                 if (value.length === 0) {
                     return localize('invalidLength', 'The name must be at least 1 character.');
@@ -44,6 +44,6 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !!wizardContext.hasOrigin || !!wizardContext.advancedCreation;
+        return !!wizardContext.originExists || !!wizardContext.advancedCreation;
     }
 }

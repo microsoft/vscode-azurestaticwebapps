@@ -31,8 +31,6 @@ export class GitignoreListStep extends AzureWizardPromptStep<IStaticWebAppWizard
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        const fsPath: string = nonNullProp(wizardContext, 'fsPath');
-        const gitignorePath: string = join(fsPath, '.gitignore');
-        return !fse.pathExistsSync(gitignorePath);
+        return wizardContext.gitignoreExists === false;
     }
 }

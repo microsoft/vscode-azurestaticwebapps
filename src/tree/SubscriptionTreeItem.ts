@@ -49,6 +49,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
+        promptSteps.push(new CreateMethodStep());
         promptSteps.push(new StaticWebAppNameStep());
         if (context.advancedCreation) {
             promptSteps.push(new ResourceGroupListStep());
@@ -60,10 +61,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             }
             executeSteps.push(new ResourceGroupCreateStep());
         }
-
-        // DeploymentMethodStep will add a sub-wizard to determine how to deploy the code that will get run before BuildPresetListStep
-        promptSteps.push(new CreateMethodStep());
-
         promptSteps.push(new BuildPresetListStep());
 
         executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
