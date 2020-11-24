@@ -6,9 +6,8 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
-import { Repository } from '../../git';
 import { BranchData, GitTreeData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
-import { DeploymentMethods } from './DeploymentMethodStep';
+import { CreateScenario } from './CreateMethodStep';
 
 // creating a dummy repoData/branchData would be an annoying amount of work, so use this type to recognize when users have selected create new repo
 export type CreateNewResource = { name?: string; html_url?: string };
@@ -16,7 +15,7 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     accessToken: string;
     client: WebSiteManagementClient;
 
-    deploymentMethod?: DeploymentMethods;
+    createScenario?: CreateScenario;
 
     orgData?: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData;
     repoData?: RepoData | CreateNewResource;
@@ -27,11 +26,10 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     newStaticWebAppName?: string;
 
-    repo?: Repository | null | undefined;
-
     newRepoName?: string;
-    newRepoPrivacy?: boolean; /* true means it's private */
+    newRepoIsPrivate?: boolean;
     newRemoteShortname?: string;
+    hasOrigin?: boolean;
 
     gitTreeDataTask?: Promise<GitTreeData[]>;
 

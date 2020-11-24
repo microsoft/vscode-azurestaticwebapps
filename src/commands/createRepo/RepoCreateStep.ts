@@ -5,13 +5,15 @@
 
 import { Octokit } from '@octokit/rest';
 import { ReposCreateForAuthenticatedUserResponseData, ReposCreateInOrgResponseData } from '@octokit/types';
-import { Progress } from 'vscode';
+import { basename } from 'path';
+import { Progress, Uri } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { ext } from '../../extensionVariables';
-import { Branch, Repository } from '../../git';
+import { getGitApi } from '../../getExtensionApi';
+import { API, Branch, Repository } from '../../git';
 import { isUser } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
-import { nonNullProp } from '../../utils/nonNull';
+import { nonNullProp, nonNullValue } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../github/createOctokitClient';
 
@@ -22,29 +24,46 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
 
     public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const newRepoName: string = nonNullProp(wizardContext, 'newRepoName');
-        const newRepoPrivacy: boolean = nonNullProp(wizardContext, 'newRepoPrivacy');
-        const privacy: string = newRepoPrivacy ? 'private' : 'public';
-        const creatingGitHubRepo: string = localize('creatingGitHubRepo', 'Creating new {0} GitHub repository "{1}"', privacy, newRepoName);
+        const newRepoIsPrivate: boolean = nonNullProp(wizardContext, 'newRepoIsPrivate');
+        const creatingGitHubRepo: string = newRepoIsPrivate ? localize('creatingPrivateGitHubRepo', 'Creating new private GitHub repository "{0}"...', newRepoName) :
+            localize('creatingPublicGitHubRepo', 'Creating new public GitHub repository "{0}"...', newRepoName);
         ext.outputChannel.appendLog(creatingGitHubRepo);
         progress.report({ message: creatingGitHubRepo });
 
-        const repo: Repository = nonNullProp(wizardContext, 'repo');
+        const client: Octokit = await createOctokitClient(wizardContext.accessToken);
+        const gitHubRepoRes: RepoCreateData = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
+            await client.repos.createInOrg({ org: nonNullProp(wizardContext, 'orgData').login, name: newRepoName, private: newRepoIsPrivate })).data;
+        wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
+
+        const git: API = await getGitApi();
+        const fsPath: string = nonNullProp(wizardContext, 'fsPath');
+        const uri: Uri = Uri.file(fsPath);
+        let repo: Repository | null = git.getRepository(uri);
+
+        if (!repo) {
+            // if there is no repo, it needs to be initialized
+            // https://github.com/microsoft/vscode/issues/111210
+            repo = nonNullValue(await git.init(uri));
+            ext.outputChannel.appendLog(localize('initRepo', 'Initialized repository in local workspace "{0}".', basename(fsPath)));
+        }
+
         if (!repo.state.HEAD?.commit) {
             // needs to have an initial commit
             await repo.commit(localize('initCommit', 'Initial commit'), { all: true });
+            ext.outputChannel.appendLog(localize('commitRepo', 'Created initial commit in local repository.'));
         }
-
-        const client: Octokit = await createOctokitClient(wizardContext.accessToken);
-        const gitHubRepoRes: RepoCreateData = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoPrivacy }) :
-            await client.repos.createInOrg({ org: nonNullProp(wizardContext, 'orgData').login, name: newRepoName, private: newRepoPrivacy })).data;
-        wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
 
         const remoteName: string = nonNullProp(wizardContext, 'newRemoteShortname');
         await repo.addRemote(remoteName, gitHubRepoRes.clone_url);
         const branch: Branch = await repo.getBranch('HEAD');
+
+        const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, wizardContext.newRepoName);
+        ext.outputChannel.appendLog(pushingBranch);
+        progress.report({ message: pushingBranch });
         await repo.push(remoteName, branch.name, true);
 
-        const createdGitHubRepo: string = localize('createdGitHubRepo', 'Created new {0} GitHub repository "{1}"', privacy, newRepoName);
+        const createdGitHubRepo: string = newRepoIsPrivate ? localize('createdPrivateGitHubRepo', 'Created new private GitHub repository "{0}".', newRepoName) :
+            localize('createdPublicGitHubRepo', 'Created new public GitHub repository "{0}".', newRepoName);
         ext.outputChannel.appendLog(createdGitHubRepo);
         progress.report({ message: createdGitHubRepo });
 

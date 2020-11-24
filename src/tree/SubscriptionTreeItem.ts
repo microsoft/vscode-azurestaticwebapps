@@ -8,7 +8,7 @@ import { ReposGetResponseData } from '@octokit/types';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
-import { DeploymentMethodStep } from '../commands/createStaticWebApp/DeploymentMethodStep';
+import { CreateMethodStep } from '../commands/createStaticWebApp/CreateMethodStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
@@ -62,7 +62,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         }
 
         // DeploymentMethodStep will add a sub-wizard to determine how to deploy the code that will get run before BuildPresetListStep
-        promptSteps.push(new DeploymentMethodStep());
+        promptSteps.push(new CreateMethodStep());
 
         promptSteps.push(new BuildPresetListStep());
 

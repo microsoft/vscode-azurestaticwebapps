@@ -6,8 +6,8 @@
 import { basename } from 'path';
 import { AzureWizardPromptStep } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
-import { Repository } from '../../git';
 import { cpUtils } from '../../utils/cpUtils';
+import { remoteShortnameExists } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
@@ -15,8 +15,12 @@ import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppW
 export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
+        const placeHolder: string = wizardContext.hasOrigin ? localize('enterRemote', 'Remote "origin" already exists in the local repository. Enter a unique shortname for the new remote') :
+            localize('enterRemote', 'Enter a unique shortname for the remote Git repository');
         wizardContext.newRemoteShortname = await ext.ui.showInputBox({
-            placeHolder: localize('enterRemote', 'Enter a unique shortname for the remote Git repository'), validateInput: async (value) => {
+            placeHolder,
+            value: wizardContext.hasOrigin ? undefined : 'origin',
+            validateInput: async (value) => {
                 if (value.length === 0) {
                     return localize('invalidLength', 'The name must be at least 1 character.');
                 } else {
@@ -28,8 +32,9 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
                         return localize('notValid', '"{0}" is not a valid remote shortname.', value);
                     }
 
-                    if (wizardContext.repo?.state.remotes.find((remote) => { return remote.name === value; })) {
-                        return localize('remoteExists', 'Remote shortname "{0}" already exists in "{1}".', value, basename(nonNullProp(wizardContext, 'fsPath')));
+                    const fsPath: string = nonNullProp(wizardContext, 'fsPath');
+                    if (await remoteShortnameExists(fsPath, value)) {
+                        return localize('remoteExists', 'Remote shortname "{0}" already exists in "{1}".', value, basename(fsPath));
                     }
                 }
 
@@ -39,18 +44,6 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        // if the repo is undefined, that means there's no chance origin already exists
-        const repo: Repository | null | undefined = wizardContext.repo;
-        let originExists: boolean = false;
-        const remoteName: string = 'origin';
-        if (repo) {
-            originExists = !!repo.state.remotes.find((remote) => { return remote.name === remoteName; });
-        }
-
-        if (!originExists && !wizardContext.advancedCreation) {
-            wizardContext.newRemoteShortname = remoteName;
-        }
-
-        return originExists || !!wizardContext.advancedCreation;
+        return !!wizardContext.hasOrigin || !!wizardContext.advancedCreation;
     }
 }

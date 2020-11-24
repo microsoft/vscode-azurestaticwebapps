@@ -25,10 +25,9 @@ export class GitignoreListStep extends AzureWizardPromptStep<IStaticWebAppWizard
         const ignored: Set<string> = new Set(files);
         result.forEach(file => ignored.delete(file.label));
 
-        if (ignored.size > 0) {
-            const data: string = [...ignored].map(i => `/${i}`).join(os.EOL);
-            await fse.writeFile(gitignorePath, data);
-        }
+        // if the user selected every file, write a blank .gitignore
+        const data: string = [...ignored].map(i => `/${i}`).join(os.EOL);
+        await fse.writeFile(gitignorePath, data);
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {

@@ -203,3 +203,15 @@ export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardCon
 
     return quickPicks;
 }
+
+export async function remoteShortnameExists(fsPath: string, remoteName: string): Promise<boolean> {
+    const localGit: git.SimpleGit = git(fsPath);
+    let hasOrigin: boolean = false;
+    try {
+        hasOrigin = !!(await localGit.getRemotes(false)).find(r => { return r.name === remoteName; });
+    } catch (error) {
+        // ignore the error and assume there is no origin
+    }
+
+    return hasOrigin;
+}
