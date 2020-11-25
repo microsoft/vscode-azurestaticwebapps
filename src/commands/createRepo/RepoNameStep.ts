@@ -8,8 +8,8 @@ import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureext
 import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
+import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../github/createOctokitClient';
-import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {

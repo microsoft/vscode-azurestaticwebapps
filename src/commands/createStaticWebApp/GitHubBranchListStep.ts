@@ -33,7 +33,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
-        return !context.branchData;
+        return !context.branchData && !!context.advancedCreation;
     }
 
     private async getBranchPicks(context: IStaticWebAppWizardContext, params: ReposListBranchesParameters, picksCache: ICachedQuickPicks<BranchData>): Promise<IAzureQuickPickItem<BranchData | undefined>[]> {
