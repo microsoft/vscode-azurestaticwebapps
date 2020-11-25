@@ -7,7 +7,7 @@ import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-app
 import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
 import { BranchData, GitTreeData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
-import { CreateScenario } from './CreateMethodStep';
+import { CreateScenario } from './CreateScenarioListStep';
 
 // creating a dummy repoData/branchData would be an annoying amount of work, so use this type to recognize when users have selected create new repo
 export type CreateNewResource = { name?: string; html_url?: string };

@@ -22,7 +22,7 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export type CreateScenario = 'publishToNewRepo' | 'connectToExistingRepo';
 
-export class CreateMethodStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+export class CreateScenarioListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public hideStepCount: boolean = true;
 
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {

@@ -8,7 +8,7 @@ import { ReposGetResponseData } from '@octokit/types';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
-import { CreateMethodStep } from '../commands/createStaticWebApp/CreateMethodStep';
+import { CreateScenarioListStep } from '../commands/createStaticWebApp/CreateScenarioListStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
@@ -49,7 +49,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
-        promptSteps.push(new CreateMethodStep());
+        promptSteps.push(new CreateScenarioListStep());
 
         promptSteps.push(new StaticWebAppNameStep());
         if (context.advancedCreation) {
