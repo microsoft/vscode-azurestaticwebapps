@@ -14,7 +14,7 @@ import { createOctokitClient } from '../github/createOctokitClient';
 export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         wizardContext.newRepoName = (await ext.ui.showInputBox({
-            prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository.'),
+            prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository. Special characters will be replaced with "-" upon creation.'),
             validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value)
         })).trim();
     }
