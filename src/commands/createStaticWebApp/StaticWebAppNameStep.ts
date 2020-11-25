@@ -3,17 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IAzureNamingRules, IWizardOptions } from "vscode-azureextensionui";
+import { AzureNameStep, IAzureNamingRules } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
-import { GitignoreListStep } from "../createRepo/GitignoreListStep";
-import { RemoteShortnameStep } from "../createRepo/RemoteShortnameStep";
-import { RepoCreateStep } from "../createRepo/RepoCreateStep";
-import { RepoNameStep } from "../createRepo/RepoNameStep";
-import { RepoPrivacyStep } from "../createRepo/RepoPrivacyStep";
-import { GitHubBranchListStep } from "./GitHubBranchListStep";
-import { GitHubOrgListStep } from "./GitHubOrgListStep";
-import { GitHubRepoListStep } from "./GitHubRepoListStep";
+import { nonNullProp } from "../../utils/nonNull";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
@@ -23,13 +16,13 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
     invalidCharsRegExp: /[^a-zA-Z0-9\-]/
 };
 
-export class StaticWebAppNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
-    public hideStepCount: boolean = true;
+export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         wizardContext.newStaticWebAppName = (await ext.ui.showInputBox({
             prompt,
+            value: await this.getRelatedName(wizardContext, `${nonNullProp(wizardContext, 'orgData').login}-${wizardContext.newRepoName || wizardContext.repoData?.name}`),
             validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(wizardContext, value)
         })).trim();
     }
@@ -38,15 +31,12 @@ export class StaticWebAppNameStep extends AzureWizardPromptStep<IStaticWebAppWiz
         return !wizardContext.newStaticWebAppName;
     }
 
-    public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
-        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new GitHubOrgListStep()];
-        if (wizardContext.createScenario === 'connectToExistingRepo') {
-            promptSteps.push(new GitHubRepoListStep(), new GitHubBranchListStep());
-            return { promptSteps };
-        } else {
-            promptSteps.push(new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep(), new GitignoreListStep());
-            return { promptSteps, executeSteps: [new RepoCreateStep()] };
-        }
+    public async isRelatedNameAvailable(wizardContext: IStaticWebAppWizardContext, name: string): Promise<boolean> {
+        return await this.isSwaNameAvailable(wizardContext, name);
+    }
+
+    public async getRelatedName(wizardContext: IStaticWebAppWizardContext, name: string): Promise<string | undefined> {
+        return await this.generateRelatedName(wizardContext, name, staticWebAppNamingRules);
     }
 
     private async validateStaticWebAppName(wizardContext: IStaticWebAppWizardContext, name: string | undefined): Promise<string | undefined> {

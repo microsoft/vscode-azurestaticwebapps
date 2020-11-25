@@ -9,7 +9,15 @@ import { ext } from "../../extensionVariables";
 import { getGitApi } from "../../getExtensionApi";
 import { localize } from "../../utils/localize";
 import { openUrl } from "../../utils/openUrl";
+import { GitignoreListStep } from "../createRepo/GitignoreListStep";
+import { RemoteShortnameStep } from "../createRepo/RemoteShortnameStep";
+import { RepoCreateStep } from "../createRepo/RepoCreateStep";
+import { RepoNameStep } from "../createRepo/RepoNameStep";
+import { RepoPrivacyStep } from "../createRepo/RepoPrivacyStep";
 import { WorkspaceListStep } from "../createRepo/WorkspaceListStep";
+import { GitHubBranchListStep } from "./GitHubBranchListStep";
+import { GitHubOrgListStep } from "./GitHubOrgListStep";
+import { GitHubRepoListStep } from "./GitHubRepoListStep";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export type CreateScenario = 'publishToNewRepo' | 'connectToExistingRepo';
@@ -45,6 +53,7 @@ export class CreateMethodStep extends AzureWizardPromptStep<IStaticWebAppWizardC
     }
 
     public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
+        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new GitHubOrgListStep()];
         if (wizardContext.createScenario === 'publishToNewRepo') {
             // calling to verify the user has git enabled so they don't go through the whole process and then it fails
             await getGitApi();
@@ -52,10 +61,15 @@ export class CreateMethodStep extends AzureWizardPromptStep<IStaticWebAppWizardC
                 // only one workspace folder, in basic mode, set that as local cod
                 wizardContext.fsPath = workspace.workspaceFolders[0].uri.fsPath;
                 await WorkspaceListStep.setWorkspaceContexts(wizardContext, wizardContext.fsPath);
+            } else {
+                promptSteps.push(new WorkspaceListStep());
             }
-            return { promptSteps: [new WorkspaceListStep()] };
-        }
 
-        return undefined;
+            promptSteps.push(new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep(), new GitignoreListStep());
+            return { promptSteps, executeSteps: [new RepoCreateStep()] };
+        } else {
+            promptSteps.push(new GitHubRepoListStep(), new GitHubBranchListStep());
+            return { promptSteps };
+        }
     }
 }

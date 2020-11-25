@@ -50,6 +50,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
         promptSteps.push(new CreateMethodStep());
+
         promptSteps.push(new StaticWebAppNameStep());
         if (context.advancedCreation) {
             promptSteps.push(new ResourceGroupListStep());
