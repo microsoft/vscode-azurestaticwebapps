@@ -308,7 +308,7 @@
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Action$|Job|Step$)/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Action|Job|Step$)/",
                     "group": "9@1"
                 },
                 {
