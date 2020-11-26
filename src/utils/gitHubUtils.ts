@@ -15,7 +15,6 @@ import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStat
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
 import { localize } from './localize';
-import { nonNullProp } from './nonNull';
 import { getSingleRootFsPath } from './workspaceUtils';
 
 type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
@@ -184,12 +183,12 @@ export async function getGitHubTree(repositoryUrl: string, branch: string): Prom
 }
 
 export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardContext, isSkippable?: boolean): Promise<IAzureQuickPickItem<string | undefined>[]> {
-    const gitTreeData: GitTreeData[] = await nonNullProp(wizardContext, 'gitTreeDataTask');
+    const gitTreeData: GitTreeData[] | undefined = await wizardContext.gitTreeDataTask;
 
     // Have quick pick items be in this following order: Skip for Now => Manually Enter => Root => Project folders
     // If a user has more than 30+ folders, it's arduous for users to find the skip/manual button, so put it near the top
 
-    const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData.map((d) => { return { label: d.path, data: d.path }; });
+    const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData ? gitTreeData.map((d) => { return { label: d.path, data: d.path }; }) : [];
 
     // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
     quickPicks.unshift({ label: './', data: '/' });
@@ -203,4 +202,16 @@ export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardCon
     }
 
     return quickPicks;
+}
+
+export async function remoteShortnameExists(fsPath: string, remoteName: string): Promise<boolean> {
+    const localGit: git.SimpleGit = git(fsPath);
+    let hasOrigin: boolean = false;
+    try {
+        hasOrigin = !!(await localGit.getRemotes(false)).find(r => { return r.name === remoteName; });
+    } catch (error) {
+        // ignore the error and assume there is no origin
+    }
+
+    return hasOrigin;
 }

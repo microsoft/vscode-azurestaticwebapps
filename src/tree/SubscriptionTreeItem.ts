@@ -8,9 +8,7 @@ import { ReposGetResponseData } from '@octokit/types';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
-import { GitHubBranchListStep } from '../commands/createStaticWebApp/GitHubBranchListStep';
-import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
-import { GitHubRepoListStep } from '../commands/createStaticWebApp/GitHubRepoListStep';
+import { CreateScenarioListStep } from '../commands/createStaticWebApp/CreateScenarioListStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
@@ -51,6 +49,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
+        promptSteps.push(new CreateScenarioListStep());
+
         promptSteps.push(new StaticWebAppNameStep());
         if (context.advancedCreation) {
             promptSteps.push(new ResourceGroupListStep());
@@ -62,13 +62,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             }
             executeSteps.push(new ResourceGroupCreateStep());
         }
-
-        promptSteps.push(new GitHubOrgListStep());
-        promptSteps.push(new GitHubRepoListStep());
-        if (context.advancedCreation) {
-            promptSteps.push(new GitHubBranchListStep());
-        }
-
         promptSteps.push(new BuildPresetListStep());
 
         executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
@@ -96,7 +89,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
         wizardContext.fsPath = getSingleRootFsPath();
         addWorkspaceTelemetry(wizardContext);
-
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
