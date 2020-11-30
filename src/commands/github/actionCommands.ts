@@ -46,7 +46,7 @@ export async function cancelAction(context: IActionContext, node?: ActionTreeIte
     await checkActionStatus(context, node);
 }
 
-export async function checkActionStatus(context: IActionContext, node: ActionTreeItem): Promise<Conclusion> {
+export async function checkActionStatus(context: IActionContext, node: ActionTreeItem, initialCreate: boolean = false): Promise<Conclusion> {
     const startTime: number = Date.now();
     const client: Octokit = await createOctokitClient();
     let workflowRun: ActionsGetWorkflowRunResponseData | undefined;
@@ -54,8 +54,11 @@ export async function checkActionStatus(context: IActionContext, node: ActionTre
         workflowRun = (await client.actions.getWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
         if (ensureStatus(workflowRun) === Status.Completed) {
             const actionCompleted: string = localize('actionCompleted', 'Action "{0}" has completed with the conclusion "{1}".', node.data.id, workflowRun.conclusion);
-            ext.outputChannel.appendLog(actionCompleted);
-            window.showInformationMessage(actionCompleted);
+            if (!initialCreate) {
+                ext.outputChannel.appendLog(actionCompleted);
+                window.showInformationMessage(actionCompleted);
+            }
+
             await node.refresh();
             context.telemetry.properties.secToReport = String((Date.now() - startTime) / 1000);
             context.telemetry.properties.conclusion = workflowRun.conclusion;
