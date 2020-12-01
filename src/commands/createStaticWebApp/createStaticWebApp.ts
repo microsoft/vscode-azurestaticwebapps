@@ -34,7 +34,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     });
 
     // tslint:disable-next-line: no-floating-promises
-    postCreateStaticWebApp(context, swaNode);
+    postCreateStaticWebApp(swaNode);
 
     return swaNode;
 }
