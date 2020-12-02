@@ -1,5 +1,23 @@
 # Change Log
 
+## 0.5.0 - 2020-12-02
+
+### Added
+- Publish local projects directly to GitHub
+- Advanced creation to provide more control when creating static web apps
+- Download remote app settings
+- Notification for when long running GitHub actions complete
+
+### Changed
+- Functions/App Setting tree items replaced with a "Learn How" node if build doesn't contain functions
+- `Create New Static Web App` wizard now asks for deployment method
+- Completed GitHub actions cannot be cancelled, on-going actions cannot be re-run
+- Messaging of prompts after static web app creation
+
+### Fixed
+- [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/7?closed=1)
+
+
 ## 0.4.0 - 2020-09-21
 
 ### Added
