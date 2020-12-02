@@ -11,7 +11,7 @@
 
 ### Changed
 - Functions/App Setting tree items no longer appear if build doesn't contain functions
-- Order of prompts now asks for GitHub repo before Azure specific prompts
+- `Create New Static Web App` prompts now asks for deployment method
 - Completed GitHub actions cannot be cancelled, on-going actions cannot be re-run
 - Messaging of prompts after static web app creation
 
