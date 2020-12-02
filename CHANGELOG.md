@@ -1,17 +1,16 @@
 # Change Log
 
-## 0.5.0 - 2020-12-01
+## 0.5.0 - 2020-12-02
 
 ### Added
-
 - Publish local projects directly to GitHub
-- Advanced creation to have more control over creation
+- Advanced creation to provide more control when creating static web apps
 - Download remote app settings
 - Notification for when long running GitHub actions complete
 
 ### Changed
-- Functions/App Setting tree items no longer appear if build doesn't contain functions
-- `Create New Static Web App` prompts now asks for deployment method
+- Functions/App Setting tree items replaced with a "Learn How" node if build doesn't contain functions
+- `Create New Static Web App` wizard now asks for deployment method
 - Completed GitHub actions cannot be cancelled, on-going actions cannot be re-run
 - Messaging of prompts after static web app creation
 
