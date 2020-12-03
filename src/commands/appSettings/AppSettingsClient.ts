@@ -5,8 +5,9 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { IAppSettingsClient } from 'vscode-azureappservice';
-import { createAzureClient, ISubscriptionContext } from 'vscode-azureextensionui';
+import { ISubscriptionContext } from 'vscode-azureextensionui';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
+import { createWebSiteClient } from '../../utils/azureClients';
 
 export class AppSettingsClient implements IAppSettingsClient {
 
@@ -29,12 +30,12 @@ export class AppSettingsClient implements IAppSettingsClient {
     }
 
     public async listApplicationSettings(): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
-        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         return await client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName);
     }
 
     public async updateApplicationSettings(appSettings: WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
-        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         return await client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName, appSettings);
     }
 }

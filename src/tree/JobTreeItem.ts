@@ -61,9 +61,9 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
         return false;
     }
 
-    public async refreshImpl(): Promise<void> {
+    public async refreshImpl(context: IActionContext): Promise<void> {
         const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
-        const octokitClient: Octokit = await createOctokitClient();
+        const octokitClient: Octokit = await createOctokitClient(context);
         this.data = (await octokitClient.actions.getJobForWorkflowRun({ job_id: this.data.id, owner: owner, repo: name })).data;
     }
 

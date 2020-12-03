@@ -45,14 +45,14 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
     }
 
     private async getRepoPicks(context: IStaticWebAppWizardContext, params: RepoParameters, orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData, picksCache: ICachedQuickPicks<RepoData>): Promise<IAzureQuickPickItem<RepoData | CreateNewResource | undefined>[]> {
-        const client: Octokit = await createOctokitClient(context.accessToken);
+        const client: Octokit = await createOctokitClient(context);
         const callback: (params?: RepoParameters) => Promise<RepoResponse> = isUser(orgData) ? client.repos.listForUser : client.repos.listForOrg;
         return await getGitHubQuickPicksWithLoadMore<RepoData, RepoParameters>(picksCache, callback, params, 'name');
 
     }
 
     private async getDefaultBranchForRepo(context: IStaticWebAppWizardContext): Promise<BranchData> {
-        const client: Octokit = await createOctokitClient(context.accessToken);
+        const client: Octokit = await createOctokitClient(context);
         const { owner, name } = getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
         const remoteRepo: ReposGetResponseData = (await client.repos.get({ owner, repo: name })).data;
         return (await client.repos.getBranch({ owner, repo: name, branch: remoteRepo.default_branch })).data;

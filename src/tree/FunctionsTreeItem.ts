@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
-import { AzExtTreeItem, AzureParentTreeItem, createAzureClient, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { createWebSiteClient } from "../utils/azureClients";
 import { localize } from '../utils/localize';
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
@@ -34,7 +35,7 @@ export class FunctionsTreeItem extends AzureParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.parent.resourceGroup, this.parent.parent.name, this.parent.buildId);
         const treeItems: AzExtTreeItem[] = await this.createTreeItemsWithErrorHandling(
             functions,

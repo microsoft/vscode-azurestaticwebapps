@@ -29,7 +29,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
 
         context.branchData = branchData;
 
-        context.gitTreeDataTask = getGitHubTree(nonNullProp(context, 'repoHtmlUrl'), nonNullValueAndProp(context.branchData, 'name'));
+        context.gitTreeDataTask = getGitHubTree(context, nonNullProp(context, 'repoHtmlUrl'), nonNullValueAndProp(context.branchData, 'name'));
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
@@ -37,7 +37,7 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
     }
 
     private async getBranchPicks(context: IStaticWebAppWizardContext, params: ReposListBranchesParameters, picksCache: ICachedQuickPicks<BranchData>): Promise<IAzureQuickPickItem<BranchData | undefined>[]> {
-        const client: Octokit = await createOctokitClient(context.accessToken);
+        const client: Octokit = await createOctokitClient(context);
         const picks: IAzureQuickPickItem<BranchData | undefined>[] = await getGitHubQuickPicksWithLoadMore<BranchData, ReposListBranchesParameters>(picksCache, client.repos.listBranches, params, 'name');
         const noBranch: string = localize('noBranch', ' $(stop) No branches detected. Go back to select a different repository or create a remote branch');
         return picks.length > 0 ? picks : [{ label: noBranch, data: undefined }];

@@ -25,9 +25,9 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
     const rerunRunning: string = localize('rerunRunning', 'Rerun for action "{0}" has started.', node.data.id);
     ext.outputChannel.appendLog(rerunRunning);
 
-    const client: Octokit = await createOctokitClient();
+    const client: Octokit = await createOctokitClient(context);
     await client.actions.reRunWorkflow({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id });
-    await node.refresh(); // need to refresh to update the data
+    await node.refresh(context); // need to refresh to update the data
     await checkActionStatus(context, node);
 }
 
@@ -40,16 +40,17 @@ export async function cancelAction(context: IActionContext, node?: ActionTreeIte
     const cancelRunning: string = localize('cancelRunning', 'Cancel for action "{0}" has started.', node.data.id);
     ext.outputChannel.appendLog(cancelRunning);
 
-    const client: Octokit = await createOctokitClient();
+    const client: Octokit = await createOctokitClient(context);
     await client.actions.cancelWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id });
-    await node.refresh(); // need to refresh to update the data
+    await node.refresh(context); // need to refresh to update the data
     await checkActionStatus(context, node);
 }
 
 export async function checkActionStatus(context: IActionContext, node: ActionTreeItem, initialCreate: boolean = false): Promise<Conclusion> {
     const startTime: number = Date.now();
-    const client: Octokit = await createOctokitClient();
+    const client: Octokit = await createOctokitClient(context);
     let workflowRun: ActionsGetWorkflowRunResponseData | undefined;
+
     const pollingOperation: () => Promise<boolean> = async () => {
         workflowRun = (await client.actions.getWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
         if (ensureStatus(workflowRun) === Status.Completed) {
@@ -59,7 +60,7 @@ export async function checkActionStatus(context: IActionContext, node: ActionTre
                 window.showInformationMessage(actionCompleted);
             }
 
-            await node.refresh();
+            await node.refresh(context);
             context.telemetry.properties.secToReport = String((Date.now() - startTime) / 1000);
             context.telemetry.properties.conclusion = workflowRun.conclusion;
             return true;

@@ -48,9 +48,9 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
         return this.data.event;
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const { owner, name } = getRepoFullname(this.parent.repositoryUrl);
-        const octokitClient: Octokit = await createOctokitClient();
+        const octokitClient: Octokit = await createOctokitClient(context);
         const response: OctokitResponse<ActionsListJobsForWorkflowRunResponseData> = await octokitClient.actions.listJobsForWorkflowRun({ owner: owner, repo: name, run_id: this.data.id });
 
         return await this.createTreeItemsWithErrorHandling(
@@ -65,9 +65,9 @@ export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourc
         return false;
     }
 
-    public async refreshImpl(): Promise<void> {
+    public async refreshImpl(context: IActionContext): Promise<void> {
         const { owner, name } = getRepoFullname(this.parent.repositoryUrl);
-        const octokitClient: Octokit = await createOctokitClient();
+        const octokitClient: Octokit = await createOctokitClient(context);
         const response: OctokitResponse<ActionsGetWorkflowRunResponseData> = await octokitClient.actions.getWorkflowRun({ owner: owner, repo: name, run_id: this.data.id });
         this.data = response.data;
     }

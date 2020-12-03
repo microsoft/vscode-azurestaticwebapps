@@ -30,7 +30,7 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
     }
 
     private async getOrganizations(context: IStaticWebAppWizardContext): Promise<IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined>[]> {
-        const octokitClient: Octokit = await createOctokitClient(context.accessToken);
+        const octokitClient: Octokit = await createOctokitClient(context);
         const userRes: OctokitResponse<UsersGetAuthenticatedResponseData> = await octokitClient.users.getAuthenticated();
         let quickPickItems: IAzureQuickPickItem<UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData>[] = createQuickPickFromJsons<UsersGetAuthenticatedResponseData>([userRes.data], 'login');
 
