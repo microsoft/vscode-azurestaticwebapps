@@ -5,8 +5,7 @@
 
 import { Octokit } from '@octokit/rest';
 import { GitGetTreeResponseData, OctokitResponse, ReposGetBranchResponseData, ReposGetResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
-// tslint:disable-next-line:no-require-imports
-import gitUrlParse = require('git-url-parse');
+import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
 import { URL } from 'url';
 import { authentication, QuickPickItem } from 'vscode';
@@ -102,15 +101,13 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
     }
 }
 
-export async function getGitHubAccessToken(context?: IActionContext): Promise<string> {
+export async function getGitHubAccessToken(context: IActionContext): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
     try {
         return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
     } catch (error) {
         if (parseError(error).message === 'User did not consent to login.') {
-            if (context) {
-                context.telemetry.properties.cancelStep = 'getGitHubToken';
-            }
+            context.telemetry.properties.cancelStep = 'getGitHubToken';
             throw new UserCancelledError();
         }
 
@@ -118,7 +115,7 @@ export async function getGitHubAccessToken(context?: IActionContext): Promise<st
     }
 }
 
-export async function tryGetRemote(): Promise<ReposGetResponseData | undefined> {
+export async function tryGetRemote(context: IActionContext): Promise<ReposGetResponseData | undefined> {
     try {
         const localProjectPath: string | undefined = getSingleRootFsPath();
         // only try to get remote if there's only a single workspace opened
@@ -128,7 +125,7 @@ export async function tryGetRemote(): Promise<ReposGetResponseData | undefined> 
 
             if (originUrl !== undefined) {
                 const { owner, name } = getRepoFullname(originUrl);
-                const client: Octokit = await createOctokitClient();
+                const client: Octokit = await createOctokitClient(context);
                 const repoData: ReposGetResponseData = (await client.repos.get({ owner, repo: name })).data;
 
                 // to create a workflow, the user needs admin access so if it's not true, it will fail
@@ -168,8 +165,8 @@ export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthen
     return !!orgData && 'type' in orgData && orgData.type === 'User';
 }
 
-export async function getGitHubTree(repositoryUrl: string, branch: string): Promise<GitTreeData[]> {
-    const octokitClient: Octokit = await createOctokitClient();
+export async function getGitHubTree(context: IActionContext, repositoryUrl: string, branch: string): Promise<GitTreeData[]> {
+    const octokitClient: Octokit = await createOctokitClient(context);
     const { owner, name } = getRepoFullname(repositoryUrl);
     const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch({ owner, repo: name, branch });
     const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree({ owner, repo: name, tree_sha: branchRes.data.commit.sha, recursive: 'true' });

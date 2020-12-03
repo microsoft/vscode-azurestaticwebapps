@@ -6,10 +6,11 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
-import { AzExtTreeItem, AzureParentTreeItem, createAzureClient, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
 import { productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
+import { createWebSiteClient } from "../utils/azureClients";
 import { pollAzureAsyncOperation } from "../utils/azureUtils";
 import { tryGetLocalBranch, tryGetRemote } from "../utils/gitHubUtils";
 import { localize } from "../utils/localize";
@@ -70,10 +71,10 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
-    public static async createEnvironmentTreeItem(parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
+    public static async createEnvironmentTreeItem(context: IActionContext, parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
         const ti: EnvironmentTreeItem = new EnvironmentTreeItem(parent, env);
         // initialize inWorkspace property
-        await ti.refreshImpl();
+        await ti.refreshImpl(context);
         return ti;
     }
 
@@ -92,7 +93,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
         if (functions.length === 0) {
             context.telemetry.properties.hasFunctions = 'false';
@@ -116,7 +117,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         const deleting: string = localize('deleting', 'Deleting environment "{0}"...', this.label);
         await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
-            const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+            const client: WebSiteManagementClient = await createWebSiteClient(this.root);
             await pollAzureAsyncOperation(await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId), this.root.credentials);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted environment "{0}".', this.label);
@@ -153,11 +154,11 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return 0; // already sorted
     }
 
-    public async refreshImpl(): Promise<void> {
-        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+    public async refreshImpl(context: IActionContext): Promise<void> {
+        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
 
-        const remote: string | undefined = (await tryGetRemote())?.html_url;
+        const remote: string | undefined = (await tryGetRemote(context))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
     }

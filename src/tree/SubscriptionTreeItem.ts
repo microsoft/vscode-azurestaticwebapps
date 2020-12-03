@@ -5,7 +5,7 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { ReposGetResponseData } from '@octokit/types';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, createAzureClient, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
 import { CreateScenarioListStep } from '../commands/createStaticWebApp/CreateScenarioListStep';
@@ -13,6 +13,7 @@ import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStat
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
+import { createWebSiteClient } from '../utils/azureClients';
 import { getGitHubAccessToken, tryGetRemote } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
@@ -31,7 +32,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         const staticWebApps: WebSiteManagementModels.StaticSitesListResponse = await client.staticSites.list();
 
         return await this.createTreeItemsWithErrorHandling(
@@ -44,7 +45,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     }
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
-        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(context), client: createAzureClient(this.root, WebSiteManagementClient), ...context, ...this.root };
+        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
+        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(context), client, ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
@@ -55,7 +57,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         if (context.advancedCreation) {
             promptSteps.push(new ResourceGroupListStep());
         } else {
-            const remoteRepo: ReposGetResponseData | undefined = await tryGetRemote();
+            const remoteRepo: ReposGetResponseData | undefined = await tryGetRemote(context);
             if (remoteRepo) {
                 wizardContext.repoHtmlUrl = remoteRepo.html_url;
                 wizardContext.branchData = { name: remoteRepo.default_branch };
