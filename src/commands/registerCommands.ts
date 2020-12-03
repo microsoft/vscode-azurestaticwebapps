@@ -34,7 +34,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.deleteEnvironment', deleteEnvironment);
     registerCommand('staticWebApps.loadMore', async (context: IActionContext, node: AzureTreeItem) => await ext.tree.loadMore(node, context));
     registerCommand('staticWebApps.openInPortal', openInPortal);
-    registerCommand('staticWebApps.refresh', async (_context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(node));
+    registerCommand('staticWebApps.refresh', async (context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(context, node));
     registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('staticWebApps.viewProperties', viewProperties);
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
@@ -50,7 +50,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.appSettings.rename', renameAppSetting);
     registerCommand('staticWebApps.appSettings.download', downloadAppSettings);
     registerCommand('staticWebApps.appSettings.upload', uploadAppSettings);
-    registerCommand('staticWebApps.toggleAppSettingVisibility', async (_context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(); }, 250);
+    registerCommand('staticWebApps.toggleAppSettingVisibility', async (context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(context); }, 250);
     registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
     registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
     registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);

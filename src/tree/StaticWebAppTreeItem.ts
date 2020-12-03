@@ -5,9 +5,10 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { ProgressLocation, window } from "vscode";
-import { AzExtTreeItem, AzureParentTreeItem, createAzureClient, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
+import { createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId, pollAzureAsyncOperation } from "../utils/azureUtils";
 import { getRepoFullname } from '../utils/gitHubUtils';
 import { localize } from "../utils/localize";
@@ -52,8 +53,8 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         return treeUtils.getThemedIconPath('azure-staticwebapps');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
 
         const envs: WebSiteManagementModels.StaticSiteBuildCollection = await client.staticSites.getStaticSiteBuilds(this.resourceGroup, this.name);
 
@@ -61,7 +62,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
             envs,
             'invalidStaticEnvironment',
             async (env: WebSiteManagementModels.StaticSiteBuildARMResource) => {
-                return await EnvironmentTreeItem.createEnvironmentTreeItem(this, env);
+                return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this, env);
             },
             env => env.buildId
         );
@@ -86,7 +87,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         const deleting: string = localize('deleting', 'Deleting static web app "{0}"...', this.name);
         await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
-            const client: WebSiteManagementClient = createAzureClient(this.root, WebSiteManagementClient);
+            const client: WebSiteManagementClient = await createWebSiteClient(this.root);
             // the client API call only awaits the call, but doesn't poll for the result so we handle that ourself
             await pollAzureAsyncOperation(await client.staticSites.deleteStaticSite(this.resourceGroup, this.name), this.root.credentials);
 
