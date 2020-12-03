@@ -26,13 +26,13 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
     return await callWithTelemetryAndErrorHandling('staticWebApps.postCreateStaticWebApp', async (context: IActionContext): Promise<void> => {
         const productionEnv: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find((ti) => { return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName; });
         if (productionEnv) {
-            const octokitClient: Octokit = await createOctokitClient();
+            const octokitClient: Octokit = await createOctokitClient(context);
             const { owner, name } = getRepoFullname(productionEnv.repositoryUrl);
             let deployActionNode: ActionTreeItem | undefined;
             const maxTime: number = Date.now() + 30 * 1000; // it can take a little for the action to queue in GitHub, wait for 30 seconds
 
             while (!deployActionNode) {
-                await productionEnv.actionsTreeItem.refresh();
+                await productionEnv.actionsTreeItem.refresh(context);
                 const actionTreeItems: ActionTreeItem[] = <ActionTreeItem[]>(await productionEnv.actionsTreeItem.loadAllChildren(context));
                 const filteredTreeItems: ActionTreeItem[] = actionTreeItems.filter(ti => { return ti.data.status !== Status.Completed; }); // only looking at on-going or queued jobs
 
@@ -45,6 +45,8 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
                         deployActionNode = ti;
                     }
                 });
+
+                // the map will create an array of promises that will get resolved in parallel here
                 await Promise.all(promises);
 
                 if (Date.now() > maxTime) {
@@ -58,7 +60,7 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
             // only output a message if it completed or failed
             const success: boolean = conclusion === Conclusion.Success;
             if (success || conclusion === Conclusion.Failure) {
-                await productionEnv.refresh();
+                await productionEnv.refresh(context);
                 const deploymentMsg: string = success ?
                     localize('deploymentCompleted', 'Successfully built and deployed "{0}". Commit and push changes the GitHub repository to create a new deployment.', swaNode.name) :
                     localize('deploymentFailed', 'Deployment for "{0}" has failed. Commit and push changes the GitHub repository to create a new deployment.', swaNode.name);
