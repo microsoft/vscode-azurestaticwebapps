@@ -8,10 +8,12 @@ import { ActionsGetWorkflowRunResponseData } from "@octokit/types";
 import { window } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
+import { Conclusion, Status } from "../../gitHubTypings";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
-import { ensureStatus } from "../../utils/actionUtils";
+import { ensureConclusion, ensureStatus } from "../../utils/actionUtils";
 import { pollAsyncOperation } from "../../utils/azureUtils";
 import { localize } from "../../utils/localize";
+import { nonNullValue } from "../../utils/nonNull";
 import { createOctokitClient } from "./createOctokitClient";
 
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
@@ -44,15 +46,20 @@ export async function cancelAction(context: IActionContext, node?: ActionTreeIte
     await checkActionStatus(context, node);
 }
 
-async function checkActionStatus(context: IActionContext, node: ActionTreeItem): Promise<void> {
+export async function checkActionStatus(context: IActionContext, node: ActionTreeItem, initialCreate: boolean = false): Promise<Conclusion> {
     const startTime: number = Date.now();
     const client: Octokit = await createOctokitClient(context);
+    let workflowRun: ActionsGetWorkflowRunResponseData | undefined;
+
     const pollingOperation: () => Promise<boolean> = async () => {
-        const workflowRun: ActionsGetWorkflowRunResponseData = (await client.actions.getWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
-        if (ensureStatus(workflowRun) === 'completed') {
+        workflowRun = (await client.actions.getWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
+        if (ensureStatus(workflowRun) === Status.Completed) {
             const actionCompleted: string = localize('actionCompleted', 'Action "{0}" has completed with the conclusion "{1}".', node.data.id, workflowRun.conclusion);
-            ext.outputChannel.appendLog(actionCompleted);
-            window.showInformationMessage(actionCompleted);
+            if (!initialCreate) {
+                ext.outputChannel.appendLog(actionCompleted);
+                window.showInformationMessage(actionCompleted);
+            }
+
             await node.refresh(context);
             context.telemetry.properties.secToReport = String((Date.now() - startTime) / 1000);
             context.telemetry.properties.conclusion = workflowRun.conclusion;
@@ -67,4 +74,7 @@ async function checkActionStatus(context: IActionContext, node: ActionTreeItem):
         ext.outputChannel.appendLog(operationTimedOut);
         window.showInformationMessage(operationTimedOut);
     }
+
+    // this will get set in the awaited pollingOperation, but ts thinks it's unassigned
+    return ensureConclusion(nonNullValue(workflowRun));
 }

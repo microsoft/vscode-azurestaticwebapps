@@ -5,11 +5,13 @@
 
 import { MessageItem, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
+import { showActionsMsg } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
 import { showActions } from '../github/showActions';
+import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     if (!node) {
@@ -21,7 +23,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);
     ext.outputChannel.appendLog(createdSs);
 
-    const showActionsMsg: MessageItem = { title: localize('openActions', 'Open Actions in GitHub') };
     const viewOutput: MessageItem = { title: localize('viewOutput', 'View Output') };
     // don't wait
     window.showInformationMessage(createdSs, showActionsMsg, viewOutput).then(async (result) => {
@@ -31,6 +32,9 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             ext.outputChannel.show();
         }
     });
+
+    // tslint:disable-next-line: no-floating-promises
+    postCreateStaticWebApp(swaNode);
 
     return swaNode;
 }
