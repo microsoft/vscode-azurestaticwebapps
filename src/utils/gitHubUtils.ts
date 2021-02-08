@@ -59,7 +59,7 @@ export interface ICachedQuickPicks<T> {
 
 export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
     cache: ICachedQuickPicks<TResult>,
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gitHubApiCb: (params: TParams) => Promise<OctokitResponse<any>>,
     params: TParams & { page?: number },
     labelName: string,
@@ -69,7 +69,7 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
     const startTime: number = Date.now();
     let gitHubQuickPicks: TResult[] = [];
     do {
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const res: OctokitResponse<any> = await gitHubApiCb(params);
         if (res.headers.link) {
             // Reference for GitHub REST routes
@@ -79,7 +79,6 @@ export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
             params.page = page ? Number(page) : undefined;
         }
 
-        // tslint:disable-next-line: no-unsafe-any
         gitHubQuickPicks = gitHubQuickPicks.concat(res.data);
         if (params.page === undefined) {
             // if there is no page, that means it has retrieved all of the branches
@@ -173,7 +172,6 @@ export async function getGitHubTree(context: IActionContext, repositoryUrl: stri
 
     // sort descending by the depth of subfolder
     return getTreeRes.data.tree.filter(file => file.type === 'tree').sort((f1, f2) => {
-        // tslint:disable-next-line: strict-boolean-expressions
         function getFolderDepth(path: string): number { return (path.match(/\//g) || []).length; }
         return getFolderDepth(f1.path) - getFolderDepth(f2.path);
     });

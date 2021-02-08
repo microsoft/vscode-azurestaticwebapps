@@ -9,7 +9,6 @@ import { IAzureQuickPickItem } from "vscode-azureextensionui";
 import { ext } from '../extensionVariables';
 import { localize } from "./localize";
 
-// tslint:disable-next-line:export-name
 export function getSingleRootFsPath(): string | undefined {
     // if this is no workspace or a multi-root workspace, return undefined
     return workspace.workspaceFolders && workspace.workspaceFolders.length === 1 ? workspace.workspaceFolders[0].uri.fsPath : undefined;
@@ -29,7 +28,6 @@ export async function selectWorkspaceFolder(placeHolder: string, getSubPath?: (f
 }
 
 export async function selectWorkspaceItem(placeHolder: string, options: OpenDialogOptions, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {
-    // tslint:disable-next-line: strict-boolean-expressions
     const folders: readonly WorkspaceFolder[] = workspace.workspaceFolders || [];
     const folderPicks: IAzureQuickPickItem<string | undefined>[] = await Promise.all(folders.map(async (f: WorkspaceFolder) => {
         let subpath: string | undefined;

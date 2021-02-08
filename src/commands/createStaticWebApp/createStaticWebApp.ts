@@ -25,7 +25,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     const viewOutput: MessageItem = { title: localize('viewOutput', 'View Output') };
     // don't wait
-    window.showInformationMessage(createdSs, showActionsMsg, viewOutput).then(async (result) => {
+    void window.showInformationMessage(createdSs, showActionsMsg, viewOutput).then(async (result) => {
         if (result === showActionsMsg) {
             await showActions(context, swaNode);
         } else if (result === viewOutput) {
@@ -33,8 +33,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         }
     });
 
-    // tslint:disable-next-line: no-floating-promises
-    postCreateStaticWebApp(swaNode);
+    void postCreateStaticWebApp(swaNode);
 
     return swaNode;
 }

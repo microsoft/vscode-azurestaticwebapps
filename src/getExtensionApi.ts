@@ -21,7 +21,7 @@ export async function getFunctionsApi(context: IActionContext): Promise<AzureFun
 
     await ext.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install' });
     const commandToRun: string = 'extension.open';
-    commands.executeCommand(commandToRun, funcExtensionId);
+    void commands.executeCommand(commandToRun, funcExtensionId);
 
     context.telemetry.properties.cancelStep = 'installFunctions';
     // we still need to throw an error even if the user installs
