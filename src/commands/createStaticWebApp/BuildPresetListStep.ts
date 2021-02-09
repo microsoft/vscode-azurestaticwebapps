@@ -43,6 +43,7 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
         return !context.appLocation;
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     public async getSubWizard(context: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
         if (!context.appLocation) {
             return { promptSteps: [new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep()] };

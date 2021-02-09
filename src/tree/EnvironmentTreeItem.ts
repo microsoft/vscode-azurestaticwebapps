@@ -121,7 +121,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
             await pollAzureAsyncOperation(await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId), this.root.credentials);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted environment "{0}".', this.label);
-            window.showInformationMessage(deleteSucceeded);
+            void window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);
         });
     }
@@ -130,7 +130,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         await openUrl(`https://${this.data.hostname}`);
     }
 
-    public async pickTreeItemImpl(expectedContextValues: (string | RegExp)[]): Promise<AzExtTreeItem | undefined> {
+    public pickTreeItemImpl(expectedContextValues: (string | RegExp)[]): AzExtTreeItem | undefined {
         for (const expectedContextValue of expectedContextValues) {
             switch (expectedContextValue) {
                 case AppSettingsTreeItem.contextValue:

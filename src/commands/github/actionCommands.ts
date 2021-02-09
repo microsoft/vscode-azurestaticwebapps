@@ -57,7 +57,7 @@ export async function checkActionStatus(context: IActionContext, node: ActionTre
             const actionCompleted: string = localize('actionCompleted', 'Action "{0}" has completed with the conclusion "{1}".', node.data.id, workflowRun.conclusion);
             if (!initialCreate) {
                 ext.outputChannel.appendLog(actionCompleted);
-                window.showInformationMessage(actionCompleted);
+                void window.showInformationMessage(actionCompleted);
             }
 
             await node.refresh(context);
@@ -72,7 +72,7 @@ export async function checkActionStatus(context: IActionContext, node: ActionTre
     if (!await pollAsyncOperation(pollingOperation, 15, 20 * 60, node.fullId)) {
         const operationTimedOut: string = localize('timedOut', 'The action "{0}" is still running.  Check "{1}" for its status', node.data.id, node.data.html_url);
         ext.outputChannel.appendLog(operationTimedOut);
-        window.showInformationMessage(operationTimedOut);
+        void window.showInformationMessage(operationTimedOut);
     }
 
     // this will get set in the awaited pollingOperation, but ts thinks it's unassigned

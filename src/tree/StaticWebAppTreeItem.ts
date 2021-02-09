@@ -92,7 +92,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
             await pollAzureAsyncOperation(await client.staticSites.deleteStaticSite(this.resourceGroup, this.name), this.root.credentials);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
-            window.showInformationMessage(deleteSucceeded);
+            void window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);
         });
     }

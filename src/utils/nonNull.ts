@@ -18,7 +18,6 @@ export function nonNullProp<TSource, TKey extends keyof TSource>(source: TSource
 export function nonNullValue<T>(value: T | undefined | null, propertyNameOrMessage?: string): T {
     if (value === null || value === undefined) {
         throw new Error(
-            // tslint:disable-next-line:prefer-template
             'Internal error: Expected value to be neither null nor undefined'
             + (propertyNameOrMessage ? `: ${propertyNameOrMessage}` : ''));
     }
@@ -32,7 +31,6 @@ export function nonNullValue<T>(value: T | undefined | null, propertyNameOrMessa
 export function nonNullOrEmptyValue(value: string | undefined, propertyNameOrMessage?: string): string {
     if (!value) {
         throw new Error(
-            // tslint:disable-next-line:prefer-template
             'Internal error: Expected value to be neither null, undefined, nor empty'
             + (propertyNameOrMessage ? `: ${propertyNameOrMessage}` : ''));
     }

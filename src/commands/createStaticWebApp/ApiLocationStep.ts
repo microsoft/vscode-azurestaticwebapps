@@ -24,6 +24,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
         return !wizardContext.apiLocation;
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
         return wizardContext.apiLocation === undefined ? { promptSteps: [new EnterApiLocationStep()] } : undefined;
     }

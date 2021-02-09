@@ -14,7 +14,6 @@ export function addWorkspaceTelemetry(wizardContext: IStaticWebAppWizardContext)
     wizardContext.telemetry.properties.gotRemote = String(!!wizardContext.repoHtmlUrl);
 
     const localGit: git.SimpleGit = git(wizardContext.fsPath);
-    // tslint:disable-next-line:no-floating-promises
     localGit.status().then(() => {
         wizardContext.telemetry.properties.isGitProject = 'true';
     }).catch((error) => {

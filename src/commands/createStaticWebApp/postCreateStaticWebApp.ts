@@ -67,7 +67,7 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
                 ext.outputChannel.appendLog(deploymentMsg);
                 const browseWebsite: MessageItem = { title: localize('browseWebsite', 'Browse Website') };
                 const msgItem: MessageItem = success ? browseWebsite : showActionsMsg;
-                window.showInformationMessage(deploymentMsg, msgItem).then(async input => {
+                void window.showInformationMessage(deploymentMsg, msgItem).then(async input => {
                     if (input === browseWebsite) {
                         await browse(context, swaNode);
                     } else if (input === showActionsMsg) {
