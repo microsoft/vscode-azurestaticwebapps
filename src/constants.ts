@@ -17,4 +17,6 @@ export const apiSubpathSetting: string = 'apiSubpath';
 export const appArtifactSubpathSetting: string = 'appArtifactSubpath';
 export const outputSubpathSetting: string = 'outputSubpath';
 
+export const configFileName: string = 'staticwebapp.config.json';
+
 export const showActionsMsg: MessageItem = { title: localize('openActions', 'Open Actions in GitHub') };
