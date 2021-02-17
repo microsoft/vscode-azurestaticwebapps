@@ -12,6 +12,10 @@ import { LocalProjectTreeItem } from './localProject/LocalProjectTreeItem';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
 
 export class AzureAccountTreeItemWithProject extends AzureAccountTreeItemBase {
+    public constructor(testAccount?: {}) {
+        super(undefined, testAccount);
+    }
+
     public createSubscriptionTreeItem(root: ISubscriptionContext): SubscriptionTreeItem {
         return new SubscriptionTreeItem(this, root);
     }
