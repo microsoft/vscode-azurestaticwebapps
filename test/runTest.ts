@@ -17,8 +17,7 @@ async function main(): Promise<void> {
             extensionTestsPath: path.resolve(repoRoot, 'dist', 'test', 'index'),
             extensionTestsEnv: {
                 DEBUGTELEMETRY: 'v'
-            },
-            version: 'insiders'
+            }
         });
     } catch (err) {
         console.error('Failed to run tests');
