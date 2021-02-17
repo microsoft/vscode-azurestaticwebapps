@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
+import { workspace } from 'vscode';
 import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
@@ -15,7 +16,8 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
         wizardContext.newRepoName = (await ext.ui.showInputBox({
             prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository. Special characters will be replaced with "-" upon creation.'),
-            validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value)
+            validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value),
+            value: workspace.workspaceFolders ? workspace.workspaceFolders[0].name : undefined
         })).trim();
     }
 

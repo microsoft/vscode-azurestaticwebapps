@@ -186,7 +186,7 @@ export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardCon
     const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData ? gitTreeData.map((d) => { return { label: d.path, data: d.path }; }) : [];
 
     // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
-    quickPicks.unshift({ label: './', data: '/' });
+    quickPicks.unshift({ label: '/', data: '/' });
 
     const enterInputQuickPickItem: IAzureQuickPickItem = { label: localize('input', '$(keyboard) Manually enter location'), data: undefined };
     quickPicks.unshift(enterInputQuickPickItem);
