@@ -33,5 +33,6 @@
     "staticWebApps.action.cancel": "Cancel Action...",
     "staticWebApps.showDocumentation": "Documentation",
     "staticWebApps.openYAMLConfigFile": "Edit Configuration...",
-    "staticWebApps.outputSubpath": "The default value for the location of your build output relative to your application code location"
+    "staticWebApps.outputSubpath": "The default value for the location of your build output relative to your application code location",
+    "staticWebApps.reportIssue": "Report Issue..."
 }

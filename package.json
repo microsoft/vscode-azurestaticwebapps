@@ -51,6 +51,7 @@
         "onCommand:staticWebApps.staticWebApps.action.rerun",
         "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onCommand:staticWebApps.openYAMLConfigFile",
+        "onCommand:staticWebApps.reportIssue",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -202,6 +203,11 @@
             {
                 "command": "staticWebApps.openYAMLConfigFile",
                 "title": "%staticWebApps.openYAMLConfigFile%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.reportIssue",
+                "title": "%staticWebApps.reportIssue%",
                 "category": "Azure Static Web Apps"
             }
         ],
