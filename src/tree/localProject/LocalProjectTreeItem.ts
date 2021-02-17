@@ -4,7 +4,6 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { basename } from "path";
-import { Disposable } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
 import { treeUtils } from "../../utils/treeUtils";
@@ -17,7 +16,6 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
     public readonly projectPath: string;
 
     private readonly _projectName: string;
-    private readonly _disposables: Disposable[] = [];
 
     public constructor(parent: AzExtParentTreeItem, projectPath: string) {
         super(parent);
@@ -35,10 +33,6 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
 
     public get description(): string {
         return this._projectName;
-    }
-
-    public dispose(): void {
-        Disposable.from(...this._disposables).dispose();
     }
 
     public hasMoreChildrenImpl(): boolean {
