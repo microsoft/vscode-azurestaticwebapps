@@ -17,6 +17,7 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
             prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository. Special characters will be replaced with "-" upon creation.'),
             validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value)
         })).trim();
+        wizardContext.valuesToMask.push(wizardContext.newRepoName);
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
