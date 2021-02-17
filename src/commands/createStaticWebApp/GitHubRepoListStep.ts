@@ -32,6 +32,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         } while (!repoData);
 
         context.repoData = repoData;
+        context.valuesToMask.push(nonNullProp(context.repoData, 'name'));
         context.repoHtmlUrl = repoData.html_url;
         // if this is a new repo, the only branch that will have been created is 'main', if it's basic create, use the default branch
         context.branchData = repoData.name === createNewRepo ?
