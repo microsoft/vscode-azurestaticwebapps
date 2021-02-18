@@ -6,6 +6,7 @@
 import * as fse from 'fs-extra';
 import * as os from 'os';
 import { join } from 'path';
+import { QuickPickItem } from 'vscode';
 import { AzureWizardPromptStep } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
@@ -19,9 +20,11 @@ export class GitignoreListStep extends AzureWizardPromptStep<IStaticWebAppWizard
         const gitignorePath: string = join(fsPath, '.gitignore');
         const files: string[] = (await fse.readdir(fsPath))
             .filter(name => name !== '.git');
-        const placeHolder: string = localize('ignore', 'Select which files should be ignored in the repository.');
-        const result: { label: string }[] = await ext.ui.showQuickPick(files.map(name => ({ label: name })), { placeHolder, canPickMany: true });
-        const ignored: Set<string> = new Set(result.map(file => file.label));
+        const placeHolder: string = localize('ignore', 'Select which files should be included in the repository.');
+        const result: { label: string }[] = await ext.ui.showQuickPick(files.map(name => ({ label: name })), { placeHolder, canPickMany: true, isPickSelected: shouldIncludeInRepo });
+
+        const ignored: Set<string> = new Set(files);
+        result.forEach(file => ignored.delete(file.label));
 
         // if the user selected every file, write a blank .gitignore
         const data: string = [...ignored].map(i => `/${i}`).join(os.EOL);
@@ -31,4 +34,9 @@ export class GitignoreListStep extends AzureWizardPromptStep<IStaticWebAppWizard
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
         return wizardContext.gitignoreExists === false;
     }
+}
+
+
+function shouldIncludeInRepo(pick: QuickPickItem): boolean {
+    return !/^(\.vscode|.*\.log|\.DS_Store)$/.test(pick.label);
 }
