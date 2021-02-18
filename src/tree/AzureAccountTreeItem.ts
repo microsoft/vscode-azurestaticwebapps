@@ -7,7 +7,8 @@ import { pathExists } from 'fs-extra';
 import { join } from 'path';
 import { workspace } from 'vscode';
 import { AzExtTreeItem, AzureAccountTreeItemBase, IActionContext, ISubscriptionContext } from 'vscode-azureextensionui';
-import { configFileName } from '../constants';
+import { configFileName, enableLocalProjectView } from '../constants';
+import { getWorkspaceSetting } from '../utils/settingsUtils';
 import { LocalProjectTreeItem } from './localProject/LocalProjectTreeItem';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
 
@@ -23,13 +24,15 @@ export class AzureAccountTreeItemWithProject extends AzureAccountTreeItemBase {
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = await super.loadMoreChildrenImpl(clearCache, context);
 
-        for (const workspaceFolder of workspace.workspaceFolders || []) {
-            const workspaceFolderPath: string = workspaceFolder.uri.fsPath;
-            const configFilePathExists: boolean = await pathExists(join(workspaceFolderPath, configFileName));
+        if (getWorkspaceSetting(enableLocalProjectView)) {
+            for (const workspaceFolder of workspace.workspaceFolders || []) {
+                const workspaceFolderPath: string = workspaceFolder.uri.fsPath;
+                const configFilePathExists: boolean = await pathExists(join(workspaceFolderPath, configFileName));
 
-            if (configFilePathExists) {
-                const localProjectTreeItem: LocalProjectTreeItem = new LocalProjectTreeItem(this, workspaceFolderPath);
-                children.push(localProjectTreeItem);
+                if (configFilePathExists) {
+                    const localProjectTreeItem: LocalProjectTreeItem = new LocalProjectTreeItem(this, workspaceFolderPath);
+                    children.push(localProjectTreeItem);
+                }
             }
         }
 
