@@ -23,9 +23,10 @@ export class AzureAccountTreeItemWithProject extends AzureAccountTreeItemBase {
     public async loadMoreChildrenImpl(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = await super.loadMoreChildrenImpl(clearCache, context);
 
-        const workspaceFolderPath: string | undefined = workspace.workspaceFolders ? workspace.workspaceFolders[0].uri.fsPath : undefined;
-        if (workspaceFolderPath) {
+        for (const workspaceFolder of workspace.workspaceFolders || []) {
+            const workspaceFolderPath: string = workspaceFolder.uri.fsPath;
             const configFilePathExists: boolean = await pathExists(join(workspaceFolderPath, configFileName));
+
             if (configFilePathExists) {
                 const localProjectTreeItem: LocalProjectTreeItem = new LocalProjectTreeItem(this, workspaceFolderPath);
                 children.push(localProjectTreeItem);
