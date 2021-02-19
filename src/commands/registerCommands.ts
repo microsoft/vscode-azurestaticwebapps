@@ -5,7 +5,7 @@
 
 import { commands } from 'vscode';
 import { AppSettingsTreeItem, AppSettingTreeItem } from 'vscode-azureappservice';
-import { AzExtParentTreeItem, AzExtTreeItem, AzureTreeItem, IActionContext, registerCommand } from 'vscode-azureextensionui';
+import { AzExtParentTreeItem, AzExtTreeItem, AzureTreeItem, IActionContext, registerCommand, registerErrorHandler, registerReportIssueCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { openUrl } from '../utils/openUrl';
 import { downloadAppSettings } from './appSettings/downloadAppSettings';
@@ -55,4 +55,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
     registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
 
+    // Suppress "Report an Issue" button for all errors in favor of the command
+    registerErrorHandler(c => c.errorHandling.suppressReportIssue = true);
+    registerReportIssueCommand('staticWebApps.reportIssue');
 }

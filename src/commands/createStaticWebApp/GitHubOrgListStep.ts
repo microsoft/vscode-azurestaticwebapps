@@ -23,6 +23,7 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
         } while (!orgData);
 
         context.orgData = orgData;
+        context.valuesToMask.push(context.orgData.login);
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {

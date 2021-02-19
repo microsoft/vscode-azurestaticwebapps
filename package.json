@@ -51,6 +51,7 @@
         "onCommand:staticWebApps.staticWebApps.action.rerun",
         "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onCommand:staticWebApps.openYAMLConfigFile",
+        "onCommand:staticWebApps.reportIssue",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -203,17 +204,13 @@
                 "command": "staticWebApps.openYAMLConfigFile",
                 "title": "%staticWebApps.openYAMLConfigFile%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.reportIssue",
+                "title": "%staticWebApps.reportIssue%",
+                "category": "Azure Static Web Apps"
             }
         ],
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "azure",
-                    "title": "Azure",
-                    "icon": "resources/azure.svg"
-                }
-            ]
-        },
         "views": {
             "azure": [
                 {
@@ -386,14 +383,6 @@
                 }
             ]
         },
-        "keybindings": [
-            {
-                "command": "workbench.view.extension.azure",
-                "key": "ctrl+shift+a",
-                "mac": "cmd+shift+a",
-                "linux": "shift+alt+a"
-            }
-        ],
         "configuration": [
             {
                 "title": "Azure Static Web Apps",
@@ -469,7 +458,7 @@
         "ts-node": "^7.0.1",
         "typescript": "^3.9.7",
         "vsce": "^1.81.1",
-        "vscode-azureextensiondev": "^0.7.0",
+        "vscode-azureextensiondev": "^0.7.1",
         "vscode-test": "^1.4.0",
         "webpack": "^4.44.1",
         "webpack-cli": "^3.3.12"
@@ -487,7 +476,7 @@
         "vscode-nls": "^4.1.1"
     },
     "extensionDependencies": [
-        "ms-vscode.azure-account"
-    ],
-    "enableProposedApi": true
+        "ms-vscode.azure-account",
+        "ms-azuretools.vscode-azureresourcegroups"
+    ]
 }

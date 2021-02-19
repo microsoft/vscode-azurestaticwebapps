@@ -1,5 +1,12 @@
 # Change Log
 
+## Unreleased
+### Added
+- Now depends on the "Azure Resources" extension, which provides a "Resource Groups" and "Help and Feedback" view
+
+### Changed
+- "Report an Issue" button was removed from errors. Use the "Help and Feedback" view or command palette instead
+
 ## 0.5.0 - 2020-12-02
 
 ### Added
