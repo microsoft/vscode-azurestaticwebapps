@@ -9,7 +9,6 @@ import { ext } from "../../extensionVariables";
 import { getGitApi } from "../../getExtensionApi";
 import { localize } from "../../utils/localize";
 import { openUrl } from "../../utils/openUrl";
-import { GitignoreListStep } from "../createRepo/GitignoreListStep";
 import { RemoteShortnameStep } from "../createRepo/RemoteShortnameStep";
 import { RepoCreateStep } from "../createRepo/RepoCreateStep";
 import { RepoNameStep } from "../createRepo/RepoNameStep";
@@ -18,6 +17,7 @@ import { WorkspaceListStep } from "../createRepo/WorkspaceListStep";
 import { GitHubBranchListStep } from "./GitHubBranchListStep";
 import { GitHubOrgListStep } from "./GitHubOrgListStep";
 import { GitHubRepoListStep } from "./GitHubRepoListStep";
+import { GitignoreCreateStep } from "./GitignoreCreateStep";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export type CreateScenario = 'publishToNewRepo' | 'connectToExistingRepo';
@@ -65,8 +65,8 @@ export class CreateScenarioListStep extends AzureWizardPromptStep<IStaticWebAppW
                 promptSteps.push(new WorkspaceListStep());
             }
 
-            promptSteps.push(new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep(), new GitignoreListStep());
-            return { promptSteps, executeSteps: [new RepoCreateStep()] };
+            promptSteps.push(new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
+            return { promptSteps, executeSteps: [new RepoCreateStep(), new GitignoreCreateStep()] };
         } else {
             promptSteps.push(new GitHubRepoListStep(), new GitHubBranchListStep());
             return { promptSteps };
