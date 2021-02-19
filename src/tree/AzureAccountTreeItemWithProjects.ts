@@ -12,7 +12,7 @@ import { getWorkspaceSetting } from '../utils/settingsUtils';
 import { LocalProjectTreeItem } from './localProject/LocalProjectTreeItem';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
 
-export class AzureAccountTreeItemWithProject extends AzureAccountTreeItemBase {
+export class AzureAccountTreeItemWithProjects extends AzureAccountTreeItemBase {
     public constructor(testAccount?: {}) {
         super(undefined, testAccount);
     }
