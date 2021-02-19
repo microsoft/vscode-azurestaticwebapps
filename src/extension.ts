@@ -12,7 +12,7 @@ import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextens
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerCommands } from './commands/registerCommands';
 import { ext } from './extensionVariables';
-import { AzureAccountTreeItem } from './tree/AzureAccountTreeItem';
+import { AzureAccountTreeItemWithProject } from './tree/AzureAccountTreeItem';
 
 export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<AzureExtensionApiProvider> {
     ext.context = context;
@@ -28,7 +28,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         activateContext.telemetry.properties.isActivationEvent = 'true';
         activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
 
-        const accountTreeItem: AzureAccountTreeItem = new AzureAccountTreeItem();
+        const accountTreeItem: AzureAccountTreeItemWithProject = new AzureAccountTreeItemWithProject();
         context.subscriptions.push(accountTreeItem);
         ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'staticWebApps.loadMore');
         ext.treeView = vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true });
