@@ -28,9 +28,9 @@ export class ConfigGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
-        const yamlSettings: string[] = ['app_location', 'api_location', 'app_artifact_location'];
+        const buildSettings: string[] = ['app_location', 'api_location', 'app_artifact_location'];
         return await this.createTreeItemsWithErrorHandling(
-            yamlSettings,
+            buildSettings,
             'azureStaticConfigInvalid',
             (setting: string) => new ConfigTreeItem(this, setting),
             (setting: string) => setting
