@@ -57,9 +57,12 @@ export class CreateScenarioListStep extends AzureWizardPromptStep<IStaticWebAppW
         if (wizardContext.createScenario === 'publishToNewRepo') {
             // calling to verify the user has git enabled so they don't go through the whole process and then it fails
             await getGitApi();
-            if (workspace.workspaceFolders && workspace.workspaceFolders.length === 1 && !wizardContext.advancedCreation) {
+            if (!wizardContext.fsPath && workspace.workspaceFolders && workspace.workspaceFolders.length === 1 && !wizardContext.advancedCreation) {
                 // only one workspace folder, in basic mode, set that as local cod
                 wizardContext.fsPath = workspace.workspaceFolders[0].uri.fsPath;
+            }
+
+            if (wizardContext.fsPath) {
                 await WorkspaceListStep.setWorkspaceContexts(wizardContext, wizardContext.fsPath);
             } else {
                 promptSteps.push(new WorkspaceListStep());

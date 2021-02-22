@@ -89,7 +89,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         });
 
         const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
-        wizardContext.fsPath = getSingleRootFsPath();
+        wizardContext.fsPath = wizardContext.fsPath || getSingleRootFsPath();
         addWorkspaceTelemetry(wizardContext);
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');

@@ -11,9 +11,10 @@ import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
 import { showActions } from '../github/showActions';
+import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 
-export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
+export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
@@ -40,4 +41,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
+}
+
+export async function createStaticWebAppFromLocalProject(context: IActionContext, projectPath: string): Promise<StaticWebAppTreeItem> {
+    return await createStaticWebApp({ ...context, fsPath: projectPath, createScenario: 'publishToNewRepo' });
 }
