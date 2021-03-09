@@ -7,10 +7,13 @@ import { MessageItem, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { showActionsMsg } from '../../constants';
 import { ext } from '../../extensionVariables';
+import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
+import { tryGetRemote } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { showActions } from '../github/showActions';
+import { CreateScenario } from './CreateScenarioListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 
@@ -43,6 +46,10 @@ export async function createStaticWebAppAdvanced(context: IActionContext, node?:
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
 }
 
-export async function createStaticWebAppFromLocalProject(context: IActionContext, projectPath: string): Promise<StaticWebAppTreeItem> {
-    return await createStaticWebApp({ ...context, fsPath: projectPath, createScenario: 'publishToNewRepo' });
+export async function createStaticWebAppFromLocalProject(context: IActionContext, localProjectTreeItem: LocalProjectTreeItem): Promise<StaticWebAppTreeItem> {
+    const localProjectPath: string = localProjectTreeItem.projectPath;
+    const createScenario: CreateScenario = await tryGetRemote(context, localProjectPath) ? 'connectToExistingRepo' : 'publishToNewRepo';
+    const swaTreeItem: StaticWebAppTreeItem = await createStaticWebApp({ ...context, fsPath: localProjectPath, createScenario });
+    await localProjectTreeItem.refresh(context);
+    return swaTreeItem;
 }

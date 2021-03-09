@@ -3,9 +3,15 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { ReposGetResponseData } from "@octokit/types";
 import { pathExists, readdir } from "fs-extra";
 import { basename, join } from "path";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IGenericTreeItemOptions, TreeItemIconPath } from "vscode-azureextensionui";
+import { Uri } from "vscode";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, IGenericTreeItemOptions, TreeItemIconPath } from "vscode-azureextensionui";
+import { getGitApi } from "../../getExtensionApi";
+import { API, Branch, Repository } from "../../git";
+import { GitTreeData } from "../../gitHubTypings";
+import { getGitHubTree, tryGetRemote } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
 import { treeUtils } from "../../utils/treeUtils";
 import { ConfigGroupTreeItem } from "./ConfigGroupTreeItem";
@@ -40,19 +46,31 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
         return false;
     }
 
-    public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
-        const workflows: string[] = await this.getWorkflows(this.projectPath);
-        if (workflows.length) {
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+        const localWorkflows: string[] = await this.getLocalWorkflows(this.projectPath);
+        if (localWorkflows.length) {
             return [new ConfigGroupTreeItem(this)];
         } else {
-            const options: IGenericTreeItemOptions = {
-                label: 'Create Static Web App from Local Project...',
-                iconPath: treeUtils.getThemedIconPath('add'),
-                commandId: 'staticWebApps.createStaticWebAppFromLocalProject',
-                contextValue: 'createStaticWebAppFromLocalProject'
-            };
+            const remoteWorkflows: GitTreeData[] = await this.getRemoteWorkflows(context, this.projectPath);
+            let options: IGenericTreeItemOptions;
+            if (remoteWorkflows.length) {
+                options = {
+                    label: localize('gitPull', '"git pull" to update local files'),
+                    iconPath: treeUtils.getThemedIconPath('cloud-download'),
+                    commandId: 'staticWebApps.gitPull',
+                    contextValue: 'gitPull'
+                };
+            } else {
+                options = {
+                    label: localize('createSWA', 'Create Static Web App from Local Project...'),
+                    iconPath: treeUtils.getThemedIconPath('add'),
+                    commandId: 'staticWebApps.createStaticWebAppFromLocalProject',
+                    contextValue: 'createStaticWebAppFromLocalProject'
+                };
+            }
+
             const treeItem: GenericTreeItem = new GenericTreeItem(this, options);
-            treeItem.commandArgs = [this.projectPath];
+            treeItem.commandArgs = [this];
             return [treeItem];
         }
     }
@@ -61,9 +79,28 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
         return false;
     }
 
-    private async getWorkflows(projectPath: string): Promise<string[]> {
+    private async getLocalWorkflows(projectPath: string): Promise<string[]> {
         const workflowsPath: string = join(projectPath, '.github', 'workflows');
         const dirListing: string[] = await pathExists(workflowsPath) && await readdir(workflowsPath) || [];
         return dirListing.filter(file => /\.(yml|yaml)$/i.test(file));
+    }
+
+    private async getRemoteWorkflows(context: IActionContext, projectPath: string): Promise<GitTreeData[]> {
+        const repoData: ReposGetResponseData | undefined = await tryGetRemote(context, projectPath);
+        const repoUrl: string | undefined = repoData?.git_url;
+
+        if (repoUrl) {
+            const git: API = await getGitApi();
+            const uri: Uri = Uri.file(projectPath);
+            const repo: Repository | null = git.getRepository(uri);
+            const branch: Branch | undefined = await repo?.getBranch('HEAD');
+            const branchName: string | undefined = branch?.name;
+
+            if (branchName) {
+                return await getGitHubTree(context, repoUrl, branchName);
+            }
+        }
+
+        return [];
     }
 }
