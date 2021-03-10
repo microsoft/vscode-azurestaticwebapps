@@ -55,7 +55,7 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
             let options: IGenericTreeItemOptions;
             if (remoteWorkflows.length) {
                 options = {
-                    label: localize('gitPull', '"git pull" to update local files'),
+                    label: localize('gitPull', '"git pull" to get build configuration files from the remote'),
                     iconPath: treeUtils.getThemedIconPath('cloud-download'),
                     commandId: 'staticWebApps.gitPull',
                     contextValue: 'gitPull'
