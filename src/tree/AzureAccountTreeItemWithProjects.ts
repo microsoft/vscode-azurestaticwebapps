@@ -3,11 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { WebSiteManagementClient } from '@azure/arm-appservice';
+import { StaticSiteARMResource, StaticSitesListResponse } from '@azure/arm-appservice/esm/models';
 import { pathExists } from 'fs-extra';
 import { join } from 'path';
 import { workspace } from 'vscode';
 import { AzExtTreeItem, AzureAccountTreeItemBase, IActionContext, ISubscriptionContext } from 'vscode-azureextensionui';
 import { configFileName, enableLocalProjectView } from '../constants';
+import { createWebSiteClient } from '../utils/azureClients';
 import { getWorkspaceSetting } from '../utils/settingsUtils';
 import { LocalProjectTreeItem } from './localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from './StaticWebAppTreeItem';
@@ -54,11 +57,11 @@ export class AzureAccountTreeItemWithProjects extends AzureAccountTreeItemBase {
         const children: AzExtTreeItem[] = await this.loadAllChildren(context);
         for (const child of children) {
             if (child instanceof SubscriptionTreeItem) {
-                const staticWebAppTreeItems: StaticWebAppTreeItem[] = <StaticWebAppTreeItem[]>await child.loadAllChildren(context);
-                for (const staticWebAppTreeItem of staticWebAppTreeItems) {
-                    if (staticWebAppTreeItem.repositoryUrl === repositoryUrl) {
-                        return staticWebAppTreeItem;
-                    }
+                const client: WebSiteManagementClient = await createWebSiteClient(child.root);
+                const staticSites: StaticSitesListResponse = await client.staticSites.list();
+                const staticSite: StaticSiteARMResource | undefined = staticSites.find(ss => ss.repositoryUrl === repositoryUrl);
+                if (staticSite) {
+                    return new StaticWebAppTreeItem(child, staticSite);
                 }
             }
         }
