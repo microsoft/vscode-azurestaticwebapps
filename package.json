@@ -315,7 +315,7 @@
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?|Job|Step)|applicationSettings/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?|Job|Step|LocalProject)|applicationSettings/",
                     "group": "9@3"
                 },
                 {
