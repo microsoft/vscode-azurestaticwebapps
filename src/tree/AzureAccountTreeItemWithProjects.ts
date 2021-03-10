@@ -10,6 +10,7 @@ import { AzExtTreeItem, AzureAccountTreeItemBase, IActionContext, ISubscriptionC
 import { configFileName, enableLocalProjectView } from '../constants';
 import { getWorkspaceSetting } from '../utils/settingsUtils';
 import { LocalProjectTreeItem } from './localProject/LocalProjectTreeItem';
+import { StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
 
 export class AzureAccountTreeItemWithProjects extends AzureAccountTreeItemBase {
@@ -47,5 +48,20 @@ export class AzureAccountTreeItemWithProjects extends AzureAccountTreeItemBase {
         } else {
             return super.compareChildrenImpl(item1, item2);
         }
+    }
+
+    public async findStaticWebAppTreeItem(context: IActionContext, repositoryUrl: string): Promise<StaticWebAppTreeItem | undefined> {
+        const children: AzExtTreeItem[] = await this.loadAllChildren(context);
+        for (const child of children) {
+            if (child instanceof SubscriptionTreeItem) {
+                const staticWebAppTreeItems: StaticWebAppTreeItem[] = <StaticWebAppTreeItem[]>await child.loadAllChildren(context);
+                for (const staticWebAppTreeItem of staticWebAppTreeItems) {
+                    if (staticWebAppTreeItem.repositoryUrl === repositoryUrl) {
+                        return staticWebAppTreeItem;
+                    }
+                }
+            }
+        }
+        return undefined;
     }
 }

@@ -54,6 +54,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
     registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
     registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
+    registerCommand('staticWebApps.revealTreeItem', async (_context: IActionContext, treeItem: AzExtTreeItem) => await ext.treeView.reveal(treeItem, { expand: true }));
 
     // Suppress "Report an Issue" button for all errors in favor of the command
     registerErrorHandler(c => c.errorHandling.suppressReportIssue = true);

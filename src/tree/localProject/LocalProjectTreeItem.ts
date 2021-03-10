@@ -4,21 +4,26 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { basename } from "path";
-import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, IGenericTreeItemOptions, TreeItemIconPath } from "vscode-azureextensionui";
+import { tryGetRemote } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
 import { treeUtils } from "../../utils/treeUtils";
+import { AzureAccountTreeItemWithProjects } from "../AzureAccountTreeItemWithProjects";
+import { StaticWebAppTreeItem } from "../StaticWebAppTreeItem";
 import { ConfigGroupTreeItem } from "./ConfigGroupTreeItem";
 
-export class LocalProjectTreeItem extends AzExtParentTreeItem {
+export class LocalProjectTreeItem extends AzureParentTreeItem {
     public static contextValue: string = 'azureStaticLocalProject';
     public contextValue: string = LocalProjectTreeItem.contextValue;
     public readonly label: string = localize('localProject', 'Local Project');
+    public readonly parent: AzureAccountTreeItemWithProjects;
     public readonly projectPath: string;
 
     private readonly _projectName: string;
 
-    public constructor(parent: AzExtParentTreeItem, projectPath: string) {
+    public constructor(parent: AzureAccountTreeItemWithProjects, projectPath: string) {
         super(parent);
+        this.parent = parent;
         this.projectPath = projectPath;
         this._projectName = basename(projectPath);
     }
@@ -40,7 +45,25 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
-    public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
-        return [new ConfigGroupTreeItem(this)];
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+        const treeItems: AzExtTreeItem[] = [new ConfigGroupTreeItem(this)];
+
+        const repositoryUrl: string | undefined = (await tryGetRemote(context, this.projectPath))?.html_url;
+        if (repositoryUrl) {
+            const staticWebAppTreeItem: StaticWebAppTreeItem | undefined = await this.parent.findStaticWebAppTreeItem(context, repositoryUrl);
+            if (staticWebAppTreeItem) {
+                const options: IGenericTreeItemOptions = {
+                    label: localize('reveal', 'Reveal linked Static Web App'),
+                    iconPath: treeUtils.getThemedIconPath('link'),
+                    commandId: 'staticWebApps.revealTreeItem',
+                    contextValue: 'revealLinkedStaticWebApp'
+                };
+                const treeItem: GenericTreeItem = new GenericTreeItem(this, options);
+                treeItem.commandArgs = [staticWebAppTreeItem];
+                treeItems.push(treeItem);
+            }
+        }
+
+        return treeItems;
     }
 }
