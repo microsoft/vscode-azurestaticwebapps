@@ -53,10 +53,10 @@ export class LocalProjectTreeItem extends AzureParentTreeItem {
             const staticWebAppTreeItem: StaticWebAppTreeItem | undefined = await this.parent.findStaticWebAppTreeItem(context, repositoryUrl);
             if (staticWebAppTreeItem) {
                 const options: IGenericTreeItemOptions = {
-                    label: localize('reveal', 'Reveal linked Static Web App'),
+                    label: localize('reveal', 'Reveal connected Static Web App'),
                     iconPath: treeUtils.getThemedIconPath('link'),
                     commandId: 'staticWebApps.revealTreeItem',
-                    contextValue: 'revealLinkedStaticWebApp'
+                    contextValue: 'revealConnectedStaticWebApp'
                 };
                 const treeItem: GenericTreeItem = new GenericTreeItem(this, options);
                 treeItem.commandArgs = [staticWebAppTreeItem];
