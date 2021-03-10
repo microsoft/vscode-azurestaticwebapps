@@ -24,7 +24,7 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('azure-staticwebapps');
+        return treeUtils.getThemedIconPath('CreateNewProject');
     }
 
     public get id(): string {
