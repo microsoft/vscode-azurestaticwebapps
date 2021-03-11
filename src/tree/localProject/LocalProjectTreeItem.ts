@@ -39,7 +39,6 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
         return false;
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
         return [new ConfigGroupTreeItem(this)];
     }
