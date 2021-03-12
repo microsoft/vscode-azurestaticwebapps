@@ -24,7 +24,7 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('CreateNewProject');
+        return treeUtils.getThemedIconPath('folder');
     }
 
     public get id(): string {

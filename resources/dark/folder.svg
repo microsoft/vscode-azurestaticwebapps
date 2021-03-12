@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+
+ <title>Icon-storage-90</title>
+ <g class="layer">
+  <title>Layer 1</title>
+  <path d="m17.1,3.6l-7.41,0a0.34,0.34 0 0 1 -0.22,-0.07l-2.12,-1.41a0.43,0.43 0 0 0 -0.22,-0.06l-6.23,0a0.4,0.4 0 0 0 -0.4,0.39l0,13.1a0.4,0.4 0 0 0 0.4,0.39l16.2,0a0.4,0.4 0 0 0 0.4,-0.39l0,-11.55a0.4,0.4 0 0 0 -0.4,-0.4z" fill="#005ba1" id="svg_1" transform="matrix(1 0 0 1 0 0)"/>
+  <rect fill="#fff" height="0.77" id="svg_2" rx="0.16" width="3.86" x="2.05" y="2.82"/>
+  <rect fill="#1ac3f2" height="0.77" id="svg_3" rx="0.11" width="0.77" x="2.05" y="2.82"/>
+  <path d="m17.1,3.58l-8.1,0a0.36,0.36 0 0 0 -0.28,0.12l-1.35,1.3a0.43,0.43 0 0 1 -0.28,0.11l-6.19,0a0.4,0.4 0 0 0 -0.4,0.4l0,10a0.4,0.4 0 0 0 0.4,0.39l16.2,0a0.4,0.4 0 0 0 0.4,-0.39l0,-11.51a0.4,0.4 0 0 0 -0.4,-0.42z" fill="#2ccaea" id="svg_4"/>
+  <polygon fill="#FF0000" id="svg_9"/>
+  <g id="svg_8"/>
+  <g id="svg_21"/>
+ </g>
+</svg>
