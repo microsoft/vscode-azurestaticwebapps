@@ -114,10 +114,10 @@ export async function getGitHubAccessToken(context: IActionContext): Promise<str
     }
 }
 
-export async function tryGetRemote(context: IActionContext): Promise<ReposGetResponseData | undefined> {
+export async function tryGetRemote(context: IActionContext, localProjectPath?: string): Promise<ReposGetResponseData | undefined> {
     try {
-        const localProjectPath: string | undefined = getSingleRootFsPath();
-        // only try to get remote if there's only a single workspace opened
+        localProjectPath = localProjectPath || getSingleRootFsPath();
+        // only try to get remote if provided a path or if there's only a single workspace opened
         if (localProjectPath) {
             const localGit: git.SimpleGit = git(localProjectPath);
             const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
