@@ -31,6 +31,7 @@ module.exports = {
         "@typescript-eslint/no-unnecessary-type-assertion": "off",
         "@typescript-eslint/restrict-template-expressions": "off",
         "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/ban-types": "off"
+        "@typescript-eslint/ban-types": "off",
+        "@typescript-eslint/require-await": "off"
     }
 };
