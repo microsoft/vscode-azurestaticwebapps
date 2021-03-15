@@ -62,7 +62,7 @@ export class CreateScenarioListStep extends AzureWizardPromptStep<IStaticWebAppW
                 wizardContext.fsPath = workspace.workspaceFolders[0].uri.fsPath;
             }
 
-            if (wizardContext.fsPath) {
+            if (wizardContext.fsPath && !wizardContext.advancedCreation) {
                 await WorkspaceListStep.setWorkspaceContexts(wizardContext, wizardContext.fsPath);
             } else {
                 promptSteps.push(new WorkspaceListStep());
