@@ -4,9 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { basename } from "path";
+import { ThemeIcon } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
-import { treeUtils } from "../../utils/treeUtils";
 import { ConfigGroupTreeItem } from "./ConfigGroupTreeItem";
 
 export class LocalProjectTreeItem extends AzExtParentTreeItem {
@@ -24,7 +24,7 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('folder');
+        return new ThemeIcon('folder');
     }
 
     public get id(): string {
