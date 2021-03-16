@@ -23,6 +23,7 @@ import { cancelAction, rerunAction } from './github/actionCommands';
 import { cloneRepo } from './github/cloneRepo';
 import { openGitHubRepo } from './github/openGitHubRepo';
 import { showActions } from './github/showActions';
+import { gitPull } from './gitPull';
 import { openInPortal } from './openInPortal';
 import { openYAMLConfigFile } from './openYAMLConfigFile';
 import { viewProperties } from './viewProperties';
@@ -55,6 +56,8 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
     registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
     registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
+    registerCommand('staticWebApps.gitPull', gitPull);
+    registerCommand('staticWebApps.showOutputChannel', () => { ext.outputChannel.show(); });
 
     // Suppress "Report an Issue" button for all errors in favor of the command
     registerErrorHandler(c => c.errorHandling.suppressReportIssue = true);
