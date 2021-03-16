@@ -3,10 +3,12 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { basename } from "path";
+import { pathExists, readdir } from "fs-extra";
+import { basename, join } from "path";
 import { ThemeIcon } from "vscode";
-import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IGenericTreeItemOptions, TreeItemIconPath } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
+import { treeUtils } from "../../utils/treeUtils";
 import { ConfigGroupTreeItem } from "./ConfigGroupTreeItem";
 
 export class LocalProjectTreeItem extends AzExtParentTreeItem {
@@ -39,8 +41,30 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
         return false;
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
-        return [new ConfigGroupTreeItem(this)];
+        const localWorkflows: string[] = await this.getLocalWorkflows(this.projectPath);
+        if (localWorkflows.length) {
+            return [new ConfigGroupTreeItem(this)];
+        } else {
+            const options: IGenericTreeItemOptions = {
+                label: localize('createSWA', 'Create Static Web App from Local Project...'),
+                iconPath: treeUtils.getThemedIconPath('add'),
+                commandId: 'staticWebApps.createStaticWebAppFromLocalProject',
+                contextValue: 'createStaticWebAppFromLocalProject'
+            };
+            const treeItem: GenericTreeItem = new GenericTreeItem(this, options);
+            treeItem.commandArgs = [this];
+            return [treeItem];
+        }
+    }
+
+    public isAncestorOfImpl(): boolean {
+        return false;
+    }
+
+    private async getLocalWorkflows(projectPath: string): Promise<string[]> {
+        const workflowsPath: string = join(projectPath, '.github', 'workflows');
+        const dirListing: string[] = await pathExists(workflowsPath) && await readdir(workflowsPath) || [];
+        return dirListing.filter(file => /\.(yml|yaml)$/i.test(file));
     }
 }
