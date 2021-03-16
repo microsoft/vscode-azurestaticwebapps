@@ -5,6 +5,7 @@
 
 import { pathExists, readdir } from "fs-extra";
 import { basename, join } from "path";
+import { ThemeIcon } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IGenericTreeItemOptions, TreeItemIconPath } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
 import { treeUtils } from "../../utils/treeUtils";
@@ -25,7 +26,7 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('CreateNewProject');
+        return new ThemeIcon('folder');
     }
 
     public get id(): string {
