@@ -38,6 +38,6 @@ export async function gitPull(context: IActionContext, localProjectTreeItem: Loc
         void window.showInformationMessage(message);
         await localProjectTreeItem.refresh(context);
     } else {
-        throw new Error(localize('couldNotFindRepo', 'Could not find git repository.'));
+        throw new Error(localize('couldNotFindRepo', 'Could not find git repository. Open a folder containing a git repository to continue.'));
     }
 }
