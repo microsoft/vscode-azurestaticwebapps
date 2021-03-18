@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri } from "vscode";
+import { ProgressLocation, Uri, window } from "vscode";
 import { IActionContext, IParsedError, parseError } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -18,7 +18,10 @@ export async function gitPull(context: IActionContext, localProjectTreeItem: Loc
 
     if (repo) {
         try {
-            await repo.pull();
+            const title: string = localize('executingGitPull', 'Executing "git pull"...');
+            await window.withProgress({ location: ProgressLocation.Notification, title }, async (): Promise<void> => {
+                await repo.pull();
+            });
         } catch (error) {
             const parsedError: IParsedError = parseError(error);
             if (/Failed to execute git/.test(parsedError.message)) {
@@ -33,6 +36,8 @@ export async function gitPull(context: IActionContext, localProjectTreeItem: Loc
             }
         }
 
+        const message: string = localize('gitPullSuccess', 'Successfully executed "git pull".');
+        void window.showInformationMessage(message);
         await localProjectTreeItem.refresh(context);
     } else {
         throw new Error(localize('couldNotFindRepo', 'Could not find git repository.'));
