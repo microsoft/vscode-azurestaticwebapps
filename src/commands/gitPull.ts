@@ -25,11 +25,9 @@ export async function gitPull(context: IActionContext, localProjectTreeItem: Loc
         } catch (error) {
             const parsedError: IParsedError = parseError(error);
             if (/Failed to execute git/.test(parsedError.message)) {
-                /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-                error.stderr && ext.outputChannel.appendLog(error.stderr);
-                error.stdout && ext.outputChannel.appendLog(error.stdout);
-                /* eslint-enable @typescript-eslint/no-unsafe-member-access */
-
+                const gitError = <{ stdout: string | undefined, stderr: string | undefined }>error;
+                gitError.stdout && ext.outputChannel.appendLog(gitError.stdout);
+                gitError.stderr && ext.outputChannel.appendLog(gitError.stderr);
                 throw new Error(localize('failedToExecGitPull', 'Failed to execute "git pull". Check the [output window](command:{0}) for more details.', `${ext.prefix}.showOutputChannel`));
             } else {
                 throw error;
