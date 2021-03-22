@@ -9,7 +9,6 @@ import { ThemeIcon } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IGenericTreeItemOptions, TreeItemIconPath } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
 import { treeUtils } from "../../utils/treeUtils";
-import { ConfigGroupTreeItem } from "./ConfigGroupTreeItem";
 
 export class LocalProjectTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = 'azureStaticLocalProject';
@@ -44,7 +43,7 @@ export class LocalProjectTreeItem extends AzExtParentTreeItem {
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
         const localWorkflows: string[] = await this.getLocalWorkflows(this.projectPath);
         if (localWorkflows.length) {
-            return [new ConfigGroupTreeItem(this)];
+            return [];
         } else {
             const options: IGenericTreeItemOptions = {
                 label: localize('createSWA', 'Create Static Web App from Local Project...'),
