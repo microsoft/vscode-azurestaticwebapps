@@ -22,7 +22,7 @@ import { ActionTreeItem } from "./ActionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
-import { ConfigGroupTreeItem } from "./localProject/ConfigGroupTreeItem";
+import { GitHubConfigGroupTreeItem } from "./localProject/ConfigGroupTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
 export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
@@ -31,7 +31,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public parent: StaticWebAppTreeItem;
     public actionsTreeItem: ActionsTreeItem;
-    public configGroupTreeItem: ConfigGroupTreeItem;
+    public gitHubConfigGroupTreeItem: GitHubConfigGroupTreeItem;
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public data: WebSiteManagementModels.StaticSiteBuildARMResource;
@@ -50,7 +50,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         super(parent);
         this.data = env;
         this.actionsTreeItem = new ActionsTreeItem(this);
-        this.configGroupTreeItem = new ConfigGroupTreeItem(this);
+        this.gitHubConfigGroupTreeItem = new GitHubConfigGroupTreeItem(this);
         this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
         this.functionsTreeItem = new FunctionsTreeItem(this);
 
@@ -98,7 +98,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = [this.actionsTreeItem];
         if (this.inWorkspace) {
-            children.push(this.configGroupTreeItem);
+            children.push(this.gitHubConfigGroupTreeItem);
         }
 
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);

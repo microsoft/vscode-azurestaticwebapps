@@ -5,17 +5,17 @@
 
 import { AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { treeUtils } from "../../utils/treeUtils";
-import { BuildConfig, ConfigGroupTreeItem } from "./ConfigGroupTreeItem";
+import { BuildConfig, GitHubConfigGroupTreeItem } from "./ConfigGroupTreeItem";
 
-export class ConfigTreeItem extends AzExtTreeItem {
-    public static contextValue: string = 'azureStaticConfig';
-    public contextValue: string = ConfigTreeItem.contextValue;
+export class GitHubConfigTreeItem extends AzExtTreeItem {
+    public static contextValue: string = 'azureStaticGitHubConfig';
+    public contextValue: string = GitHubConfigTreeItem.contextValue;
     public commandId: string = 'staticWebApps.openYAMLConfigFile';
     public commandArgs: unknown[];
     public readonly buildConfig: string;
-    public parent: ConfigGroupTreeItem;
+    public parent: GitHubConfigGroupTreeItem;
 
-    public constructor(parent: ConfigGroupTreeItem, buildConfig: BuildConfig) {
+    public constructor(parent: GitHubConfigGroupTreeItem, buildConfig: BuildConfig) {
         super(parent);
         this.buildConfig = buildConfig;
         this.commandArgs = [this.parent.parent, this.buildConfig];

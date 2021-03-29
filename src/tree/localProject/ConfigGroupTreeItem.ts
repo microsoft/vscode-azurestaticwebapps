@@ -7,14 +7,14 @@ import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "vscode-azu
 import { localize } from "../../utils/localize";
 import { treeUtils } from "../../utils/treeUtils";
 import { EnvironmentTreeItem } from "../EnvironmentTreeItem";
-import { ConfigTreeItem } from "./ConfigTreeItem";
+import { GitHubConfigTreeItem } from "./ConfigTreeItem";
 
 export type BuildConfig = 'app_location' | 'api_location' | 'output_location';
 
-export class ConfigGroupTreeItem extends AzExtParentTreeItem {
-    public static contextValue: string = 'azureStaticConfigGroup';
-    public contextValue: string = ConfigGroupTreeItem.contextValue;
-    public readonly label: string = localize('config', 'Configuration');
+export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
+    public static contextValue: string = 'azureStaticGitHubConfigGroup';
+    public contextValue: string = GitHubConfigGroupTreeItem.contextValue;
+    public readonly label: string = localize('gitHubConfig', 'GitHub Configuration');
     public parent: EnvironmentTreeItem;
 
     public constructor(parent: EnvironmentTreeItem) {
@@ -34,7 +34,7 @@ export class ConfigGroupTreeItem extends AzExtParentTreeItem {
         return await this.createTreeItemsWithErrorHandling(
             buildConfigs,
             'azureStaticConfigInvalid',
-            (config: BuildConfig) => new ConfigTreeItem(this, config),
+            (config: BuildConfig) => new GitHubConfigTreeItem(this, config),
             (config: BuildConfig) => config
         );
     }
