@@ -12,6 +12,7 @@ import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { tryGetRemote } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
+import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
 import { CreateScenario } from './CreateScenarioListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
@@ -22,6 +23,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 
+    const folder = await getWorkspaceFolder(context);
+    console.log(folder);
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
     const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);

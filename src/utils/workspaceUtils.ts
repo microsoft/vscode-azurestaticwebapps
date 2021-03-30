@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { OpenDialogOptions, workspace, WorkspaceFolder } from "vscode";
-import { IAzureQuickPickItem } from "vscode-azureextensionui";
+import { commands, MessageItem, OpenDialogOptions, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
 import { ext } from '../extensionVariables';
+import { NoWorkspaceError } from './errors';
 import { localize } from "./localize";
 
 export function getSingleRootFsPath(): string | undefined {
@@ -43,4 +44,42 @@ export async function selectWorkspaceItem(placeHolder: string, options: OpenDial
     const folder: IAzureQuickPickItem<string | undefined> = await ext.ui.showQuickPick(folderPicks, { placeHolder });
 
     return folder.data ? folder.data : (await ext.ui.showOpenDialog(options))[0].fsPath;
+}
+
+export async function getWorkspaceFolder(context: IActionContext): Promise<WorkspaceFolder> {
+    let folder: WorkspaceFolder | undefined;
+    if (!workspace.workspaceFolders || workspace.workspaceFolders.length === 0) {
+        const message: string = localize('noWorkspaceWarning', 'You must have a project open to create a Static Web App.');
+        const newProject: MessageItem = { title: localize('createNewProject', 'Clone existing project') };
+        const openExistingProject: MessageItem = { title: localize('openExistingProject', 'Open existing project') };
+        const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true }, newProject, openExistingProject);
+
+        if (result === newProject) {
+            await commands.executeCommand('git.clone');
+            context.telemetry.properties.noWorkspaceResult = 'createNewProject';
+        } else {
+            const uri: Uri[] = await context.ui.showOpenDialog({
+                canSelectFiles: false,
+                canSelectFolders: true,
+                canSelectMany: false,
+                openLabel: localize('open', 'Open')
+            });
+            // don't wait
+            void commands.executeCommand('vscode.openFolder', uri[0]);
+            context.telemetry.properties.noWorkspaceResult = 'openExistingProject';
+        }
+
+        context.errorHandling.suppressDisplay = true;
+        throw new NoWorkspaceError();
+    } else if (workspace.workspaceFolders.length === 1) {
+        folder = workspace.workspaceFolders[0];
+    } else {
+        const placeHolder: string = localize('selectProjectFolder', 'Select the folder containing your SWA project');
+        folder = await window.showWorkspaceFolderPick({ placeHolder });
+        if (!folder) {
+            throw new UserCancelledError();
+        }
+    }
+
+    return folder;
 }
