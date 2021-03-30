@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ProgressLocation, Uri, window } from "vscode";
-import { IActionContext, IParsedError, parseError } from "vscode-azureextensionui";
+import { IParsedError, parseError } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, Repository } from "../git";
-import { LocalProjectTreeItem } from "../tree/localProject/LocalProjectTreeItem";
 import { localize } from "../utils/localize";
 
-export async function gitPull(context: IActionContext, localProjectTreeItem: LocalProjectTreeItem): Promise<void> {
+export async function gitPull(localPath: string): Promise<void> {
     const git: API = await getGitApi();
-    const projectUri: Uri = Uri.file(localProjectTreeItem.projectPath);
+    const projectUri: Uri = Uri.file(localPath);
     const repo: Repository | null = git.getRepository(projectUri);
 
     if (repo) {
@@ -36,7 +35,6 @@ export async function gitPull(context: IActionContext, localProjectTreeItem: Loc
 
         const message: string = localize('gitPullSuccess', 'Successfully executed "git pull".');
         void window.showInformationMessage(message);
-        await localProjectTreeItem.refresh(context);
     } else {
         throw new Error(localize('couldNotFindRepo', 'Could not find git repository. Open a folder containing a git repository to continue.'));
     }
