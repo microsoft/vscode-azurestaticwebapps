@@ -11,6 +11,7 @@ import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
 import { BuildConfig } from '../tree/localProject/ConfigGroupTreeItem';
 import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
+import { getYAMLFileName } from '../utils/gitHubUtils';
 import { openUrl } from "../utils/openUrl";
 import { getSingleRootFsPath } from '../utils/workspaceUtils';
 
@@ -19,8 +20,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
-    const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
-    const ymlFileName: string = `.github/workflows/azure-static-web-apps-${defaultHostname.split('.')[0]}.yml`;
+    const ymlFileName: string = getYAMLFileName(node);
 
     if (node instanceof EnvironmentTreeItem && node.inWorkspace) {
         const fsPath: string | undefined = getSingleRootFsPath();

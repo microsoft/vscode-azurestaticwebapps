@@ -470,10 +470,11 @@
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
-        "simple-git": "^1.132.0",
+        "simple-git": "^2.37.0",
         "vscode-azureappservice": "^0.73.0",
         "vscode-azureextensionui": "^0.39.1",
-        "vscode-nls": "^4.1.1"
+        "vscode-nls": "^4.1.1",
+        "yaml": "^1.10.2"
     },
     "extensionDependencies": [
         "ms-vscode.azure-account",
