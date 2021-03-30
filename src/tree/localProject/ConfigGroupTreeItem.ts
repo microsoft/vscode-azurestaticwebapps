@@ -5,11 +5,11 @@
 
 import { readFile } from "fs-extra";
 import { join } from "path";
+import { ThemeIcon } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, IParsedError, parseError, TreeItemIconPath } from "vscode-azureextensionui";
 import { parse } from "yaml";
 import { getYAMLFileName } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
-import { treeUtils } from "../../utils/treeUtils";
 import { getSingleRootFsPath } from "../../utils/workspaceUtils";
 import { EnvironmentTreeItem } from "../EnvironmentTreeItem";
 import { GitHubConfigTreeItem } from "./ConfigTreeItem";
@@ -39,7 +39,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('settings');
+        return new ThemeIcon('settings-gear');
     }
 
     public hasMoreChildrenImpl(): boolean {
