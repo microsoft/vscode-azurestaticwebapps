@@ -10,7 +10,6 @@ import { AzExtParentTreeItem, AzExtTreeItem, IParsedError, parseError, TreeItemI
 import { parse } from "yaml";
 import { getYAMLFileName } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
-import { getSingleRootFsPath } from "../../utils/workspaceUtils";
 import { EnvironmentTreeItem } from "../EnvironmentTreeItem";
 import { GitHubConfigTreeItem } from "./ConfigTreeItem";
 
@@ -48,11 +47,10 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
         const buildConfigs: BuildConfig[] = ['app_location', 'api_location'];
-        const yamlFileName: string = getYAMLFileName(this.parent);
-        const workspacePath: string | undefined = getSingleRootFsPath();
 
-        if (workspacePath) {
-            const yamlFilePath: string = join(workspacePath, yamlFileName)
+        if (this.parent.localProjectPath) {
+            const yamlFileName: string = getYAMLFileName(this.parent);
+            const yamlFilePath: string = join(this.parent.localProjectPath, yamlFileName)
             const yamlFileContents: string = (await readFile(yamlFilePath)).toString();
             const parsedYaml: ParsedYaml = <ParsedYaml>await parse(yamlFileContents);
             let outputLocation: string | undefined;
