@@ -29,7 +29,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
             // if we couldn't find it, then try opening it in GitHub
             if (await fse.pathExists(ymlFsPath)) {
                 const configDocument: TextDocument = await workspace.openTextDocument(ymlFsPath);
-                const selection: Range | undefined = await getSelection(configDocument, buildConfigToSelect);
+                const selection: Range | undefined = buildConfigToSelect ? await getSelection(configDocument, buildConfigToSelect) : undefined;
                 await window.showTextDocument(configDocument, { selection });
                 return;
             }
@@ -39,7 +39,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
     await openUrl(`${node.repositoryUrl}/edit/${node.branch}/${ymlFileName}`);
 }
 
-async function getSelection(configDocument: TextDocument, buildConfigToSelect?: BuildConfig): Promise<Range | undefined> {
+async function getSelection(configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {
     if (buildConfigToSelect) {
         const configRegex: RegExp = new RegExp(`${buildConfigToSelect}:`);
 
