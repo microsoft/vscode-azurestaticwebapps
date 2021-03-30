@@ -10,9 +10,9 @@ import { getGitApi } from "../getExtensionApi";
 import { API, Repository } from "../git";
 import { localize } from "../utils/localize";
 
-export async function gitPull(localPath: string): Promise<void> {
+export async function gitPull(projectPath: string): Promise<void> {
     const git: API = await getGitApi();
-    const projectUri: Uri = Uri.file(localPath);
+    const projectUri: Uri = Uri.file(projectPath);
     const repo: Repository | null = git.getRepository(projectUri);
 
     if (repo) {
