@@ -3,7 +3,7 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { readdir, readFile } from "fs-extra";
+import { pathExists, readdir, readFile } from "fs-extra";
 import { basename, join } from "path";
 import { ThemeIcon } from "vscode";
 import { ext } from "vscode-azureappservice/out/src/extensionVariables";
@@ -34,7 +34,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
         if (parent.localProjectPath && parent.inWorkspace) {
             const treeItems: GitHubConfigGroupTreeItem[] = [];
             const workflowsDir: string = join(parent.localProjectPath, '.github/workflows');
-            const yamlFiles: string[] = await readdir(workflowsDir);
+            const yamlFiles: string[] = await pathExists(workflowsDir) ? await readdir(workflowsDir) : [];
 
             for (const yamlFile of yamlFiles) {
                 if (/\.(yml|yaml)$/i.test(yamlFile)) {
