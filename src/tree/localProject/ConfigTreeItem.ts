@@ -3,8 +3,8 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { ThemeIcon } from "vscode";
 import { AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { treeUtils } from "../../utils/treeUtils";
 import { BuildConfig, GitHubConfigGroupTreeItem } from "./ConfigGroupTreeItem";
 
 export class GitHubConfigTreeItem extends AzExtTreeItem {
@@ -28,6 +28,6 @@ export class GitHubConfigTreeItem extends AzExtTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('constant');
+        return new ThemeIcon('symbol-constant');
     }
 }
