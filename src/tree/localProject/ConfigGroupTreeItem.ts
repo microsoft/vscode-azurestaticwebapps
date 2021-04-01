@@ -37,7 +37,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
             const yamlFiles: string[] = await readdir(workflowsDir);
 
             for (const yamlFile of yamlFiles) {
-                if (yamlFile.endsWith('.yml')) {
+                if (/\.(yml|yaml)$/i.test(yamlFile)) {
                     const yamlFilePath: string = join(workflowsDir, yamlFile);
                     const contents: string = (await readFile(yamlFilePath)).toString();
 
