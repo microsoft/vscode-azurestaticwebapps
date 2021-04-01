@@ -13,8 +13,6 @@ import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } f
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
-import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
-import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 import { localize } from './localize';
 import { getSingleRootFsPath } from './workspaceUtils';
 
@@ -211,9 +209,4 @@ export async function remoteShortnameExists(fsPath: string, remoteName: string):
     }
 
     return hasOrigin;
-}
-
-export function getYAMLFileName(node: StaticWebAppTreeItem | EnvironmentTreeItem): string {
-    const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
-    return `.github/workflows/azure-static-web-apps-${defaultHostname.split('.')[0]}.yml`;
 }

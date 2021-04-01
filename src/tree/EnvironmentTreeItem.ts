@@ -32,7 +32,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public parent: StaticWebAppTreeItem;
     public actionsTreeItem: ActionsTreeItem;
-    public gitHubConfigGroupTreeItem: GitHubConfigGroupTreeItem;
+    public gitHubConfigGroupTreeItems: GitHubConfigGroupTreeItem[];
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public data: WebSiteManagementModels.StaticSiteBuildARMResource;
@@ -52,7 +52,6 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         super(parent);
         this.data = env;
         this.actionsTreeItem = new ActionsTreeItem(this);
-        this.gitHubConfigGroupTreeItem = new GitHubConfigGroupTreeItem(this);
         this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
         this.functionsTreeItem = new FunctionsTreeItem(this);
 
@@ -100,7 +99,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = [this.actionsTreeItem];
         if (this.inWorkspace) {
-            children.push(this.gitHubConfigGroupTreeItem);
+            children.push(...this.gitHubConfigGroupTreeItems);
         }
 
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
@@ -174,5 +173,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         const remote: string | undefined = (await tryGetRemote(context, this.localProjectPath))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
+
+        this.gitHubConfigGroupTreeItems = await GitHubConfigGroupTreeItem.createGitHubConfigGroupTreeItems(this);
     }
 }

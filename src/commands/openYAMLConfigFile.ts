@@ -3,40 +3,46 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fse from 'fs-extra';
-import * as path from 'path';
+import { basename } from 'path';
 import { Position, Range, TextDocument, window, workspace } from "vscode";
-import { IActionContext } from "vscode-azureextensionui";
+import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
-import { BuildConfig } from '../tree/localProject/ConfigGroupTreeItem';
+import { BuildConfig, GitHubConfigGroupTreeItem } from '../tree/localProject/ConfigGroupTreeItem';
 import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
-import { getYAMLFileName } from '../utils/gitHubUtils';
+import { localize } from '../utils/localize';
 import { openUrl } from "../utils/openUrl";
-import { getSingleRootFsPath } from '../utils/workspaceUtils';
 
-export async function openYAMLConfigFile(context: IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
+export async function openYAMLConfigFile(context: IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem | GitHubConfigGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
-    const ymlFileName: string = getYAMLFileName(node);
+    if (node instanceof StaticWebAppTreeItem || node instanceof EnvironmentTreeItem && node.gitHubConfigGroupTreeItems.length === 0) {
+        const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
+        const ymlFileName: string = `.github/workflows/azure-static-web-apps-${defaultHostname.split('.')[0]}.yml`;
+        return await openUrl(`${node.repositoryUrl}/edit/${node.branch}/${ymlFileName}`);
+    }
 
-    if (node instanceof EnvironmentTreeItem && node.inWorkspace) {
-        const fsPath: string | undefined = getSingleRootFsPath();
-        if (fsPath) {
-            const ymlFsPath: string = path.join(fsPath, ymlFileName);
-            // if we couldn't find it, then try opening it in GitHub
-            if (await fse.pathExists(ymlFsPath)) {
-                const configDocument: TextDocument = await workspace.openTextDocument(ymlFsPath);
-                const selection: Range | undefined = buildConfigToSelect ? await getSelection(configDocument, buildConfigToSelect) : undefined;
-                await window.showTextDocument(configDocument, { selection });
-                return;
-            }
+    let yamlFilePath: string | undefined;
+    if (node instanceof GitHubConfigGroupTreeItem ){
+        yamlFilePath = node.yamlFilePath;
+    } else {
+        const picks: IAzureQuickPickItem<string>[] = node.gitHubConfigGroupTreeItems.map(configNode => {
+            return { label: basename(configNode.yamlFilePath), data: configNode.yamlFilePath };
+        });
+
+        if (picks.length === 1) {
+            yamlFilePath = picks[0].data;
+        } else {
+            const placeHolder: string = localize('selectGitHubConfig', 'Select the GitHub configuration file to open.');
+            yamlFilePath = (await ext.ui.showQuickPick(picks, { placeHolder })).data;
         }
     }
 
-    await openUrl(`${node.repositoryUrl}/edit/${node.branch}/${ymlFileName}`);
+    const configDocument: TextDocument = await workspace.openTextDocument(yamlFilePath);
+    const selection: Range | undefined = buildConfigToSelect ? await getSelection(configDocument, buildConfigToSelect) : undefined;
+    await window.showTextDocument(configDocument, { selection });
 }
 
 async function getSelection(configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {

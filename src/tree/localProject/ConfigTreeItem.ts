@@ -13,16 +13,18 @@ export class GitHubConfigTreeItem extends AzExtTreeItem {
     public commandId: string = 'staticWebApps.openYAMLConfigFile';
     public commandArgs: unknown[];
     public readonly buildConfig: string;
+    public buildConfigValue: string;
     public parent: GitHubConfigGroupTreeItem;
 
-    public constructor(parent: GitHubConfigGroupTreeItem, buildConfig: BuildConfig) {
+    public constructor(parent: GitHubConfigGroupTreeItem, buildConfig: BuildConfig, buildConfigValue: string) {
         super(parent);
         this.buildConfig = buildConfig;
-        this.commandArgs = [this.parent.parent, this.buildConfig];
+        this.buildConfigValue = buildConfigValue;
+        this.commandArgs = [this.parent, this.buildConfig];
     }
 
     public get label(): string {
-        return this.buildConfig;
+        return `${this.buildConfig}="${this.buildConfigValue}"`;
     }
 
     public get iconPath(): TreeItemIconPath {
