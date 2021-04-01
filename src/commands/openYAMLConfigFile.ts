@@ -46,17 +46,13 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
 }
 
 async function getSelection(configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {
-    if (buildConfigToSelect) {
-        const configRegex: RegExp = new RegExp(`${buildConfigToSelect}:`);
+    const configRegex: RegExp = new RegExp(`${buildConfigToSelect}:`);
 
-        let offset: number = configDocument.getText().search(configRegex);
-        // Shift the offset to the beginning of the build config's value
-        offset += `${buildConfigToSelect}: `.length;
+    let offset: number = configDocument.getText().search(configRegex);
+    // Shift the offset to the beginning of the build config's value
+    offset += `${buildConfigToSelect}: `.length;
 
-        const position: Position = configDocument.positionAt(offset);
-        const configValueRegex: RegExp = /['"].*['"]/;
-        return configDocument.getWordRangeAtPosition(position, configValueRegex);
-    }
-
-    return undefined;
+    const position: Position = configDocument.positionAt(offset);
+    const configValueRegex: RegExp = /['"].*['"]/;
+    return configDocument.getWordRangeAtPosition(position, configValueRegex);
 }
