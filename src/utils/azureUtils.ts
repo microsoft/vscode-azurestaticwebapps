@@ -72,7 +72,7 @@ export async function pollAzureAsyncOperation(restResponse: msRest.RestResponse,
     request.prepare({ method: 'GET', url });
     await credentials.signRequest(request);
 
-    const client: msRest.ServiceClient = createGenericClient();
+    const client: msRest.ServiceClient = await createGenericClient();
     const pollingOperation: () => Promise<boolean> = async () => {
         const statusJsonString: msRest.HttpOperationResponse = await client.sendRequest(request);
         const operationResponse: AzureAsyncOperationResponse | undefined = <AzureAsyncOperationResponse>statusJsonString.parsedBody;
