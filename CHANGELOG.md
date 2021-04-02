@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.5.1 - 2021-04-02
+## 0.5.1 - 2021-04-12
 
 ### Added
 - Experimental framework to test incremental changes
