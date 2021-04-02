@@ -34,7 +34,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         const gitApi: API = await getGitApi();
         const newRepo: Repository | null = await gitApi.init(folder.uri);
         if (!newRepo) {
-            throw new Error();
+            throw new Error(localize('gitInitFailed', 'Git initialization failed.  Please initialize a git repository manually and attempt to create again.'));
         }
 
         const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value: localize('initCommit', 'Initial commit') });
