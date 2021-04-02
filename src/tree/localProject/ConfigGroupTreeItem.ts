@@ -3,13 +3,12 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { pathExists, readdir, readFile } from "fs-extra";
+import { pathExists, readdir } from "fs-extra";
 import { basename, join } from "path";
 import { ThemeIcon } from "vscode";
-import { ext } from "vscode-azureappservice/out/src/extensionVariables";
 import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { parse } from "yaml";
 import { localize } from "../../utils/localize";
+import { parseYamlFile } from "../../utils/yamlUtils";
 import { EnvironmentTreeItem } from "../EnvironmentTreeItem";
 import { GitHubConfigTreeItem } from "./ConfigTreeItem";
 
@@ -34,45 +33,14 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
         if (parent.localProjectPath && parent.inWorkspace) {
             const treeItems: GitHubConfigGroupTreeItem[] = [];
             const workflowsDir: string = join(parent.localProjectPath, '.github/workflows');
-            const yamlFiles: string[] = await pathExists(workflowsDir) ? await readdir(workflowsDir) : [];
+            const yamlFiles: string[] = await pathExists(workflowsDir) ?
+                (await readdir(workflowsDir)).filter(file => /\.(yml|yaml)$/i.test(file)) :
+                [];
 
             for (const yamlFile of yamlFiles) {
-                if (/\.(yml|yaml)$/i.test(yamlFile)) {
-                    const yamlFilePath: string = join(workflowsDir, yamlFile);
-                    const contents: string = (await readFile(yamlFilePath)).toString();
-
-                    if (/Azure\/static-web-apps-deploy/.test(contents)) {
-                        /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, no-prototype-builtins */
-                        const parsedYaml: any = await parse(contents);
-                        const buildConfigs: Map<BuildConfig, string> = new Map();
-
-                        for (const job of <any[]>Object.values(parsedYaml.jobs)) {
-                            for (const step of <any[]>Object.values(job['steps'])) {
-                                if (step.hasOwnProperty('id') && step['id'] === 'builddeploy') {
-                                    if (!step.hasOwnProperty('with') || !step['with'].hasOwnProperty('api_location') || !step['with'].hasOwnProperty('app_location')) {
-                                        void ext.ui.showWarningMessage(localize('mustContainLocs', `"{0}" must include "api_location" and "app_location". See the [workflow file guide](https://aka.ms/AAbrcox).`, yamlFile));
-                                        continue;
-                                    }
-
-                                    buildConfigs.set('api_location', step['with']['api_location'])
-                                    buildConfigs.set('app_location', step['with']['app_location'])
-
-                                    if (step['with'].hasOwnProperty('output_location')) {
-                                        buildConfigs.set('output_location', step['with']['output_location'])
-                                    } else if (step['with'].hasOwnProperty('app_artifact_location')) {
-                                        buildConfigs.set('app_artifact_location', step['with']['app_artifact_location'])
-                                    } else {
-                                        void ext.ui.showWarningMessage(localize('mustContainOutputLocs', `"{0}" must include "output_location" or "app_artifact_location". See the [workflow file guide](https://aka.ms/AAbrcox).`, yamlFile));
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                        /* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, no-prototype-builtins */
-
-                        treeItems.push(new GitHubConfigGroupTreeItem(parent, yamlFilePath, buildConfigs));
-                    }
-                }
+                const yamlFilePath: string = join(workflowsDir, yamlFile);
+                const buildConfigs: Map<BuildConfig, string> | undefined = await parseYamlFile(yamlFilePath);
+                buildConfigs && treeItems.push(new GitHubConfigGroupTreeItem(parent, yamlFilePath, buildConfigs));
             }
 
             return treeItems;
@@ -99,5 +67,10 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
             treeItems.push(new GitHubConfigTreeItem(this, config, value));
         });
         return treeItems;
+    }
+
+    public async refreshImpl(): Promise<void> {
+        const newBuildConfigs: Map<BuildConfig, string> | undefined = await parseYamlFile(this.yamlFilePath);
+        this.buildConfigs = newBuildConfigs ? newBuildConfigs : new Map<BuildConfig, string>();
     }
 }
