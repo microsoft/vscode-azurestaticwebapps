@@ -7,7 +7,7 @@
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "engines": {
-        "vscode": "^1.48.0"
+        "vscode": "^1.53.0"
     },
     "repository": {
         "type": "git",
@@ -443,9 +443,7 @@
         "@types/gulp": "^4.0.6",
         "@types/mocha": "^7.0.2",
         "@types/node": "^12.12.53",
-        "@types/request": "^2.48.5",
-        "@types/request-promise": "4.1.46",
-        "@types/vscode": "1.48.0",
+        "@types/vscode": "1.53.0",
         "@typescript-eslint/eslint-plugin": "^4.14.2",
         "@typescript-eslint/parser": "^4.14.2",
         "eslint": "^7.19.0",
@@ -457,11 +455,11 @@
         "mocha-multi-reporters": "^1.1.7",
         "ts-node": "^7.0.1",
         "typescript": "^3.9.7",
-        "vsce": "^1.81.1",
-        "vscode-azureextensiondev": "^0.7.1",
-        "vscode-test": "^1.4.0",
-        "webpack": "^4.44.1",
-        "webpack-cli": "^3.3.12"
+        "vsce": "^1.87.1",
+        "vscode-azureextensiondev": "^0.9.1",
+        "vscode-test": "^1.5.2",
+        "webpack": "^5.28.0",
+        "webpack-cli": "^4.6.0"
     },
     "dependencies": {
         "@azure/arm-appservice": "^6.0.0",
@@ -470,6 +468,7 @@
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
+        "open": "^8.0.4",
         "simple-git": "^1.132.0",
         "vscode-azureappservice": "^0.76.0",
         "vscode-azureextensionui": "^0.41.1",
