@@ -471,8 +471,8 @@
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
         "simple-git": "^1.132.0",
-        "vscode-azureappservice": "^0.73.0",
-        "vscode-azureextensionui": "^0.39.1",
+        "vscode-azureappservice": "^0.76.0",
+        "vscode-azureextensionui": "^0.41.1",
         "vscode-nls": "^4.1.1"
     },
     "extensionDependencies": [

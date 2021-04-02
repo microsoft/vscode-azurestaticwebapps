@@ -12,7 +12,7 @@ import { productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { pollAzureAsyncOperation } from "../utils/azureUtils";
-import { tryGetLocalBranch, tryGetRemote } from "../utils/gitHubUtils";
+import { tryGetLocalBranch, tryGetProjectForCreation } from "../utils/gitHubUtils";
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from "../utils/openUrl";
@@ -158,7 +158,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
 
-        const remote: string | undefined = (await tryGetRemote(context))?.html_url;
+        const remote: string | undefined = (await tryGetProjectForCreation(context))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
     }

@@ -3,18 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MessageItem, window } from 'vscode';
-import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
+import { MessageItem, window, WorkspaceFolder } from 'vscode';
+import { DialogResponses, IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { showActionsMsg } from '../../constants';
 import { ext } from '../../extensionVariables';
+import { getGitApi } from '../../getExtensionApi';
+import { API, Repository } from '../../git';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { tryGetRemote } from '../../utils/gitHubUtils';
+import { defaultBranchExists, getDefaultBranch, getGitWorkspaceState, GitWorkspaceState } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
-import { CreateScenario } from './CreateScenarioListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 
@@ -23,8 +24,48 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 
-    const folder = await getWorkspaceFolder(context);
-    console.log(folder);
+    const folder: WorkspaceFolder = await getWorkspaceFolder(context);
+    const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
+
+    const commitPrompt: string = localize('commitPrompt', 'Enter a commit message.');
+    if (!gitWorkspaceState.repo) {
+        const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to create a Static Web App. Would you like to initialize your project as a git repository and create a GitHub remote?');
+        await ext.ui.showWarningMessage(gitRequired, { modal: true }, DialogResponses.yes);
+        const gitApi: API = await getGitApi();
+        const newRepo: Repository | null = await gitApi.init(folder.uri);
+        if (!newRepo) {
+            throw new Error();
+        }
+
+        const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value: localize('initCommit', 'Initial commit') });
+        await newRepo.commit(commitMsg, { all: true });
+        gitWorkspaceState.repo = newRepo;
+
+    } else if (!!gitWorkspaceState.remoteUrl && !gitWorkspaceState.hasAdminAccess) {
+        const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository is required.  Please use a repo with admin access or create a fork.');
+        await ext.ui.showWarningMessage(adminAccess, { modal: true });
+
+    } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
+        const commitChanges: string = localize('commitChanges', 'Commit all working changes to create a Static Web App.');
+        await ext.ui.showWarningMessage(commitChanges, { modal: true }, { title: localize('commit', 'Commit') });
+
+        const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..` });
+        await gitWorkspaceState.repo.commit(commitMsg, { all: true });
+    }
+
+    const defaultBranch: string = await getDefaultBranch(gitWorkspaceState.repo)
+    if (gitWorkspaceState.repo.state.HEAD?.name !== defaultBranch && await defaultBranchExists(gitWorkspaceState.repo, defaultBranch)) {
+        const checkoutButton: MessageItem = { title: localize('checkout', 'Checkout "{0}"', defaultBranch) };
+        // we should only prompt them if the default branch exists otherwise it will fail when we try to checkout
+        const result: MessageItem = await ext.ui.showWarningMessage(localize('deployBranch', 'It is recommended to connect your SWA to the default branch "{0}".  Would you like to continue with branch "{1}"?',
+            defaultBranch, gitWorkspaceState.repo.state.HEAD?.name), { modal: true }, checkoutButton, { title: localize('continue', 'Continue') });
+        if (result === checkoutButton) {
+            await gitWorkspaceState.repo.checkout(defaultBranch);
+        }
+    }
+
+    context.fsPath = folder.uri.fsPath;
+
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
     const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);
@@ -51,8 +92,7 @@ export async function createStaticWebAppAdvanced(context: IActionContext, node?:
 
 export async function createStaticWebAppFromLocalProject(context: IActionContext, localProjectTreeItem: LocalProjectTreeItem): Promise<StaticWebAppTreeItem> {
     const localProjectPath: string = localProjectTreeItem.projectPath;
-    const createScenario: CreateScenario = await tryGetRemote(context, localProjectPath) ? 'connectToExistingRepo' : 'publishToNewRepo';
-    const swaTreeItem: StaticWebAppTreeItem = await createStaticWebApp({ ...context, fsPath: localProjectPath, createScenario });
+    const swaTreeItem: StaticWebAppTreeItem = await createStaticWebApp({ ...context, fsPath: localProjectPath });
     await localProjectTreeItem.refresh(context);
     return swaTreeItem;
 }

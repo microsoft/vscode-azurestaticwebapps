@@ -52,7 +52,7 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
         const message: string = localize('noWorkspaceWarning', 'You must have a project open to create a Static Web App.');
         const newProject: MessageItem = { title: localize('createNewProject', 'Clone existing project') };
         const openExistingProject: MessageItem = { title: localize('openExistingProject', 'Open existing project') };
-        const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true }, newProject, openExistingProject);
+        const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true }, openExistingProject, newProject);
 
         if (result === newProject) {
             await commands.executeCommand('git.clone');

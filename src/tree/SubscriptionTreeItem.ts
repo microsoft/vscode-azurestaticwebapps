@@ -6,15 +6,21 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { ReposGetResponseData } from '@octokit/types';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
+import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
+import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
+import { RepoPrivacyStep } from '../commands/createRepo/RepoPrivacyStep';
+import { WorkspaceListStep } from '../commands/createRepo/WorkspaceListStep';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
-import { CreateScenarioListStep } from '../commands/createStaticWebApp/CreateScenarioListStep';
+import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
+import { GitignoreCreateStep } from '../commands/createStaticWebApp/GitignoreCreateStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
 import { createWebSiteClient } from '../utils/azureClients';
-import { getGitHubAccessToken, tryGetRemote } from '../utils/gitHubUtils';
+import { getGitHubAccessToken, tryGetProjectForCreation } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { updateWorkspaceSetting } from '../utils/settingsUtils';
@@ -51,13 +57,20 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
-        promptSteps.push(new CreateScenarioListStep());
+        // because a workspace is a requirement, we can be confident that there is a fsPath
+        await WorkspaceListStep.setWorkspaceContexts(wizardContext, nonNullProp(wizardContext, 'fsPath'));
+
+        // if the local project doesn't have a GitHub remote, we will create it for them
+        if (!wizardContext.originExists) {
+            promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
+            executeSteps.push(new RepoCreateStep(), new GitignoreCreateStep());
+        }
 
         promptSteps.push(new StaticWebAppNameStep());
         if (context.advancedCreation) {
             promptSteps.push(new ResourceGroupListStep());
         } else {
-            const remoteRepo: ReposGetResponseData | undefined = await tryGetRemote(context);
+            const remoteRepo: ReposGetResponseData | undefined = await tryGetProjectForCreation(context);
             if (remoteRepo) {
                 wizardContext.repoHtmlUrl = remoteRepo.html_url;
                 wizardContext.branchData = { name: remoteRepo.default_branch };
