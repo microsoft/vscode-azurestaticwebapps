@@ -14,8 +14,9 @@ import { RepoCreateStep } from "../createRepo/RepoCreateStep";
 import { RepoNameStep } from "../createRepo/RepoNameStep";
 import { RepoPrivacyStep } from "../createRepo/RepoPrivacyStep";
 import { WorkspaceListStep } from "../createRepo/WorkspaceListStep";
-import { CloneRepoStep } from "./CloneRepoStep";
+import { GitHubBranchListStep } from "./GitHubBranchListStep";
 import { GitHubOrgListStep } from "./GitHubOrgListStep";
+import { GitHubRepoListStep } from "./GitHubRepoListStep";
 import { GitignoreCreateStep } from "./GitignoreCreateStep";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
@@ -27,7 +28,7 @@ export class CreateScenarioListStep extends AzureWizardPromptStep<IStaticWebAppW
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
 
         const localCode: IAzureQuickPickItem<CreateScenario> = { label: localize('local', '$(cloud-upload) Publish local code to a new GitHub repository'), data: 'publishToNewRepo' };
-        const existingRepo: IAzureQuickPickItem<CreateScenario> = { label: localize('existingRepo', '$(github) Clone existing GitHub repository'), data: 'connectToExistingRepo' };
+        const existingRepo: IAzureQuickPickItem<CreateScenario> = { label: localize('existingRepo', '$(github) Use existing GitHub repository'), data: 'connectToExistingRepo' };
 
         const placeHolder: string = localize('createMethod', "How do you want to create a static web app?");
         const learnMore: IAzureQuickPickItem<CreateScenario | undefined> = { label: localize('learnMore', '$(book) Learn more...'), data: undefined };
@@ -52,7 +53,7 @@ export class CreateScenarioListStep extends AzureWizardPromptStep<IStaticWebAppW
     }
 
     public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
-        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
+        const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [new GitHubOrgListStep()];
         if (wizardContext.createScenario === 'publishToNewRepo') {
             // calling to verify the user has git enabled so they don't go through the whole process and then it fails
             await getGitApi();
@@ -67,10 +68,10 @@ export class CreateScenarioListStep extends AzureWizardPromptStep<IStaticWebAppW
                 promptSteps.push(new WorkspaceListStep());
             }
 
-            promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
+            promptSteps.push(new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
             return { promptSteps, executeSteps: [new RepoCreateStep(), new GitignoreCreateStep()] };
         } else {
-            promptSteps.push(new CloneRepoStep());
+            promptSteps.push(new GitHubRepoListStep(), new GitHubBranchListStep());
             return { promptSteps };
         }
     }

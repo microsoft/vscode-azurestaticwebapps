@@ -12,7 +12,7 @@ import { API, Repository } from '../../git';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { defaultBranchExists, getDefaultBranch, getGitWorkspaceState, GitWorkspaceState } from '../../utils/gitUtils';
+import { getGitWorkspaceState, GitWorkspaceState, tryGetDefaultBranch } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
@@ -53,10 +53,9 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         await gitWorkspaceState.repo.commit(commitMsg, { all: true });
     }
 
-    const defaultBranch: string = await getDefaultBranch(gitWorkspaceState.repo)
-    if (gitWorkspaceState.repo.state.HEAD?.name !== defaultBranch && await defaultBranchExists(gitWorkspaceState.repo, defaultBranch)) {
+    const defaultBranch: string | undefined = await tryGetDefaultBranch(gitWorkspaceState.repo)
+    if (defaultBranch && gitWorkspaceState.repo.state.HEAD?.name !== defaultBranch) {
         const checkoutButton: MessageItem = { title: localize('checkout', 'Checkout "{0}"', defaultBranch) };
-        // we should only prompt them if the default branch exists otherwise it will fail when we try to checkout
         const result: MessageItem = await ext.ui.showWarningMessage(localize('deployBranch', 'It is recommended to connect your SWA to the default branch "{0}".  Would you like to continue with branch "{1}"?',
             defaultBranch, gitWorkspaceState.repo.state.HEAD?.name), { modal: true }, checkoutButton, { title: localize('continue', 'Continue') });
         if (result === checkoutButton) {

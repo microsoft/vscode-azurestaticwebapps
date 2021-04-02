@@ -6,7 +6,7 @@
 import { Uri } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { getGitApi } from "../getExtensionApi";
-import { API, Repository } from "../git";
+import { API, Ref, Repository } from "../git";
 import { hasAdminAccessToRepo, tryGetRemote, tryGetReposGetResponseData } from "./gitHubUtils";
 
 export type GitWorkspaceState = { repo: Repository | null, dirty?: boolean, remoteUrl?: string; hasAdminAccess?: boolean };
@@ -27,21 +27,29 @@ export async function getGitWorkspaceState(context: IActionContext, uri: Uri): P
 }
 
 
-export async function getDefaultBranch(repo: Repository): Promise<string> {
-    let defaultBranch: string = 'master';
+export async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined> {
+    // currently git still uses master as the default branch but will be updated to main so handle both cases
+    // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
+    const defaultBranches: string[] = ['main', 'master'];
     try {
-        defaultBranch = await repo.getConfig('init.defaultBranch');
+        defaultBranches.unshift(await repo.getConfig('init.defaultBranch'));
     } catch (err) {
         // if no local config setting is found, try global
         try {
-            defaultBranch = await repo.getGlobalConfig('init.defaultBranch');
+            defaultBranches.push(await repo.getGlobalConfig('init.defaultBranch'));
         } catch (err) {
             // VS Code's git API doesn't fail gracefully if no config is found, so swallow the error
         }
     }
-    return defaultBranch;
-}
 
-export async function defaultBranchExists(repo: Repository, defaultBranch: string): Promise<boolean> {
-    return (await repo.getBranches({ remote: false })).some(branch => branch.name === defaultBranch)
+    const localBranches: Ref[] = await repo.getBranches({ remote: false });
+    // order matters here because we want the setting, main, then master respectively so use indexing
+    for (let i = 0; i < localBranches.length; i++) {
+        if (localBranches.some(lBranch => lBranch.name === defaultBranches[i])) {
+            // only return the branch if we can find it locally, otherwise we won't be able to checkout
+            return defaultBranches[i];
+        }
+    }
+
+    return undefined;
 }
