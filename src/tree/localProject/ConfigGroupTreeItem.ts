@@ -12,7 +12,14 @@ import { parseYamlFile } from "../../utils/yamlUtils";
 import { EnvironmentTreeItem } from "../EnvironmentTreeItem";
 import { GitHubConfigTreeItem } from "./ConfigTreeItem";
 
-export type BuildConfig = 'app_location' | 'api_location' | 'app_artifact_location' | 'output_location';
+export type BuildConfig = 'app_location' | 'api_location' | 'output_location' | 'app_artifact_location';
+
+export type BuildConfigs = {
+    'app_location': string,
+    'api_location': string,
+    'output_location': string | undefined,
+    'app_artifact_location': string | undefined
+}
 
 export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = 'azureStaticGitHubConfigGroup';
@@ -20,9 +27,9 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     public readonly label: string = localize('gitHubConfig', 'GitHub Configuration');
     public parent: EnvironmentTreeItem;
     public yamlFilePath: string;
-    public buildConfigs: Map<BuildConfig, string>;
+    public buildConfigs: BuildConfigs | undefined;
 
-    public constructor(parent: EnvironmentTreeItem, yamlFilePath: string, buildConfigs: Map<BuildConfig, string>) {
+    public constructor(parent: EnvironmentTreeItem, yamlFilePath: string, buildConfigs: BuildConfigs) {
         super(parent);
         this.yamlFilePath = yamlFilePath;
         this.buildConfigs = buildConfigs;
@@ -39,7 +46,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
 
             for (const yamlFile of yamlFiles) {
                 const yamlFilePath: string = join(workflowsDir, yamlFile);
-                const buildConfigs: Map<BuildConfig, string> | undefined = await parseYamlFile(yamlFilePath);
+                const buildConfigs: BuildConfigs | undefined = await parseYamlFile(yamlFilePath);
                 buildConfigs && treeItems.push(new GitHubConfigGroupTreeItem(parent, yamlFilePath, buildConfigs));
             }
 
@@ -63,14 +70,16 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
         const treeItems: GitHubConfigTreeItem[] = [];
-        this.buildConfigs.forEach((value: string, config: BuildConfig) => {
-            treeItems.push(new GitHubConfigTreeItem(this, config, value));
-        });
+
+        for (const buildConfig in this.buildConfigs) {
+            const value: string | undefined = <string | undefined>this.buildConfigs[buildConfig];
+            value !== undefined && treeItems.push(new GitHubConfigTreeItem(this, <BuildConfig>buildConfig, value));
+        }
+
         return treeItems;
     }
 
     public async refreshImpl(): Promise<void> {
-        const newBuildConfigs: Map<BuildConfig, string> | undefined = await parseYamlFile(this.yamlFilePath);
-        this.buildConfigs = newBuildConfigs ? newBuildConfigs : new Map<BuildConfig, string>();
+        this.buildConfigs = await parseYamlFile(this.yamlFilePath);
     }
 }
