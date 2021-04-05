@@ -50,6 +50,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         await ext.ui.showWarningMessage(commitChanges, { modal: true }, { title: localize('commit', 'Commit') });
 
         const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..` });
+        // error when there are no changes staged
         await gitWorkspaceState.repo.commit(commitMsg, { all: true });
     }
 
