@@ -15,10 +15,10 @@ import { GitHubConfigTreeItem } from "./ConfigTreeItem";
 export type BuildConfig = 'app_location' | 'api_location' | 'output_location' | 'app_artifact_location';
 
 export type BuildConfigs = {
-    'app_location': string,
-    'api_location': string,
-    'output_location': string | undefined,
-    'app_artifact_location': string | undefined
+    'app_location'?: string,
+    'api_location'?: string,
+    'output_location'?: string,
+    'app_artifact_location'?: string
 }
 
 export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
@@ -37,8 +37,9 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public static async createGitHubConfigGroupTreeItems(parent: EnvironmentTreeItem): Promise<GitHubConfigGroupTreeItem[]> {
+        const treeItems: GitHubConfigGroupTreeItem[] = [];
+
         if (parent.localProjectPath && parent.inWorkspace) {
-            const treeItems: GitHubConfigGroupTreeItem[] = [];
             const workflowsDir: string = join(parent.localProjectPath, '.github/workflows');
             const yamlFiles: string[] = await pathExists(workflowsDir) ?
                 (await readdir(workflowsDir)).filter(file => /\.(yml|yaml)$/i.test(file)) :
@@ -49,11 +50,9 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
                 const buildConfigs: BuildConfigs | undefined = await parseYamlFile(yamlFilePath);
                 buildConfigs && treeItems.push(new GitHubConfigGroupTreeItem(parent, yamlFilePath, buildConfigs));
             }
-
-            return treeItems;
         }
 
-        return [];
+        return treeItems;
     }
 
     public get iconPath(): TreeItemIconPath {

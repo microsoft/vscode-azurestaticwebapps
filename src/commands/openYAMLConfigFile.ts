@@ -35,7 +35,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
         if (picks.length === 1) {
             yamlFilePath = picks[0].data;
         } else {
-            const placeHolder: string = localize('selectGitHubConfig', 'Select the GitHub configuration file to open.');
+            const placeHolder: string = localize('selectGitHubConfig', 'Select the GitHub workflow file to open.');
             yamlFilePath = (await ext.ui.showQuickPick(picks, { placeHolder })).data;
         }
     }

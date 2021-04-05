@@ -11,13 +11,8 @@ import { BuildConfig, BuildConfigs } from "../tree/localProject/ConfigGroupTreeI
 import { localize } from "./localize";
 
 type BuildDeployStep = {
-    id: 'builddeploy',
-    with: {
-        api_location: string,
-        app_location: string,
-        output_location?: string,
-        app_artifact_location?: string
-    }
+    id?: 'builddeploy',
+    with?: BuildConfigs
 }
 
 export async function parseYamlFile(yamlFilePath: string): Promise<BuildConfigs | undefined> {
@@ -26,33 +21,39 @@ export async function parseYamlFile(yamlFilePath: string): Promise<BuildConfigs 
 
     if (buildDeployStep) {
         return {
-            api_location: buildDeployStep.with.api_location,
-            app_location: buildDeployStep.with.app_location,
-            output_location: buildDeployStep.with.output_location,
-            app_artifact_location: buildDeployStep.with.app_artifact_location
+            app_location: buildDeployStep.with?.app_location,
+            api_location: buildDeployStep.with?.api_location,
+            output_location: buildDeployStep.with?.output_location,
+            app_artifact_location: buildDeployStep.with?.app_artifact_location
         };
     }
 
     return undefined;
 }
 
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, no-prototype-builtins */
 async function getBuildDeployStep(yamlFileContents: string, yamlFileName: string): Promise<BuildDeployStep | undefined> {
     if (/Azure\/static-web-apps-deploy/.test(yamlFileContents)) {
-        const parsedYaml: any = await parse(yamlFileContents);
+        const parsedYaml = <{ jobs?: { steps?: BuildDeployStep[] }[] }>await parse(yamlFileContents);
 
-        for (const job of <any[]>Object.values(parsedYaml.jobs)) {
-            for (const step of <any[]>Object.values(job['steps'])) {
+        for (const job of Object.values(parsedYaml.jobs || {})) {
+            for (const step of Object.values(job.steps || {})) {
                 if (step.id === 'builddeploy' && step.with) {
-                    if (!stepIncludesBuildConfig(step, 'app_location')) {
-                        return showYamlWarningMessage(yamlFileName, 'app_location');
-                    } else if (!stepIncludesBuildConfig(step, 'api_location')) {
-                        return showYamlWarningMessage(yamlFileName, 'api_location');
-                    } else if (!stepIncludesBuildConfig(step, 'output_location') && !stepIncludesBuildConfig(step, 'app_artifact_location')) {
-                        return showYamlWarningMessage(yamlFileName, 'output_location');
+                    const stepIncludesAppLocation: boolean = stepIncludesBuildConfig(step, 'app_location');
+                    const stepIncludesApiLocation: boolean = stepIncludesBuildConfig(step, 'api_location');
+                    const stepIncludesOutputLocation: boolean = stepIncludesBuildConfig(step, 'output_location') || stepIncludesBuildConfig(step, 'app_artifact_location');
+
+                    if (stepIncludesAppLocation && stepIncludesApiLocation && stepIncludesOutputLocation) {
+                        return <BuildDeployStep>step;
+                    } else if(!stepIncludesAppLocation) {
+                        showYamlWarningMessage(yamlFileName, 'app_location');
+                    } else if (!stepIncludesApiLocation) {
+                        showYamlWarningMessage(yamlFileName, 'api_location');
+                    } else {
+                        showYamlWarningMessage(yamlFileName, 'output_location');
                     }
 
-                    return <BuildDeployStep>step;
+                    // Ignore any other builddeploy steps
+                    return undefined;
                 }
             }
         }
@@ -61,12 +62,11 @@ async function getBuildDeployStep(yamlFileContents: string, yamlFileName: string
     return undefined;
 }
 
-function stepIncludesBuildConfig(step: { with: any }, buildConfig: BuildConfig): boolean {
-    return !!step.with.hasOwnProperty(buildConfig);
+function stepIncludesBuildConfig(step: BuildDeployStep, buildConfig: BuildConfig): boolean {
+    // eslint-disable-next-line no-prototype-builtins
+    return !!step.with?.hasOwnProperty(buildConfig);
 }
-/* eslint-enable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, no-prototype-builtins */
 
-function showYamlWarningMessage(yamlFileName: string, buildConfig: BuildConfig): undefined {
+function showYamlWarningMessage(yamlFileName: string, buildConfig: BuildConfig): void {
     void ext.ui.showWarningMessage(localize('mustIncludeBuildConfig', `"{0}" must include "{1}". See the [workflow file guide](https://aka.ms/AAbrcox).`, yamlFileName, buildConfig));
-    return undefined;
 }
