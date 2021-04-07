@@ -8,6 +8,11 @@
 - "Report an Issue" button was removed from errors. Use the "Help and Feedback" view or command palette instead
 - Minimum version of VS Code is now 1.53.0
 
+## 0.5.1 - 2021-04-12
+
+### Added
+- Experimental framework to test incremental changes
+
 ## 0.5.0 - 2020-12-02
 
 ### Added
