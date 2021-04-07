@@ -5,8 +5,7 @@
 
 import assert = require('assert');
 import { Uri } from 'vscode';
-import { getGitWorkspaceState, GitWorkspaceState } from '../extension.bundle';
-import { tryGetDefaultBranch } from '../src/utils/gitUtils';
+import { getGitWorkspaceState, GitWorkspaceState, tryGetDefaultBranch } from '../extension.bundle';
 import { cleanTestWorkspace, createTestActionContext, testWorkspacePath } from './global.test';
 
 suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
