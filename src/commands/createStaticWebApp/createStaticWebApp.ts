@@ -4,15 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MessageItem, window, WorkspaceFolder } from 'vscode';
-import { DialogResponses, IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
+import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { showActionsMsg } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { getGitApi } from '../../getExtensionApi';
-import { API, Repository } from '../../git';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { getGitWorkspaceState, GitWorkspaceState, tryGetDefaultBranch } from '../../utils/gitUtils';
+import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyRepoForCreation } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
@@ -26,43 +24,11 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     const folder: WorkspaceFolder = await getWorkspaceFolder(context);
     const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
+    // verifyRepoForCreation will set gitWorkspaceState.repo, but typing will yell if we don't set it here
+    gitWorkspaceState.repo = await verifyRepoForCreation(context, gitWorkspaceState, folder.uri);
 
-    const commitPrompt: string = localize('commitPrompt', 'Enter a commit message.');
-    if (!gitWorkspaceState.repo) {
-        const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to create a Static Web App. Would you like to initialize your project as a git repository and create a GitHub remote?');
-        await ext.ui.showWarningMessage(gitRequired, { modal: true }, DialogResponses.yes);
-        const gitApi: API = await getGitApi();
-        const newRepo: Repository | null = await gitApi.init(folder.uri);
-        if (!newRepo) {
-            throw new Error(localize('gitInitFailed', 'Git initialization failed.  Please initialize a git repository manually and attempt to create again.'));
-        }
-
-        const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value: localize('initCommit', 'Initial commit') });
-        await newRepo.commit(commitMsg, { all: true });
-        gitWorkspaceState.repo = newRepo;
-
-    } else if (!!gitWorkspaceState.remoteUrl && !gitWorkspaceState.hasAdminAccess) {
-        const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository is required.  Please use a repo with admin access or create a fork.');
-        await ext.ui.showWarningMessage(adminAccess, { modal: true });
-
-    } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
-        const commitChanges: string = localize('commitChanges', 'Commit all working changes to create a Static Web App.');
-        await ext.ui.showWarningMessage(commitChanges, { modal: true }, { title: localize('commit', 'Commit') });
-
-        const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..` });
-        // error when there are no changes staged
-        await gitWorkspaceState.repo.commit(commitMsg, { all: true });
-    }
-
-    const defaultBranch: string | undefined = await tryGetDefaultBranch(gitWorkspaceState.repo)
-    if (defaultBranch && gitWorkspaceState.repo.state.HEAD?.name !== defaultBranch) {
-        const checkoutButton: MessageItem = { title: localize('checkout', 'Checkout "{0}"', defaultBranch) };
-        const result: MessageItem = await ext.ui.showWarningMessage(localize('deployBranch', 'It is recommended to connect your SWA to the default branch "{0}".  Would you like to continue with branch "{1}"?',
-            defaultBranch, gitWorkspaceState.repo.state.HEAD?.name), { modal: true }, checkoutButton, { title: localize('continue', 'Continue') });
-        if (result === checkoutButton) {
-            await gitWorkspaceState.repo.checkout(defaultBranch);
-        }
-    }
+    await promptForDefaultBranch(context, gitWorkspaceState.repo);
+    context.telemetry.properties.cancelStep = undefined;
 
     context.fsPath = folder.uri.fsPath;
 
