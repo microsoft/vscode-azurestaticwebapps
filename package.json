@@ -20,7 +20,8 @@
     "homepage": "https://github.com/Microsoft/vscode-azurestaticwebapps/blob/main/README.md",
     "license": "SEE LICENSE IN LICENSE.md",
     "categories": [
-        "Azure"
+        "Azure",
+        "Snippets"
     ],
     "keywords": [
         "Azure",
@@ -419,6 +420,12 @@
                         "default": false
                     }
                 }
+            }
+        ],
+        "snippets": [
+            {
+                "language": "json",
+                "path": "./snippets/json.json"
             }
         ]
     },

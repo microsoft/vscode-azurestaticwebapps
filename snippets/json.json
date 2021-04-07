@@ -1,0 +1,15 @@
+{
+    "Static Web App Routes": {
+        "prefix": [
+            "swa-routes"
+        ],
+        "body": [
+            "\"routes\": [",
+            "\t{",
+            "\t\t\"route\": \"/${1}\",",
+            "\t\t\"redirect\": \"/${2:index.html}\"",
+            "\t}",
+            "]"
+        ]
+    }
+}
