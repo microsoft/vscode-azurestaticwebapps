@@ -315,7 +315,7 @@
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?|Job|Step|LocalProject)|applicationSettings/",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?|Job|Step|GitHubConfigGroup|LocalProject)|applicationSettings/",
                     "group": "9@3"
                 },
                 {
@@ -469,10 +469,11 @@
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
         "open": "^8.0.4",
-        "simple-git": "^1.132.0",
+        "simple-git": "^2.37.0",
         "vscode-azureappservice": "^0.76.0",
         "vscode-azureextensionui": "^0.41.1",
-        "vscode-nls": "^4.1.1"
+        "vscode-nls": "^4.1.1",
+        "yaml": "^1.10.2"
     },
     "extensionDependencies": [
         "ms-vscode.azure-account",

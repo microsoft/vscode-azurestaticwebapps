@@ -22,6 +22,7 @@ import { ActionTreeItem } from "./ActionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
+import { GitHubConfigGroupTreeItem } from "./localProject/ConfigGroupTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
 export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
@@ -30,6 +31,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public parent: StaticWebAppTreeItem;
     public actionsTreeItem: ActionsTreeItem;
+    public gitHubConfigGroupTreeItems: GitHubConfigGroupTreeItem[];
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public data: WebSiteManagementModels.StaticSiteBuildARMResource;
@@ -40,6 +42,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public repositoryUrl: string;
     public branch: string;
     public buildId: string;
+    public localProjectPath: string | undefined;
 
     public isProduction: boolean;
     public inWorkspace: boolean;
@@ -93,20 +96,27 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+        const children: AzExtTreeItem[] = [this.actionsTreeItem];
+        if (this.inWorkspace) {
+            children.push(...this.gitHubConfigGroupTreeItems);
+        }
+
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
         if (functions.length === 0) {
             context.telemetry.properties.hasFunctions = 'false';
-            return [this.actionsTreeItem, new GenericTreeItem(this, {
+            children.push(new GenericTreeItem(this, {
                 label: localize('noFunctions', 'Learn how to add an API with Azure Functions...'),
                 contextValue: 'noFunctions',
                 commandId: 'staticWebApps.showFunctionsDocumentation',
                 iconPath: new ThemeIcon('book')
-            })];
+            }));
+        } else {
+            context.telemetry.properties.hasFunctions = 'true';
+            children.push(this.appSettingsTreeItem, this.functionsTreeItem);
         }
 
-        context.telemetry.properties.hasFunctions = 'true';
-        return [this.actionsTreeItem, this.appSettingsTreeItem, this.functionsTreeItem];
+        return children;
     }
 
     public hasMoreChildrenImpl(): boolean {
@@ -161,5 +171,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         const remote: string | undefined = (await tryGetProjectForCreation(context))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
+
+        this.gitHubConfigGroupTreeItems = await GitHubConfigGroupTreeItem.createGitHubConfigGroupTreeItems(this);
     }
 }
