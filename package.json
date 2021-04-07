@@ -383,6 +383,12 @@
                 }
             ]
         },
+        "jsonValidation": [
+            {
+                "fileMatch": "staticwebapp.config.json",
+                "url": "https://json.schemastore.org/staticwebapp.config.json"
+            }
+        ],
         "configuration": [
             {
                 "title": "Azure Static Web Apps",
