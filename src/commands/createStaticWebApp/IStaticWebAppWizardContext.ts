@@ -34,6 +34,12 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     gitTreeDataTask?: Promise<GitTreeData[]>;
 
+    // prefill the input boxes with preset build values;
+    // projects are too flexible for us to force users to use these values
+    presetAppLocation?: string;
+    presetApiLocation?: string;
+    presetOutputLocation?: string;
+
     appLocation?: string;
     apiLocation?: string;
     outputLocation?: string;

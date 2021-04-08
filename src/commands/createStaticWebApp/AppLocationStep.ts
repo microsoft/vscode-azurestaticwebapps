@@ -21,7 +21,7 @@ export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !wizardContext.appLocation;
+        return !wizardContext.appLocation && !wizardContext.presetAppLocation;
     }
 
     public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {

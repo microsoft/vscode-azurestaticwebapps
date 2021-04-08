@@ -32,10 +32,13 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
         } while (pick === learnMore);
 
         if (pick.data) {
-            context.appLocation = pick.data.appLocation;
-            context.apiLocation = pick.data.apiLocation;
-            context.outputLocation = pick.data.outputLocation;
+            // prefill locations with the preset locations, but don't force the users to use them
+            context.presetAppLocation = pick.data.appLocation;
+            context.presetApiLocation = pick.data.apiLocation;
+            context.presetOutputLocation = pick.data.outputLocation;
         }
+
+        context.telemetry.properties.buildPreset = pick.data?.displayName || 'Custom';
 
     }
 

@@ -8,14 +8,19 @@ import { apiSubpathSetting, defaultApiLocation } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
+import { addLocationTelemetry } from "./addLocationTelemetry";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class EnterApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
+        const defaultValue: string = context.presetApiLocation || defaultApiLocation;
+
         context.apiLocation = (await ext.ui.showInputBox({
-            value: getWorkspaceSetting(apiSubpathSetting, context.fsPath) || defaultApiLocation,
+            value: getWorkspaceSetting(apiSubpathSetting, context.fsPath) || defaultValue,
             prompt: localize('enterApiLocation', "Enter the location of your Azure Functions code. For example, 'api' represents a folder called 'api'. Leave blank to skip this step."),
         })).trim();
+
+        addLocationTelemetry(context, 'apiLocation', defaultValue);
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
