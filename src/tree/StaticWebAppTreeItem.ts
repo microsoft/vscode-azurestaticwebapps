@@ -50,7 +50,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('azure-staticwebapps');
+        return treeUtils.getIconPath('azure-staticwebapps');
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
