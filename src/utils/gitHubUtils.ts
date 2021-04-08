@@ -4,16 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { GitGetTreeResponseData, OctokitResponse, ReposGetBranchResponseData, ReposGetResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
+import { OctokitResponse, ReposGetResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
 import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
 import { URL } from 'url';
 import { authentication, QuickPickItem } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
-import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { GitTreeData, OrgForAuthenticatedUserData } from '../gitHubTypings';
-import { localize } from './localize';
+import { OrgForAuthenticatedUserData } from '../gitHubTypings';
 import { getSingleRootFsPath } from './workspaceUtils';
 
 type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
@@ -162,41 +160,6 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
-}
-
-export async function getGitHubTree(context: IActionContext, repositoryUrl: string, branch: string): Promise<GitTreeData[]> {
-    const octokitClient: Octokit = await createOctokitClient(context);
-    const { owner, name } = getRepoFullname(repositoryUrl);
-    const branchRes: OctokitResponse<ReposGetBranchResponseData> = await octokitClient.repos.getBranch({ owner, repo: name, branch });
-    const getTreeRes: OctokitResponse<GitGetTreeResponseData> = await octokitClient.git.getTree({ owner, repo: name, tree_sha: branchRes.data.commit.sha, recursive: 'true' });
-
-    // sort descending by the depth of subfolder
-    return getTreeRes.data.tree.filter(file => file.type === 'tree').sort((f1, f2) => {
-        function getFolderDepth(path: string): number { return (path.match(/\//g) || []).length; }
-        return getFolderDepth(f1.path) - getFolderDepth(f2.path);
-    });
-}
-
-export async function getGitTreeQuickPicks(wizardContext: IStaticWebAppWizardContext, isSkippable?: boolean): Promise<IAzureQuickPickItem<string | undefined>[]> {
-    const gitTreeData: GitTreeData[] | undefined = await wizardContext.gitTreeDataTask;
-
-    // Have quick pick items be in this following order: Skip for Now => Manually Enter => Root => Project folders
-    // If a user has more than 30+ folders, it's arduous for users to find the skip/manual button, so put it near the top
-
-    const quickPicks: IAzureQuickPickItem<string | undefined>[] = gitTreeData ? gitTreeData.map((d) => { return { label: d.path, data: d.path }; }) : [];
-
-    // the root directory is not listed in the gitTreeData from GitHub, so just add it to the QuickPick list
-    quickPicks.unshift({ label: '/', data: '/' });
-
-    const enterInputQuickPickItem: IAzureQuickPickItem = { label: localize('input', '$(keyboard) Manually enter location'), data: undefined };
-    quickPicks.unshift(enterInputQuickPickItem);
-
-    if (isSkippable) {
-        const skipForNowQuickPickItem: IAzureQuickPickItem<string> = { label: localize('skipForNow', '$(clock) Skip for now'), data: '' };
-        quickPicks.unshift(skipForNowQuickPickItem);
-    }
-
-    return quickPicks;
 }
 
 export async function remoteShortnameExists(fsPath: string, remoteName: string): Promise<boolean> {

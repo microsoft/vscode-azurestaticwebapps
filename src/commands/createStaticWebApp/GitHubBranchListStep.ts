@@ -7,9 +7,9 @@ import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
 import { BranchData } from '../../gitHubTypings';
-import { getGitHubQuickPicksWithLoadMore, getGitHubTree, getRepoFullname, ICachedQuickPicks } from '../../utils/gitHubUtils';
+import { getGitHubQuickPicksWithLoadMore, getRepoFullname, ICachedQuickPicks } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
-import { nonNullProp, nonNullValueAndProp } from '../../utils/nonNull';
+import { nonNullProp } from '../../utils/nonNull';
 import { createOctokitClient } from '../github/createOctokitClient';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
@@ -28,8 +28,6 @@ export class GitHubBranchListStep extends AzureWizardPromptStep<IStaticWebAppWiz
         } while (!branchData);
 
         context.branchData = branchData;
-
-        context.gitTreeDataTask = getGitHubTree(context, nonNullProp(context, 'repoHtmlUrl'), nonNullValueAndProp(context.branchData, 'name'));
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
