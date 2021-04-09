@@ -12,7 +12,7 @@ import { API, CommitOptions, Ref, Repository } from "../git";
 import { hasAdminAccessToRepo, tryGetRemote, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 
-export type GitWorkspaceState = { repo: Repository | null, dirty?: boolean, remoteUrl?: string; hasAdminAccess?: boolean };
+export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteUrl: string | undefined; hasAdminAccess: boolean };
 
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteUrl: undefined, hasAdminAccess: false };
@@ -22,7 +22,7 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
     if (repo) {
         const originUrl: string | undefined = await tryGetRemote(uri.fsPath);
         gitWorkspaceState.repo = repo;
-        gitWorkspaceState.dirty = !!repo.state.workingTreeChanges.length;
+        gitWorkspaceState.dirty = !!(repo.state.workingTreeChanges.length || repo.state.indexChanges.length);
         gitWorkspaceState.remoteUrl = originUrl;
         gitWorkspaceState.hasAdminAccess = originUrl ? hasAdminAccessToRepo(await (tryGetReposGetResponseData(context, originUrl))) : false;
     }
@@ -65,17 +65,17 @@ export async function verifyRepoForCreation(context: IActionContext, gitWorkspac
 
 export async function promptForCommit(repo: Repository, value?: string): Promise<void> {
     const commitPrompt: string = localize('commitPrompt', 'Enter a commit message.');
-    // VS Code doesn't handle nested git repos very well; it'll show changes as working, but is unable to commit
-    // so commit with { empty: true } so that we don't get errors when we making "empty" commits
-    const commitOptions: CommitOptions = { all: true, empty: true };
+    const commitOptions: CommitOptions = { all: true };
 
     const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value });
     try {
         await repo.commit(commitMsg, commitOptions);
     } catch (err) {
-        // just to help debug the tests
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        throw new Error(err.stdout);
+        if (!/nothing to commit/.test(err.stdout)) {
+            // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
+            throw (err);
+        }
     }
 }
 

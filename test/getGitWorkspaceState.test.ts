@@ -19,16 +19,12 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
         await cleanTestWorkspace();
     });
 
-    test('Workspace with no git repository', async () => {
+    test('Empty workspace with no git repository', async () => {
         await testUserInput.runWithInputs([DialogResponses.yes.title, testCommitMsg], async () => {
             const context = createTestActionContext();
             const testWorkspaceUri: Uri = Uri.file(testWorkspacePath);
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testWorkspaceUri);
             assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
-
-            const testTextFilePath: string = path.join(testWorkspacePath, 'test.txt');
-            await fse.ensureFile(testTextFilePath);
-            await fse.writeFile(testTextFilePath, 'Test');
 
             await verifyRepoForCreation(context, gitWorkspaceState, testWorkspaceUri);
             assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize')
@@ -41,9 +37,9 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
             const context = createTestActionContext();
             const testWorkspaceUri: Uri = Uri.file(testWorkspacePath);
 
-            const testTextFilePath: string = path.join(testWorkspacePath, 'test2.txt');
+            const testTextFilePath: string = path.join(testWorkspacePath, 'test.txt');
             await fse.ensureFile(testTextFilePath);
-            await fse.writeFile(testTextFilePath, 'Test2');
+            await fse.writeFile(testTextFilePath, 'Test');
 
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testWorkspaceUri);
             assert.strictEqual(gitWorkspaceState.dirty, true, 'Workspace tree was not dirty');
