@@ -26,6 +26,10 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testWorkspaceUri);
             assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
 
+            const testTextFilePath: string = path.join(testWorkspacePath, 'test.txt');
+            await fse.ensureFile(testTextFilePath);
+            await fse.writeFile(testTextFilePath, 'Test');
+
             await verifyRepoForCreation(context, gitWorkspaceState, testWorkspaceUri);
             assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize')
         });
@@ -37,9 +41,9 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
             const context = createTestActionContext();
             const testWorkspaceUri: Uri = Uri.file(testWorkspacePath);
 
-            const testTextFilePath: string = path.join(testWorkspacePath, 'test.txt');
+            const testTextFilePath: string = path.join(testWorkspacePath, 'test2.txt');
             await fse.ensureFile(testTextFilePath);
-            await fse.writeFile(testTextFilePath, 'Test');
+            await fse.writeFile(testTextFilePath, 'Test2');
 
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testWorkspaceUri);
             assert.strictEqual(gitWorkspaceState.dirty, true, 'Workspace tree was not dirty');
