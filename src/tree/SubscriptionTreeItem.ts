@@ -7,10 +7,10 @@ import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-app
 import { ReposGetResponseData } from '@octokit/types';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
+import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
+import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
 import { CreateScenarioListStep } from '../commands/createStaticWebApp/CreateScenarioListStep';
-import { ApiLocationStep } from '../commands/createStaticWebApp/EnterApiLocationStep';
-import { AppLocationStep } from '../commands/createStaticWebApp/EnterAppLocationStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
