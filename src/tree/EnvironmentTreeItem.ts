@@ -17,6 +17,7 @@ import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
+import { getSingleRootFsPath } from "../utils/workspaceUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { ActionTreeItem } from "./ActionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
@@ -167,6 +168,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public async refreshImpl(context: IActionContext): Promise<void> {
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
+        this.localProjectPath = getSingleRootFsPath();
 
         const remote: string | undefined = (await tryGetProjectForCreation(context))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;

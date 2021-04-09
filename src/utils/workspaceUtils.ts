@@ -6,8 +6,8 @@
 import * as path from 'path';
 import { commands, MessageItem, OpenDialogOptions, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
+import { NoWorkspaceError } from '../errors';
 import { ext } from '../extensionVariables';
-import { NoWorkspaceError } from './errors';
 import { localize } from "./localize";
 
 export function getSingleRootFsPath(): string | undefined {

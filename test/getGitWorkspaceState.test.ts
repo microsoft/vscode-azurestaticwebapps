@@ -8,7 +8,7 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import { Uri } from "vscode";
 import { DialogResponses } from 'vscode-azureextensionui';
-import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyRepoForCreation } from "../extension.bundle";
+import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
 import { cleanTestWorkspace, createTestActionContext, testUserInput, testWorkspacePath } from "./global.test";
 
 suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite): void {
@@ -26,7 +26,7 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testWorkspaceUri);
             assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
 
-            await verifyRepoForCreation(context, gitWorkspaceState, testWorkspaceUri);
+            await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testWorkspaceUri);
             assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize')
         });
 
@@ -44,7 +44,7 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testWorkspaceUri);
             assert.strictEqual(gitWorkspaceState.dirty, true, 'Workspace tree was not dirty');
 
-            await verifyRepoForCreation(context, gitWorkspaceState, testWorkspaceUri);
+            await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testWorkspaceUri);
             assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize')
         });
     });

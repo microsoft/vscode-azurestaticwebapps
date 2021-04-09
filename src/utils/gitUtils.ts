@@ -13,6 +13,7 @@ import { hasAdminAccessToRepo, tryGetRemote, tryGetReposGetResponseData } from "
 import { localize } from "./localize";
 
 export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteUrl: string | undefined; hasAdminAccess: boolean };
+export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository };
 
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteUrl: undefined, hasAdminAccess: false };
@@ -30,7 +31,7 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
     return gitWorkspaceState;
 }
 
-export async function verifyRepoForCreation(context: IActionContext, gitWorkspaceState: GitWorkspaceState, uri: Uri): Promise<Repository> {
+export async function verifyGitWorkspaceForCreation(context: IActionContext, gitWorkspaceState: GitWorkspaceState, uri: Uri): Promise<VerifiedGitWorkspaceState> {
     if (!gitWorkspaceState.repo) {
         const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to create a Static Web App. Would you like to initialize your project as a git repository and create a GitHub remote?');
         context.telemetry.properties.cancelStep = 'initRepo';
@@ -60,7 +61,7 @@ export async function verifyRepoForCreation(context: IActionContext, gitWorkspac
         gitWorkspaceState.dirty = false;
     }
 
-    return gitWorkspaceState.repo;
+    return <VerifiedGitWorkspaceState>gitWorkspaceState;
 }
 
 export async function promptForCommit(repo: Repository, value?: string): Promise<void> {
@@ -73,6 +74,8 @@ export async function promptForCommit(repo: Repository, value?: string): Promise
     } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (!/nothing to commit/.test(err.stdout)) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            console.debug(err.toString());
             // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
             throw (err);
         }

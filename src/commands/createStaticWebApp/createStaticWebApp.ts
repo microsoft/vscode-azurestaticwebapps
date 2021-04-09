@@ -10,7 +10,7 @@ import { ext } from '../../extensionVariables';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyRepoForCreation } from '../../utils/gitUtils';
+import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
@@ -24,10 +24,9 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     const folder: WorkspaceFolder = await getWorkspaceFolder(context);
     const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
-    // verifyRepoForCreation will set gitWorkspaceState.repo, but typing will yell if we don't set it here
-    gitWorkspaceState.repo = await verifyRepoForCreation(context, gitWorkspaceState, folder.uri);
+    const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
-    await promptForDefaultBranch(context, gitWorkspaceState.repo);
+    await promptForDefaultBranch(context, verifiedWorkspace.repo);
     context.telemetry.properties.cancelStep = undefined;
 
     context.fsPath = folder.uri.fsPath;
