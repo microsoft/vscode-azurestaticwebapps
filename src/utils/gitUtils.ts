@@ -70,7 +70,13 @@ export async function promptForCommit(repo: Repository, value?: string): Promise
     const commitOptions: CommitOptions = { all: true, empty: true };
 
     const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value });
-    await repo.commit(commitMsg, commitOptions);
+    try {
+        await repo.commit(commitMsg, commitOptions);
+    } catch (err) {
+        // just to help debug the tests
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        throw new Error(err.stdout);
+    }
 }
 
 export async function promptForDefaultBranch(context: IActionContext, repo: Repository): Promise<void> {
