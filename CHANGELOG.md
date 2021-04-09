@@ -12,6 +12,9 @@
 - Build presets pre-generate values for app, api, and output locations but must be confirmed
 - Experimental framework to test incremental changes
 
+### Fixed
+- [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/8?closed=1)
+
 ## 0.5.0 - 2020-12-02
 
 ### Added
