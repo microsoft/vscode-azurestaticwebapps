@@ -9,7 +9,10 @@ import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptSt
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
 import { CreateScenarioListStep } from '../commands/createStaticWebApp/CreateScenarioListStep';
+import { ApiLocationStep } from '../commands/createStaticWebApp/EnterApiLocationStep';
+import { AppLocationStep } from '../commands/createStaticWebApp/EnterAppLocationStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
+import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
@@ -64,7 +67,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             }
             executeSteps.push(new ResourceGroupCreateStep());
         }
-        promptSteps.push(new BuildPresetListStep());
+        promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
 
         executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
         executeSteps.push(new StaticWebAppCreateStep());

@@ -13,12 +13,13 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const defaultLocation: string = 'build';
+        const defaultValue: string = wizardContext.presetOutputLocation || 'build';
         wizardContext.outputLocation = (await ext.ui.showInputBox({
-            value: getWorkspaceSetting(outputSubpathSetting, wizardContext.fsPath) || getWorkspaceSetting(appArtifactSubpathSetting, wizardContext.fsPath) || defaultLocation,
-            prompt: localize('publishLocation', "Enter the path of your build output relative to your app's location, or leave blank if it has no build. For example, setting a value of 'build' when your app location is set to 'app' will cause the content at 'app/build' to be served.")
+            value: getWorkspaceSetting(outputSubpathSetting, wizardContext.fsPath) || getWorkspaceSetting(appArtifactSubpathSetting, wizardContext.fsPath) || defaultValue,
+            prompt: localize('publishLocation', "Enter the location of your build output relative to your app's location or leave blank if it has no build. For example, setting a value of 'build' when your app location is set to 'app' will cause the content at 'app/build' to be served.")
         })).trim();
-        addLocationTelemetry(wizardContext, 'outputLocation', defaultLocation);
+
+        addLocationTelemetry(wizardContext, 'outputLocation', defaultValue);
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {

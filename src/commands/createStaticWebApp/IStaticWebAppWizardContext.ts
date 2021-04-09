@@ -6,7 +6,7 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
-import { BranchData, GitTreeData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
+import { BranchData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
 import { CreateScenario } from './CreateScenarioListStep';
 
 // creating a dummy repoData/branchData would be an annoying amount of work, so use this type to recognize when users have selected create new repo
@@ -32,7 +32,11 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     originExists?: boolean;
     gitignoreExists?: boolean;
 
-    gitTreeDataTask?: Promise<GitTreeData[]>;
+    // prefill the input boxes with preset build values;
+    // projects are too flexible for us to force users to use these values
+    presetAppLocation?: string;
+    presetApiLocation?: string;
+    presetOutputLocation?: string;
 
     appLocation?: string;
     apiLocation?: string;

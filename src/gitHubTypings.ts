@@ -3,11 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ActionsGetJobForWorkflowRunResponseData, GitGetTreeResponseData, OrgsListForAuthenticatedUserResponseData, ReposListBranchesResponseData, ReposListForOrgResponseData } from "@octokit/types";
+import { ActionsGetJobForWorkflowRunResponseData, OrgsListForAuthenticatedUserResponseData, ReposListBranchesResponseData, ReposListForOrgResponseData } from "@octokit/types";
 
 // we'll export the types until this is fixed: https://github.com/octokit/types.ts/issues/120
 export type OrgForAuthenticatedUserData = OrgsListForAuthenticatedUserResponseData[0];
-export type GitTreeData = GitGetTreeResponseData['tree'][0];
 export type ActionWorkflowStepData = ActionsGetJobForWorkflowRunResponseData['steps'][0];
 export type RepoData = ReposListForOrgResponseData[0];
 export type BranchData = ReposListBranchesResponseData[0];
