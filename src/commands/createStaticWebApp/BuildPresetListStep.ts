@@ -3,16 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IAzureQuickPickItem, IWizardOptions } from 'vscode-azureextensionui';
+import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { buildPresets } from '../../buildPresets/buildPresets';
 import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
 import { openUrl } from '../../utils/openUrl';
-import { ApiLocationStep } from './ApiLocationStep';
-import { AppLocationStep } from './AppLocationStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
-import { OutputLocationStep } from './OutputLocationStep';
 
 export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
@@ -32,22 +29,17 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
         } while (pick === learnMore);
 
         if (pick.data) {
-            context.appLocation = pick.data.appLocation;
-            context.apiLocation = pick.data.apiLocation;
-            context.outputLocation = pick.data.outputLocation;
+            // prefill locations with the preset locations, but don't force the users to use them
+            context.presetAppLocation = pick.data.appLocation;
+            context.presetApiLocation = pick.data.apiLocation;
+            context.presetOutputLocation = pick.data.outputLocation;
         }
+
+        context.telemetry.properties.buildPreset = pick.data?.displayName || 'Custom';
 
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
         return !context.appLocation;
-    }
-
-    public async getSubWizard(context: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
-        if (!context.appLocation) {
-            return { promptSteps: [new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep()] };
-        } else {
-            return undefined;
-        }
     }
 }

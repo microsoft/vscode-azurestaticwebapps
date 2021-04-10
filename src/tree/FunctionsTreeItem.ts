@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import { ThemeIcon } from "vscode";
 import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createWebSiteClient } from "../utils/azureClients";
 import { localize } from '../utils/localize';
-import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 
@@ -31,7 +31,7 @@ export class FunctionsTreeItem extends AzureParentTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('list-unordered');
+        return new ThemeIcon('list-unordered');
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {

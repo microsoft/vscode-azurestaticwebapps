@@ -2,7 +2,7 @@
     "name": "vscode-azurestaticwebapps",
     "displayName": "Azure Static Web Apps (Preview)",
     "description": "%staticWebApps.description%",
-    "version": "0.5.1-alpha",
+    "version": "0.6.0",
     "publisher": "ms-azuretools",
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
@@ -61,19 +61,13 @@
                 "command": "staticWebApps.createStaticWebApp",
                 "title": "%staticWebApps.createStaticWebApp%",
                 "category": "Azure Static Web Apps",
-                "icon": {
-                    "light": "resources/light/add.svg",
-                    "dark": "resources/dark/add.svg"
-                }
+                "icon": "$(add)"
             },
             {
                 "command": "staticWebApps.showDocumentation",
                 "title": "%staticWebApps.showDocumentation%",
                 "category": "Azure Static Web Apps",
-                "icon": {
-                    "light": "resources/light/book.svg",
-                    "dark": "resources/dark/book.svg"
-                }
+                "icon": "$(book)"
             },
             {
                 "command": "staticWebApps.createStaticWebAppAdvanced",
@@ -104,18 +98,12 @@
                 "command": "staticWebApps.refresh",
                 "title": "%staticWebApps.refresh%",
                 "category": "Azure Static Web Apps",
-                "icon": {
-                    "light": "resources/light/refresh.svg",
-                    "dark": "resources/dark/refresh.svg"
-                }
+                "icon": "$(refresh)"
             },
             {
                 "command": "staticWebApps.selectSubscriptions",
                 "title": "Select Subscriptions...",
-                "icon": {
-                    "light": "resources/light/filter.svg",
-                    "dark": "resources/dark/filter.svg"
-                }
+                "icon": "$(filter)"
             },
             {
                 "command": "staticWebApps.viewProperties",
@@ -190,10 +178,7 @@
                 "command": "staticWebApps.toggleAppSettingVisibility",
                 "title": "%staticWebApps.toggleAppSettingVisibility%",
                 "category": "Azure Static Web Apps",
-                "icon": {
-                    "light": "resources/light/Visible.svg",
-                    "dark": "resources/dark/Visible.svg"
-                }
+                "icon": "$(eye)"
             },
             {
                 "command": "staticWebApps.openGitHubRepo",
@@ -383,6 +368,12 @@
                 }
             ]
         },
+        "jsonValidation": [
+            {
+                "fileMatch": "staticwebapp.config.json",
+                "url": "https://json.schemastore.org/staticwebapp.config.json"
+            }
+        ],
         "configuration": [
             {
                 "title": "Azure Static Web Apps",
@@ -456,7 +447,7 @@
         "ts-node": "^7.0.1",
         "typescript": "^3.9.7",
         "vsce": "^1.87.1",
-        "vscode-azureextensiondev": "^0.9.1",
+        "vscode-azureextensiondev": "^0.9.2",
         "vscode-test": "^1.5.2",
         "webpack": "^5.28.0",
         "webpack-cli": "^4.6.0"
@@ -470,8 +461,8 @@
         "moment": "^2.27.0",
         "open": "^8.0.4",
         "simple-git": "^2.37.0",
-        "vscode-azureappservice": "^0.76.0",
-        "vscode-azureextensionui": "^0.41.1",
+        "vscode-azureappservice": "^0.76.1",
+        "vscode-azureextensionui": "^0.41.3",
         "vscode-nls": "^4.1.1",
         "yaml": "^1.10.2"
     },

@@ -3,28 +3,27 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IWizardOptions } from "vscode-azureextensionui";
-import { defaultAppLocation } from "../../constants";
+import { AzureWizardPromptStep } from "vscode-azureextensionui";
+import { appSubpathSetting, defaultAppLocation } from "../../constants";
 import { ext } from "../../extensionVariables";
-import { getGitTreeQuickPicks } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
+import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
-import { EnterAppLocationStep } from "./EnterAppLocationStep";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
-    public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const placeHolder: string = localize('appLocation', "Select the location of your application code");
-        wizardContext.appLocation = (await ext.ui.showQuickPick(getGitTreeQuickPicks(wizardContext), { placeHolder, suppressPersistence: true })).data;
+    public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
+        const defaultValue: string = context.presetAppLocation || defaultAppLocation
 
-        addLocationTelemetry(wizardContext, 'appLocation', defaultAppLocation);
+        context.appLocation = (await ext.ui.showInputBox({
+            value: getWorkspaceSetting(appSubpathSetting, context.fsPath) || defaultValue,
+            prompt: localize('enterAppLocation', "Enter the location of your application code. For example, '/' represents the root of your app, while '/app' represents a directory called 'app'.")
+        })).trim();
+
+        addLocationTelemetry(context, 'appLocation', defaultValue);
     }
 
-    public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !wizardContext.appLocation;
-    }
-
-    public async getSubWizard(wizardContext: IStaticWebAppWizardContext): Promise<IWizardOptions<IStaticWebAppWizardContext> | undefined> {
-        return wizardContext.appLocation === undefined ? { promptSteps: [new EnterAppLocationStep()] } : undefined;
+    public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
+        return context.appLocation === undefined;
     }
 }

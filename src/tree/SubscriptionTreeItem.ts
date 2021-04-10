@@ -12,10 +12,13 @@ import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
 import { RepoPrivacyStep } from '../commands/createRepo/RepoPrivacyStep';
 import { WorkspaceListStep } from '../commands/createRepo/WorkspaceListStep';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
+import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
+import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
 import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
 import { GitignoreCreateStep } from '../commands/createStaticWebApp/GitignoreCreateStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
+import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
@@ -77,7 +80,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             }
             executeSteps.push(new ResourceGroupCreateStep());
         }
-        promptSteps.push(new BuildPresetListStep());
+        promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
 
         executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
         executeSteps.push(new StaticWebAppCreateStep());
