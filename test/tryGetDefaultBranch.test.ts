@@ -6,7 +6,7 @@
 import assert = require('assert');
 import { Uri } from 'vscode';
 import { getGitWorkspaceState, GitWorkspaceState, tryGetDefaultBranch } from '../extension.bundle';
-import { cleanTestWorkspace, createTestActionContext, testWorkspacePath } from './global.test';
+import { cleanTestWorkspace, createTestActionContext, testFolderPath } from './global.test';
 
 suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
     this.timeout(30 * 1000);
@@ -15,8 +15,8 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
     suiteSetup(async () => {
         await cleanTestWorkspace();
         const context = createTestActionContext();
-        const testWorkspaceUri: Uri = Uri.file(testWorkspacePath);
-        gitWorkspaceState = await getGitWorkspaceState(context, testWorkspaceUri);
+        const testFolderUri: Uri = Uri.file(testFolderPath);
+        gitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
 
         await gitWorkspaceState.repo?.setConfig('init.defaultBranch', mainBranch);
         // set global config here
