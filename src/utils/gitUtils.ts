@@ -3,8 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as git from 'simple-git/promise';
 import { MessageItem, Uri } from "vscode";
-import { DialogResponses, IActionContext } from "vscode-azureextensionui";
+import { DialogResponses, IActionContext, parseError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -18,7 +19,7 @@ export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository }
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteUrl: undefined, hasAdminAccess: false };
     const gitApi: API = await getGitApi();
-    const repo: Repository | null = gitApi.getRepository(uri);
+    const repo: Repository | null = await gitApi.openRepository(uri);
 
     if (repo) {
         const originUrl: string | undefined = await tryGetRemote(uri.fsPath);
@@ -38,9 +39,15 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
         await ext.ui.showWarningMessage(gitRequired, { modal: true }, DialogResponses.yes);
         const gitApi: API = await getGitApi();
-        const newRepo: Repository | null = await gitApi.init(uri);
+        let newRepo: Repository | null = await gitApi.init(uri);
         if (!newRepo) {
-            throw new Error(localize('gitInitFailed', 'Git initialization failed.  Please initialize a git repository manually and attempt to create again.'));
+            const localGit: git.SimpleGit = git(uri.fsPath);
+            await localGit.init({});
+            newRepo = await gitApi.openRepository(uri);
+            if (!newRepo) {
+                throw new Error(localize('gitInitFailed', 'Git initialization failed.  Please initialize a git repository manually and attempt to create again.'));
+            }
+
         }
 
         await promptForCommit(newRepo, localize('initCommit', 'Initial commit'));
@@ -75,7 +82,7 @@ export async function promptForCommit(repo: Repository, value?: string): Promise
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (!/nothing to commit/.test(err.stdout)) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            console.debug(err.toString());
+            console.debug(parseError(err));
             // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
             throw (err);
         }

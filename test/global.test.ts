@@ -40,6 +40,7 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
     }
 
     await fse.ensureDir(testFolderPath);
+    await fse.emptyDir(testFolderPath);
     testWorkspacePath = await initTestWorkspacePath();
 
     ext.outputChannel = new TestOutputChannel();
