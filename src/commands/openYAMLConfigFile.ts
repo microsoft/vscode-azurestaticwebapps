@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { basename } from 'path';
-import { Position, Range, TextDocument, window, workspace } from "vscode";
+import { Position, Range, TextDocument, TextLine, window, workspace } from "vscode";
 import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
 import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
@@ -47,12 +47,13 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
 
 async function getSelection(configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {
     const configRegex: RegExp = new RegExp(`${buildConfigToSelect}:`);
+    const offset: number = configDocument.getText().search(configRegex);
 
-    let offset: number = configDocument.getText().search(configRegex);
-    // Shift the offset to the beginning of the build config's value
-    offset += `${buildConfigToSelect}: `.length;
+    if (offset === -1) {
+        return undefined;
+    }
 
     const position: Position = configDocument.positionAt(offset);
-    const configValueRegex: RegExp = /['"].*['"]/;
-    return configDocument.getWordRangeAtPosition(position, configValueRegex);
+    const line: TextLine = configDocument.lineAt(position);
+    return line.range;
 }
