@@ -8,8 +8,7 @@ import * as fse from 'fs-extra';
 import * as path from 'path';
 import { Uri } from "vscode";
 import { DialogResponses } from 'vscode-azureextensionui';
-import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
-import { getGitApi } from '../src/getExtensionApi';
+import { getGitApi, getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
 import { API } from '../src/git';
 import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
 
