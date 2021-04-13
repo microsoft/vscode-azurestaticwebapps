@@ -9,6 +9,8 @@ import * as path from 'path';
 import { Uri } from "vscode";
 import { DialogResponses } from 'vscode-azureextensionui';
 import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
+import { getGitApi } from '../src/getExtensionApi';
+import { API } from '../src/git';
 import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
 
 suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite): void {
@@ -33,20 +35,25 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     });
 
     test('Workspace with dirty workspace tree', async () => {
-        await testUserInput.runWithInputs(['Commit', testCommitMsg], async () => {
-            const context = createTestActionContext();
-            const testFolderUri: Uri = Uri.file(testFolderPath);
+        const testFolderUri: Uri = Uri.file(testFolderPath);
+        const gitApi: API = await getGitApi();
+        const repo = await gitApi.openRepository(testFolderUri);
 
-            const testTextFilePath: string = path.join(testFolderPath, 'test.txt');
-            await fse.ensureFile(testTextFilePath);
-            await fse.writeFile(testTextFilePath, 'Test');
+        const listener = repo?.state.onDidChange(async () => {
+            await testUserInput.runWithInputs(['Commit', testCommitMsg], async () => {
+                const context = createTestActionContext();
+                const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
+                assert.strictEqual(gitWorkspaceState.dirty, true, 'Workspace tree was not dirty');
 
-            const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
-            assert.strictEqual(gitWorkspaceState.dirty, true, 'Workspace tree was not dirty');
-
-            await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testFolderUri);
-            assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize')
+                await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testFolderUri);
+                assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize');
+                listener?.dispose();
+            });
         });
+
+        const testTextFilePath: string = path.join(testFolderPath, 'test.txt');
+        await fse.ensureFile(testTextFilePath);
+        await fse.writeFile(testTextFilePath, 'Test');
     });
 
     test('Workspace on default branch', async () => {
