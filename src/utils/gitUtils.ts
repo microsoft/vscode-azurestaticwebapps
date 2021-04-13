@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as fse from 'fs-extra';
 import * as git from 'simple-git/promise';
 import { MessageItem, Uri } from "vscode";
 import { DialogResponses, IActionContext, parseError } from "vscode-azureextensionui";
@@ -32,7 +33,14 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
     return gitWorkspaceState;
 }
 
+/* Function used to enforce all our opinionated requirements for creating a Static Web App */
 export async function verifyGitWorkspaceForCreation(context: IActionContext, gitWorkspaceState: GitWorkspaceState, uri: Uri): Promise<VerifiedGitWorkspaceState> {
+    const gitFolderName: string = '.git';
+    if ((await fse.readdir(uri.fsPath)).filter(file => file !== gitFolderName).length === 0) {
+        // if the git repo is empty, git push will fail and create an empty GitHub repo so throw an error here
+        throw new Error(localize('emptyWorkspace', 'Cannot create a Static Web App with an empty workspace.'));
+    }
+
     if (!gitWorkspaceState.repo) {
         const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to create a Static Web App. Would you like to initialize your project as a git repository and create a GitHub remote?');
         context.telemetry.properties.cancelStep = 'initRepo';
