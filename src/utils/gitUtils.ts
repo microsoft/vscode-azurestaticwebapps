@@ -72,7 +72,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
         const commitChanges: string = localize('commitChanges', 'Commit all working changes to create a Static Web App.');
         await ext.ui.showWarningMessage(commitChanges, { modal: true }, { title: localize('commit', 'Commit') });
-        await promptForCommit(gitWorkspaceState.repo);
+        await promptForCommit(gitWorkspaceState.repo, localize('commitMade', 'Commit made from VS Code Azure Static Web Apps'));
         gitWorkspaceState.dirty = false;
     }
 
