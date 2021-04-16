@@ -3,9 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { EOL } from 'os';
 import { basename } from 'path';
-import { Position, Range, TextDocument, TextLine, window, workspace } from "vscode";
+import { Range, TextDocument, window, workspace } from "vscode";
 import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
+import { Document, parseDocument } from 'yaml';
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
 import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
 import { BuildConfig, GitHubConfigGroupTreeItem } from '../tree/localProject/ConfigGroupTreeItem';
@@ -45,15 +48,67 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
     await window.showTextDocument(configDocument, { selection });
 }
 
-async function getSelection(configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {
-    const configRegex: RegExp = new RegExp(`${buildConfigToSelect}:`);
-    const offset: number = configDocument.getText().search(configRegex);
+/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, no-prototype-builtins, @typescript-eslint/no-unsafe-assignment */
+export async function getSelection(configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {
+    const configDocumentText: string = configDocument.getText();
+    const buildConfigRegex: RegExp = new RegExp(`${buildConfigToSelect}:`, 'g');
+    const buildConfigMatches: RegExpMatchArray | null = configDocumentText.match(buildConfigRegex);
 
-    if (offset === -1) {
+    if (buildConfigMatches && buildConfigMatches.length > 1) {
+        void ext.ui.showWarningMessage(localize('foundMultipleBuildConfigs', 'Multiple "{0}" build configurations were found in "{1}".', buildConfigToSelect, basename(configDocument.uri.fsPath)));
         return undefined;
     }
 
-    const position: Position = configDocument.positionAt(offset);
-    const line: TextLine = configDocument.lineAt(position);
-    return line.range;
+    const parsedYaml: Document.Parsed = parseDocument(configDocumentText);
+    type YamlNode = YAMLMap | YAMLSeq | Pair | undefined;
+    const yamlNodes: YamlNode[] = [];
+    let yamlNode: YamlNode = parsedYaml.get('jobs');
+
+    while (yamlNode) {
+        if (yamlNode.hasOwnProperty('key') && yamlNode['key'].value === buildConfigToSelect && yamlNode.hasOwnProperty('value')) {
+            const configValue = <Scalar>yamlNode['value'];
+            const range = <number[] | undefined>configValue.range;
+
+            if (range) {
+                const buildConfigOffset: number = configDocumentText.search(buildConfigRegex);
+                let newlines: number = 0;
+
+                // The range returned from the `yaml` package doesn't include newlines
+                // So count newlines and include them in the range we return
+                for (const char of configDocumentText.slice(0, buildConfigOffset)) {
+                    newlines += char === EOL ? 1 : 0;
+                }
+
+                const startOffset = range[0] + newlines;
+                let endOffset = range[1] + newlines;
+
+                if (configValue.comment) {
+                    // `endOffset` by default includes the length of the comment
+                    endOffset -= configValue.comment.length + 1;
+
+                    // Don't include the comment character
+                    if (configDocumentText[endOffset] === '#') {
+                        endOffset--;
+                    }
+
+                    // Don't include any horizontal whitespace between the end of the YAML value and the comment
+                    while (/[ \t]/.test(configDocumentText[endOffset - 1])) {
+                        endOffset--;
+                    }
+                }
+
+                const startPosition = configDocument.positionAt(startOffset);
+                const endPosition = configDocument.positionAt(endOffset);
+                return new Range(startPosition, endPosition);
+            }
+        } else if (yamlNode.hasOwnProperty('items')) {
+            yamlNodes.push(...yamlNode['items'])
+        } else if (yamlNode.hasOwnProperty('value') && yamlNode['value'].hasOwnProperty('items')) {
+            yamlNodes.push(...yamlNode['value']['items'])
+        }
+
+        yamlNode = yamlNodes.pop();
+    }
+
+    return undefined;
 }

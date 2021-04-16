@@ -15,8 +15,10 @@
 // The tests should import '../extension.bundle'. At design-time they live in tests/ and so will pick up this file (extension.bundle.ts).
 // At runtime the tests live in dist/tests and will therefore pick up the main webpack bundle at dist/extension.bundle.js.
 export * from 'vscode-azureextensionui';
+export { getSelection } from './src/commands/openYAMLConfigFile';
 // Export activate/deactivate for main.js
 export { activateInternal, deactivateInternal } from './src/extension';
 export * from './src/extensionVariables';
+export { BuildConfig } from './src/tree/localProject/ConfigGroupTreeItem';
 
 // NOTE: The auto-fix action "source.organizeImports" does weird things with this file, but there doesn't seem to be a way to disable it on a per-file basis so we'll just let it happen
