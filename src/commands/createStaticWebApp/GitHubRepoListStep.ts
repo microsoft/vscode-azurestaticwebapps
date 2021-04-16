@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import { ReposGetResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
-import { BranchData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
+import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData, RepoData, RepoParameters, ReposGetResponseData } from '../../gitHubTypings';
 import { getGitHubQuickPicksWithLoadMore, getRepoFullname, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
@@ -15,7 +14,9 @@ import { createOctokitClient } from '../github/createOctokitClient';
 import { CreateNewResource, IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 const createNewRepo: string = 'createNewRepo';
-type RepoParameters = RestEndpointMethodTypes['repos']['listForUser']['parameters'] | RestEndpointMethodTypes['repos']['listForOrg']['parameters'];
+
+
+
 type RepoResponse = RestEndpointMethodTypes['repos']['listForOrg']['response'] | RestEndpointMethodTypes['repos']['listForUser']['response'];
 
 export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
@@ -23,7 +24,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('chooseRepo', 'Choose repository');
         let repoData: RepoData | CreateNewResource | undefined;
-        const orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData = nonNullProp(context, 'orgData');
+        const orgData: ListOrgsForUserData | OrgForAuthenticatedUserData = nonNullProp(context, 'orgData');
         const picksCache: ICachedQuickPicks<RepoData> = { picks: [] };
         const params: RepoParameters = isUser(orgData) ? { username: orgData.login, type: 'owner' } : { org: orgData.login, type: 'member' };
 
@@ -32,7 +33,10 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         } while (!repoData);
 
         context.repoData = repoData;
-        context.valuesToMask.push(nonNullProp(context.repoData, 'name'));
+        if (context.repoData.name) {
+            context.valuesToMask.push(context.repoData.name);
+        }
+
         context.repoHtmlUrl = repoData.html_url;
         // if this is a new repo, the only branch that will have been created is 'main', if it's basic create, use the default branch
         context.branchData = repoData.name === createNewRepo ?
@@ -45,7 +49,7 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         return !context.repoHtmlUrl;
     }
 
-    private async getRepoPicks(context: IStaticWebAppWizardContext, params: RepoParameters, orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData, picksCache: ICachedQuickPicks<RepoData>): Promise<IAzureQuickPickItem<RepoData | CreateNewResource | undefined>[]> {
+    private async getRepoPicks(context: IStaticWebAppWizardContext, params: RepoParameters, orgData: ListOrgsForUserData | OrgForAuthenticatedUserData, picksCache: ICachedQuickPicks<RepoData>): Promise<IAzureQuickPickItem<RepoData | CreateNewResource | undefined>[]> {
         const client: Octokit = await createOctokitClient(context);
         const callback: (params?: RepoParameters) => Promise<RepoResponse> = isUser(orgData) ? client.repos.listForUser : client.repos.listForOrg;
         return await getGitHubQuickPicksWithLoadMore<RepoData, RepoParameters>(picksCache, callback, params, 'name');
@@ -56,6 +60,6 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         const client: Octokit = await createOctokitClient(context);
         const { owner, name } = getRepoFullname(nonNullProp(context, 'repoHtmlUrl'));
         const remoteRepo: ReposGetResponseData = (await client.repos.get({ owner, repo: name })).data;
-        return (await client.repos.getBranch({ owner, repo: name, branch: remoteRepo.default_branch })).data;
+        return <BranchData><unknown>(await client.repos.getBranch({ owner, repo: name, branch: remoteRepo.default_branch })).data;
     }
 }

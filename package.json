@@ -428,7 +428,7 @@
         "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats"
     },
     "devDependencies": {
-        "@octokit/types": "^5.2.0",
+        "@octokit/types": "^6.13.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
         "@types/gulp": "^4.0.6",
@@ -455,7 +455,7 @@
     "dependencies": {
         "@azure/arm-appservice": "^6.0.0",
         "@azure/ms-rest-js": "^2.2.1",
-        "@octokit/rest": "^18.0.3",
+        "@octokit/rest": "^18.5.2",
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",

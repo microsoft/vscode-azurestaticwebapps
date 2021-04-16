@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from "@octokit/rest";
-import { ActionsListWorkflowRunsForRepoResponseData, OctokitResponse } from "@octokit/types";
+import { OctokitResponse } from "@octokit/types";
 import { ThemeIcon } from "vscode";
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from "../commands/github/createOctokitClient";
+import { ActionsListWorkflowRunsForRepoResponseData } from "../gitHubTypings";
 import { getRepoFullname } from '../utils/gitHubUtils';
 import { localize } from "../utils/localize";
 import { ActionTreeItem } from './ActionTreeItem';
