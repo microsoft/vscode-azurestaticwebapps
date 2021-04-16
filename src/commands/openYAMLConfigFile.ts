@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EOL } from 'os';
 import { basename } from 'path';
 import { Range, TextDocument, window, workspace } from "vscode";
 import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
@@ -76,7 +75,7 @@ export async function getSelection(configDocument: TextDocument, buildConfigToSe
                 // The range returned from the `yaml` package doesn't include newlines
                 // So count newlines and include them in the range we return
                 for (const char of configDocumentText.slice(0, buildConfigOffset)) {
-                    newlines += char === EOL ? 1 : 0;
+                    newlines += char === '\n' ? 1 : 0;
                 }
 
                 const startOffset = range[0] + newlines;
