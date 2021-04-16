@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
-import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData, RepoData, RepoParameters, ReposGetResponseData } from '../../gitHubTypings';
+import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData, RepoData, RepoParameters, RepoResponse, ReposGetResponseData } from '../../gitHubTypings';
 import { getGitHubQuickPicksWithLoadMore, getRepoFullname, ICachedQuickPicks, isUser } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
@@ -14,11 +14,6 @@ import { createOctokitClient } from '../github/createOctokitClient';
 import { CreateNewResource, IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 const createNewRepo: string = 'createNewRepo';
-
-
-
-type RepoResponse = RestEndpointMethodTypes['repos']['listForOrg']['response'] | RestEndpointMethodTypes['repos']['listForUser']['response'];
-
 export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
@@ -53,7 +48,6 @@ export class GitHubRepoListStep extends AzureWizardPromptStep<IStaticWebAppWizar
         const client: Octokit = await createOctokitClient(context);
         const callback: (params?: RepoParameters) => Promise<RepoResponse> = isUser(orgData) ? client.repos.listForUser : client.repos.listForOrg;
         return await getGitHubQuickPicksWithLoadMore<RepoData, RepoParameters>(picksCache, callback, params, 'name');
-
     }
 
     private async getDefaultBranchForRepo(context: IStaticWebAppWizardContext): Promise<BranchData> {

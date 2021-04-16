@@ -20,6 +20,8 @@ export type ReposGetResponseData = Endpoints["GET /repos/{owner}/{repo}"]["respo
 export type RepoData = Endpoints["GET /users/{username}/repos"]["response"]["data"][0] | Endpoints["GET /orgs/{org}/repos"]["response"]["data"][0];
 export type BranchData = Endpoints["GET /repos/{owner}/{repo}/branches"]["response"]["data"][0];
 
+export type RepoResponse = Endpoints["GET /orgs/{org}/repos"]["response"] | Endpoints["GET /users/{username}/repos"]["response"];
+
 // Doc for these parameter values: https://developer.github.com/v3/checks/runs/#parameters
 export enum Conclusion {
     Success = 'success',
