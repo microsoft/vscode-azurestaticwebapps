@@ -3,11 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData } from '@octokit/types';
 import * as moment from 'moment';
 import { ThemeIcon } from 'vscode';
 import { TreeItemIconPath } from 'vscode-azureextensionui';
-import { ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
+import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData, ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
 import { localize } from "./localize";
 
 export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData | ActionsGetWorkflowRunResponseData): TreeItemIconPath {
@@ -53,7 +52,7 @@ export function getActionDescription(data: ActionWorkflowStepData | ActionsGetJo
     }
 }
 
-export function ensureConclusion(data: { conclusion: string }): Conclusion {
+export function ensureConclusion(data: { conclusion: string | null }): Conclusion {
     if (Object.values(Conclusion).includes(<Conclusion>data.conclusion)) {
         return <Conclusion>data.conclusion;
     } else {
@@ -76,7 +75,7 @@ function convertConclusionToVerb(conclusion: Conclusion): string {
     }
 }
 
-export function ensureStatus(data: { status: string }): Status {
+export function ensureStatus(data: { status: string | null }): Status {
     if (Object.values(Status).includes(<Status>data.status)) {
         return <Status>data.status;
     } else {

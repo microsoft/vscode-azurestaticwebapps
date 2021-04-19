@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { ReposGetResponseData } from '@octokit/types';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
@@ -73,7 +72,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         if (context.advancedCreation) {
             promptSteps.push(new ResourceGroupListStep());
         } else {
-            const remoteRepo: ReposGetResponseData | undefined = await tryGetProjectForCreation(context, wizardContext.fsPath);
+            const remoteRepo = await tryGetProjectForCreation(context, wizardContext.fsPath);
             if (remoteRepo) {
                 wizardContext.repoHtmlUrl = remoteRepo.html_url;
                 wizardContext.branchData = { name: remoteRepo.default_branch };

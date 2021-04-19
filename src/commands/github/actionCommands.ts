@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from "@octokit/rest";
-import { ActionsGetWorkflowRunResponseData } from "@octokit/types";
 import { window } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
-import { Conclusion, Status } from "../../gitHubTypings";
+import { ActionsGetWorkflowRunResponseData, Conclusion, Status } from "../../gitHubTypings";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
 import { ensureConclusion, ensureStatus } from "../../utils/actionUtils";
 import { pollAsyncOperation } from "../../utils/azureUtils";
 import { localize } from "../../utils/localize";
-import { nonNullValue } from "../../utils/nonNull";
+import { nonNullProp, nonNullValue } from "../../utils/nonNull";
 import { createOctokitClient } from "./createOctokitClient";
 
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
@@ -26,7 +25,8 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
     ext.outputChannel.appendLog(rerunRunning);
 
     const client: Octokit = await createOctokitClient(context);
-    await client.actions.reRunWorkflow({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id });
+    const owner = nonNullProp(node.data.repository, 'owner');
+    await client.actions.reRunWorkflow({ owner: owner.login, repo: node.data.repository.name, run_id: node.data.id });
     await node.refresh(context); // need to refresh to update the data
     await checkActionStatus(context, node);
 }
@@ -41,7 +41,8 @@ export async function cancelAction(context: IActionContext, node?: ActionTreeIte
     ext.outputChannel.appendLog(cancelRunning);
 
     const client: Octokit = await createOctokitClient(context);
-    await client.actions.cancelWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id });
+    const owner = nonNullProp(node.data.repository, 'owner');
+    await client.actions.cancelWorkflowRun({ owner: owner.login, repo: node.data.repository.name, run_id: node.data.id });
     await node.refresh(context); // need to refresh to update the data
     await checkActionStatus(context, node);
 }
@@ -50,9 +51,11 @@ export async function checkActionStatus(context: IActionContext, node: ActionTre
     const startTime: number = Date.now();
     const client: Octokit = await createOctokitClient(context);
     let workflowRun: ActionsGetWorkflowRunResponseData | undefined;
+    const owner = nonNullProp(node.data.repository, 'owner');
 
     const pollingOperation: () => Promise<boolean> = async () => {
-        workflowRun = (await client.actions.getWorkflowRun({ owner: node.data.repository.owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
+
+        workflowRun = (await client.actions.getWorkflowRun({ owner: owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
         if (ensureStatus(workflowRun) === Status.Completed) {
             const actionCompleted: string = localize('actionCompleted', 'Action "{0}" has completed with the conclusion "{1}".', node.data.id, workflowRun.conclusion);
             if (!initialCreate) {
@@ -62,7 +65,7 @@ export async function checkActionStatus(context: IActionContext, node: ActionTre
 
             await node.refresh(context);
             context.telemetry.properties.secToReport = String((Date.now() - startTime) / 1000);
-            context.telemetry.properties.conclusion = workflowRun.conclusion;
+            context.telemetry.properties.conclusion = workflowRun.conclusion || '';
             return true;
         }
 

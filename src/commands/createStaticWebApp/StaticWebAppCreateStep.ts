@@ -16,9 +16,10 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
 
     public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const newName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+        const branchData = nonNullProp(wizardContext, 'branchData');
         const siteEnvelope: WebSiteManagementModels.StaticSiteARMResource = {
             repositoryUrl: wizardContext.repoHtmlUrl,
-            branch: wizardContext.branchData?.name,
+            branch: branchData.name,
             repositoryToken: wizardContext.accessToken,
             // The SDK hasn't updated to reflect the outputLocation property and platform will continue supporting appArtifactLocation, but will update as soon as available
             buildProperties: {

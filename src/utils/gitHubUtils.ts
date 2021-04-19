@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { OctokitResponse, ReposGetResponseData, UsersGetAuthenticatedResponseData } from '@octokit/types';
+import { OctokitResponse } from '@octokit/types';
 import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
 import { URL } from 'url';
 import { authentication, QuickPickItem } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { OrgForAuthenticatedUserData } from '../gitHubTypings';
+import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposGetResponseData } from '../gitHubTypings';
 import { getSingleRootFsPath } from './workspaceUtils';
 
 type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
@@ -178,7 +178,7 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
     return { owner: parsedUrl.owner, name: parsedUrl.name };
 }
 
-export function isUser(orgData: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData | undefined): boolean {
+export function isUser(orgData: ListOrgsForUserData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
 }
