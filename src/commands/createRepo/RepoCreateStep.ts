@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { ReposCreateForAuthenticatedUserResponseData, ReposCreateInOrgResponseData } from '@octokit/types';
 import { basename } from 'path';
 import { Progress, Uri } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
@@ -17,7 +16,6 @@ import { nonNullProp, nonNullValue } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../github/createOctokitClient';
 
-type RepoCreateData = ReposCreateForAuthenticatedUserResponseData | ReposCreateInOrgResponseData;
 export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     // should happen before resource group create step
     public priority: number = 90;
@@ -31,7 +29,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         progress.report({ message: creatingGitHubRepo });
 
         const client: Octokit = await createOctokitClient(wizardContext);
-        const gitHubRepoRes: RepoCreateData = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
+        const gitHubRepoRes = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
             await client.repos.createInOrg({ org: nonNullProp(wizardContext, 'orgData').login, name: newRepoName, private: newRepoIsPrivate })).data;
         wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
 

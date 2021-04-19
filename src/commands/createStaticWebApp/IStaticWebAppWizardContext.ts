@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
-import { BranchData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
+import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
 import { CreateScenario } from './CreateScenarioListStep';
 
 // creating a dummy repoData/branchData would be an annoying amount of work, so use this type to recognize when users have selected create new repo
@@ -17,7 +16,7 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     createScenario?: CreateScenario;
 
-    orgData?: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData;
+    orgData?: OrgForAuthenticatedUserData | ListOrgsForUserData;
     repoData?: RepoData | CreateNewResource;
     branchData?: BranchData | CreateNewResource;
 
