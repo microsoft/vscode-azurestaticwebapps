@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import { join } from 'path';
 import { Position, Range, TextDocument, workspace } from "vscode";
-import { BuildConfig, getSelection } from "../extension.bundle";
+import { BuildConfig, tryGetSelection } from "../extension.bundle";
 import { getWorkspacePath } from './utils/workspaceUtils';
 
 interface ISelectBuildConfigTestCase {
@@ -48,7 +48,7 @@ suite('Select Build Configurations in GitHub Workflow Files', () => {
 
         test(title, async () => {
             const configDocument: TextDocument = await workspace.openTextDocument(join(workspacePath, 'testWorkflows', testCase.workflowFileName));
-            const selection: Range | undefined = await getSelection(configDocument, testCase.buildConfig);
+            const selection: Range | undefined = await tryGetSelection(configDocument, testCase.buildConfig);
             let expectedSelection: Range | undefined;
 
             if (testCase.expectedSelection) {
