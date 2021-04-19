@@ -6,7 +6,7 @@
 import * as fse from 'fs-extra';
 import * as git from 'simple-git/promise';
 import { MessageItem, Uri } from "vscode";
-import { DialogResponses, IActionContext, parseError } from "vscode-azureextensionui";
+import { DialogResponses, IActionContext } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -79,7 +79,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     return <VerifiedGitWorkspaceState>gitWorkspaceState;
 }
 
-export async function promptForCommit(repo: Repository, value?: string): Promise<void> {
+async function promptForCommit(repo: Repository, value?: string): Promise<void> {
     const commitPrompt: string = localize('commitPrompt', 'Enter a commit message.');
     const commitOptions: CommitOptions = { all: true };
 
@@ -89,8 +89,6 @@ export async function promptForCommit(repo: Repository, value?: string): Promise
     } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (!/nothing to commit/.test(err.stdout)) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            console.debug(parseError(err));
             // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
             throw (err);
         }
@@ -117,7 +115,7 @@ export async function promptForDefaultBranch(context: IActionContext, repo: Repo
     }
 }
 
-export async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined> {
+async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined> {
     // currently git still uses master as the default branch but will be updated to main so handle both cases
     // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
     const defaultBranches: string[] = ['main', 'master'];
@@ -134,7 +132,7 @@ export async function tryGetDefaultBranch(repo: Repository): Promise<string | un
 
     const localBranches: Ref[] = await repo.getBranches({ remote: false });
     // order matters here because we want the setting, main, then master respectively so use indexing
-    for (let i = 0; i < localBranches.length; i++) {
+    for (let i = 0; i < defaultBranches.length; i++) {
         if (localBranches.some(lBranch => lBranch.name === defaultBranches[i])) {
             // only return the branch if we can find it locally, otherwise we won't be able to checkout
             return defaultBranches[i];

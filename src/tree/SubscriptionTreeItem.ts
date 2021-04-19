@@ -22,7 +22,7 @@ import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWeb
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
 import { createWebSiteClient } from '../utils/azureClients';
-import { getGitHubAccessToken, tryGetProjectForCreation } from '../utils/gitHubUtils';
+import { getGitHubAccessToken, tryGetRepoDataForCreation } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { updateWorkspaceSetting } from '../utils/settingsUtils';
@@ -72,7 +72,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         if (context.advancedCreation) {
             promptSteps.push(new ResourceGroupListStep());
         } else {
-            const remoteRepo = await tryGetProjectForCreation(context, wizardContext.fsPath);
+            const remoteRepo = await tryGetRepoDataForCreation(context, wizardContext.fsPath);
             if (remoteRepo) {
                 wizardContext.repoHtmlUrl = remoteRepo.html_url;
                 wizardContext.branchData = { name: remoteRepo.default_branch };
