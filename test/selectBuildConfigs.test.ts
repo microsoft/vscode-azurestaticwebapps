@@ -4,13 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { join } from 'path';
-import { Position, Range, TextDocument, workspace } from "vscode";
+import { Position, Range, TextDocument, TextDocumentContentProvider, Uri, workspace } from 'vscode';
 import { BuildConfig, tryGetSelection } from "../extension.bundle";
-import { getWorkspacePath } from './utils/workspaceUtils';
 
 interface ISelectBuildConfigTestCase {
-    workflowFileName: string;
+    workflowIndex: number;
     buildConfig: BuildConfig;
     expectedSelection: undefined | {
         line: number;
@@ -21,33 +19,41 @@ interface ISelectBuildConfigTestCase {
 
 suite('Select Build Configurations in GitHub Workflow Files', () => {
     const testCases: ISelectBuildConfigTestCase[] = [
-        { workflowFileName: 'workflow-simple.yml', buildConfig: 'api_location', expectedSelection: { line: 30, startChar: 24, endChar: 26 } },
-        { workflowFileName: 'workflow-simple.yml', buildConfig: 'app_location', expectedSelection: { line: 29, startChar: 24, endChar: 27 } },
-        { workflowFileName: 'workflow-simple.yml', buildConfig: 'output_location', expectedSelection: { line: 31, startChar: 27, endChar: 29 } },
-        { workflowFileName: 'workflow-simple.yml', buildConfig: 'app_artifact_location', expectedSelection: undefined },
+        { workflowIndex: 0, buildConfig: 'api_location', expectedSelection: { line: 7, startChar: 24, endChar: 26 } },
+        { workflowIndex: 0, buildConfig: 'app_location', expectedSelection: { line: 6, startChar: 24, endChar: 27 } },
+        { workflowIndex: 0, buildConfig: 'output_location', expectedSelection: { line: 8, startChar: 27, endChar: 29 } },
+        { workflowIndex: 0, buildConfig: 'app_artifact_location', expectedSelection: undefined },
 
-        { workflowFileName: 'workflow-funky.yml', buildConfig: 'api_location', expectedSelection: { line: 30, startChar: 24, endChar: 39 } },
-        { workflowFileName: 'workflow-funky.yml', buildConfig: 'app_location', expectedSelection: { line: 29, startChar: 24, endChar: 57 } },
-        { workflowFileName: 'workflow-funky.yml', buildConfig: 'output_location', expectedSelection: { line: 31, startChar: 27, endChar: 54 } },
-        { workflowFileName: 'workflow-funky.yml', buildConfig: 'app_artifact_location', expectedSelection: undefined },
+        { workflowIndex: 1, buildConfig: 'api_location', expectedSelection: { line: 7, startChar: 24, endChar: 38 } },
+        { workflowIndex: 1, buildConfig: 'app_location', expectedSelection: { line: 6, startChar: 24, endChar: 38 } },
+        { workflowIndex: 1, buildConfig: 'output_location', expectedSelection: undefined },
+        { workflowIndex: 1, buildConfig: 'app_artifact_location', expectedSelection: { line: 8, startChar: 33, endChar: 54 }},
 
-        { workflowFileName: 'workflow-old.yml', buildConfig: 'api_location', expectedSelection: { line: 30, startChar: 24, endChar: 29 } },
-        { workflowFileName: 'workflow-old.yml', buildConfig: 'app_location', expectedSelection: { line: 29, startChar: 24, endChar: 29 } },
-        { workflowFileName: 'workflow-old.yml', buildConfig: 'output_location', expectedSelection: undefined },
-        { workflowFileName: 'workflow-old.yml', buildConfig: 'app_artifact_location', expectedSelection: { line: 31, startChar: 33, endChar: 38 } },
+        { workflowIndex: 2, buildConfig: 'api_location', expectedSelection: undefined },
+        { workflowIndex: 2, buildConfig: 'app_location', expectedSelection: undefined },
+        { workflowIndex: 2, buildConfig: 'output_location', expectedSelection: undefined },
+        { workflowIndex: 2, buildConfig: 'app_artifact_location', expectedSelection: undefined },
 
-        { workflowFileName: 'workflow-duplicates.yml', buildConfig: 'api_location', expectedSelection: undefined },
-        { workflowFileName: 'workflow-duplicates.yml', buildConfig: 'app_location', expectedSelection: undefined },
-        { workflowFileName: 'workflow-duplicates.yml', buildConfig: 'output_location', expectedSelection: undefined },
-        { workflowFileName: 'workflow-duplicates.yml', buildConfig: 'app_artifact_location', expectedSelection: undefined },
+        { workflowIndex: 3, buildConfig: 'api_location', expectedSelection: { line: 30, startChar: 24, endChar: 39 }},
+        { workflowIndex: 3, buildConfig: 'app_location', expectedSelection: { line: 29, startChar: 24, endChar: 57 }},
+        { workflowIndex: 3, buildConfig: 'output_location', expectedSelection: { line: 31, startChar: 27, endChar: 54 }},
+        { workflowIndex: 3, buildConfig: 'app_artifact_location', expectedSelection: undefined },
     ];
 
+    const workflowProvider: TextDocumentContentProvider = new (class implements TextDocumentContentProvider {
+        provideTextDocumentContent(uri: Uri): string {
+            return workflows[parseInt(uri.path)];
+        }
+    })();
+    const scheme: string = 'testWorkflows';
+    workspace.registerTextDocumentContentProvider(scheme, workflowProvider);
+
     for (const testCase of testCases) {
-        const title: string = `${testCase.workflowFileName}: ${testCase.buildConfig}`;
-        const workspacePath: string = getWorkspacePath('testWorkspace');
+        const title: string = `Workflow ${testCase.workflowIndex}: ${testCase.buildConfig}`;
 
         test(title, async () => {
-            const configDocument: TextDocument = await workspace.openTextDocument(join(workspacePath, 'testWorkflows', testCase.workflowFileName));
+            const uri: Uri = Uri.parse(`${scheme}:${testCase.workflowIndex}`);
+            const configDocument: TextDocument = await workspace.openTextDocument(uri);
             const selection: Range | undefined = await tryGetSelection(configDocument, testCase.buildConfig);
             let expectedSelection: Range | undefined;
 
@@ -61,3 +67,91 @@ suite('Select Build Configurations in GitHub Workflow Files', () => {
         });
     }
 });
+
+const workflows: string[] = [
+`jobs:
+  build_and_deploy_job:
+    steps:
+      - uses: Azure/static-web-apps-deploy@v0.0.1-preview
+        id: builddeploy
+        with:
+          app_location: "/"
+          api_location: ""
+          output_location: ""`,
+
+`jobs:
+  build_and_deploy_job:
+    steps:
+      - uses: Azure/static-web-apps-deploy@v0.0.1-preview
+        id: builddeploy
+        with:
+          app_location: "app/location"
+          api_location: 'api/location'
+          app_artifact_location: app/artifact/location`,
+
+`jobs:
+  build_and_deploy_job1:
+    steps:
+      - uses: Azure/static-web-apps-deploy@v0.0.1-preview
+        id: builddeploy
+        with:
+            app_location: "src"
+            api_location: "api"
+            output_location: "build"
+
+  build_and_deploy_job2:
+    steps:
+      - uses: Azure/static-web-apps-deploy@v0.0.1-preview
+        id: builddeploy
+        with:
+          app_location: "src"
+          api_location: "api"
+          output_location: "build"`,
+
+`name: Azure Static Web Apps CI/CD
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - master
+
+jobs:
+  build_and_deploy_job:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v0.0.1-preview
+        with:
+          azure_static_web_apps_api_token: $\{{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AMBITIOUS_ROCK_0D992521E }}
+          repo_token: $\{{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          action: "upload"
+          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
+          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+          app_location: "super/long/path/to/app/location"		# There are tabs before this comment
+          api_location: 'single/quotes'                         #There are spaces before this comment
+          output_location: output/location with/spaces # There is a single space before this comment
+          ###### End of Repository/Build Configurations ######
+
+  close_pull_request_job:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request Job
+    steps:
+      - name: Close Pull Request
+        id: closepullrequest
+        uses: Azure/static-web-apps-deploy@v0.0.1-preview
+        with:
+          azure_static_web_apps_api_token: $\{{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AMBITIOUS_ROCK_0D992521E }}
+          action: "close"
+
+`];
