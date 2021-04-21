@@ -11,14 +11,15 @@ import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStat
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
+import { ReposGetResponseData } from '../gitHubTypings';
 import { hasAdminAccessToRepo, tryGetRemote, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 
-export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteUrl: string | undefined; hasAdminAccess: boolean };
+export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteRepo: ReposGetResponseData | undefined; hasAdminAccess: boolean };
 export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository };
 
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
-    const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteUrl: undefined, hasAdminAccess: false };
+    const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
     const gitApi: API = await getGitApi();
     const repo: Repository | null = await gitApi.openRepository(uri);
 
@@ -26,8 +27,11 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
         const originUrl: string | undefined = await tryGetRemote(uri.fsPath);
         gitWorkspaceState.repo = repo;
         gitWorkspaceState.dirty = !!(repo.state.workingTreeChanges.length || repo.state.indexChanges.length);
-        gitWorkspaceState.remoteUrl = originUrl;
-        gitWorkspaceState.hasAdminAccess = originUrl ? hasAdminAccessToRepo(await (tryGetReposGetResponseData(context, originUrl))) : false;
+
+        if (originUrl) {
+            gitWorkspaceState.remoteRepo = await tryGetReposGetResponseData(context, originUrl);
+            gitWorkspaceState.hasAdminAccess = hasAdminAccessToRepo(gitWorkspaceState.remoteRepo);
+        }
     }
 
     return gitWorkspaceState;
@@ -61,7 +65,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         await promptForCommit(newRepo, localize('initCommit', 'Initial commit'));
         gitWorkspaceState.repo = newRepo;
 
-    } else if (!!gitWorkspaceState.remoteUrl && !gitWorkspaceState.hasAdminAccess) {
+    } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {
         context.telemetry.properties.cancelStep = 'adminAccess';
 
         const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository is required.  Please use a repo with admin access or create a fork.');

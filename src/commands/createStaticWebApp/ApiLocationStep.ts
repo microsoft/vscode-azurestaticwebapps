@@ -24,6 +24,10 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
+        if (!context.advancedCreation) {
+            context.apiLocation = context.presetApiLocation || defaultApiLocation;
+        }
+
         return context.apiLocation === undefined;
     }
 }

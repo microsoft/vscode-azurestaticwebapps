@@ -5,7 +5,7 @@
 
 import * as fse from 'fs-extra';
 import { join } from 'path';
-import { AzureWizardPromptStep } from 'vscode-azureextensionui';
+import { AzureWizardPromptStep, IActionContext } from 'vscode-azureextensionui';
 import { remoteShortnameExists } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { selectWorkspaceFolder } from '../../utils/workspaceUtils';
@@ -14,7 +14,7 @@ import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppW
 export class WorkspaceListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public hideStepCount: boolean = true;
 
-    public static async setWorkspaceContexts(wizardContext: IStaticWebAppWizardContext, fsPath: string): Promise<void> {
+    public static async setWorkspaceContexts(wizardContext: IActionContext & Partial<IStaticWebAppWizardContext>, fsPath: string): Promise<void> {
         const origin: string = 'origin';
         wizardContext.originExists = await remoteShortnameExists(fsPath, origin);
         wizardContext.newRemoteShortname = wizardContext.originExists ? undefined : origin;

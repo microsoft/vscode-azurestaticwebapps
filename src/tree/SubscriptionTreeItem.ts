@@ -9,7 +9,6 @@ import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep'
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
 import { RepoPrivacyStep } from '../commands/createRepo/RepoPrivacyStep';
-import { WorkspaceListStep } from '../commands/createRepo/WorkspaceListStep';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
@@ -22,7 +21,7 @@ import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWeb
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
 import { createWebSiteClient } from '../utils/azureClients';
-import { getGitHubAccessToken, tryGetRepoDataForCreation } from '../utils/gitHubUtils';
+import { getGitHubAccessToken } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { updateWorkspaceSetting } from '../utils/settingsUtils';
@@ -59,9 +58,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
-        // because a workspace is a requirement, we can be confident that there is a fsPath
-        await WorkspaceListStep.setWorkspaceContexts(wizardContext, nonNullProp(wizardContext, 'fsPath'));
-
         // if the local project doesn't have a GitHub remote, we will create it for them
         if (!wizardContext.originExists) {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
@@ -69,34 +65,35 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         }
 
         promptSteps.push(new StaticWebAppNameStep());
-        if (context.advancedCreation) {
-            promptSteps.push(new ResourceGroupListStep());
-        } else {
-            const remoteRepo = await tryGetRepoDataForCreation(context, wizardContext.fsPath);
-            if (remoteRepo) {
-                wizardContext.repoHtmlUrl = remoteRepo.html_url;
-                wizardContext.branchData = { name: remoteRepo.default_branch };
-            }
+
+        if (!context.advancedCreation) {
             executeSteps.push(new ResourceGroupCreateStep());
+        } else {
+            promptSteps.push(new ResourceGroupListStep());
         }
         promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
+
+        // hard-coding locations available during preview
+        // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
+        const locations = [
+            { name: 'Central US' },
+            { name: 'East US 2' },
+            { name: 'East Asia' },
+            { name: 'West Europe' },
+            { name: 'West US 2' }
+        ];
+        if (context.advancedCreation) {
+            wizardContext.locationsTask = new Promise((resolve) => {
+                resolve(locations);
+            });
+            LocationListStep.addStep(wizardContext, promptSteps);
+        } else {
+            wizardContext.location = locations[0];
+        }
 
         executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
         executeSteps.push(new StaticWebAppCreateStep());
 
-        // hard-coding locations available during preview
-        // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
-        wizardContext.locationsTask = new Promise((resolve) => {
-            resolve([
-                { name: 'Central US' },
-                { name: 'East US 2' },
-                { name: 'East Asia' },
-                { name: 'West Europe' },
-                { name: 'West US 2' }
-            ]);
-        });
-
-        LocationListStep.addStep(wizardContext, promptSteps);
         const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
             title,
             promptSteps,
@@ -106,6 +103,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
         wizardContext.fsPath = wizardContext.fsPath || getSingleRootFsPath();
         addWorkspaceTelemetry(wizardContext);
+
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
