@@ -13,11 +13,11 @@ import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
-import { WorkspaceListStep } from '../createRepo/WorkspaceListStep';
 import { showActions } from '../github/showActions';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
+import { setWorkspaceContexts } from './setWorkspaceContexts';
 
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     if (!node) {
@@ -48,7 +48,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
                 }
             }
 
-            await WorkspaceListStep.setWorkspaceContexts(context, context.fsPath);
+            await setWorkspaceContexts(context, context.fsPath);
         });
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);

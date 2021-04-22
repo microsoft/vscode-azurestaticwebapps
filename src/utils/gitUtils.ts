@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fse from 'fs-extra';
-import * as git from 'simple-git/promise';
 import { MessageItem, Uri } from "vscode";
-import { DialogResponses, IActionContext } from "vscode-azureextensionui";
+import { IActionContext } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -46,29 +45,22 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     }
 
     if (!gitWorkspaceState.repo) {
-        const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to create a Static Web App. Would you like to initialize your project as a git repository and create a GitHub remote?');
+        const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to proceed. Create a local git repository and GitHub remote to create a Static Web App.');
         context.telemetry.properties.cancelStep = 'initRepo';
 
-        await ext.ui.showWarningMessage(gitRequired, { modal: true }, DialogResponses.yes);
+        await ext.ui.showWarningMessage(gitRequired, { modal: true }, { title: localize('create', 'Create') });
         const gitApi: API = await getGitApi();
-        let newRepo: Repository | null = await gitApi.init(uri);
+        const newRepo: Repository | null = await gitApi.init(uri);
         if (!newRepo) {
-            const localGit: git.SimpleGit = git(uri.fsPath);
-            await localGit.init({});
-            newRepo = await gitApi.openRepository(uri);
-            if (!newRepo) {
-                throw new Error(localize('gitInitFailed', 'Git initialization failed.  Please initialize a git repository manually and attempt to create again.'));
-            }
-
+            throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
         }
 
         await promptForCommit(newRepo, localize('initCommit', 'Initial commit'));
         gitWorkspaceState.repo = newRepo;
-
     } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {
         context.telemetry.properties.cancelStep = 'adminAccess';
 
-        const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository is required.  Please use a repo with admin access or create a fork.');
+        const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository is required.  Use a repo with admin access or create a fork.');
         await ext.ui.showWarningMessage(adminAccess, { modal: true });
 
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
@@ -128,7 +120,7 @@ async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined
     } catch (err) {
         // if no local config setting is found, try global
         try {
-            defaultBranches.push(await repo.getGlobalConfig('init.defaultBranch'));
+            defaultBranches.unshift(await repo.getGlobalConfig('init.defaultBranch'));
         } catch (err) {
             // VS Code's git API doesn't fail gracefully if no config is found, so swallow the error
         }

@@ -26,7 +26,6 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
         await extension.activate();
     }
 
-
     ext.outputChannel = new TestOutputChannel();
     ext.ui = testUserInput;
 
@@ -39,4 +38,3 @@ suite('suite1', () => {
         // once actual tests exist, we can remove this
     });
 });
-
