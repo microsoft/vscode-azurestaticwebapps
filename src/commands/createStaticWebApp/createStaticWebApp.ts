@@ -26,7 +26,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     await node.runWithTemporaryDescription(
         context,
-        localize('startingCreate', 'Starting Create...'),
+        localize('startingCreate', 'Create Starting...'),
         async () => {
             const folder: WorkspaceFolder = await getWorkspaceFolder(context);
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);

@@ -7,6 +7,7 @@ import * as fse from 'fs-extra';
 import { MessageItem, Uri } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
+import { GitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
@@ -83,10 +84,10 @@ async function promptForCommit(repo: Repository, value?: string): Promise<void> 
     try {
         await repo.commit(commitMsg, commitOptions);
     } catch (err) {
+        // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (!/nothing to commit/.test(err.stdout)) {
-            // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
-            throw (err);
+            throw new GitError(err);
         }
     }
 }
