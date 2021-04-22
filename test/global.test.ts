@@ -31,10 +31,3 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
 
     longRunningTestsEnabled = !/^(false|0)?$/i.test(process.env.ENABLE_LONG_RUNNING_TESTS || '');
 });
-
-suite('suite1', () => {
-    test('test1', () => {
-        // suiteSetup only runs if a suite/test exists, so added a placeholder test here so we can at least verify the extension can activate
-        // once actual tests exist, we can remove this
-    });
-});
