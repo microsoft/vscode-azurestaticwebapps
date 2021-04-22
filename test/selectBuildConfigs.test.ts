@@ -10,11 +10,11 @@ import { BuildConfig, tryGetSelection } from "../extension.bundle";
 interface ISelectBuildConfigTestCase {
     workflowIndex: number;
     buildConfig: BuildConfig;
-    expectedSelection: undefined | {
+    expectedSelection: {
         line: number;
         startChar: number;
         endChar: number;
-    }
+    } | undefined;
 }
 
 suite('Select Build Configurations in GitHub Workflow Files', () => {
@@ -29,15 +29,20 @@ suite('Select Build Configurations in GitHub Workflow Files', () => {
         { workflowIndex: 1, buildConfig: 'output_location', expectedSelection: undefined },
         { workflowIndex: 1, buildConfig: 'app_artifact_location', expectedSelection: { line: 8, startChar: 33, endChar: 54 }},
 
-        { workflowIndex: 2, buildConfig: 'api_location', expectedSelection: undefined },
-        { workflowIndex: 2, buildConfig: 'app_location', expectedSelection: undefined },
-        { workflowIndex: 2, buildConfig: 'output_location', expectedSelection: undefined },
+        { workflowIndex: 2, buildConfig: 'api_location', expectedSelection: { line: 7, startChar: 24, endChar: 50 } },
+        { workflowIndex: 2, buildConfig: 'app_location', expectedSelection: { line: 6, startChar: 24, endChar: 30 } },
+        { workflowIndex: 2, buildConfig: 'output_location', expectedSelection: { line: 8, startChar: 27, endChar: 40 } },
         { workflowIndex: 2, buildConfig: 'app_artifact_location', expectedSelection: undefined },
 
-        { workflowIndex: 3, buildConfig: 'api_location', expectedSelection: { line: 30, startChar: 24, endChar: 39 }},
-        { workflowIndex: 3, buildConfig: 'app_location', expectedSelection: { line: 29, startChar: 24, endChar: 57 }},
-        { workflowIndex: 3, buildConfig: 'output_location', expectedSelection: { line: 31, startChar: 27, endChar: 54 }},
+        { workflowIndex: 3, buildConfig: 'api_location', expectedSelection: undefined },
+        { workflowIndex: 3, buildConfig: 'app_location', expectedSelection: undefined },
+        { workflowIndex: 3, buildConfig: 'output_location', expectedSelection: undefined },
         { workflowIndex: 3, buildConfig: 'app_artifact_location', expectedSelection: undefined },
+
+        { workflowIndex: 4, buildConfig: 'api_location', expectedSelection: { line: 30, startChar: 24, endChar: 39 }},
+        { workflowIndex: 4, buildConfig: 'app_location', expectedSelection: { line: 29, startChar: 24, endChar: 57 }},
+        { workflowIndex: 4, buildConfig: 'output_location', expectedSelection: { line: 31, startChar: 27, endChar: 54 }},
+        { workflowIndex: 4, buildConfig: 'app_artifact_location', expectedSelection: undefined },
     ];
 
     const workflowProvider: TextDocumentContentProvider = new (class implements TextDocumentContentProvider {
@@ -63,7 +68,7 @@ suite('Select Build Configurations in GitHub Workflow Files', () => {
                 expectedSelection = new Range(expectedStart, expectedEnd);
             }
 
-            assert.ok(expectedSelection && selection?.isEqual(expectedSelection) || selection === expectedSelection, 'Actual and expected selections do not match');
+            assert.ok(selection && expectedSelection && selection.isEqual(expectedSelection) || selection === expectedSelection, 'Actual and expected selections do not match');
         });
     }
 });
@@ -88,6 +93,16 @@ const workflows: string[] = [
           app_location: "app/location"
           api_location: 'api/location'
           app_artifact_location: app/artifact/location`,
+
+`jobs:
+  build_and_deploy_job:
+    steps:
+      - uses: Azure/static-web-apps-deploy@v0.0.1-preview
+        id: builddeploy
+        with:
+          app_location: 你会说中文吗 # 你会说中文吗
+          api_location: $p3c!@L-ÇhärãçΤΕrs &()%^*? # Comment
+          output_location: "한국어 할 줄 아세요"`,
 
 `jobs:
   build_and_deploy_job1:
