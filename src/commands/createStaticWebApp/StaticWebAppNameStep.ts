@@ -30,6 +30,10 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
             validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(wizardContext, value)
         })).trim();
         wizardContext.valuesToMask.push(wizardContext.newStaticWebAppName);
+
+        if (wizardContext.advancedCreation) {
+            wizardContext.relatedNameTask = this.getRelatedName(wizardContext, wizardContext.newStaticWebAppName);
+        }
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
