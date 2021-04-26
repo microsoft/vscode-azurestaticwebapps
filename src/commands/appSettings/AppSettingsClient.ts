@@ -23,10 +23,9 @@ export class AppSettingsClient implements IAppSettingsClient {
         this.resourceGroup = node.parent.resourceGroup;
         this.root = node.root;
 
-        // For IAppSettingsClient, isLinux is used for app settings key validation.
-        // I'm unsure what the Functions Apps are under the hood, but the Linux app settings restrictions do not apply
-        // to the keys so isLinux should be considered false
-        this.isLinux = false;
+        // For IAppSettingsClient, isLinux is used for app settings key validation and Linux app settings restrictions
+        // apply to the keys
+        this.isLinux = true;
     }
 
     public async listApplicationSettings(): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
