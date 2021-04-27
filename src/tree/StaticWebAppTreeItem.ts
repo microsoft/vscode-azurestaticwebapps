@@ -5,8 +5,8 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { ProgressLocation, window } from "vscode";
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { productionEnvironmentName } from '../constants';
+import { AzExtTreeItem, AzureParentTreeItem, IActionContext, IParsedError, parseError, TreeItemIconPath } from "vscode-azureextensionui";
+import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId, pollAzureAsyncOperation } from "../utils/azureUtils";
@@ -62,7 +62,15 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
             envs,
             'invalidStaticEnvironment',
             async (env: WebSiteManagementModels.StaticSiteBuildARMResource) => {
-                return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this, env);
+                try {
+                    return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this, env);
+                } catch (error) {
+                    const parsedError: IParsedError = parseError(error);
+                    if (/(null|undefined).*sourceBranch/.test(parsedError.message)) {
+                        throw new Error(onlyGitHubSupported);
+                    }
+                    throw error;
+                }
             },
             env => env.buildId
         );

@@ -14,7 +14,7 @@ import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStat
 import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
-import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
+import { apiSubpathSetting, appSubpathSetting, onlyGitHubSupported, outputSubpathSetting } from '../constants';
 import { createWebSiteClient } from '../utils/azureClients';
 import { getGitHubAccessToken, tryGetRemote } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
@@ -46,7 +46,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
                 } catch (error) {
                     const parsedError: IParsedError = parseError(error);
                     if (/(null|undefined).*repositoryUrl/.test(parsedError.message)) {
-                        throw new Error(localize('onlySupportGitHub', 'Only Static Web Apps linked to GitHub are supported at this time.'));
+                        throw new Error(onlyGitHubSupported);
                     }
                     throw error;
                 }
