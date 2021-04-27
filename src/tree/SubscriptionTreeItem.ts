@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, IParsedError, LocationListStep, parseError, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
@@ -40,7 +40,17 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         return await this.createTreeItemsWithErrorHandling(
             staticWebApps,
             'invalidStaticWebApp',
-            ss => new StaticWebAppTreeItem(this, ss),
+            ss => {
+                try {
+                    return new StaticWebAppTreeItem(this, ss);
+                } catch (error) {
+                    const parsedError: IParsedError = parseError(error);
+                    if (/(null|undefined).*repositoryUrl/.test(parsedError.message)) {
+                        throw new Error(localize('onlySupportGitHub', 'Only Static Web Apps linked to GitHub are supported at this time.'));
+                    }
+                    throw error;
+                }
+            },
             ss => ss.name
         );
 
