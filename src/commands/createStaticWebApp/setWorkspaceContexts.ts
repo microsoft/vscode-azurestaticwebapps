@@ -6,7 +6,7 @@
 import * as fse from 'fs-extra';
 import { join } from "path";
 import { IActionContext } from "vscode-azureextensionui";
-import { remoteShortnameExists } from "../../utils/gitHubUtils";
+import { remoteShortnameExists } from "../../utils/gitUtils";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export async function setWorkspaceContexts(wizardContext: IActionContext & Partial<IStaticWebAppWizardContext>, fsPath: string): Promise<void> {

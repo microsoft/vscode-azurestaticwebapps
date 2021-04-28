@@ -4,17 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { OctokitResponse } from '@octokit/types';
-import * as gitUrlParse from 'git-url-parse';
-import * as git from 'simple-git/promise';
-import { URL } from 'url';
-import { authentication, QuickPickItem } from 'vscode';
+import { authentication } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposGetResponseData } from '../gitHubTypings';
-import { getSingleRootFsPath } from './workspaceUtils';
-
-type gitHubLink = { prev?: string; next?: string; last?: string; first?: string };
+import { getRepoFullname, tryGetRemote } from './gitUtils';
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
@@ -39,65 +33,6 @@ export function createQuickPickFromJsons<T>(data: T[], label: string): IAzureQui
     return quickPicks;
 }
 
-function parseLinkHeaderToGitHubLinkObject(linkHeader: string): gitHubLink {
-    const linkUrls: string[] = linkHeader.split(', ');
-    const linkMap: gitHubLink = {};
-
-    // link header response is "<https://api.github.com/organizations/6154722/repos?page=2>; rel="prev", <https://api.github.com/organizations/6154722/repos?page=4>; rel="next""
-    const relative: string = 'rel=';
-    for (const url of linkUrls) {
-        linkMap[url.substring(url.indexOf(relative) + relative.length + 1, url.length - 1)] = url.substring(url.indexOf('<') + 1, url.indexOf('>'));
-    }
-    return linkMap;
-}
-
-export interface ICachedQuickPicks<T> {
-    picks: IAzureQuickPickItem<T>[];
-}
-
-export async function getGitHubQuickPicksWithLoadMore<TResult, TParams>(
-    cache: ICachedQuickPicks<TResult>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    gitHubApiCb: (params: TParams) => Promise<OctokitResponse<any>>,
-    params: TParams & { page?: number },
-    labelName: string,
-    timeoutSeconds: number = 10): Promise<IAzureQuickPickItem<TResult | undefined>[]> {
-
-    const timeoutMs: number = timeoutSeconds * 1000;
-    const startTime: number = Date.now();
-    let gitHubQuickPicks: TResult[] = [];
-    do {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const res: OctokitResponse<any> = await gitHubApiCb(params);
-        if (res.headers.link) {
-            // Reference for GitHub REST routes
-            // https://developer.github.com/v3/
-            const linkObject: gitHubLink = parseLinkHeaderToGitHubLinkObject(res.headers.link);
-            const page: string | null | undefined = linkObject.next ? new URL(linkObject.next).searchParams.get('page') : undefined;
-            params.page = page ? Number(page) : undefined;
-        }
-
-        gitHubQuickPicks = gitHubQuickPicks.concat(res.data);
-        if (params.page === undefined) {
-            // if there is no page, that means it has retrieved all of the branches
-            break;
-        }
-    } while (params.page !== undefined && startTime + timeoutMs > Date.now());
-
-    cache.picks = cache.picks.concat(createQuickPickFromJsons(gitHubQuickPicks, labelName));
-    cache.picks.sort((a: QuickPickItem, b: QuickPickItem) => a.label.localeCompare(b.label));
-
-    if (params.page !== undefined) {
-        return (<IAzureQuickPickItem<TResult | undefined>[]>[{
-            label: '$(sync) Load More',
-            suppressPersistence: true,
-            data: undefined
-        }]).concat(cache.picks);
-    } else {
-        return cache.picks;
-    }
-}
-
 export async function getGitHubAccessToken(context: IActionContext): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
     try {
@@ -110,22 +45,6 @@ export async function getGitHubAccessToken(context: IActionContext): Promise<str
 
         throw error;
     }
-}
-
-export async function tryGetRemote(localProjectPath?: string): Promise<string | undefined> {
-    let originUrl: string | void | undefined;
-    localProjectPath = localProjectPath || getSingleRootFsPath();
-    // only try to get remote if provided a path or if there's only a single workspace opened
-    if (localProjectPath) {
-        try {
-            const localGit: git.SimpleGit = git(localProjectPath);
-            originUrl = await localGit.remote(['get-url', 'origin']);
-        } catch (err) {
-            // do nothing, remote origin does not exist
-        }
-    }
-
-    return originUrl ? originUrl : undefined;
 }
 
 export async function tryGetReposGetResponseData(context: IActionContext, originUrl: string): Promise<ReposGetResponseData | undefined> {
@@ -155,42 +74,9 @@ export async function tryGetRepoDataForCreation(context: IActionContext, localPr
     }
 
     return undefined;
-
-}
-
-export async function tryGetLocalBranch(): Promise<string | undefined> {
-    try {
-        const localProjectPath: string | undefined = getSingleRootFsPath();
-        if (localProjectPath) {
-            // only try to get branch if there's only a single workspace opened
-            const localGit: git.SimpleGit = git(localProjectPath);
-
-            return (await localGit.branch()).current;
-        }
-    } catch (error) {
-        // an error here should be ignored, it probably means that they don't have git installed
-    }
-    return;
-}
-
-export function getRepoFullname(gitUrl: string): { owner: string; name: string } {
-    const parsedUrl: gitUrlParse.GitUrl = gitUrlParse(gitUrl);
-    return { owner: parsedUrl.owner, name: parsedUrl.name };
 }
 
 export function isUser(orgData: ListOrgsForUserData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
-}
-
-export async function remoteShortnameExists(fsPath: string, remoteName: string): Promise<boolean> {
-    const localGit: git.SimpleGit = git(fsPath);
-    let hasOrigin: boolean = false;
-    try {
-        hasOrigin = !!(await localGit.getRemotes(false)).find(r => { return r.name === remoteName; });
-    } catch (error) {
-        // ignore the error and assume there is no origin
-    }
-
-    return hasOrigin;
 }

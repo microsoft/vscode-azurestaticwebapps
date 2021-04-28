@@ -8,7 +8,7 @@ import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } 
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { ActionsGetJobForWorkflowRunResponseData } from '../gitHubTypings';
 import { getActionDescription, getActionIconPath } from '../utils/actionUtils';
-import { getRepoFullname } from '../utils/gitHubUtils';
+import { getRepoFullname } from '../utils/gitUtils';
 import { ActionTreeItem } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { StepTreeItem } from './StepTreeItem';
