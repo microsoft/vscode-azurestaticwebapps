@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, IParsedError, LocationListStep, parseError, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
@@ -14,7 +14,7 @@ import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStat
 import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
-import { apiSubpathSetting, appSubpathSetting, onlyGitHubSupported, outputSubpathSetting } from '../constants';
+import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
 import { createWebSiteClient } from '../utils/azureClients';
 import { getGitHubAccessToken, tryGetRemote } from '../utils/gitHubUtils';
 import { localize } from '../utils/localize';
@@ -40,17 +40,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         return await this.createTreeItemsWithErrorHandling(
             staticWebApps,
             'invalidStaticWebApp',
-            ss => {
-                try {
-                    return new StaticWebAppTreeItem(this, ss);
-                } catch (error) {
-                    const parsedError: IParsedError = parseError(error);
-                    if (/(null|undefined).*repositoryUrl/.test(parsedError.message)) {
-                        throw new Error(onlyGitHubSupported);
-                    }
-                    throw error;
-                }
-            },
+            ss => new StaticWebAppTreeItem(this, ss),
             ss => ss.name
         );
 

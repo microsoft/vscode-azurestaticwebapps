@@ -5,7 +5,7 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { ProgressLocation, window } from "vscode";
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, IParsedError, parseError, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
@@ -39,7 +39,13 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         this.id = nonNullProp(this.data, 'id');
         this.resourceGroup = getResourceGroupFromId(this.id);
         this.label = this.name;
-        this.repositoryUrl = nonNullProp(this.data, 'repositoryUrl');
+
+        if (this.data.repositoryUrl) {
+            this.repositoryUrl = this.data.repositoryUrl;
+        } else {
+            throw new Error(onlyGitHubSupported);
+        }
+
         this.branch = nonNullProp(this.data, 'branch');
         this.defaultHostname = nonNullProp(this.data, 'defaultHostname');
     }
@@ -62,15 +68,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
             envs,
             'invalidStaticEnvironment',
             async (env: WebSiteManagementModels.StaticSiteBuildARMResource) => {
-                try {
-                    return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this, env);
-                } catch (error) {
-                    const parsedError: IParsedError = parseError(error);
-                    if (/(null|undefined).*sourceBranch/.test(parsedError.message)) {
-                        throw new Error(onlyGitHubSupported);
-                    }
-                    throw error;
-                }
+                return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this, env);
             },
             env => env.buildId
         );

@@ -8,7 +8,7 @@ import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
 import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
-import { enableLocalProjectView, productionEnvironmentName } from "../constants";
+import { enableLocalProjectView, onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { pollAzureAsyncOperation } from "../utils/azureUtils";
@@ -61,7 +61,12 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         this.buildId = nonNullProp(this.data, 'buildId');
 
         this.repositoryUrl = this.parent.repositoryUrl;
-        this.branch = nonNullProp(this.data, 'sourceBranch');
+
+        if (this.data.sourceBranch) {
+            this.branch = this.data.sourceBranch;
+        } else {
+            throw new Error(onlyGitHubSupported);
+        }
 
         this.isProduction = this.buildId === 'default';
 
