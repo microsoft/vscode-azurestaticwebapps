@@ -403,11 +403,6 @@
                         "scope": "resource",
                         "type": "string",
                         "description": "%staticWebApps.outputSubpath%"
-                    },
-                    "staticWebApps.enableLocalProjectView": {
-                        "type": "boolean",
-                        "description": "%staticWebApps.enableLocalProjectView%",
-                        "default": false
                     }
                 }
             }
