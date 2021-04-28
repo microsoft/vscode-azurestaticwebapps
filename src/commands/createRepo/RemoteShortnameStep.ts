@@ -7,7 +7,7 @@ import { basename } from 'path';
 import { AzureWizardPromptStep } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
 import { cpUtils } from '../../utils/cpUtils';
-import { remoteShortnameExists } from '../../utils/gitHubUtils';
+import { remoteShortnameExists } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';

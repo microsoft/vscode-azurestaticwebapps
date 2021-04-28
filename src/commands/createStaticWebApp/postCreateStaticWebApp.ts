@@ -13,7 +13,7 @@ import { ActionTreeItem } from "../../tree/ActionTreeItem";
 import { EnvironmentTreeItem } from "../../tree/EnvironmentTreeItem";
 import { StaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
 import { delay } from "../../utils/delay";
-import { getRepoFullname } from "../../utils/gitHubUtils";
+import { getRepoFullname } from "../../utils/gitUtils";
 import { localize } from "../../utils/localize";
 import { nonNullValue } from "../../utils/nonNull";
 import { openUrl } from "../../utils/openUrl";

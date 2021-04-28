@@ -5,7 +5,7 @@
 
 import { AzureNameStep, IAzureNamingRules } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
-import { getRepoFullname } from "../../utils/gitHubUtils";
+import { getRepoFullname } from "../../utils/gitUtils";
 import { localize } from "../../utils/localize";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
