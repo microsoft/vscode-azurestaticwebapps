@@ -52,6 +52,7 @@
         "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onCommand:staticWebApps.openYAMLConfigFile",
         "onCommand:staticWebApps.reportIssue",
+        "onCommand:staticWebApps.createSwaConfigFile",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -193,6 +194,11 @@
             {
                 "command": "staticWebApps.reportIssue",
                 "title": "%staticWebApps.reportIssue%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.createSwaConfigFile",
+                "title": "%staticWebApps.createSwaConfigFile%",
                 "category": "Azure Static Web Apps"
             }
         ],
@@ -460,6 +466,7 @@
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
         "open": "^8.0.4",
+        "readdirp": "^3.6.0",
         "simple-git": "^2.37.0",
         "vscode-azureappservice": "^0.76.1",
         "vscode-azureextensionui": "^0.41.3",

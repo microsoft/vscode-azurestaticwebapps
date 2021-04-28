@@ -16,6 +16,7 @@ import { browse } from './browse';
 import { createChildNode } from './createChildNode';
 import { createHttpFunction } from './createHttpFunction';
 import { createStaticWebApp, createStaticWebAppAdvanced, createStaticWebAppFromLocalProject } from './createStaticWebApp/createStaticWebApp';
+import { createSwaConfigFile } from './createSwaConfigFile';
 import { deleteEnvironment } from './deleteEnvironment';
 import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
@@ -55,6 +56,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
     registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
     registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
+    registerCommand('staticWebApps.createSwaConfigFile', createSwaConfigFile);
 
     // Suppress "Report an Issue" button for all errors in favor of the command
     registerErrorHandler(c => c.errorHandling.suppressReportIssue = true);

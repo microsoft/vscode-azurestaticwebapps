@@ -49,7 +49,7 @@ export async function selectWorkspaceItem(placeHolder: string, options: OpenDial
 export async function getWorkspaceFolder(context: IActionContext): Promise<WorkspaceFolder> {
     let folder: WorkspaceFolder | undefined;
     if (!workspace.workspaceFolders || workspace.workspaceFolders.length === 0) {
-        const message: string = localize('noWorkspaceWarning', 'You must have a git project open to create a Static Web App.');
+        const message: string = localize('noWorkspaceWarning', 'You must have a git project open to perform this action.');
         const cloneProject: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
         const openExistingProject: MessageItem = { title: localize('openExistingProject', 'Open existing project') };
         const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true }, openExistingProject, cloneProject);

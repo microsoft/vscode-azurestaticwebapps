@@ -35,5 +35,6 @@
     "staticWebApps.openYAMLConfigFile": "Edit Configuration...",
     "staticWebApps.outputSubpath": "The default value for the location of your build output relative to your application code location",
     "staticWebApps.enableLocalProjectView": "Enable preview support for viewing local projects in the tree view.",
-    "staticWebApps.reportIssue": "Report Issue..."
+    "staticWebApps.reportIssue": "Report Issue...",
+    "staticWebApps.createSwaConfigFile": "Create Configuration File"
 }
