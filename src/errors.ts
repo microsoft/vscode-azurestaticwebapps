@@ -10,7 +10,7 @@ export class NoWorkspaceError extends Error {
     public message: string = localize('noWorkspaceError', 'You must have a workspace open to perform this operation.');
 }
 
-// copied from https://github.com/microsoft/vscode/blob/main/extensions/git/src/commands.ts#L2800-L2863
+// copied from https://github.com/microsoft/vscode/blob/779434d2d118889e2a5a2113714ad6c8bcb3a6e3/extensions/git/src/commands.ts#L2800-L2863
 export class GitError extends Error {
     constructor(err: Error & { gitErrorCode?: GitErrorCodes, stdout?: string, stderr?: string }) {
         super();
