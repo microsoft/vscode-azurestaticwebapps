@@ -21,3 +21,5 @@ export const enableLocalProjectView: string = 'enableLocalProjectView';
 export const configFileName: string = 'staticwebapp.config.json';
 
 export const showActionsMsg: MessageItem = { title: localize('openActions', 'Open Actions in GitHub') };
+
+export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'Only Static Web Apps linked to GitHub are supported at this time.');
