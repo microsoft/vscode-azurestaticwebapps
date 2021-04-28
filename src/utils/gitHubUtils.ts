@@ -112,29 +112,50 @@ export async function getGitHubAccessToken(context: IActionContext): Promise<str
     }
 }
 
-export async function tryGetRemote(context: IActionContext, localProjectPath?: string): Promise<ReposGetResponseData | undefined> {
-    try {
-        localProjectPath = localProjectPath || getSingleRootFsPath();
-        // only try to get remote if provided a path or if there's only a single workspace opened
-        if (localProjectPath) {
+export async function tryGetRemote(localProjectPath?: string): Promise<string | undefined> {
+    let originUrl: string | void | undefined;
+    localProjectPath = localProjectPath || getSingleRootFsPath();
+    // only try to get remote if provided a path or if there's only a single workspace opened
+    if (localProjectPath) {
+        try {
             const localGit: git.SimpleGit = git(localProjectPath);
-            const originUrl: string | void = await localGit.remote(['get-url', 'origin']);
-
-            if (originUrl !== undefined) {
-                const { owner, name } = getRepoFullname(originUrl);
-                const client: Octokit = await createOctokitClient(context);
-                const repoData: ReposGetResponseData = (await client.repos.get({ owner, repo: name })).data;
-
-                // to create a workflow, the user needs admin access so if it's not true, it will fail
-                if (repoData.permissions?.admin) {
-                    return repoData;
-                }
-            }
+            originUrl = await localGit.remote(['get-url', 'origin']);
+        } catch (err) {
+            // do nothing, remote origin does not exist
         }
-    } catch (error) {
-        // don't do anything for an error, this shouldn't prevent creation
     }
-    return;
+
+    return originUrl ? originUrl : undefined;
+}
+
+export async function tryGetReposGetResponseData(context: IActionContext, originUrl: string): Promise<ReposGetResponseData | undefined> {
+    const { owner, name } = getRepoFullname(originUrl);
+    const client: Octokit = await createOctokitClient(context);
+    try {
+        return (await client.repos.get({ owner, repo: name })).data;
+    } catch (error) {
+        // don't do anything for an error, it means the repo doesn't exist on GitHub
+    }
+
+    return undefined;
+}
+
+export function hasAdminAccessToRepo(repoData?: ReposGetResponseData): boolean {
+    // to create a workflow, the user needs admin access so if it's not true, it will fail
+    return !!repoData?.permissions?.admin
+}
+
+export async function tryGetRepoDataForCreation(context: IActionContext, localProjectPath?: string): Promise<ReposGetResponseData | undefined> {
+    const originUrl: string | undefined = await tryGetRemote(localProjectPath);
+    if (originUrl) {
+        const repoData: ReposGetResponseData | undefined = await tryGetReposGetResponseData(context, originUrl);
+        if (hasAdminAccessToRepo(repoData)) {
+            return repoData;
+        }
+    }
+
+    return undefined;
+
 }
 
 export async function tryGetLocalBranch(): Promise<string | undefined> {

@@ -3,24 +3,53 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MessageItem, window } from 'vscode';
+import { MessageItem, window, WorkspaceFolder } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { showActionsMsg } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { tryGetRemote } from '../../utils/gitHubUtils';
+import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
+import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
-import { CreateScenario } from './CreateScenarioListStep';
+import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
+import { setWorkspaceContexts } from './setWorkspaceContexts';
 
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
+
+    await node.runWithTemporaryDescription(
+        context,
+        localize('startingCreate', 'Create Starting...'),
+        async () => {
+            const folder: WorkspaceFolder = await getWorkspaceFolder(context);
+            const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
+            const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
+
+            await promptForDefaultBranch(context, verifiedWorkspace.repo);
+            context.telemetry.properties.cancelStep = undefined;
+
+            context.fsPath = folder.uri.fsPath;
+            if (gitWorkspaceState.remoteRepo) {
+                context.repoHtmlUrl = gitWorkspaceState.remoteRepo.html_url;
+                context.branchData = { name: gitWorkspaceState.remoteRepo.default_branch };
+            } else {
+                if (!context.advancedCreation) {
+                    // default repo to private for basic create
+                    context.newRepoIsPrivate = true;
+                    // set the org to the authenticated user for creation
+                    context.orgData = await GitHubOrgListStep.getAuthenticatedUser(context);
+                }
+            }
+
+            await setWorkspaceContexts(context, context.fsPath);
+        });
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
@@ -48,8 +77,7 @@ export async function createStaticWebAppAdvanced(context: IActionContext, node?:
 
 export async function createStaticWebAppFromLocalProject(context: IActionContext, localProjectTreeItem: LocalProjectTreeItem): Promise<StaticWebAppTreeItem> {
     const localProjectPath: string = localProjectTreeItem.projectPath;
-    const createScenario: CreateScenario = await tryGetRemote(context, localProjectPath) ? 'connectToExistingRepo' : 'publishToNewRepo';
-    const swaTreeItem: StaticWebAppTreeItem = await createStaticWebApp({ ...context, fsPath: localProjectPath, createScenario });
+    const swaTreeItem: StaticWebAppTreeItem = await createStaticWebApp({ ...context, fsPath: localProjectPath });
     await localProjectTreeItem.refresh(context);
     return swaTreeItem;
 }

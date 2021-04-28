@@ -7,7 +7,6 @@ import { AzureNameStep, IAzureNamingRules } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { getRepoFullname } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
-import { nonNullProp } from "../../utils/nonNull";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
@@ -19,9 +18,14 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
+        let owner: string | undefined;
+        let name: string | undefined;
+        if (wizardContext.repoHtmlUrl) {
+            ({ owner, name } = getRepoFullname(wizardContext.repoHtmlUrl));
+        }
 
-        const login: string = wizardContext.orgData?.login || getRepoFullname(nonNullProp(wizardContext, 'repoHtmlUrl')).owner;
-        const repo: string = wizardContext.newRepoName || wizardContext.repoData?.name || getRepoFullname(nonNullProp(wizardContext, 'repoHtmlUrl')).name;
+        const login: string = wizardContext.orgData?.login || owner || 'login';
+        const repo: string = wizardContext.newRepoName || wizardContext.repoData?.name || name || 'repo';
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         wizardContext.newStaticWebAppName = (await ext.ui.showInputBox({

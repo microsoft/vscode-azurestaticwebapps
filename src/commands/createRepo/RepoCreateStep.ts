@@ -41,7 +41,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         const git: API = await getGitApi();
         const fsPath: string = nonNullProp(wizardContext, 'fsPath');
         const uri: Uri = Uri.file(fsPath);
-        let repo: Repository | null = git.getRepository(uri);
+        let repo: Repository | null = await git.openRepository(uri);
 
         if (!repo) {
             // if there is no repo, it needs to be initialized
