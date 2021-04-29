@@ -9,7 +9,7 @@ import { ThemeIcon } from "vscode";
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from "../commands/github/createOctokitClient";
 import { ActionsListWorkflowRunsForRepoResponseData } from "../gitHubTypings";
-import { getRepoFullname } from '../utils/gitHubUtils';
+import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { ActionTreeItem } from './ActionTreeItem';
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";

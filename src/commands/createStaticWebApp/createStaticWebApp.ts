@@ -36,6 +36,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             context.telemetry.properties.cancelStep = undefined;
 
             context.fsPath = folder.uri.fsPath;
+            context.repo = verifiedWorkspace.repo;
+
             if (gitWorkspaceState.remoteRepo) {
                 context.repoHtmlUrl = gitWorkspaceState.remoteRepo.html_url;
                 context.branchData = { name: gitWorkspaceState.remoteRepo.default_branch };

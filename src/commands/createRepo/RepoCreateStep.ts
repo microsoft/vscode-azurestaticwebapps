@@ -4,16 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { basename } from 'path';
-import { Progress, Uri } from 'vscode';
+import { Progress } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { ext } from '../../extensionVariables';
-import { getGitApi } from '../../getExtensionApi';
-import { API, Branch, Repository } from '../../git';
+import { Branch, Repository } from '../../git';
 import { isUser } from "../../utils/gitHubUtils";
 import { callWithGitErrorHandling } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
-import { nonNullProp, nonNullValue } from '../../utils/nonNull';
+import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../github/createOctokitClient';
 
@@ -39,32 +37,15 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         ext.outputChannel.appendLog(createdGitHubRepo);
         progress.report({ message: createdGitHubRepo });
 
-        const git: API = await getGitApi();
-        const fsPath: string = nonNullProp(wizardContext, 'fsPath');
-        const uri: Uri = Uri.file(fsPath);
-        let repo: Repository | null = await git.openRepository(uri);
-
-        if (!repo) {
-            // if there is no repo, it needs to be initialized
-            // https://github.com/microsoft/vscode/issues/111210
-            repo = nonNullValue(await git.init(uri));
-            ext.outputChannel.appendLog(localize('initRepo', 'Initialized repository in local workspace "{0}".', basename(fsPath)));
-        }
-
-        if (!repo.state.HEAD?.commit) {
-            // needs to have an initial commit
-            await repo.commit(localize('initCommit', 'Initial commit'), { all: true });
-            ext.outputChannel.appendLog(localize('commitRepo', 'Created initial commit in local repository.'));
-        }
-
+        const repo: Repository = nonNullProp(wizardContext, 'repo');
         const remoteName: string = nonNullProp(wizardContext, 'newRemoteShortname');
-        await callWithGitErrorHandling(async () => await nonNullValue(repo).addRemote(remoteName, gitHubRepoRes.clone_url));
+        await callWithGitErrorHandling(async () => await repo.addRemote(remoteName, gitHubRepoRes.clone_url));
         const branch: Branch = await repo.getBranch('HEAD');
 
         const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, wizardContext.newRepoName);
         ext.outputChannel.appendLog(pushingBranch);
         progress.report({ message: pushingBranch });
-        await callWithGitErrorHandling(async () => await nonNullValue(repo).push(remoteName, branch.name, true));
+        await callWithGitErrorHandling(async () => await repo.push(remoteName, branch.name, true));
 
         const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, wizardContext.newRepoName);
         ext.outputChannel.appendLog(pushedBranch);

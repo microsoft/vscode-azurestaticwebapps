@@ -12,7 +12,8 @@ import { enableLocalProjectView, onlyGitHubSupported, productionEnvironmentName 
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { pollAzureAsyncOperation } from "../utils/azureUtils";
-import { tryGetLocalBranch, tryGetRepoDataForCreation } from "../utils/gitHubUtils";
+import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
+import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from "../utils/openUrl";

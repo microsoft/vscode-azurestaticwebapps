@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fse from 'fs-extra';
+import * as gitUrlParse from 'git-url-parse';
+import * as git from 'simple-git/promise';
 import { MessageItem, Uri } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
@@ -12,8 +14,9 @@ import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
-import { hasAdminAccessToRepo, tryGetRemote, tryGetReposGetResponseData } from "./gitHubUtils";
+import { hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
+import { getSingleRootFsPath } from './workspaceUtils';
 
 export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteRepo: ReposGetResponseData | undefined; hasAdminAccess: boolean };
 export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository };
@@ -91,12 +94,62 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     return <VerifiedGitWorkspaceState>gitWorkspaceState;
 }
 
+export async function tryGetRemote(localProjectPath?: string): Promise<string | undefined> {
+    let originUrl: string | void | undefined;
+    localProjectPath = localProjectPath || getSingleRootFsPath();
+    // only try to get remote if provided a path or if there's only a single workspace opened
+    if (localProjectPath) {
+        try {
+            const localGit: git.SimpleGit = git(localProjectPath);
+            originUrl = await localGit.remote(['get-url', 'origin']);
+        } catch (err) {
+            // do nothing, remote origin does not exist
+        }
+    }
+
+    return originUrl ? originUrl : undefined;
+}
+
+export function getRepoFullname(gitUrl: string): { owner: string; name: string } {
+    const parsedUrl: gitUrlParse.GitUrl = gitUrlParse(gitUrl);
+    return { owner: parsedUrl.owner, name: parsedUrl.name };
+}
+
+
+export async function remoteShortnameExists(fsPath: string, remoteName: string): Promise<boolean> {
+    const localGit: git.SimpleGit = git(fsPath);
+    let hasOrigin: boolean = false;
+    try {
+        hasOrigin = !!(await localGit.getRemotes(false)).find(r => { return r.name === remoteName; });
+    } catch (error) {
+        // ignore the error and assume there is no origin
+    }
+
+    return hasOrigin;
+}
+
+
 async function promptForCommit(repo: Repository, value?: string): Promise<void> {
     const commitPrompt: string = localize('commitPrompt', 'Enter a commit message.');
     const commitOptions: CommitOptions = { all: true };
 
     const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value });
     await callWithGitErrorHandling(async () => await repo.commit(commitMsg, commitOptions));
+}
+
+export async function tryGetLocalBranch(): Promise<string | undefined> {
+    try {
+        const localProjectPath: string | undefined = getSingleRootFsPath();
+        if (localProjectPath) {
+            // only try to get branch if there's only a single workspace opened
+            const localGit: git.SimpleGit = git(localProjectPath);
+
+            return (await localGit.branch()).current;
+        }
+    } catch (error) {
+        // an error here should be ignored, it probably means that they don't have git installed
+    }
+    return;
 }
 
 export async function promptForDefaultBranch(context: IActionContext, repo: Repository): Promise<void> {
