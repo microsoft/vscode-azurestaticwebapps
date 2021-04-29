@@ -53,9 +53,6 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     constructor(parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource) {
         super(parent);
         this.data = env;
-        this.actionsTreeItem = new ActionsTreeItem(this);
-        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
-        this.functionsTreeItem = new FunctionsTreeItem(this);
 
         this.name = nonNullProp(this.data, 'name');
         this.id = nonNullProp(this.data, 'id');
@@ -80,6 +77,10 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
             }
         }
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
+
+        this.actionsTreeItem = new ActionsTreeItem(this);
+        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
+        this.functionsTreeItem = new FunctionsTreeItem(this);
     }
 
     public static async createEnvironmentTreeItem(context: IActionContext, parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
