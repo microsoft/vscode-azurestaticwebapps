@@ -25,7 +25,7 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
         }
 
         const login: string = wizardContext.orgData?.login || owner || 'login';
-        const repo: string = wizardContext.newRepoName || wizardContext.repoData?.name || name || 'repo';
+        const repo: string = wizardContext.newRepoName || name || 'repo';
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         wizardContext.newStaticWebAppName = (await ext.ui.showInputBox({
