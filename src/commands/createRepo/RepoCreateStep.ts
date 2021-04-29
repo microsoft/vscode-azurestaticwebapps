@@ -11,6 +11,7 @@ import { ext } from '../../extensionVariables';
 import { getGitApi } from '../../getExtensionApi';
 import { API, Branch, Repository } from '../../git';
 import { isUser } from "../../utils/gitHubUtils";
+import { callWithGitErrorHandling } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp, nonNullValue } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
@@ -57,13 +58,13 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         }
 
         const remoteName: string = nonNullProp(wizardContext, 'newRemoteShortname');
-        await repo.addRemote(remoteName, gitHubRepoRes.clone_url);
+        await callWithGitErrorHandling(async () => await nonNullValue(repo).addRemote(remoteName, gitHubRepoRes.clone_url));
         const branch: Branch = await repo.getBranch('HEAD');
 
         const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, wizardContext.newRepoName);
         ext.outputChannel.appendLog(pushingBranch);
         progress.report({ message: pushingBranch });
-        await repo.push(remoteName, branch.name, true);
+        await callWithGitErrorHandling(async () => await nonNullValue(repo).push(remoteName, branch.name, true));
 
         const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, wizardContext.newRepoName);
         ext.outputChannel.appendLog(pushedBranch);
