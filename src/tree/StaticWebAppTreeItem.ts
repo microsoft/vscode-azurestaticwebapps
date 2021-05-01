@@ -10,7 +10,7 @@ import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId, pollAzureAsyncOperation } from "../utils/azureUtils";
-import { getRepoFullname } from '../utils/gitHubUtils';
+import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from '../utils/openUrl';

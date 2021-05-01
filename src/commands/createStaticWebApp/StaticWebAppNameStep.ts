@@ -5,7 +5,7 @@
 
 import { AzureNameStep, IAzureNamingRules } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
-import { getRepoFullname } from "../../utils/gitHubUtils";
+import { getRepoFullname } from "../../utils/gitUtils";
 import { localize } from "../../utils/localize";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
@@ -25,7 +25,7 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
         }
 
         const login: string = wizardContext.orgData?.login || owner || 'login';
-        const repo: string = wizardContext.newRepoName || wizardContext.repoData?.name || name || 'repo';
+        const repo: string = wizardContext.newRepoName || name || 'repo';
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         wizardContext.newStaticWebAppName = (await ext.ui.showInputBox({
