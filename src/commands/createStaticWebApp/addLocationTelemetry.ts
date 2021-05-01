@@ -9,7 +9,8 @@ export function addLocationTelemetry(wizardContext: IStaticWebAppWizardContext, 
     const value: string | undefined = wizardContext[key];
     let telemValue: string;
     if (value === undefined) {
-        telemValue = 'manuallyEnter';
+        // no telemetry to add yet
+        return;
     } else if (value.length === 0) {
         telemValue = 'empty';
     } else if (value === defaultValue) {

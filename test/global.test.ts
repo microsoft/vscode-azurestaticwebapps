@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { IHookCallbackContext } from 'mocha';
 import * as vscode from 'vscode';
 import { TestOutputChannel, TestUserInput } from 'vscode-azureextensiondev';
 import { ext, IActionContext } from '../extension.bundle';
@@ -17,7 +16,7 @@ export function createTestActionContext(): IActionContext {
 }
 
 // Runs before all tests
-suiteSetup(async function (this: IHookCallbackContext): Promise<void> {
+suiteSetup(async function (this: Mocha.Context): Promise<void> {
     this.timeout(1 * 60 * 1000);
 
     const extension = vscode.extensions.getExtension('ms-azuretools.vscode-azurestaticwebapps');
@@ -31,11 +30,4 @@ suiteSetup(async function (this: IHookCallbackContext): Promise<void> {
     ext.ui = testUserInput;
 
     longRunningTestsEnabled = !/^(false|0)?$/i.test(process.env.ENABLE_LONG_RUNNING_TESTS || '');
-});
-
-suite('suite1', () => {
-    test('test1', () => {
-        // suiteSetup only runs if a suite/test exists, so added a placeholder test here so we can at least verify the extension can activate
-        // once actual tests exist, we can remove this
-    });
 });

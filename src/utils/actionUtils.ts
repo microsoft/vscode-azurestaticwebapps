@@ -3,18 +3,44 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData } from '@octokit/types';
 import * as moment from 'moment';
-import * as path from 'path';
+import { ThemeIcon } from 'vscode';
 import { TreeItemIconPath } from 'vscode-azureextensionui';
-import { ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
+import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData, ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
 import { localize } from "./localize";
-import { treeUtils } from "./treeUtils";
 
 export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData | ActionsGetWorkflowRunResponseData): TreeItemIconPath {
-    return data.conclusion !== null ?
-        treeUtils.getThemedIconPath(path.join('conclusions', ensureConclusion(data))) :
-        treeUtils.getThemedIconPath(path.join('statuses', ensureStatus(data)));
+    let id: string;
+    if (data.conclusion !== null) {
+        switch (ensureConclusion(data)) {
+            case Conclusion.Cancelled:
+                id = 'circle-slash';
+                break;
+            case Conclusion.Failure:
+                id = 'error';
+                break;
+            case Conclusion.Skipped:
+                id = 'debug-step-over';
+                break;
+            case Conclusion.Success:
+                id = 'pass'
+                break;
+        }
+    } else {
+        switch (ensureStatus(data)) {
+            case Status.Queued:
+                id = 'clock';
+                break;
+            case Status.InProgress:
+                id = 'play-circle';
+                break;
+            case Status.Completed:
+                id = 'pass';
+                break;
+        }
+    }
+
+    return new ThemeIcon(id);
 }
 
 export function getActionDescription(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData): string {
@@ -26,7 +52,7 @@ export function getActionDescription(data: ActionWorkflowStepData | ActionsGetJo
     }
 }
 
-export function ensureConclusion(data: { conclusion: string }): Conclusion {
+export function ensureConclusion(data: { conclusion: string | null }): Conclusion {
     if (Object.values(Conclusion).includes(<Conclusion>data.conclusion)) {
         return <Conclusion>data.conclusion;
     } else {
@@ -49,7 +75,7 @@ function convertConclusionToVerb(conclusion: Conclusion): string {
     }
 }
 
-export function ensureStatus(data: { status: string }): Status {
+export function ensureStatus(data: { status: string | null }): Status {
     if (Object.values(Status).includes(<Status>data.status)) {
         return <Status>data.status;
     } else {

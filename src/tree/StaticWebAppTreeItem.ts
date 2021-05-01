@@ -6,11 +6,11 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { ProgressLocation, window } from "vscode";
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { productionEnvironmentName } from '../constants';
+import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId, pollAzureAsyncOperation } from "../utils/azureUtils";
-import { getRepoFullname } from '../utils/gitHubUtils';
+import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from '../utils/openUrl';
@@ -39,7 +39,13 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
         this.id = nonNullProp(this.data, 'id');
         this.resourceGroup = getResourceGroupFromId(this.id);
         this.label = this.name;
-        this.repositoryUrl = nonNullProp(this.data, 'repositoryUrl');
+
+        if (this.data.repositoryUrl) {
+            this.repositoryUrl = this.data.repositoryUrl;
+        } else {
+            throw new Error(onlyGitHubSupported);
+        }
+
         this.branch = nonNullProp(this.data, 'branch');
         this.defaultHostname = nonNullProp(this.data, 'defaultHostname');
     }
@@ -50,7 +56,7 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     }
 
     public get iconPath(): TreeItemIconPath {
-        return treeUtils.getThemedIconPath('azure-staticwebapps');
+        return treeUtils.getIconPath('azure-staticwebapps');
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {

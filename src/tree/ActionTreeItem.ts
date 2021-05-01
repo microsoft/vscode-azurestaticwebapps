@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunResponseData, OctokitResponse } from '@octokit/types';
+import { OctokitResponse } from '@octokit/types';
 import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
+import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunResponseData } from '../gitHubTypings';
 import { ensureStatus, getActionIconPath } from '../utils/actionUtils';
-import { getRepoFullname } from '../utils/gitHubUtils';
+import { getRepoFullname } from '../utils/gitUtils';
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';

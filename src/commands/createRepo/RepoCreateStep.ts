@@ -4,20 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { ReposCreateForAuthenticatedUserResponseData, ReposCreateInOrgResponseData } from '@octokit/types';
-import { basename } from 'path';
-import { Progress, Uri } from 'vscode';
+import { Progress } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { ext } from '../../extensionVariables';
-import { getGitApi } from '../../getExtensionApi';
-import { API, Branch, Repository } from '../../git';
+import { Branch, Repository } from '../../git';
 import { isUser } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
-import { nonNullProp, nonNullValue } from '../../utils/nonNull';
+import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../github/createOctokitClient';
 
-type RepoCreateData = ReposCreateForAuthenticatedUserResponseData | ReposCreateInOrgResponseData;
 export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     // should happen before resource group create step
     public priority: number = 90;
@@ -31,7 +27,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         progress.report({ message: creatingGitHubRepo });
 
         const client: Octokit = await createOctokitClient(wizardContext);
-        const gitHubRepoRes: RepoCreateData = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
+        const gitHubRepoRes = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
             await client.repos.createInOrg({ org: nonNullProp(wizardContext, 'orgData').login, name: newRepoName, private: newRepoIsPrivate })).data;
         wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
 
@@ -40,25 +36,9 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         ext.outputChannel.appendLog(createdGitHubRepo);
         progress.report({ message: createdGitHubRepo });
 
-        const git: API = await getGitApi();
-        const fsPath: string = nonNullProp(wizardContext, 'fsPath');
-        const uri: Uri = Uri.file(fsPath);
-        let repo: Repository | null = git.getRepository(uri);
-
-        if (!repo) {
-            // if there is no repo, it needs to be initialized
-            // https://github.com/microsoft/vscode/issues/111210
-            repo = nonNullValue(await git.init(uri));
-            ext.outputChannel.appendLog(localize('initRepo', 'Initialized repository in local workspace "{0}".', basename(fsPath)));
-        }
-
-        if (!repo.state.HEAD?.commit) {
-            // needs to have an initial commit
-            await repo.commit(localize('initCommit', 'Initial commit'), { all: true });
-            ext.outputChannel.appendLog(localize('commitRepo', 'Created initial commit in local repository.'));
-        }
-
+        const repo: Repository = nonNullProp(wizardContext, 'repo');
         const remoteName: string = nonNullProp(wizardContext, 'newRemoteShortname');
+
         await repo.addRemote(remoteName, gitHubRepoRes.clone_url);
         const branch: Branch = await repo.getBranch('HEAD');
 

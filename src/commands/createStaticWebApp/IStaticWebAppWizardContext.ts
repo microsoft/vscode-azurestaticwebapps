@@ -4,24 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { UsersGetAuthenticatedResponseData } from '@octokit/types';
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
-import { BranchData, GitTreeData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
-import { CreateScenario } from './CreateScenarioListStep';
+import { Repository } from '../../git';
+import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
 
-// creating a dummy repoData/branchData would be an annoying amount of work, so use this type to recognize when users have selected create new repo
-export type CreateNewResource = { name?: string; html_url?: string };
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, ICreateChildImplContext {
     accessToken: string;
     client: WebSiteManagementClient;
 
-    createScenario?: CreateScenario;
-
-    orgData?: UsersGetAuthenticatedResponseData | OrgForAuthenticatedUserData;
-    repoData?: RepoData | CreateNewResource;
-    branchData?: BranchData | CreateNewResource;
-
+    orgData?: OrgForAuthenticatedUserData | ListOrgsForUserData;
+    branchData?: Partial<BranchData>;
     repoHtmlUrl?: string;
+
+    repo?: Repository;
     fsPath?: string;
 
     newStaticWebAppName?: string;
@@ -29,14 +24,20 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     newRepoName?: string;
     newRepoIsPrivate?: boolean;
     newRemoteShortname?: string;
+
     originExists?: boolean;
     gitignoreExists?: boolean;
 
-    gitTreeDataTask?: Promise<GitTreeData[]>;
+    // prefill the input boxes with preset build values;
+    // projects are too flexible for us to force users to use these values
+    presetAppLocation?: string;
+    presetApiLocation?: string;
+    presetOutputLocation?: string;
 
     appLocation?: string;
     apiLocation?: string;
     outputLocation?: string;
+
     // created when the wizard is done executing
     staticWebApp?: WebSiteManagementModels.StaticSiteARMResource;
 }

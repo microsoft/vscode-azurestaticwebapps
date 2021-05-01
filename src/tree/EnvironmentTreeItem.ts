@@ -8,20 +8,23 @@ import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
 import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
-import { productionEnvironmentName } from "../constants";
+import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { pollAzureAsyncOperation } from "../utils/azureUtils";
-import { tryGetLocalBranch, tryGetRemote } from "../utils/gitHubUtils";
+import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
+import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
+import { getSingleRootFsPath } from "../utils/workspaceUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { ActionTreeItem } from "./ActionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
+import { GitHubConfigGroupTreeItem } from "./localProject/ConfigGroupTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
 export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
@@ -30,6 +33,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public parent: StaticWebAppTreeItem;
     public actionsTreeItem: ActionsTreeItem;
+    public gitHubConfigGroupTreeItems: GitHubConfigGroupTreeItem[];
     public appSettingsTreeItem: AppSettingsTreeItem;
     public functionsTreeItem: FunctionsTreeItem;
     public data: WebSiteManagementModels.StaticSiteBuildARMResource;
@@ -40,6 +44,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public repositoryUrl: string;
     public branch: string;
     public buildId: string;
+    public localProjectPath: string | undefined;
 
     public isProduction: boolean;
     public inWorkspace: boolean;
@@ -56,7 +61,12 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         this.buildId = nonNullProp(this.data, 'buildId');
 
         this.repositoryUrl = this.parent.repositoryUrl;
-        this.branch = nonNullProp(this.data, 'sourceBranch');
+
+        if (this.data.sourceBranch) {
+            this.branch = this.data.sourceBranch;
+        } else {
+            throw new Error(onlyGitHubSupported);
+        }
 
         this.isProduction = this.buildId === 'default';
 
@@ -93,20 +103,27 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+        const children: AzExtTreeItem[] = [this.actionsTreeItem];
+        if (this.inWorkspace) {
+            children.push(...this.gitHubConfigGroupTreeItems);
+        }
+
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
         if (functions.length === 0) {
             context.telemetry.properties.hasFunctions = 'false';
-            return [this.actionsTreeItem, new GenericTreeItem(this, {
+            children.push(new GenericTreeItem(this, {
                 label: localize('noFunctions', 'Learn how to add an API with Azure Functions...'),
                 contextValue: 'noFunctions',
                 commandId: 'staticWebApps.showFunctionsDocumentation',
                 iconPath: new ThemeIcon('book')
-            })];
+            }));
+        } else {
+            context.telemetry.properties.hasFunctions = 'true';
+            children.push(this.appSettingsTreeItem, this.functionsTreeItem);
         }
 
-        context.telemetry.properties.hasFunctions = 'true';
-        return [this.actionsTreeItem, this.appSettingsTreeItem, this.functionsTreeItem];
+        return children;
     }
 
     public hasMoreChildrenImpl(): boolean {
@@ -157,9 +174,12 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public async refreshImpl(context: IActionContext): Promise<void> {
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
+        this.localProjectPath = getSingleRootFsPath();
 
-        const remote: string | undefined = (await tryGetRemote(context))?.html_url;
+        const remote: string | undefined = (await tryGetRepoDataForCreation(context))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
+
+        this.gitHubConfigGroupTreeItems = await GitHubConfigGroupTreeItem.createGitHubConfigGroupTreeItems(this);
     }
 }
