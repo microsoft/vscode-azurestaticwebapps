@@ -61,7 +61,6 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-
         const envs: WebSiteManagementModels.StaticSiteBuildCollection = await client.staticSites.getStaticSiteBuilds(this.resourceGroup, this.name);
 
         return await this.createTreeItemsWithErrorHandling(

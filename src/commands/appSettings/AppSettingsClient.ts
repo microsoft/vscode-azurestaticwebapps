@@ -16,12 +16,17 @@ export class AppSettingsClient implements IAppSettingsClient {
     public fullName: string;
     public resourceGroup: string;
     public root: ISubscriptionContext;
+    public prId: string;
+    public isBuild: boolean;
 
     constructor(node: EnvironmentTreeItem) {
         this.ssId = node.id;
         this.fullName = node.parent.name;
         this.resourceGroup = node.parent.resourceGroup;
         this.root = node.root;
+
+        this.prId = node.buildId;
+        this.isBuild = !node.isProduction;
 
         // For IAppSettingsClient, isLinux is used for app settings key validation and Linux app settings restrictions
         // apply to the keys
@@ -30,11 +35,13 @@ export class AppSettingsClient implements IAppSettingsClient {
 
     public async listApplicationSettings(): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        return await client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName);
+        return this.isBuild ? await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.resourceGroup, this.fullName, this.prId) :
+            await client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName);
     }
 
     public async updateApplicationSettings(appSettings: WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        return await client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName, appSettings);
+        return this.isBuild ? await client.staticSites.createOrUpdateStaticSiteBuildFunctionAppSettings(this.resourceGroup, this.fullName, this.prId, appSettings) :
+            await client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName, appSettings);
     }
 }
