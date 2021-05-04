@@ -52,6 +52,7 @@
         "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onCommand:staticWebApps.openYAMLConfigFile",
         "onCommand:staticWebApps.reportIssue",
+        "onCommand:staticWebApps.createSwaConfigFile",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -193,6 +194,11 @@
             {
                 "command": "staticWebApps.reportIssue",
                 "title": "%staticWebApps.reportIssue%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.createSwaConfigFile",
+                "title": "%staticWebApps.createSwaConfigFile%",
                 "category": "Azure Static Web Apps"
             }
         ],
