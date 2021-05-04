@@ -165,22 +165,17 @@ export async function promptForDefaultBranch(context: IActionContext, repo: Repo
     }
 }
 
-export async function gitPull(folder: Uri): Promise<void> {
-    const git: API = await getGitApi();
-    const repo: Repository | null = git.getRepository(folder);
-
-    if (repo) {
-        try {
-            const options: ProgressOptions = {
-                location: ProgressLocation.Notification,
-                title: localize('executingGitPull', 'Executing "git pull"...')
-            };
-            await window.withProgress(options, async () => {
-                await repo.pull();
-            });
-        } catch (error) {
-            throw new GitError(error);
-        }
+export async function gitPull(repo: Repository): Promise<void> {
+    try {
+        const options: ProgressOptions = {
+            location: ProgressLocation.Notification,
+            title: localize('executingGitPull', 'Executing "git pull"...')
+        };
+        await window.withProgress(options, async () => {
+            await repo.pull();
+        });
+    } catch (error) {
+        throw new GitError(error);
     }
 }
 

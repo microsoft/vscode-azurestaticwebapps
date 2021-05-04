@@ -12,6 +12,7 @@ import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { getGitWorkspaceState, gitPull, GitWorkspaceState, promptForDefaultBranch, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
+import { nonNullProp } from '../../utils/nonNull';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
 import { openYAMLConfigFile } from '../openYAMLConfigFile';
@@ -25,13 +26,11 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 
-    let folder: WorkspaceFolder | undefined;
-
     await node.runWithTemporaryDescription(
         context,
         localize('startingCreate', 'Create Starting...'),
         async () => {
-            folder = await getWorkspaceFolder(context);
+            const folder: WorkspaceFolder = await getWorkspaceFolder(context);
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
             const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
@@ -71,7 +70,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         }
     });
 
-    folder && await gitPull(folder.uri);
+    await gitPull(nonNullProp(context, 'repo'));
     await openYAMLConfigFile(context, swaNode);
 
     void postCreateStaticWebApp(swaNode);
