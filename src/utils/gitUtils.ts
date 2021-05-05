@@ -166,17 +166,17 @@ export async function promptForDefaultBranch(context: IActionContext, repo: Repo
 }
 
 export async function gitPull(repo: Repository): Promise<void> {
-    try {
-        const options: ProgressOptions = {
-            location: ProgressLocation.Notification,
-            title: localize('executingGitPull', 'Executing "git pull"...')
-        };
-        await window.withProgress(options, async () => {
+    const options: ProgressOptions = {
+        location: ProgressLocation.Notification,
+        title: localize('executingGitPull', 'Executing "git pull"...')
+    };
+    await window.withProgress(options, async () => {
+        try {
             await repo.pull();
-        });
-    } catch (error) {
-        throw new GitError(error);
-    }
+        } catch (error) {
+            throw new GitError(error);
+        }
+    });
 }
 
 async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined> {
