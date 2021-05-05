@@ -6,10 +6,10 @@
 import { Octokit } from '@octokit/rest';
 import { Progress } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
+import { gitErrorHandler } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { Branch, Repository } from '../../git';
 import { isUser } from "../../utils/gitHubUtils";
-import { callWithGitErrorHandling } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
@@ -39,19 +39,24 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
 
         const repo: Repository = nonNullProp(wizardContext, 'repo');
         const remoteName: string = nonNullProp(wizardContext, 'newRemoteShortname');
-        await callWithGitErrorHandling(async () => await repo.addRemote(remoteName, gitHubRepoRes.clone_url));
-        const branch: Branch = await repo.getBranch('HEAD');
 
-        const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, wizardContext.newRepoName);
-        ext.outputChannel.appendLog(pushingBranch);
-        progress.report({ message: pushingBranch });
-        await callWithGitErrorHandling(async () => await repo.push(remoteName, branch.name, true));
+        try {
+            await repo.addRemote(remoteName, gitHubRepoRes.clone_url)
+            const branch: Branch = await repo.getBranch('HEAD');
+            const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, wizardContext.newRepoName);
+            ext.outputChannel.appendLog(pushingBranch);
 
-        const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, wizardContext.newRepoName);
-        ext.outputChannel.appendLog(pushedBranch);
-        progress.report({ message: pushedBranch });
+            progress.report({ message: pushingBranch });
+            await repo.push(remoteName, branch.name, true);
 
-        wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+            const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, wizardContext.newRepoName);
+            ext.outputChannel.appendLog(pushedBranch);
+            progress.report({ message: pushedBranch });
+
+            wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+        } catch (err) {
+            gitErrorHandler(err);
+        }
     }
 
     public shouldExecute(wizardContext: IStaticWebAppWizardContext): boolean {

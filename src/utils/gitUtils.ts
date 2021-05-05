@@ -9,7 +9,7 @@ import * as git from 'simple-git/promise';
 import { MessageItem, Uri } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
-import { GitError } from '../errors';
+import { gitErrorHandler } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
@@ -21,25 +21,16 @@ import { getSingleRootFsPath } from './workspaceUtils';
 export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteRepo: ReposGetResponseData | undefined; hasAdminAccess: boolean };
 export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository };
 
-// use only when using the gitApi
-export async function callWithGitErrorHandling<T>(callback: () => Promise<T>): Promise<T | null> {
-    try {
-        return await callback();
-    } catch (gitError) {
-        // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (!/nothing to commit/.test(gitError.stdout)) {
-            throw new GitError(gitError);
-        }
-
-        return null;
-    }
-}
-
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
     const gitApi: API = await getGitApi();
-    const repo: Repository | null = await callWithGitErrorHandling(async () => await gitApi.openRepository(uri));
+    let repo: Repository | null = null;
+
+    try {
+        repo = await gitApi.openRepository(uri);
+    } catch (err) {
+        gitErrorHandler(err);
+    }
 
     if (repo) {
         const originUrl: string | undefined = await tryGetRemote(uri.fsPath);
@@ -69,7 +60,13 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
         await ext.ui.showWarningMessage(gitRequired, { modal: true }, { title: localize('create', 'Create') });
         const gitApi: API = await getGitApi();
-        const newRepo: Repository | null = await callWithGitErrorHandling(async () => await gitApi.init(uri));
+        let newRepo: Repository | null = null;
+        try {
+            newRepo = await gitApi.init(uri)
+        } catch (err) {
+            gitErrorHandler(err);
+        }
+
         if (!newRepo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
         }
@@ -134,7 +131,11 @@ async function promptForCommit(repo: Repository, value?: string): Promise<void> 
     const commitOptions: CommitOptions = { all: true };
 
     const commitMsg: string = await ext.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value });
-    await callWithGitErrorHandling(async () => await repo.commit(commitMsg, commitOptions));
+    try {
+        await repo.commit(commitMsg, commitOptions)
+    } catch (err) {
+        gitErrorHandler(err);
+    }
 }
 
 export async function tryGetLocalBranch(): Promise<string | undefined> {
@@ -164,7 +165,11 @@ export async function promptForDefaultBranch(context: IActionContext, repo: Repo
         const result: MessageItem = await ext.ui.showWarningMessage(localize('deployBranch', 'It is recommended to connect your SWA to the default branch "{0}".  Would you like to continue with branch "{1}"?',
             defaultBranch, repo.state.HEAD?.name), { modal: true }, checkoutButton, { title: localize('continue', 'Continue') });
         if (result === checkoutButton) {
-            await callWithGitErrorHandling(async () => await repo.checkout(defaultBranch));
+            try {
+                await repo.checkout(defaultBranch);
+            } catch (err) {
+                gitErrorHandler(err);
+            }
             context.telemetry.properties.checkoutDefault = 'true';
         } else {
             context.telemetry.properties.checkoutDefault = 'false';
@@ -177,7 +182,7 @@ async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined
     // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
     const defaultBranches: string[] = ['main', 'master'];
     try {
-        // don't use callWithGitErrorHandling here because we're handling the errors differently here
+        // don't use gitErrorHandler because we're handling the errors differently here
         defaultBranches.unshift(await repo.getConfig('init.defaultBranch'));
     } catch (err) {
         // if no local config setting is found, try global
@@ -188,7 +193,13 @@ async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined
         }
     }
 
-    const localBranches: Ref[] = await callWithGitErrorHandling(async () => await repo.getBranches({ remote: false })) || [];
+    let localBranches: Ref[] = [];
+    try {
+        localBranches = await repo.getBranches({ remote: false })
+    } catch (err) {
+        gitErrorHandler(err);
+    }
+
     // order matters here because we want the setting, main, then master respectively so use indexing
     for (let i = 0; i < defaultBranches.length; i++) {
         if (localBranches.some(lBranch => lBranch.name === defaultBranches[i])) {

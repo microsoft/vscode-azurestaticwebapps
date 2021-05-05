@@ -10,9 +10,24 @@ export class NoWorkspaceError extends Error {
     public message: string = localize('noWorkspaceError', 'You must have a workspace open to perform this operation.');
 }
 
+// use only when using the gitApi
+export function gitErrorHandler(err: GitErrorType): void {
+    // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
+    if (err.stdout && /nothing to commit/.test(err.stdout)) {
+        return;
+    }
+
+    if ('gitErrorCode' in err) {
+        throw new GitError(err);
+    }
+
+    throw err;
+}
+
+type GitErrorType = Error & { gitErrorCode?: GitErrorCodes, stdout?: string, stderr?: string };
 // copied from https://github.com/microsoft/vscode/blob/779434d2d118889e2a5a2113714ad6c8bcb3a6e3/extensions/git/src/commands.ts#L2800-L2863
 export class GitError extends Error {
-    constructor(err: Error & { gitErrorCode?: GitErrorCodes, stdout?: string, stderr?: string }) {
+    constructor(err: GitErrorType) {
         super();
         switch (err.gitErrorCode) {
             case GitErrorCodes.DirtyWorkTree:
