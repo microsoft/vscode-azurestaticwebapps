@@ -84,11 +84,13 @@ export function isUser(orgData: ListOrgsForUserData | OrgForAuthenticatedUserDat
     return !!orgData && 'type' in orgData && orgData.type === 'User';
 }
 
-export async function createFork(client: Octokit, remoteRepo: ReposGetResponseData): Promise<void> {
+export async function createFork(context: IActionContext, remoteRepo: ReposGetResponseData): Promise<void> {
     let createForkResponse: RestEndpointMethodTypes["repos"]["createFork"]["response"] | undefined;
 
     if (remoteRepo.owner?.login) {
+        const client: Octokit = await createOctokitClient(context);
         const title: string = localize('forking', 'Forking "{0}"...', remoteRepo.name);
+
         await window.withProgress({ location: ProgressLocation.Notification, title }, async () => {
             createForkResponse = await client.repos.createFork({
                 owner: nonNullProp(remoteRepo, 'owner').login,

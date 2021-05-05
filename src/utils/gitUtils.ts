@@ -3,14 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Octokit } from '@octokit/rest';
 import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
 import { MessageItem, Uri } from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
-import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { GitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -70,8 +68,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const createForkItem: MessageItem = { title: localize('createFork', 'Create Fork') };
         await ext.ui.showWarningMessage(adminAccess, { modal: true }, createForkItem);
 
-        const client: Octokit = await createOctokitClient(context);
-        await createFork(client, gitWorkspaceState.remoteRepo);
+        await createFork(context, gitWorkspaceState.remoteRepo);
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
         context.telemetry.properties.cancelStep = 'dirtyWorkspace';
 
