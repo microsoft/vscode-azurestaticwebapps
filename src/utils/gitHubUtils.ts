@@ -3,12 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Octokit } from '@octokit/rest';
-import { authentication } from 'vscode';
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import { authentication, MessageItem, ProgressLocation, window } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
+import { localize } from './localize';
+import { nonNullProp, nonNullValue } from './nonNull';
+import { openUrl } from './openUrl';
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
@@ -79,4 +82,33 @@ export async function tryGetRepoDataForCreation(context: IActionContext, localPr
 export function isUser(orgData: ListOrgsForUserData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
+}
+
+export async function createFork(client: Octokit, remoteRepo: ReposGetResponseData): Promise<void> {
+    let createForkResponse: RestEndpointMethodTypes["repos"]["createFork"]["response"] | undefined;
+
+    if (remoteRepo.owner?.login) {
+        const title: string = localize('forking', 'Forking "{0}"...', remoteRepo.name);
+        await window.withProgress({ location: ProgressLocation.Notification, title }, async () => {
+            createForkResponse = await client.repos.createFork({
+                owner: nonNullProp(remoteRepo, 'owner').login,
+                repo: remoteRepo.name
+            });
+        });
+    }
+
+    if (createForkResponse?.status === 202) {
+        const openInGitHub: MessageItem = { title: localize('openInGitHub', 'Open in GitHub') };
+        const success: string = localize('forkSuccess', 'Successfully forked repository "{0}"', remoteRepo.name);
+
+        void window.showInformationMessage(success, openInGitHub).then(async (result) => {
+            if (result === openInGitHub) {
+                await openUrl(nonNullValue(createForkResponse).data.html_url);
+            }
+        });
+
+        throw new UserCancelledError();
+    } else {
+        throw new Error(localize('forkFail', 'Could not automatically fork repository. Please fork [{0}]({1}) manually.', remoteRepo.name, remoteRepo.html_url));
+    }
 }

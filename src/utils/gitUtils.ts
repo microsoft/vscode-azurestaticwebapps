@@ -3,18 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Octokit } from '@octokit/rest';
 import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
-import { MessageItem, Uri } from "vscode";
+import { MessageItem, Uri } from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
+import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { GitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
-import { hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
+import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 import { getSingleRootFsPath } from './workspaceUtils';
 
@@ -64,9 +66,12 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {
         context.telemetry.properties.cancelStep = 'adminAccess';
 
-        const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository is required.  Use a repo with admin access or create a fork.');
-        await ext.ui.showWarningMessage(adminAccess, { modal: true });
+        const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository "{0}" is required. Would you like to create a fork?', gitWorkspaceState.remoteRepo.name);
+        const createForkItem: MessageItem = { title: localize('createFork', 'Create Fork') };
+        await ext.ui.showWarningMessage(adminAccess, { modal: true }, createForkItem);
 
+        const client: Octokit = await createOctokitClient(context);
+        await createFork(client, gitWorkspaceState.remoteRepo);
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
         context.telemetry.properties.cancelStep = 'dirtyWorkspace';
 
