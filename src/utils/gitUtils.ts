@@ -186,7 +186,7 @@ export async function gitPull(repo: Repository): Promise<void> {
         try {
             await repo.pull();
         } catch (error) {
-            throw new GitError(error);
+            gitErrorHandler(error)
         }
     });
 }
