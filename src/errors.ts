@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { parseError } from "vscode-azureextensionui";
 import { GitErrorCodes } from "./git";
 import { localize } from "./utils/localize";
 
@@ -21,15 +20,10 @@ export function handleGitError(err: unknown): void {
         } else if ('gitErrorCode' in err) {
             throw new GitError(<GitErrorType>err);
         }
-
-        // if it's not a GitError, just throw up the original error
-        throw err;
-    } else if (err === null || err === undefined) {
-        throw new Error(localize('unrecognizedError', 'Encounter an unrecognized error'));
-    } else {
-        // if this isn't an object, do our best to parse and throw that error
-        throw new Error(parseError(err).message);
     }
+
+    // if it's not a GitError, just throw up the original error
+    throw err;
 }
 
 type GitErrorType = Error & { gitErrorCode: GitErrorCodes, stdout?: string, stderr?: string };
