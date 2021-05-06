@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { basename } from 'path';
-import { Position, Range, TextDocument, window, workspace } from 'vscode';
+import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
 import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
 import { CST, Document, parseDocument } from 'yaml';
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
@@ -20,16 +20,11 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
-    if (node instanceof StaticWebAppTreeItem || node instanceof EnvironmentTreeItem && node.gitHubConfigGroupTreeItems.length === 0) {
-        const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
-        const ymlFileName: string = `.github/workflows/azure-static-web-apps-${defaultHostname.split('.')[0]}.yml`;
-        return await openUrl(`${node.repositoryUrl}/edit/${node.branch}/${ymlFileName}`);
-    }
-
     let yamlFilePath: string | undefined;
+
     if (node instanceof GitHubConfigGroupTreeItem ){
         yamlFilePath = node.yamlFilePath;
-    } else {
+    } else if (node instanceof EnvironmentTreeItem && node.gitHubConfigGroupTreeItems.length) {
         const picks: IAzureQuickPickItem<string>[] = node.gitHubConfigGroupTreeItems.map(configNode => {
             return { label: basename(configNode.yamlFilePath), data: configNode.yamlFilePath };
         });
@@ -39,6 +34,16 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
         } else {
             const placeHolder: string = localize('selectGitHubConfig', 'Select the GitHub workflow file to open.');
             yamlFilePath = (await ext.ui.showQuickPick(picks, { placeHolder })).data;
+        }
+    } else {
+        const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
+        const ymlFileName: string = `.github/workflows/azure-static-web-apps-${defaultHostname.split('.')[0]}.yml`;
+        const localYamlFiles: Uri[] = await workspace.findFiles(ymlFileName);
+
+        if (localYamlFiles.length === 1) {
+            yamlFilePath = localYamlFiles[0].fsPath;
+        } else {
+            return await openUrl(`${node.repositoryUrl}/edit/${node.branch}/${ymlFileName}`);
         }
     }
 

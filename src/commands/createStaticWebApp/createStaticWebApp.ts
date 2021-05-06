@@ -10,10 +10,12 @@ import { ext } from '../../extensionVariables';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation } from '../../utils/gitUtils';
+import { getGitWorkspaceState, gitPull, GitWorkspaceState, promptForDefaultBranch, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
+import { nonNullProp } from '../../utils/nonNull';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
+import { openYAMLConfigFile } from '../openYAMLConfigFile';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
@@ -67,6 +69,9 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             ext.outputChannel.show();
         }
     });
+
+    await gitPull(nonNullProp(context, 'repo'));
+    await openYAMLConfigFile(context, swaNode);
 
     void postCreateStaticWebApp(swaNode);
 

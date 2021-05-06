@@ -6,7 +6,7 @@
 import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
-import { commands, MessageItem, Uri } from 'vscode';
+import { commands, MessageItem, ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { GitError } from '../errors';
@@ -172,6 +172,20 @@ export async function promptForDefaultBranch(context: IActionContext, repo: Repo
             context.telemetry.properties.checkoutDefault = 'false';
         }
     }
+}
+
+export async function gitPull(repo: Repository): Promise<void> {
+    const options: ProgressOptions = {
+        location: ProgressLocation.Notification,
+        title: localize('executingGitPull', 'Executing "git pull"...')
+    };
+    await window.withProgress(options, async () => {
+        try {
+            await repo.pull();
+        } catch (error) {
+            throw new GitError(error);
+        }
+    });
 }
 
 async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined> {
