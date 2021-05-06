@@ -9,7 +9,7 @@ import * as git from 'simple-git/promise';
 import { MessageItem, ProgressLocation, ProgressOptions, Uri, window } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
-import { gitErrorHandler } from '../errors';
+import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
@@ -29,7 +29,7 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
     try {
         repo = await gitApi.openRepository(uri);
     } catch (err) {
-        gitErrorHandler(err);
+        handleGitError(err);
     }
 
     if (repo) {
@@ -64,7 +64,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         try {
             newRepo = await gitApi.init(uri)
         } catch (err) {
-            gitErrorHandler(err);
+            handleGitError(err);
         }
 
         if (!newRepo) {
@@ -134,7 +134,7 @@ async function promptForCommit(repo: Repository, value?: string): Promise<void> 
     try {
         await repo.commit(commitMsg, commitOptions)
     } catch (err) {
-        gitErrorHandler(err);
+        handleGitError(err);
     }
 }
 
@@ -168,7 +168,7 @@ export async function promptForDefaultBranch(context: IActionContext, repo: Repo
             try {
                 await repo.checkout(defaultBranch);
             } catch (err) {
-                gitErrorHandler(err);
+                handleGitError(err);
             }
             context.telemetry.properties.checkoutDefault = 'true';
         } else {
@@ -186,7 +186,7 @@ export async function gitPull(repo: Repository): Promise<void> {
         try {
             await repo.pull();
         } catch (error) {
-            gitErrorHandler(error)
+            handleGitError(error)
         }
     });
 }
@@ -196,7 +196,7 @@ async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined
     // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
     const defaultBranches: string[] = ['main', 'master'];
     try {
-        // don't use gitErrorHandler because we're handling the errors differently here
+        // don't use handleGitError because we're handling the errors differently here
         defaultBranches.unshift(await repo.getConfig('init.defaultBranch'));
     } catch (err) {
         // if no local config setting is found, try global
@@ -211,7 +211,7 @@ async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined
     try {
         localBranches = await repo.getBranches({ remote: false })
     } catch (err) {
-        gitErrorHandler(err);
+        handleGitError(err);
     }
 
     // order matters here because we want the setting, main, then master respectively so use indexing

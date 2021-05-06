@@ -6,7 +6,7 @@
 import { Octokit } from '@octokit/rest';
 import { Progress } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
-import { gitErrorHandler } from '../../errors';
+import { handleGitError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { Branch, Repository } from '../../git';
 import { isUser } from "../../utils/gitHubUtils";
@@ -55,7 +55,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
 
             wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
         } catch (err) {
-            gitErrorHandler(err);
+            handleGitError(err);
         }
     }
 

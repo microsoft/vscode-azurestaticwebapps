@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { parseError } from "vscode-azureextensionui";
 import { GitErrorCodes } from "./git";
 import { localize } from "./utils/localize";
 
@@ -11,20 +12,27 @@ export class NoWorkspaceError extends Error {
 }
 
 // use only when using the gitApi
-export function gitErrorHandler(err: GitErrorType): void {
-    // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
-    if (err.stdout && /nothing to commit/.test(err.stdout)) {
-        return;
-    }
+export function handleGitError(err: unknown): void {
+    if (typeof err === 'object' && err !== null) {
+        const stdout = (<Error & { stdout?: string }>err).stdout;
+        // ignore empty commit errors which will happen if a user initializes a blank folder or have changes in a nested git repo
+        if (stdout && /nothing to commit/.test(stdout)) {
+            return;
+        } else if ('gitErrorCode' in err) {
+            throw new GitError(<GitErrorType>err);
+        }
 
-    if ('gitErrorCode' in err) {
-        throw new GitError(err);
+        // if it's not a GitError, just throw up the original error
+        throw err;
+    } else if (err === null || err === undefined) {
+        throw new Error(localize('unrecognizedError', 'Encounter an unrecognized error'));
+    } else {
+        // if this isn't an object, do our best to parse and throw that error
+        throw new Error(parseError(err).message);
     }
-
-    throw err;
 }
 
-type GitErrorType = Error & { gitErrorCode?: GitErrorCodes, stdout?: string, stderr?: string };
+type GitErrorType = Error & { gitErrorCode: GitErrorCodes, stdout?: string, stderr?: string };
 // copied from https://github.com/microsoft/vscode/blob/779434d2d118889e2a5a2113714ad6c8bcb3a6e3/extensions/git/src/commands.ts#L2800-L2863
 export class GitError extends Error {
     constructor(err: GitErrorType) {
