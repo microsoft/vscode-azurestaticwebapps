@@ -18,7 +18,7 @@ export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContex
             };
         });
 
-        const placeHolder = localize('selectSku', 'Select a sku');
+        const placeHolder: string = localize('selectSku', 'Select a sku');
         wizardContext.sku = (await wizardContext.ui.showQuickPick(skus, { placeHolder, suppressPersistence: true })).data;
     }
 
