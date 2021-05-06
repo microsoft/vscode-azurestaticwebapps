@@ -168,8 +168,14 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return undefined;
     }
 
-    public compareChildrenImpl(): number {
-        return 0; // already sorted
+    public compareChildrenImpl(ti1: AzExtTreeItem, ti2: AzExtTreeItem): number {
+        if (ti1 instanceof GenericTreeItem) {
+            return 1;
+        } else if (ti2 instanceof GenericTreeItem) {
+            return -1;
+        }
+
+        return 0;
     }
 
     public async refreshImpl(context: IActionContext): Promise<void> {
