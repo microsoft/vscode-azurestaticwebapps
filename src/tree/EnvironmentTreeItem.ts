@@ -105,10 +105,6 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = [this.actionsTreeItem];
-        if (this.inWorkspace) {
-            children.push(...this.gitHubConfigGroupTreeItems);
-        }
-
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
         if (functions.length === 0) {
@@ -122,6 +118,10 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         } else {
             context.telemetry.properties.hasFunctions = 'true';
             children.push(this.appSettingsTreeItem, this.functionsTreeItem);
+        }
+
+        if (this.inWorkspace) {
+            children.push(...this.gitHubConfigGroupTreeItems);
         }
 
         return children;
@@ -168,8 +168,14 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return undefined;
     }
 
-    public compareChildrenImpl(): number {
-        return 0; // already sorted
+    public compareChildrenImpl(ti1: AzExtTreeItem, ti2: AzExtTreeItem): number {
+        if (ti1 instanceof GenericTreeItem) {
+            return 1;
+        } else if (ti2 instanceof GenericTreeItem) {
+            return -1;
+        }
+
+        return 0;
     }
 
     public async refreshImpl(context: IActionContext): Promise<void> {
