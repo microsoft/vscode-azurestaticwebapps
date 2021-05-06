@@ -63,17 +63,18 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         gitWorkspaceState.repo = newRepo;
     } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {
         context.telemetry.properties.cancelStep = 'adminAccess';
-
         const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository "{0}" is required. Would you like to create a fork?', gitWorkspaceState.remoteRepo.name);
         const createForkItem: MessageItem = { title: localize('createFork', 'Create Fork') };
         await ext.ui.showWarningMessage(adminAccess, { modal: true }, createForkItem);
 
         const repoUrl: string = (await createFork(context, gitWorkspaceState.remoteRepo)).data.html_url;
 
+        context.telemetry.properties.cancelStep = 'cloneFork';
         const forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}". Would you like to clone your new repository?', gitWorkspaceState.remoteRepo.name);
         const clone: MessageItem = { title: localize('clone', 'Clone') };
         await ext.ui.showWarningMessage(forkSuccess, { modal: true }, clone);
 
+        context.telemetry.properties.cancelStep = 'afterCloneFork';
         await commands.executeCommand('git.clone', repoUrl);
         throw new UserCancelledError();
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
