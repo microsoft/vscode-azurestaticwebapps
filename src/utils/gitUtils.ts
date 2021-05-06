@@ -6,8 +6,8 @@
 import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
-import { MessageItem, Uri } from 'vscode';
-import { IActionContext } from "vscode-azureextensionui";
+import { commands, MessageItem, Uri } from 'vscode';
+import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { GitError } from '../errors';
 import { ext } from "../extensionVariables";
@@ -68,7 +68,14 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const createForkItem: MessageItem = { title: localize('createFork', 'Create Fork') };
         await ext.ui.showWarningMessage(adminAccess, { modal: true }, createForkItem);
 
-        await createFork(context, gitWorkspaceState.remoteRepo);
+        const repoUrl: string = (await createFork(context, gitWorkspaceState.remoteRepo)).data.html_url;
+
+        const forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}". Would you like to clone your new repository?', gitWorkspaceState.remoteRepo.name);
+        const clone: MessageItem = { title: localize('clone', 'Clone') };
+        await ext.ui.showWarningMessage(forkSuccess, { modal: true }, clone);
+
+        await commands.executeCommand('git.clone', repoUrl);
+        throw new UserCancelledError();
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
         context.telemetry.properties.cancelStep = 'dirtyWorkspace';
 

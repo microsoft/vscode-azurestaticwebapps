@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
-import { authentication, MessageItem, ProgressLocation, window } from 'vscode';
+import { authentication, ProgressLocation, window } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
 import { localize } from './localize';
-import { nonNullProp, nonNullValue } from './nonNull';
-import { openUrl } from './openUrl';
+import { nonNullProp } from './nonNull';
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
@@ -84,7 +83,7 @@ export function isUser(orgData: ListOrgsForUserData | OrgForAuthenticatedUserDat
     return !!orgData && 'type' in orgData && orgData.type === 'User';
 }
 
-export async function createFork(context: IActionContext, remoteRepo: ReposGetResponseData): Promise<void> {
+export async function createFork(context: IActionContext, remoteRepo: ReposGetResponseData): Promise<RestEndpointMethodTypes["repos"]["createFork"]["response"]> {
     let createForkResponse: RestEndpointMethodTypes["repos"]["createFork"]["response"] | undefined;
 
     if (remoteRepo.owner?.login) {
@@ -100,16 +99,7 @@ export async function createFork(context: IActionContext, remoteRepo: ReposGetRe
     }
 
     if (createForkResponse?.status === 202) {
-        const openInGitHub: MessageItem = { title: localize('openInGitHub', 'Open in GitHub') };
-        const success: string = localize('forkSuccess', 'Successfully forked repository "{0}"', remoteRepo.name);
-
-        void window.showInformationMessage(success, openInGitHub).then(async (result) => {
-            if (result === openInGitHub) {
-                await openUrl(nonNullValue(createForkResponse).data.html_url);
-            }
-        });
-
-        throw new UserCancelledError();
+        return createForkResponse;
     } else {
         throw new Error(localize('forkFail', 'Could not automatically fork repository. Please fork [{0}]({1}) manually.', remoteRepo.name, remoteRepo.html_url));
     }
