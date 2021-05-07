@@ -4,11 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { authentication } from 'vscode';
+import { authentication, ProgressLocation, window } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposGetResponseData } from '../gitHubTypings';
+import { ext } from '../extensionVariables';
+import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposCreateForkResponse, ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
+import { localize } from './localize';
+import { nonNullProp } from './nonNull';
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label
@@ -79,4 +82,27 @@ export async function tryGetRepoDataForCreation(context: IActionContext, localPr
 export function isUser(orgData: ListOrgsForUserData | OrgForAuthenticatedUserData | undefined): boolean {
     // if there's no orgData, just assume that it's a user (but this shouldn't happen)
     return !!orgData && 'type' in orgData && orgData.type === 'User';
+}
+
+export async function createFork(context: IActionContext, remoteRepo: ReposGetResponseData): Promise<ReposCreateForkResponse> {
+    let createForkResponse: ReposCreateForkResponse | undefined;
+
+    if (remoteRepo.owner?.login) {
+        const client: Octokit = await createOctokitClient(context);
+        const forking: string = localize('forking', 'Forking "{0}"...', remoteRepo.name);
+        ext.outputChannel.appendLog(forking);
+
+        await window.withProgress({ location: ProgressLocation.Notification, title: forking }, async () => {
+            createForkResponse = await client.repos.createFork({
+                owner: nonNullProp(remoteRepo, 'owner').login,
+                repo: remoteRepo.name
+            });
+        });
+    }
+
+    if (createForkResponse?.status === 202) {
+        return createForkResponse;
+    } else {
+        throw new Error(localize('forkFail', 'Could not automatically fork repository. Please fork [{0}]({1}) manually.', remoteRepo.name, remoteRepo.html_url));
+    }
 }

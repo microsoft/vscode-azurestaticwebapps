@@ -6,15 +6,16 @@
 import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
-import { MessageItem, ProgressLocation, ProgressOptions, Uri, window } from "vscode";
-import { IActionContext } from "vscode-azureextensionui";
+import { MessageItem, ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
+import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
+import { cloneRepo } from '../commands/github/cloneRepo';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
-import { hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
+import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 import { getSingleRootFsPath } from './workspaceUtils';
 
@@ -75,10 +76,25 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         gitWorkspaceState.repo = newRepo;
     } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {
         context.telemetry.properties.cancelStep = 'adminAccess';
+        const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository "{0}" is required. Would you like to create a fork?', gitWorkspaceState.remoteRepo.name);
+        const createForkItem: MessageItem = { title: localize('createFork', 'Create Fork') };
+        await ext.ui.showWarningMessage(adminAccess, { modal: true }, createForkItem);
 
-        const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository is required.  Use a repo with admin access or create a fork.');
-        await ext.ui.showWarningMessage(adminAccess, { modal: true });
+        const repoUrl: string = (await createFork(context, gitWorkspaceState.remoteRepo)).data.html_url;
 
+        context.telemetry.properties.cancelStep = 'cloneFork';
+        let forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}".', gitWorkspaceState.remoteRepo.name);
+        ext.outputChannel.appendLog(forkSuccess);
+        forkSuccess += localize('cloneNewRepo', ' Would you like to clone your new repository?');
+        const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
+        const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, clone)
+
+        if (result === clone) {
+            context.telemetry.properties.cancelStep = 'afterCloneFork';
+            void cloneRepo(context, repoUrl);
+        }
+
+        throw new UserCancelledError();
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
         context.telemetry.properties.cancelStep = 'dirtyWorkspace';
 
