@@ -79,24 +79,27 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         // hard-coding locations available during preview
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
         const locations = [
-            { name: 'Central US' },
-            { name: 'East US 2' },
-            { name: 'East Asia' },
-            { name: 'West Europe' },
-            { name: 'West US 2' }
+            'Central US',
+            'East US 2',
+            'East Asia',
+            'West Europe',
+            'West US 2'
         ];
+
+        const webProvider: string = 'Microsoft.Web';
         if (context.advancedCreation) {
-            wizardContext.locationsTask = new Promise((resolve) => {
+            LocationListStep.setLocationSubset(wizardContext, new Promise((resolve) => {
                 resolve(locations);
-            });
+            }), webProvider);
+
             LocationListStep.addStep(wizardContext, promptSteps);
         } else {
-            wizardContext.location = locations[0];
+            await LocationListStep.setLocation(wizardContext, locations[0]);
             // default to free for basic
             wizardContext.sku = SkuListStep.getSkus()[0];
         }
 
-        executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));
+        executeSteps.push(new VerifyProvidersStep([webProvider]));
         executeSteps.push(new StaticWebAppCreateStep());
 
         const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
