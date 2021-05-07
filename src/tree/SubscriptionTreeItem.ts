@@ -59,12 +59,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
-        // if the local project doesn't have a GitHub remote, we will create it for them
-        if (!wizardContext.originExists) {
-            promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
-            executeSteps.push(new RepoCreateStep(), new GitignoreCreateStep());
-        }
-
         promptSteps.push(new StaticWebAppNameStep());
 
         if (!context.advancedCreation) {
@@ -74,6 +68,13 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         }
 
         promptSteps.push(new SkuListStep());
+
+        // if the local project doesn't have a GitHub remote, we will create it for them
+        if (!wizardContext.originExists) {
+            promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
+            executeSteps.push(new RepoCreateStep(), new GitignoreCreateStep());
+        }
+
         promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
 
         // hard-coding locations available during preview
