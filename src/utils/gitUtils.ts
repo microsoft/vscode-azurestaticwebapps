@@ -74,12 +74,12 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}". Would you like to clone your new repository?', gitWorkspaceState.remoteRepo.name);
         const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
         ext.outputChannel.appendLog(forkSuccess);
-        void window.showInformationMessage(forkSuccess, clone).then(result => {
-            if (result === clone) {
-                context.telemetry.properties.cancelStep = 'afterCloneFork';
-                void cloneRepo(context, repoUrl);
-            }
-        });
+        const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, clone)
+
+        if (result === clone) {
+            context.telemetry.properties.cancelStep = 'afterCloneFork';
+            void cloneRepo(context, repoUrl);
+        }
 
         throw new UserCancelledError();
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
