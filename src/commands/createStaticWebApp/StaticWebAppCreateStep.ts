@@ -5,7 +5,7 @@
 
 import { WebSiteManagementModels } from "@azure/arm-appservice";
 import { Progress } from "vscode";
-import { AzureWizardExecuteStep } from "vscode-azureextensionui";
+import { AzureWizardExecuteStep, LocationListStep } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
 import { nonNullProp, nonNullValueAndProp } from "../../utils/nonNull";
@@ -28,7 +28,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
                 appArtifactLocation: wizardContext.outputLocation
             },
             sku: wizardContext.sku,
-            location: nonNullValueAndProp(wizardContext.location, 'name')
+            location: (await LocationListStep.getLocation(wizardContext)).name
         };
 
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
