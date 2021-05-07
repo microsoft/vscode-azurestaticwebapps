@@ -463,7 +463,7 @@
         "open": "^8.0.4",
         "simple-git": "^2.37.0",
         "vscode-azureappservice": "^0.76.1",
-        "vscode-azureextensionui": "^0.41.3",
+        "vscode-azureextensionui": "^0.43.0",
         "vscode-nls": "^4.1.1",
         "yaml": "^1.10.2"
     },

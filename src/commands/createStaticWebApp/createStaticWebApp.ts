@@ -16,6 +16,7 @@ import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showActions } from '../github/showActions';
+import { openYAMLConfigFile } from '../openYAMLConfigFile';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
@@ -57,20 +58,20 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
+    await gitPull(nonNullProp(context, 'repo'));
+
     const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);
     ext.outputChannel.appendLog(createdSs);
 
-    const viewOutput: MessageItem = { title: localize('viewOutput', 'View Output') };
+    const viewEditConfig: MessageItem = { title: localize('viewEditConfig', 'View/Edit Config') };
     // don't wait
-    void window.showInformationMessage(createdSs, showActionsMsg, viewOutput).then(async (result) => {
+    void window.showInformationMessage(createdSs, showActionsMsg, viewEditConfig).then(async (result) => {
         if (result === showActionsMsg) {
             await showActions(context, swaNode);
-        } else if (result === viewOutput) {
-            ext.outputChannel.show();
+        } else if (result === viewEditConfig) {
+            await openYAMLConfigFile(context, swaNode);
         }
     });
-
-    await gitPull(nonNullProp(context, 'repo'));
 
     const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
         return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
