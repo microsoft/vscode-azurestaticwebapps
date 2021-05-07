@@ -9,7 +9,7 @@ import { ext } from '../../extensionVariables';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 
 export async function cloneRepo(context: IActionContext, resource?: StaticWebAppTreeItem | string): Promise<void> {
-    if (!resource) {
+    if (resource === undefined) {
         resource = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 

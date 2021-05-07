@@ -83,9 +83,10 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const repoUrl: string = (await createFork(context, gitWorkspaceState.remoteRepo)).data.html_url;
 
         context.telemetry.properties.cancelStep = 'cloneFork';
-        const forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}". Would you like to clone your new repository?', gitWorkspaceState.remoteRepo.name);
-        const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
+        let forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}".', gitWorkspaceState.remoteRepo.name);
         ext.outputChannel.appendLog(forkSuccess);
+        forkSuccess += localize('cloneNewRepo', ' Would you like to clone your new repository?');
+        const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
         const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, clone)
 
         if (result === clone) {
