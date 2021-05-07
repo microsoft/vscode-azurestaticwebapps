@@ -5,10 +5,9 @@
 
 import { MessageItem, window, WorkspaceFolder } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
-import { showActionsMsg } from '../../constants';
+import { productionEnvironmentName, showActionsMsg } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
-import { GitHubConfigGroupTreeItem } from '../../tree/localProject/ConfigGroupTreeItem';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
@@ -73,14 +72,10 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     await gitPull(nonNullProp(context, 'repo'));
 
-    const environmentNode = <EnvironmentTreeItem>(await swaNode.loadAllChildren(context)).find(node => {
-        return node instanceof EnvironmentTreeItem && node.inWorkspace;
+    const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
+        return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
     });
-    await environmentNode.loadAllChildren(context);
-    const nodeToReveal: GitHubConfigGroupTreeItem | EnvironmentTreeItem  = environmentNode.gitHubConfigGroupTreeItems.length === 1 ?
-        environmentNode.gitHubConfigGroupTreeItems[0] :
-        environmentNode;
-    await ext.treeView.reveal(nodeToReveal, { expand: true });
+    environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
 
     void postCreateStaticWebApp(swaNode);
 
