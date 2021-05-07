@@ -19,13 +19,12 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const sub: string = wizardContext.subscriptionDisplayName;
         const folderName: string = path.basename(nonNullProp(wizardContext, 'fsPath'));
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         wizardContext.newStaticWebAppName = (await ext.ui.showInputBox({
             prompt,
-            value: await this.getRelatedName(wizardContext, `${sub}-${folderName}`),
+            value: await this.getRelatedName(wizardContext, folderName),
             validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(wizardContext, value)
         })).trim();
         wizardContext.valuesToMask.push(wizardContext.newStaticWebAppName);
