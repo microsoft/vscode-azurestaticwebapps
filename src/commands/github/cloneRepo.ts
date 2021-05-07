@@ -8,10 +8,17 @@ import { IActionContext } from 'vscode-azureextensionui';
 import { ext } from '../../extensionVariables';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 
-export async function cloneRepo(context: IActionContext, node?: StaticWebAppTreeItem): Promise<void> {
-    if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+export async function cloneRepo(context: IActionContext, resource?: StaticWebAppTreeItem | string): Promise<void> {
+    if (!resource) {
+        resource = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
-    await commands.executeCommand('git.clone', node.repositoryUrl);
+    let repoUrl: string;
+    if (resource instanceof StaticWebAppTreeItem) {
+        repoUrl = resource.repositoryUrl;
+    } else {
+        repoUrl = resource;
+    }
+
+    await commands.executeCommand('git.clone', repoUrl);
 }

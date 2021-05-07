@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import { Endpoints } from "@octokit/types";
 
 export type OrgForAuthenticatedUserData = Endpoints["GET /user"]["response"]["data"];
@@ -21,6 +22,8 @@ export type RepoData = Endpoints["GET /users/{username}/repos"]["response"]["dat
 export type BranchData = Endpoints["GET /repos/{owner}/{repo}/branches"]["response"]["data"][0];
 
 export type RepoResponse = Endpoints["GET /orgs/{org}/repos"]["response"] | Endpoints["GET /users/{username}/repos"]["response"];
+
+export type ReposCreateForkResponse = RestEndpointMethodTypes["repos"]["createFork"]["response"];
 
 // Doc for these parameter values: https://developer.github.com/v3/checks/runs/#parameters
 export enum Conclusion {

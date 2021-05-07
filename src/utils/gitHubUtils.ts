@@ -3,11 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 import { authentication, ProgressLocation, window } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposGetResponseData } from '../gitHubTypings';
+import { ext } from '../extensionVariables';
+import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposCreateForkResponse, ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
 import { localize } from './localize';
 import { nonNullProp } from './nonNull';
@@ -83,14 +84,15 @@ export function isUser(orgData: ListOrgsForUserData | OrgForAuthenticatedUserDat
     return !!orgData && 'type' in orgData && orgData.type === 'User';
 }
 
-export async function createFork(context: IActionContext, remoteRepo: ReposGetResponseData): Promise<RestEndpointMethodTypes["repos"]["createFork"]["response"]> {
-    let createForkResponse: RestEndpointMethodTypes["repos"]["createFork"]["response"] | undefined;
+export async function createFork(context: IActionContext, remoteRepo: ReposGetResponseData): Promise<ReposCreateForkResponse> {
+    let createForkResponse: ReposCreateForkResponse | undefined;
 
     if (remoteRepo.owner?.login) {
         const client: Octokit = await createOctokitClient(context);
-        const title: string = localize('forking', 'Forking "{0}"...', remoteRepo.name);
+        const forking: string = localize('forking', 'Forking "{0}"...', remoteRepo.name);
+        ext.outputChannel.appendLog(forking);
 
-        await window.withProgress({ location: ProgressLocation.Notification, title }, async () => {
+        await window.withProgress({ location: ProgressLocation.Notification, title: forking }, async () => {
             createForkResponse = await client.repos.createFork({
                 owner: nonNullProp(remoteRepo, 'owner').login,
                 repo: remoteRepo.name

@@ -6,9 +6,10 @@
 import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
 import * as git from 'simple-git/promise';
-import { commands, MessageItem, ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
+import { MessageItem, ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
+import { cloneRepo } from '../commands/github/cloneRepo';
 import { GitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -71,11 +72,15 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
         context.telemetry.properties.cancelStep = 'cloneFork';
         const forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}". Would you like to clone your new repository?', gitWorkspaceState.remoteRepo.name);
-        const clone: MessageItem = { title: localize('clone', 'Clone') };
-        await ext.ui.showWarningMessage(forkSuccess, { modal: true }, clone);
+        const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
+        ext.outputChannel.appendLog(forkSuccess);
+        void window.showInformationMessage(forkSuccess, clone).then(result => {
+            if (result === clone) {
+                context.telemetry.properties.cancelStep = 'afterCloneFork';
+                void cloneRepo(context, repoUrl);
+            }
+        });
 
-        context.telemetry.properties.cancelStep = 'afterCloneFork';
-        await commands.executeCommand('git.clone', repoUrl);
         throw new UserCancelledError();
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
         context.telemetry.properties.cancelStep = 'dirtyWorkspace';
