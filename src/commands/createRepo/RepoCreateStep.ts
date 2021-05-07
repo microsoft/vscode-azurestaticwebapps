@@ -6,6 +6,7 @@
 import { Octokit } from '@octokit/rest';
 import { Progress } from 'vscode';
 import { AzureWizardExecuteStep } from "vscode-azureextensionui";
+import { handleGitError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { Branch, Repository } from '../../git';
 import { isUser } from "../../utils/gitHubUtils";
@@ -39,19 +40,23 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         const repo: Repository = nonNullProp(wizardContext, 'repo');
         const remoteName: string = nonNullProp(wizardContext, 'newRemoteShortname');
 
-        await repo.addRemote(remoteName, gitHubRepoRes.clone_url);
-        const branch: Branch = await repo.getBranch('HEAD');
+        try {
+            await repo.addRemote(remoteName, gitHubRepoRes.clone_url)
+            const branch: Branch = await repo.getBranch('HEAD');
+            const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, wizardContext.newRepoName);
+            ext.outputChannel.appendLog(pushingBranch);
 
-        const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, wizardContext.newRepoName);
-        ext.outputChannel.appendLog(pushingBranch);
-        progress.report({ message: pushingBranch });
-        await repo.push(remoteName, branch.name, true);
+            progress.report({ message: pushingBranch });
+            await repo.push(remoteName, branch.name, true);
 
-        const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, wizardContext.newRepoName);
-        ext.outputChannel.appendLog(pushedBranch);
-        progress.report({ message: pushedBranch });
+            const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, wizardContext.newRepoName);
+            ext.outputChannel.appendLog(pushedBranch);
+            progress.report({ message: pushedBranch });
 
-        wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+            wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+        } catch (err) {
+            handleGitError(err);
+        }
     }
 
     public shouldExecute(wizardContext: IStaticWebAppWizardContext): boolean {

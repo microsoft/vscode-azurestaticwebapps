@@ -17,6 +17,7 @@ import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListS
 import { GitignoreCreateStep } from '../commands/createStaticWebApp/GitignoreCreateStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
+import { SkuListStep } from '../commands/createStaticWebApp/SkuListStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
@@ -71,6 +72,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         } else {
             promptSteps.push(new ResourceGroupListStep());
         }
+
+        promptSteps.push(new SkuListStep());
         promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
 
         // hard-coding locations available during preview
@@ -89,6 +92,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             LocationListStep.addStep(wizardContext, promptSteps);
         } else {
             wizardContext.location = locations[0];
+            // default to free for basic
+            wizardContext.sku = SkuListStep.getSkus()[0];
         }
 
         executeSteps.push(new VerifyProvidersStep(['Microsoft.Web']));

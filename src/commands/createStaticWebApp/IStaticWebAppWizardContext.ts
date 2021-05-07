@@ -38,6 +38,8 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     apiLocation?: string;
     outputLocation?: string;
 
+    sku?: WebSiteManagementModels.SkuDescription;
+
     // created when the wizard is done executing
     staticWebApp?: WebSiteManagementModels.StaticSiteARMResource;
 }
