@@ -14,7 +14,6 @@ import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep'
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
 import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
-import { GitignoreCreateStep } from '../commands/createStaticWebApp/GitignoreCreateStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
 import { SkuListStep } from '../commands/createStaticWebApp/SkuListStep';
@@ -72,7 +71,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         // if the local project doesn't have a GitHub remote, we will create it for them
         if (!wizardContext.originExists) {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
-            executeSteps.push(new RepoCreateStep(), new GitignoreCreateStep());
+            executeSteps.push(new RepoCreateStep());
         }
 
         promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
