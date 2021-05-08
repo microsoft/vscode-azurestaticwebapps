@@ -57,21 +57,21 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
+    await gitPull(nonNullProp(context, 'repo'));
+
     const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);
     ext.outputChannel.appendLog(createdSs);
 
-    const viewOutput: MessageItem = { title: localize('viewOutput', 'View Output') };
+    const viewEditConfig: MessageItem = { title: localize('viewEditConfig', 'View/Edit Config') };
     // don't wait
-    void window.showInformationMessage(createdSs, showActionsMsg, viewOutput).then(async (result) => {
+    void window.showInformationMessage(createdSs, showActionsMsg, viewEditConfig).then(async (result) => {
         if (result === showActionsMsg) {
             await showActions(context, swaNode);
-        } else if (result === viewOutput) {
-            ext.outputChannel.show();
+        } else if (result === viewEditConfig) {
+            await openYAMLConfigFile(context, swaNode);
         }
     });
 
-    await gitPull(nonNullProp(context, 'repo'));
-    await openYAMLConfigFile(context, swaNode);
 
     void postCreateStaticWebApp(swaNode);
 
