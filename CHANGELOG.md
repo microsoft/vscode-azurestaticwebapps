@@ -1,5 +1,20 @@
 # Change Log
 
+## 0.7.0 - 2021-05-07
+### Added
+- Fork repos that don't have admin access to
+- Git pull after creating a Static Web App
+- GitHub Configurations tree item
+- Create Configuration File
+- Workspace validation prior to create
+
+### Changed
+- `Create Static Web App...` requires a workspace be opened
+- Location, API location, GitHub org, and repo privacy are defaulted in `Create Static Web App...`
+
+### Fixed
+-  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/12?closed=1)
+
 ## 0.6.0 - 2021-04-13
 ### Added
 - Now depends on the "Azure Resources" extension, which provides a "Resource Groups" and "Help and Feedback" view
