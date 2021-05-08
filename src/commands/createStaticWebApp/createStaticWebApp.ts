@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MessageItem, window, WorkspaceFolder } from 'vscode';
+import { MessageItem, ProgressLocation, ProgressOptions, window, WorkspaceFolder } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { showActionsMsg } from '../../constants';
 import { ext } from '../../extensionVariables';
@@ -26,34 +26,35 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 
-    await node.runWithTemporaryDescription(
-        context,
-        localize('startingCreate', 'Create Starting...'),
-        async () => {
-            const folder: WorkspaceFolder = await getWorkspaceFolder(context);
-            const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
-            const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
+    const progressOptions: ProgressOptions = {
+        location: ProgressLocation.Notification,
+        title: localize('verifyingWorkspace', 'Verifying workspace...')
+    };
+    await window.withProgress(progressOptions, async () => {
+        const folder: WorkspaceFolder = await getWorkspaceFolder(context);
+        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
+        const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
-            await promptForDefaultBranch(context, verifiedWorkspace.repo);
-            context.telemetry.properties.cancelStep = undefined;
+        await promptForDefaultBranch(context, verifiedWorkspace.repo);
+        context.telemetry.properties.cancelStep = undefined;
 
-            context.fsPath = folder.uri.fsPath;
-            context.repo = verifiedWorkspace.repo;
+        context.fsPath = folder.uri.fsPath;
+        context.repo = verifiedWorkspace.repo;
 
-            if (gitWorkspaceState.remoteRepo) {
-                context.repoHtmlUrl = gitWorkspaceState.remoteRepo.html_url;
-                context.branchData = { name: gitWorkspaceState.remoteRepo.default_branch };
-            } else {
-                if (!context.advancedCreation) {
-                    // default repo to private for basic create
-                    context.newRepoIsPrivate = true;
-                    // set the org to the authenticated user for creation
-                    context.orgData = await GitHubOrgListStep.getAuthenticatedUser(context);
-                }
+        if (gitWorkspaceState.remoteRepo) {
+            context.repoHtmlUrl = gitWorkspaceState.remoteRepo.html_url;
+            context.branchData = { name: gitWorkspaceState.remoteRepo.default_branch };
+        } else {
+            if (!context.advancedCreation) {
+                // default repo to private for basic create
+                context.newRepoIsPrivate = true;
+                // set the org to the authenticated user for creation
+                context.orgData = await GitHubOrgListStep.getAuthenticatedUser(context);
             }
+        }
 
-            await setWorkspaceContexts(context, context.fsPath);
-        });
+        await setWorkspaceContexts(context, context.fsPath);
+    });
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
