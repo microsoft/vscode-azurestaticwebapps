@@ -5,8 +5,9 @@
 
 import { MessageItem, window, WorkspaceFolder } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
-import { showActionsMsg } from '../../constants';
+import { productionEnvironmentName, showActionsMsg } from '../../constants';
 import { ext } from '../../extensionVariables';
+import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
@@ -72,6 +73,10 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         }
     });
 
+    const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
+        return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
+    });
+    environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
 
     void postCreateStaticWebApp(swaNode);
 
