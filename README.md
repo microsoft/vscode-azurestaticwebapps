@@ -1,4 +1,4 @@
-# Azure Static Web Apps (Preview) for Visual Studio Code
+# Azure Static Web Apps for Visual Studio Code
 
 <!-- region exclude-from-marketplace -->
 
@@ -6,7 +6,7 @@
 
 <!-- endregion exclude-from-marketplace -->
 
-Use this extension to quickly create and manage Azure Static Web Apps (Preview) directly from VS Code.
+Use this extension to quickly create and manage Azure Static Web Apps directly from VS Code.
 
 **Visit the [wiki](https://github.com/Microsoft/vscode-azurestaticwebapps/wiki) for additional information about the extension.**
 

@@ -17,7 +17,7 @@ import { AzureAccountTreeItem } from './tree/AzureAccountTreeItemWithProjects';
 export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<AzureExtensionApiProvider> {
     ext.context = context;
     ext.ignoreBundle = ignoreBundle;
-    ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps (Preview)', ext.prefix);
+    ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps', ext.prefix);
     context.subscriptions.push(ext.outputChannel);
     ext.ui = new AzureUserInput(context.globalState);
 
@@ -28,7 +28,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         activateContext.telemetry.properties.isActivationEvent = 'true';
         activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
 
-        const accountTreeItem: AzureAccountTreeItem  = new AzureAccountTreeItem();
+        const accountTreeItem: AzureAccountTreeItem = new AzureAccountTreeItem();
         context.subscriptions.push(accountTreeItem);
         ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'staticWebApps.loadMore');
         ext.treeView = vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true });
