@@ -5,11 +5,13 @@
 
 import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
+import { join } from 'path';
 import * as git from 'simple-git/promise';
 import { MessageItem, ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
+import { defaultGitignoreContents } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -70,6 +72,12 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
         if (!newRepo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
+        }
+
+        // create a generic .gitignore for user if we do not detect one
+        const gitignorePath: string = join(uri.fsPath, '.gitignore');
+        if (!await fse.pathExists(gitignorePath)) {
+            await fse.writeFile(gitignorePath, defaultGitignoreContents);
         }
 
         await promptForCommit(newRepo, localize('initCommit', 'Initial commit'));

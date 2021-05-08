@@ -26,7 +26,6 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     newRemoteShortname?: string;
 
     originExists?: boolean;
-    gitignoreExists?: boolean;
 
     // prefill the input boxes with preset build values;
     // projects are too flexible for us to force users to use these values
