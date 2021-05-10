@@ -1,5 +1,24 @@
 # Change Log
 
+## 0.7.0 - 2021-05-12
+### Added
+- Git project validation prior to `Create Static Web App...`
+- After creating a Static Web App, `git pull` is executed to retrieve the [GitHub Actions workflow file](https://aka.ms/AAcg392)
+- GitHub Configuration tree item when SWA is connected to local project
+- `Create Configuration File` command to add `staticwebapp.config.json`
+- Standard SKU option for `Create Static Web App... (Advanced)`
+
+### Changed
+- `Create Static Web App...` requires an opened workspace in VS Code
+- Location, API location, GitHub org, and repo privacy steps have default values for `Create Static Web App...`
+    - Use `Create Static Web App... (Advanced)` for a more customizable creation
+
+### Removed
+- (Preview) label 🎉
+
+### Fixed
+-  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/12?closed=1)
+
 ## 0.6.0 - 2021-04-13
 ### Added
 - Now depends on the "Azure Resources" extension, which provides a "Resource Groups" and "Help and Feedback" view
