@@ -7,6 +7,7 @@
 - GitHub Configurations tree item
 - Create Configuration File
 - Workspace validation prior to create
+- Standard SKU
 
 ### Changed
 - `Create Static Web App...` requires a workspace be opened
