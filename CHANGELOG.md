@@ -3,7 +3,7 @@
 ## 0.7.0 - 2021-05-12
 ### Added
 - Git project validation prior to `Create Static Web App...`
-- After creating a Static Web App, `git pull` is executed to retrieve workflow config
+- After creating a Static Web App, `git pull` is executed to retrieve the [GitHub Actions workflow file](https://docs.microsoft.com/en-us/azure/static-web-apps/github-actions-workflow)
 - GitHub Configuration tree item when SWA is connected to local project
 - `Create Configuration File` command to add `staticwebapp.config.json`
 - Standard SKU option for `Create Static Web App... (Advanced)`
