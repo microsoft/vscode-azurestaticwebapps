@@ -5,7 +5,7 @@
 - Project validation prior to `Create Static Web App...`
 - After creating a Static Web App, `git pull` is executed to retrieve workflow config
 - GitHub Configurations tree item when SWA is connected to local project
-- `Create Configuration File` command to create `staticwebapp.config.json`
+- `Create Configuration File` command to add `staticwebapp.config.json`
 - Standard SKU for `Create Static Web App... (Advanced)`
 
 ### Changed
