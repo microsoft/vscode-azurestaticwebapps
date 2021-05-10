@@ -17,7 +17,7 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
         const value: string | undefined = await this.validateRepoName(wizardContext, name) === undefined ? name : undefined;
 
         wizardContext.newRepoName = (await ext.ui.showInputBox({
-            prompt: localize('AppServicePlanPrompt', 'Enter the name of the new GitHub repository. Special characters will be replaced with "-" upon creation.'),
+            prompt: localize('newRepoPrompt', 'Enter the name of the new GitHub repository. Azure Static Web Apps automatically builds and deploys using GitHub Actions.'),
             validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value),
             value
         })).trim();

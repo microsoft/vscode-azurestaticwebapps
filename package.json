@@ -1,6 +1,6 @@
 {
     "name": "vscode-azurestaticwebapps",
-    "displayName": "Azure Static Web Apps (Preview)",
+    "displayName": "Azure Static Web Apps",
     "description": "%staticWebApps.description%",
     "version": "0.6.1-alpha",
     "publisher": "ms-azuretools",
@@ -206,7 +206,7 @@
             "azure": [
                 {
                     "id": "staticWebApps",
-                    "name": "Static Web Apps (Preview)"
+                    "name": "Static Web Apps"
                 }
             ]
         },

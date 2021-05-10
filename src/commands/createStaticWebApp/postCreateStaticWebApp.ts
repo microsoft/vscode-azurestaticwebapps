@@ -61,8 +61,8 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
             if (success || conclusion === Conclusion.Failure) {
                 await productionEnv.refresh(context);
                 const deploymentMsg: string = success ?
-                    localize('deploymentCompleted', 'Successfully built and deployed "{0}". Commit and push changes the GitHub repository to create a new deployment.', swaNode.name) :
-                    localize('deploymentFailed', 'Deployment for "{0}" has failed. Commit and push changes the GitHub repository to create a new deployment.', swaNode.name);
+                    localize('deploymentCompleted', 'Successfully built and deployed "{0}". Commit and push changes to the GitHub repository to create a new deployment.', swaNode.name) :
+                    localize('deploymentFailed', 'Deployment for "{0}" has failed. Commit and push changes to the GitHub repository to create a new deployment.', swaNode.name);
                 ext.outputChannel.appendLog(deploymentMsg);
                 const browseWebsite: MessageItem = { title: localize('browseWebsite', 'Browse Website') };
                 const msgItem: MessageItem = success ? browseWebsite : showActionsMsg;
