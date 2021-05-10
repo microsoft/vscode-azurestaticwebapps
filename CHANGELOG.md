@@ -10,7 +10,7 @@
 
 ### Changed
 - `Create Static Web App...` requires an opened workspace in VS Code
-- Location, API location, GitHub org, and repo privacy are defaulted in `Create Static Web App...`
+- Location, API location, GitHub org, and repo privacy steps have default values for `Create Static Web App...`
     - Use `Create Static Web App... (Advanced)` for a more customizable creation
 
 ### Removed
