@@ -1,17 +1,20 @@
 # Change Log
 
-## 0.7.0 - 2021-05-07
+## 0.7.0 - 2021-05-12
 ### Added
-- Fork repos that don't have admin access to
-- Git pull after creating a Static Web App
-- GitHub Configurations tree item
-- Create Configuration File
-- Workspace validation prior to create
-- Standard SKU
+- Project validation prior to `Create Static Web App...`
+- After creating a Static Web App, `git pull` is executed to retrieve workflow config
+- GitHub Configurations tree item when SWA is connected to local project
+- `Create Configuration File` command to create `staticwebapp.config.json`
+- Standard SKU for `Create Static Web App... (Advanced)`
 
 ### Changed
-- `Create Static Web App...` requires a workspace be opened
+- `Create Static Web App...` requires an opened workspace in VS Code
 - Location, API location, GitHub org, and repo privacy are defaulted in `Create Static Web App...`
+    - Use `Create Static Web App... (Advanced)` for a more customizable creation
+
+### Removed
+- (Preview) label 🎉
 
 ### Fixed
 -  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/12?closed=1)
