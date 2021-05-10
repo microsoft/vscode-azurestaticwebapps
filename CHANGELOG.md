@@ -6,7 +6,7 @@
 - After creating a Static Web App, `git pull` is executed to retrieve workflow config
 - GitHub Configuration tree item when SWA is connected to local project
 - `Create Configuration File` command to add `staticwebapp.config.json`
-- Standard SKU for `Create Static Web App... (Advanced)`
+- Standard SKU option for `Create Static Web App... (Advanced)`
 
 ### Changed
 - `Create Static Web App...` requires an opened workspace in VS Code
