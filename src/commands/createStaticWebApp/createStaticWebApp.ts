@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MessageItem, ProgressLocation, ProgressOptions, window, WorkspaceFolder } from 'vscode';
+import { ProgressLocation, ProgressOptions, window, WorkspaceFolder } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
-import { productionEnvironmentName, showActionsMsg } from '../../constants';
+import { productionEnvironmentName } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
@@ -15,8 +15,7 @@ import { getGitWorkspaceState, gitPull, GitWorkspaceState, promptForDefaultBranc
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
-import { showActions } from '../github/showActions';
-import { openYAMLConfigFile } from '../openYAMLConfigFile';
+import { showSwaCreated } from '../showSwaCreated';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
@@ -60,19 +59,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
 
     await gitPull(nonNullProp(context, 'repo'));
-
-    const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);
-    ext.outputChannel.appendLog(createdSs);
-
-    const viewEditConfig: MessageItem = { title: localize('viewEditConfig', 'View/Edit Config') };
-    // don't wait
-    void window.showInformationMessage(createdSs, showActionsMsg, viewEditConfig).then(async (result) => {
-        if (result === showActionsMsg) {
-            await showActions(context, swaNode);
-        } else if (result === viewEditConfig) {
-            await openYAMLConfigFile(context, swaNode);
-        }
-    });
+    void showSwaCreated(swaNode);
 
     const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
         return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
