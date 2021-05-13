@@ -5,7 +5,7 @@
 
 import { ThemeIcon } from "vscode";
 import { AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { BuildConfig, GitHubConfigGroupTreeItem } from "./ConfigGroupTreeItem";
+import { BuildConfig, GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeItem";
 
 export class GitHubConfigTreeItem extends AzExtTreeItem {
     public static contextValue: string = 'azureStaticGitHubConfig';

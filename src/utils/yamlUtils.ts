@@ -7,7 +7,7 @@ import { readFile } from "fs-extra";
 import { basename } from "path";
 import { ext } from "vscode-azureappservice/out/src/extensionVariables";
 import { parse } from "yaml";
-import { BuildConfig, BuildConfigs } from "../tree/localProject/ConfigGroupTreeItem";
+import { BuildConfig, BuildConfigs } from "../tree/GitHubConfigGroupTreeItem";
 import { localize } from "./localize";
 
 type BuildDeployStep = {

@@ -10,7 +10,7 @@ import { CST, Document, parseDocument } from 'yaml';
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
 import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
-import { BuildConfig, GitHubConfigGroupTreeItem } from '../tree/localProject/ConfigGroupTreeItem';
+import { BuildConfig, GitHubConfigGroupTreeItem } from '../tree/GitHubConfigGroupTreeItem';
 import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { localize } from '../utils/localize';
 import { openUrl } from "../utils/openUrl";
