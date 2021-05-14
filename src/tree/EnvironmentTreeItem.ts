@@ -23,8 +23,8 @@ import { ActionsTreeItem } from "./ActionsTreeItem";
 import { ActionTreeItem } from "./ActionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
+import { GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
-import { GitHubConfigGroupTreeItem } from "./localProject/ConfigGroupTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
 export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {

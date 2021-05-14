@@ -7,10 +7,10 @@ import { pathExists, readdir } from "fs-extra";
 import { basename, join } from "path";
 import { ThemeIcon } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { localize } from "../../utils/localize";
-import { parseYamlFile } from "../../utils/yamlUtils";
-import { EnvironmentTreeItem } from "../EnvironmentTreeItem";
-import { GitHubConfigTreeItem } from "./ConfigTreeItem";
+import { localize } from "../utils/localize";
+import { parseYamlFile } from "../utils/yamlUtils";
+import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
+import { GitHubConfigTreeItem } from "./GitHubConfigTreeItem";
 
 export type BuildConfig = 'app_location' | 'api_location' | 'output_location' | 'app_artifact_location';
 

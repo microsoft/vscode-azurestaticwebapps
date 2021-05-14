@@ -8,7 +8,6 @@ import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui
 import { productionEnvironmentName } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
-import { LocalProjectTreeItem } from '../../tree/localProject/LocalProjectTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { getGitWorkspaceState, gitPull, GitWorkspaceState, promptForDefaultBranch, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation } from '../../utils/gitUtils';
@@ -73,11 +72,4 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
-}
-
-export async function createStaticWebAppFromLocalProject(context: IActionContext, localProjectTreeItem: LocalProjectTreeItem): Promise<StaticWebAppTreeItem> {
-    const localProjectPath: string = localProjectTreeItem.projectPath;
-    const swaTreeItem: StaticWebAppTreeItem = await createStaticWebApp({ ...context, fsPath: localProjectPath });
-    await localProjectTreeItem.refresh(context);
-    return swaTreeItem;
 }

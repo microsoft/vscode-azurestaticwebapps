@@ -15,7 +15,7 @@ import { uploadAppSettings } from './appSettings/uploadAppSettings';
 import { browse } from './browse';
 import { createChildNode } from './createChildNode';
 import { createHttpFunction } from './createHttpFunction';
-import { createStaticWebApp, createStaticWebAppAdvanced, createStaticWebAppFromLocalProject } from './createStaticWebApp/createStaticWebApp';
+import { createStaticWebApp, createStaticWebAppAdvanced } from './createStaticWebApp/createStaticWebApp';
 import { createSwaConfigFile } from './createSwaConfigFile';
 import { deleteEnvironment } from './deleteEnvironment';
 import { deleteNode } from './deleteNode';
@@ -31,7 +31,6 @@ import { viewProperties } from './viewProperties';
 export function registerCommands(): void {
     registerCommand('staticWebApps.createStaticWebApp', createStaticWebApp);
     registerCommand('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
-    registerCommand('staticWebApps.createStaticWebAppFromLocalProject', createStaticWebAppFromLocalProject);
     registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
     registerCommand('staticWebApps.deleteEnvironment', deleteEnvironment);
     registerCommand('staticWebApps.loadMore', async (context: IActionContext, node: AzureTreeItem) => await ext.tree.loadMore(node, context));
