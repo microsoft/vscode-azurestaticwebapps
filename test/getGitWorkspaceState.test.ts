@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import * as fse from 'fs-extra';
+import { join } from 'path';
 import { Uri } from "vscode";
 import { DialogResponses } from 'vscode-azureextensionui';
 import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
@@ -20,6 +22,14 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     test('Empty workspace with no git repository', async () => {
         const context = createTestActionContext();
         const testFolderUri: Uri = Uri.file(testFolderPath);
+        await assert.rejects(async () => { await getGitWorkspaceState(context, testFolderUri) });
+    });
+
+    test('Workspace with no git repository', async () => {
+        const context = createTestActionContext();
+        await fse.writeFile(join(testFolderPath, 'test.txt'), 'Test');
+        const testFolderUri: Uri = Uri.file(testFolderPath);
+
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
         assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
 
