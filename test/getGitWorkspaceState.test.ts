@@ -7,7 +7,6 @@ import * as assert from 'assert';
 import * as fse from 'fs-extra';
 import { join } from 'path';
 import { Uri } from "vscode";
-import { DialogResponses } from 'vscode-azureextensionui';
 import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
 import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
 
@@ -22,7 +21,7 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     test('Empty workspace with no git repository', async () => {
         const context = createTestActionContext();
         const testFolderUri: Uri = Uri.file(testFolderPath);
-        await assert.rejects(async () => { await getGitWorkspaceState(context, testFolderUri) });
+        assert.throws(async () => { await getGitWorkspaceState(context, testFolderUri) });
     });
 
     test('Workspace with no git repository', async () => {
@@ -33,7 +32,7 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
         assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
 
-        await testUserInput.runWithInputs([DialogResponses.yes.title, testCommitMsg], async () => {
+        await testUserInput.runWithInputs(['Create', testCommitMsg], async () => {
             await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testFolderUri);
             assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize')
         });
