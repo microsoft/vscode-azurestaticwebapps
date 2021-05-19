@@ -4,6 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import * as fse from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { TestOutputChannel, TestUserInput } from 'vscode-azureextensiondev';
 import { ext, IActionContext } from '../extension.bundle';
@@ -45,3 +48,21 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
 
     longRunningTestsEnabled = !/^(false|0)?$/i.test(process.env.ENABLE_LONG_RUNNING_TESTS || '');
 });
+
+export async function cleanTestWorkspace(): Promise<void> {
+    await fse.emptyDir(testWorkspacePath);
+}
+
+async function initTestWorkspacePath(): Promise<string> {
+    const workspaceFolders: readonly vscode.WorkspaceFolder[] | undefined = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) {
+        throw new Error("No workspace is open");
+    } else {
+        assert.strictEqual(workspaceFolders.length, 1, "Expected only one workspace to be open.");
+        const workspacePath: string = workspaceFolders[0].uri.fsPath;
+        assert.strictEqual(path.basename(workspacePath), 'testWorkspace', "Opened against an unexpected workspace.");
+        await fse.ensureDir(workspacePath);
+        await fse.emptyDir(workspacePath);
+        return workspacePath;
+    }
+}

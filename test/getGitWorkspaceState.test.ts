@@ -4,12 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as fse from 'fs-extra';
-import * as path from 'path';
 import { Uri } from "vscode";
 import { DialogResponses } from 'vscode-azureextensionui';
-import { getGitApi, getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
-import { API } from '../src/git';
+import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
 import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
 
 suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite): void {
@@ -21,38 +18,16 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     });
 
     test('Empty workspace with no git repository', async () => {
-        await testUserInput.runWithInputs([DialogResponses.yes.title, testCommitMsg], async () => {
-            const context = createTestActionContext();
-            const testFolderUri: Uri = Uri.file(testFolderPath);
-            const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
-            assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
+        const context = createTestActionContext();
+        const testFolderUri: Uri = Uri.file(testFolderPath);
+        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
+        assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
 
+        await testUserInput.runWithInputs([DialogResponses.yes.title, testCommitMsg], async () => {
             await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testFolderUri);
             assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize')
         });
 
-    });
-
-    test('Workspace with dirty workspace tree', async () => {
-        const testFolderUri: Uri = Uri.file(testFolderPath);
-        const gitApi: API = await getGitApi();
-        const repo = await gitApi.openRepository(testFolderUri);
-
-        const listener = repo?.state.onDidChange(async () => {
-            await testUserInput.runWithInputs(['Commit', testCommitMsg], async () => {
-                const context = createTestActionContext();
-                const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
-                assert.strictEqual(gitWorkspaceState.dirty, true, 'Workspace tree was not dirty');
-
-                await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testFolderUri);
-                assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize');
-                listener?.dispose();
-            });
-        });
-
-        const testTextFilePath: string = path.join(testFolderPath, 'test.txt');
-        await fse.ensureFile(testTextFilePath);
-        await fse.writeFile(testTextFilePath, 'Test');
     });
 
     test('Workspace on default branch', async () => {

@@ -215,7 +215,7 @@ export async function gitPull(repo: Repository): Promise<void> {
     });
 }
 
-async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined> {
+export async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined> {
     // currently git still uses master as the default branch but will be updated to main so handle both cases
     // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
     const defaultBranches: string[] = ['main', 'master'];
