@@ -8,23 +8,23 @@ import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
 import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
-import { enableLocalProjectView, productionEnvironmentName } from "../constants";
+import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { pollAzureAsyncOperation } from "../utils/azureUtils";
-import { tryGetLocalBranch, tryGetProjectForCreation } from "../utils/gitHubUtils";
+import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
+import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from "../utils/openUrl";
-import { getWorkspaceSetting } from "../utils/settingsUtils";
 import { treeUtils } from "../utils/treeUtils";
 import { getSingleRootFsPath } from "../utils/workspaceUtils";
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { ActionTreeItem } from "./ActionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
+import { GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
-import { GitHubConfigGroupTreeItem } from "./localProject/ConfigGroupTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
 export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
@@ -52,16 +52,18 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     constructor(parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource) {
         super(parent);
         this.data = env;
-        this.actionsTreeItem = new ActionsTreeItem(this);
-        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
-        this.functionsTreeItem = new FunctionsTreeItem(this);
 
         this.name = nonNullProp(this.data, 'name');
         this.id = nonNullProp(this.data, 'id');
         this.buildId = nonNullProp(this.data, 'buildId');
 
         this.repositoryUrl = this.parent.repositoryUrl;
-        this.branch = nonNullProp(this.data, 'sourceBranch');
+
+        if (this.data.sourceBranch) {
+            this.branch = this.data.sourceBranch;
+        } else {
+            throw new Error(onlyGitHubSupported);
+        }
 
         this.isProduction = this.buildId === 'default';
 
@@ -74,6 +76,10 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
             }
         }
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
+
+        this.actionsTreeItem = new ActionsTreeItem(this);
+        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
+        this.functionsTreeItem = new FunctionsTreeItem(this);
     }
 
     public static async createEnvironmentTreeItem(context: IActionContext, parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
@@ -99,10 +105,6 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = [this.actionsTreeItem];
-        if (getWorkspaceSetting(enableLocalProjectView) && this.inWorkspace) {
-            children.push(...this.gitHubConfigGroupTreeItems);
-        }
-
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
         if (functions.length === 0) {
@@ -116,6 +118,10 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         } else {
             context.telemetry.properties.hasFunctions = 'true';
             children.push(this.appSettingsTreeItem, this.functionsTreeItem);
+        }
+
+        if (this.inWorkspace) {
+            children.push(...this.gitHubConfigGroupTreeItems);
         }
 
         return children;
@@ -162,8 +168,14 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return undefined;
     }
 
-    public compareChildrenImpl(): number {
-        return 0; // already sorted
+    public compareChildrenImpl(ti1: AzExtTreeItem, ti2: AzExtTreeItem): number {
+        if (ti1 instanceof GenericTreeItem) {
+            return 1;
+        } else if (ti2 instanceof GenericTreeItem) {
+            return -1;
+        }
+
+        return 0;
     }
 
     public async refreshImpl(context: IActionContext): Promise<void> {
@@ -171,12 +183,10 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
         this.localProjectPath = getSingleRootFsPath();
 
-        const remote: string | undefined = (await tryGetProjectForCreation(context))?.html_url;
+        const remote: string | undefined = (await tryGetRepoDataForCreation(context))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
 
-        this.gitHubConfigGroupTreeItems = getWorkspaceSetting(enableLocalProjectView) ?
-            await GitHubConfigGroupTreeItem.createGitHubConfigGroupTreeItems(this) :
-            [];
+        this.gitHubConfigGroupTreeItems = await GitHubConfigGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
     }
 }

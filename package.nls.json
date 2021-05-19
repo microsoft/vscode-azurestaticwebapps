@@ -3,7 +3,7 @@
     "staticWebApps.createStaticWebAppAdvanced": "Create Static Web App... (Advanced)",
     "staticWebApps.deleteStaticWebApp": "Delete...",
     "staticWebApps.deleteEnvironment": "Delete Environment...",
-    "staticWebApps.description": "An Azure Static Web Apps (Preview) extension for Visual Studio Code.",
+    "staticWebApps.description": "An Azure Static Web Apps extension for Visual Studio Code.",
     "staticWebApps.enableOutputTimestamps": "Prepends each line displayed in the output channel with a timestamp.",
     "staticWebApps.loadMore": "Load More",
     "staticWebApps.openInPortal": "Open in Portal",
@@ -34,6 +34,6 @@
     "staticWebApps.showDocumentation": "Documentation",
     "staticWebApps.openYAMLConfigFile": "Edit Configuration...",
     "staticWebApps.outputSubpath": "The default value for the location of your build output relative to your application code location",
-    "staticWebApps.enableLocalProjectView": "Enable preview support for viewing local projects in the tree view.",
-    "staticWebApps.reportIssue": "Report Issue..."
+    "staticWebApps.reportIssue": "Report Issue...",
+    "staticWebApps.createSwaConfigFile": "Create Configuration File"
 }

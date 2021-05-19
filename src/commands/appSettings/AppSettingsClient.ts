@@ -13,29 +13,37 @@ export class AppSettingsClient implements IAppSettingsClient {
 
     public isLinux: boolean;
     public ssId: string;
+    public parentName: string;
     public fullName: string;
     public resourceGroup: string;
     public root: ISubscriptionContext;
+    public prId: string;
+    public isBuild: boolean;
 
     constructor(node: EnvironmentTreeItem) {
         this.ssId = node.id;
-        this.fullName = node.parent.name;
+        this.parentName = node.parent.name;
+        this.fullName = `${this.parentName}/${node.branch}`;
         this.resourceGroup = node.parent.resourceGroup;
         this.root = node.root;
 
-        // For IAppSettingsClient, isLinux is used for app settings key validation.
-        // I'm unsure what the Functions Apps are under the hood, but the Linux app settings restrictions do not apply
-        // to the keys so isLinux should be considered false
-        this.isLinux = false;
+        this.prId = node.buildId;
+        this.isBuild = !node.isProduction;
+
+        // For IAppSettingsClient, isLinux is used for app settings key validation and Linux app settings restrictions
+        // apply to the keys
+        this.isLinux = true;
     }
 
     public async listApplicationSettings(): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        return await client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName);
+        return this.isBuild ? await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.resourceGroup, this.parentName, this.prId) :
+            await client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.parentName);
     }
 
     public async updateApplicationSettings(appSettings: WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        return await client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.fullName, appSettings);
+        return this.isBuild ? await client.staticSites.createOrUpdateStaticSiteBuildFunctionAppSettings(this.resourceGroup, this.parentName, this.prId, appSettings) :
+            await client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.parentName, appSettings);
     }
 }

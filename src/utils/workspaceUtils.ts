@@ -6,6 +6,7 @@
 import * as path from 'path';
 import { commands, MessageItem, OpenDialogOptions, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
+import { cloneRepo } from '../commands/github/cloneRepo';
 import { NoWorkspaceError } from '../errors';
 import { ext } from '../extensionVariables';
 import { localize } from "./localize";
@@ -55,7 +56,7 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
         const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true }, openExistingProject, cloneProject);
 
         if (result === cloneProject) {
-            await commands.executeCommand('git.clone');
+            await cloneRepo(context, '');
             context.telemetry.properties.noWorkspaceResult = 'cloneProject';
         } else {
             const uri: Uri[] = await context.ui.showOpenDialog({

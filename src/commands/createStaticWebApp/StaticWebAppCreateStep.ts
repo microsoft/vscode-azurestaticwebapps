@@ -5,7 +5,7 @@
 
 import { WebSiteManagementModels } from "@azure/arm-appservice";
 import { Progress } from "vscode";
-import { AzureWizardExecuteStep } from "vscode-azureextensionui";
+import { AzureWizardExecuteStep, LocationListStep } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
 import { nonNullProp, nonNullValueAndProp } from "../../utils/nonNull";
@@ -16,9 +16,10 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
 
     public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const newName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+        const branchData = nonNullProp(wizardContext, 'branchData');
         const siteEnvelope: WebSiteManagementModels.StaticSiteARMResource = {
             repositoryUrl: wizardContext.repoHtmlUrl,
-            branch: wizardContext.branchData?.name,
+            branch: branchData.name,
             repositoryToken: wizardContext.accessToken,
             // The SDK hasn't updated to reflect the outputLocation property and platform will continue supporting appArtifactLocation, but will update as soon as available
             buildProperties: {
@@ -26,8 +27,8 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
                 apiLocation: wizardContext.apiLocation,
                 appArtifactLocation: wizardContext.outputLocation
             },
-            sku: { name: 'Free', tier: 'Free' },
-            location: nonNullValueAndProp(wizardContext.location, 'name')
+            sku: wizardContext.sku,
+            location: (await LocationListStep.getLocation(wizardContext)).name
         };
 
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);

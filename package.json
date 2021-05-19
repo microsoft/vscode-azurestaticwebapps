@@ -1,8 +1,8 @@
 {
     "name": "vscode-azurestaticwebapps",
-    "displayName": "Azure Static Web Apps (Preview)",
+    "displayName": "Azure Static Web Apps",
     "description": "%staticWebApps.description%",
-    "version": "0.6.0",
+    "version": "0.7.1-alpha",
     "publisher": "ms-azuretools",
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
@@ -52,6 +52,7 @@
         "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onCommand:staticWebApps.openYAMLConfigFile",
         "onCommand:staticWebApps.reportIssue",
+        "onCommand:staticWebApps.createSwaConfigFile",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -194,13 +195,18 @@
                 "command": "staticWebApps.reportIssue",
                 "title": "%staticWebApps.reportIssue%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.createSwaConfigFile",
+                "title": "%staticWebApps.createSwaConfigFile%",
+                "category": "Azure Static Web Apps"
             }
         ],
         "views": {
             "azure": [
                 {
                     "id": "staticWebApps",
-                    "name": "Static Web Apps (Preview)"
+                    "name": "Static Web Apps"
                 }
             ]
         },
@@ -403,11 +409,6 @@
                         "scope": "resource",
                         "type": "string",
                         "description": "%staticWebApps.outputSubpath%"
-                    },
-                    "staticWebApps.enableLocalProjectView": {
-                        "type": "boolean",
-                        "description": "%staticWebApps.enableLocalProjectView%",
-                        "default": false
                     }
                 }
             }
@@ -428,11 +429,11 @@
         "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats"
     },
     "devDependencies": {
-        "@octokit/types": "^5.2.0",
+        "@octokit/types": "^6.13.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
         "@types/gulp": "^4.0.6",
-        "@types/mocha": "^7.0.2",
+        "@types/mocha": "^8.2.2",
         "@types/node": "^12.12.53",
         "@types/vscode": "1.53.0",
         "@typescript-eslint/eslint-plugin": "^4.14.2",
@@ -441,8 +442,8 @@
         "eslint-plugin-import": "^2.22.1",
         "glob": "^7.1.6",
         "gulp": "^4.0.2",
-        "mocha": "^7.2.0",
-        "mocha-junit-reporter": "^1.23.1",
+        "mocha": "^8.3.2",
+        "mocha-junit-reporter": "^2.0.0",
         "mocha-multi-reporters": "^1.1.7",
         "ts-node": "^7.0.1",
         "typescript": "^3.9.7",
@@ -455,14 +456,14 @@
     "dependencies": {
         "@azure/arm-appservice": "^6.0.0",
         "@azure/ms-rest-js": "^2.2.1",
-        "@octokit/rest": "^18.0.3",
+        "@octokit/rest": "^18.5.2",
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
         "open": "^8.0.4",
         "simple-git": "^2.37.0",
         "vscode-azureappservice": "^0.76.1",
-        "vscode-azureextensionui": "^0.41.3",
+        "vscode-azureextensionui": "^0.43.0",
         "vscode-nls": "^4.1.1",
         "yaml": "^1.10.2"
     },

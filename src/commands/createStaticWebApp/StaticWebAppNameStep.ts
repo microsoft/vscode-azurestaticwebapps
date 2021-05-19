@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as path from 'path';
 import { AzureNameStep, IAzureNamingRules } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
-import { getRepoFullname } from "../../utils/gitHubUtils";
 import { localize } from "../../utils/localize";
-import { nonNullProp } from "../../utils/nonNull";
+import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
@@ -19,17 +19,19 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-
-        const login: string = wizardContext.orgData?.login || getRepoFullname(nonNullProp(wizardContext, 'repoHtmlUrl')).owner;
-        const repo: string = wizardContext.newRepoName || wizardContext.repoData?.name || getRepoFullname(nonNullProp(wizardContext, 'repoHtmlUrl')).name;
+        const folderName: string = path.basename(nonNullProp(wizardContext, 'fsPath'));
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         wizardContext.newStaticWebAppName = (await ext.ui.showInputBox({
             prompt,
-            value: await this.getRelatedName(wizardContext, `${login}-${repo}`),
+            value: await this.getRelatedName(wizardContext, folderName),
             validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(wizardContext, value)
         })).trim();
         wizardContext.valuesToMask.push(wizardContext.newStaticWebAppName);
+
+        if (wizardContext.advancedCreation) {
+            wizardContext.relatedNameTask = this.getRelatedName(wizardContext, wizardContext.newStaticWebAppName);
+        }
     }
 
     public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {

@@ -4,17 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from "@octokit/rest";
-import { ActionsGetWorkflowResponseData } from "@octokit/types";
 import { MessageItem, window } from "vscode";
 import { callWithTelemetryAndErrorHandling, IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { productionEnvironmentName, showActionsMsg } from "../../constants";
 import { ext } from "../../extensionVariables";
-import { Conclusion, Status } from "../../gitHubTypings";
+import { ActionsGetWorkflowResponseData, Conclusion, Status } from "../../gitHubTypings";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
 import { EnvironmentTreeItem } from "../../tree/EnvironmentTreeItem";
 import { StaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
 import { delay } from "../../utils/delay";
-import { getRepoFullname } from "../../utils/gitHubUtils";
+import { getRepoFullname } from "../../utils/gitUtils";
 import { localize } from "../../utils/localize";
 import { nonNullValue } from "../../utils/nonNull";
 import { openUrl } from "../../utils/openUrl";
@@ -62,8 +61,8 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
             if (success || conclusion === Conclusion.Failure) {
                 await productionEnv.refresh(context);
                 const deploymentMsg: string = success ?
-                    localize('deploymentCompleted', 'Successfully built and deployed "{0}". Commit and push changes the GitHub repository to create a new deployment.', swaNode.name) :
-                    localize('deploymentFailed', 'Deployment for "{0}" has failed. Commit and push changes the GitHub repository to create a new deployment.', swaNode.name);
+                    localize('deploymentCompleted', 'Successfully built and deployed "{0}". Commit and push changes to the GitHub repository to create a new deployment.', swaNode.name) :
+                    localize('deploymentFailed', 'Deployment for "{0}" has failed. Commit and push changes to the GitHub repository to create a new deployment.', swaNode.name);
                 ext.outputChannel.appendLog(deploymentMsg);
                 const browseWebsite: MessageItem = { title: localize('browseWebsite', 'Browse Website') };
                 const msgItem: MessageItem = success ? browseWebsite : showActionsMsg;

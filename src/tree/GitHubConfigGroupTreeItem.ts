@@ -6,11 +6,11 @@
 import { pathExists, readdir } from "fs-extra";
 import { basename, join } from "path";
 import { ThemeIcon } from "vscode";
-import { AzExtParentTreeItem, AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { localize } from "../../utils/localize";
-import { parseYamlFile } from "../../utils/yamlUtils";
-import { EnvironmentTreeItem } from "../EnvironmentTreeItem";
-import { GitHubConfigTreeItem } from "./ConfigTreeItem";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { localize } from "../utils/localize";
+import { parseYamlFile } from "../utils/yamlUtils";
+import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
+import { GitHubConfigTreeItem } from "./GitHubConfigTreeItem";
 
 export type BuildConfig = 'app_location' | 'api_location' | 'output_location' | 'app_artifact_location';
 
@@ -36,7 +36,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
         this.id = `${parent.id}-${this.yamlFilePath}`;
     }
 
-    public static async createGitHubConfigGroupTreeItems(parent: EnvironmentTreeItem): Promise<GitHubConfigGroupTreeItem[]> {
+    public static async createGitHubConfigGroupTreeItems(context: IActionContext, parent: EnvironmentTreeItem): Promise<GitHubConfigGroupTreeItem[]> {
         const treeItems: GitHubConfigGroupTreeItem[] = [];
 
         if (parent.localProjectPath && parent.inWorkspace) {
@@ -44,6 +44,8 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
             const yamlFiles: string[] = await pathExists(workflowsDir) ?
                 (await readdir(workflowsDir)).filter(file => /\.(yml|yaml)$/i.test(file)) :
                 [];
+
+            context.telemetry.properties.numWorkflows = yamlFiles.length.toString();
 
             for (const yamlFile of yamlFiles) {
                 const yamlFilePath: string = join(workflowsDir, yamlFile);
