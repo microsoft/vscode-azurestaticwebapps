@@ -22,9 +22,10 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     test('Empty workspace with no git repository', async () => {
         const context = createTestActionContext();
         const testFolderUri: Uri = Uri.file(testFolderPath);
-        await assert.rejects(async () => { await getGitWorkspaceState(context, testFolderUri) },
+        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri)
+        await assert.rejects(async () => { await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testFolderUri) },
             (err) => {
-                const pError = parseError(err)
+                const pError = parseError(err);
                 assert.strictEqual(pError.message, 'Cannot create a Static Web App with an empty workspace.')
             });
     });
@@ -34,13 +35,13 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
         await fse.writeFile(join(testFolderPath, 'test.txt'), 'Test');
         const testFolderUri: Uri = Uri.file(testFolderPath);
 
-
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
         if (!gitWorkspaceState.repo) {
             throw new Error('Could not retrieve git repository.');
         }
-        await gitWorkspaceState.repo.setConfig('user.name', 'AutomatedTester')
-        await gitWorkspaceState.repo.setConfig('user.email', 'testing@testing.com')
+
+        await gitWorkspaceState.repo.setConfig('user.name', 'AutomatedTester');
+        await gitWorkspaceState.repo.setConfig('user.email', 'testing@testing.com');
 
         assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
         await testUserInput.runWithInputs(['Create', testCommitMsg], async () => {
