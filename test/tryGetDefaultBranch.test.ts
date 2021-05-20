@@ -5,21 +5,23 @@
 
 import assert = require('assert');
 import { Uri } from 'vscode';
-import { getGitWorkspaceState, GitWorkspaceState, tryGetDefaultBranch } from '../extension.bundle';
+import { cpUtils, getGitWorkspaceState, GitWorkspaceState, tryGetDefaultBranch } from '../extension.bundle';
 import { cleanTestWorkspace, createTestActionContext, testFolderPath } from './global.test';
 
 suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
     this.timeout(30 * 1000);
     let gitWorkspaceState: GitWorkspaceState;
-    const mainBranch: string = 'main';
+    const localDefaultBranch: string = 'localDefault';
+    const globalDefaultBranch: string = 'globalDefault';
+
     suiteSetup(async () => {
         await cleanTestWorkspace();
         const context = createTestActionContext();
         const testFolderUri: Uri = Uri.file(testFolderPath);
         gitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
 
-        await gitWorkspaceState.repo?.setConfig('init.defaultBranch', mainBranch);
-        // set global config here
+        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--local', 'init.defaultBranch', localDefaultBranch);
+        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--local', 'init.defaultBranch', globalDefaultBranch);
     });
 
     test('Workspace with default branch set in local config', async () => {
@@ -27,15 +29,20 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
             throw new Error('Could not retrieve git repository.');
         }
 
-        assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), mainBranch);
+        assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), localDefaultBranch);
     });
 
     test('Workspace with default branch set in global config', async () => {
-        // todo Git API doesn't have a setGlobalConfig so will look for an alternative method
+        if (!gitWorkspaceState.repo) {
+            throw new Error('Could not retrieve git repository.');
+        }
+
+        assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), globalDefaultBranch);
     });
 
     suiteTeardown(async () => {
         // reset the configs
-        await gitWorkspaceState.repo?.setConfig('init.defaultBranch', '');
+        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--local', 'init.defaultBranch', '');
+        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'init.defaultBranch', '');
     })
 });

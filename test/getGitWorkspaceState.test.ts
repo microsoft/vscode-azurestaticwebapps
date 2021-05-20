@@ -9,7 +9,7 @@ import { join } from 'path';
 import { Uri } from "vscode";
 import { parseError } from 'vscode-azureextensionui';
 import { cpUtils, getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
-import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
+import { cleanTestWorkspace, createTestActionContext, testUserInput, testWorkspacePath } from "./global.test";
 
 suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite): void {
     const testCommitMsg: string = 'Test commit';
@@ -21,7 +21,7 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
 
     test('Empty workspace with no git repository', async () => {
         const context = createTestActionContext();
-        const testFolderUri: Uri = Uri.file(testFolderPath);
+        const testFolderUri: Uri = Uri.file(testWorkspacePath);
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri)
         try {
             await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testFolderUri)
@@ -33,8 +33,8 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
 
     test('Workspace with no git repository', async () => {
         const context = createTestActionContext();
-        await fse.writeFile(join(testFolderPath, 'test.txt'), 'Test');
-        const testFolderUri: Uri = Uri.file(testFolderPath);
+        await fse.writeFile(join(testWorkspacePath, 'test.txt'), 'Test');
+        const testFolderUri: Uri = Uri.file(testWorkspacePath);
 
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
         await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'user.name', 'Automated Tester');
@@ -51,7 +51,7 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     test('Workspace on default branch', async () => {
         await testUserInput.runWithInputs([], async () => {
             const context = createTestActionContext();
-            const testFolderUri: Uri = Uri.file(testFolderPath);
+            const testFolderUri: Uri = Uri.file(testWorkspacePath);
 
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
             if (!gitWorkspaceState.repo) {
@@ -66,7 +66,7 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     test('Workspace not on default branch', async () => {
         await testUserInput.runWithInputs(['Checkout "master"'], async () => {
             const context = createTestActionContext();
-            const testFolderUri: Uri = Uri.file(testFolderPath);
+            const testFolderUri: Uri = Uri.file(testWorkspacePath);
 
             const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
             if (!gitWorkspaceState.repo) {
