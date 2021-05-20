@@ -8,8 +8,7 @@ import * as fse from 'fs-extra';
 import { join } from 'path';
 import { Uri } from "vscode";
 import { parseError } from 'vscode-azureextensionui';
-import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
-import { cpUtils } from '../src/utils/cpUtils';
+import { cpUtils, getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
 import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
 
 suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite): void {
