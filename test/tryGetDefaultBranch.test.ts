@@ -21,7 +21,7 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
         gitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
 
         await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--local', 'init.defaultBranch', localDefaultBranch);
-        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--local', 'init.defaultBranch', globalDefaultBranch);
+        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'init.defaultBranch', globalDefaultBranch);
     });
 
     test('Workspace with default branch set in local config', async () => {

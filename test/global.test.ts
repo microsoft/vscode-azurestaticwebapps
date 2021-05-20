@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { TestOutputChannel, TestUserInput } from 'vscode-azureextensiondev';
-import { ext, IActionContext } from '../extension.bundle';
+import { cpUtils, ext, IActionContext } from '../extension.bundle';
 import { getRandomHexString } from './getRandomHexString';
 
 export let longRunningTestsEnabled: boolean;
@@ -47,6 +47,10 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
     ext.ui = testUserInput;
 
     longRunningTestsEnabled = !/^(false|0)?$/i.test(process.env.ENABLE_LONG_RUNNING_TESTS || '');
+
+    // set the user name and email since this seems to be required for everything
+    await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'user.name', 'Automated Tester');
+    await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'user.email', 'automated@testing.com');
 });
 
 export async function cleanTestWorkspace(): Promise<void> {
