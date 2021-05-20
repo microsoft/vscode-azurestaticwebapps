@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import * as fse from 'fs-extra';
 import { join } from 'path';
-import { Uri } from "vscode";
+import { Uri, window } from "vscode";
 import { parseError } from 'vscode-azureextensionui';
 import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
 import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
@@ -40,8 +40,10 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
             throw new Error('Could not retrieve git repository.');
         }
 
-        await gitWorkspaceState.repo.setConfig('user.name', 'AutomatedTester');
-        await gitWorkspaceState.repo.setConfig('user.email', 'testing@testing.com');
+        const gitConfigCommands: string =
+            `git config --global user.name "Automated Tester"
+            $ git config --global user.email "automated@testing.com"`
+        window.createTerminal().sendText(gitConfigCommands);
 
         assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
         await testUserInput.runWithInputs(['Create', testCommitMsg], async () => {
