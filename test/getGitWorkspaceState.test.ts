@@ -6,9 +6,10 @@
 import * as assert from 'assert';
 import * as fse from 'fs-extra';
 import { join } from 'path';
-import { Uri, window } from "vscode";
+import { Uri } from "vscode";
 import { parseError } from 'vscode-azureextensionui';
 import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
+import { cpUtils } from '../src/utils/cpUtils';
 import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
 
 suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite): void {
@@ -37,10 +38,8 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
         const testFolderUri: Uri = Uri.file(testFolderPath);
 
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
-        const gitConfigCommands: string =
-            `git config --global user.name "Automated Tester"
-            $ git config --global user.email "automated@testing.com"`
-        window.createTerminal().sendText(gitConfigCommands);
+        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'user.name', 'Automated Tester');
+        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'user.email', 'automated@testing.com');
 
         assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
         await testUserInput.runWithInputs(['Create', testCommitMsg], async () => {
