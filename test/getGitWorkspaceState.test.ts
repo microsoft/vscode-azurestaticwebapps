@@ -34,9 +34,15 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
         await fse.writeFile(join(testFolderPath, 'test.txt'), 'Test');
         const testFolderUri: Uri = Uri.file(testFolderPath);
 
-        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
-        assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
 
+        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
+        if (!gitWorkspaceState.repo) {
+            throw new Error('Could not retrieve git repository.');
+        }
+        await gitWorkspaceState.repo.setConfig('user.name', 'AutomatedTester')
+        await gitWorkspaceState.repo.setConfig('user.email', 'testing@testing.com')
+
+        assert.strictEqual(gitWorkspaceState.repo, null, 'Workspace contained a repository prior to test');
         await testUserInput.runWithInputs(['Create', testCommitMsg], async () => {
             await verifyGitWorkspaceForCreation(context, gitWorkspaceState, testFolderUri);
             assert.ok(gitWorkspaceState.repo, 'Repo did not successfully initialize')
