@@ -70,6 +70,8 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
             handleGitError(err);
         }
 
+        newRepo = await gitApi.openRepository(uri);
+
         if (!newRepo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
         }

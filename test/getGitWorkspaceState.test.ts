@@ -7,6 +7,7 @@ import * as assert from 'assert';
 import * as fse from 'fs-extra';
 import { join } from 'path';
 import { Uri } from "vscode";
+import { parseError } from 'vscode-azureextensionui';
 import { getGitWorkspaceState, GitWorkspaceState, promptForDefaultBranch, verifyGitWorkspaceForCreation } from "../extension.bundle";
 import { cleanTestWorkspace, createTestActionContext, testFolderPath, testUserInput } from "./global.test";
 
@@ -21,7 +22,11 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     test('Empty workspace with no git repository', async () => {
         const context = createTestActionContext();
         const testFolderUri: Uri = Uri.file(testFolderPath);
-        assert.throws(async () => { await getGitWorkspaceState(context, testFolderUri) });
+        await assert.rejects(async () => { await getGitWorkspaceState(context, testFolderUri) },
+            (err) => {
+                const pError = parseError(err)
+                assert.strictEqual(pError.message, 'Cannot create a Static Web App with an empty workspace.')
+            });
     });
 
     test('Workspace with no git repository', async () => {
