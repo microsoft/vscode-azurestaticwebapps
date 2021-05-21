@@ -20,7 +20,7 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
         const testFolderUri: Uri = Uri.file(testFolderPath);
         gitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
 
-        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--local', 'init.defaultBranch', localDefaultBranch);
+        await cpUtils.executeCommand(undefined, testFolderPath, 'git', 'config', '--local', 'init.defaultBranch', localDefaultBranch);
         await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'init.defaultBranch', globalDefaultBranch);
     });
 
@@ -42,7 +42,7 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
 
     suiteTeardown(async () => {
         // reset the configs
-        await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--local', 'init.defaultBranch', '');
+        await cpUtils.executeCommand(undefined, testFolderPath, 'git', 'config', '--local', 'init.defaultBranch', '');
         await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'init.defaultBranch', '');
     })
 });
