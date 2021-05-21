@@ -29,6 +29,7 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
             throw new Error('Could not retrieve git repository.');
         }
 
+        await gitWorkspaceState.repo.createBranch(localDefaultBranch, false);
         assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), localDefaultBranch);
     });
 
@@ -37,6 +38,7 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
             throw new Error('Could not retrieve git repository.');
         }
 
+        await gitWorkspaceState.repo.createBranch(globalDefaultBranch, false);
         assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), globalDefaultBranch);
     });
 
