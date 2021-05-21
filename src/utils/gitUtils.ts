@@ -17,6 +17,7 @@ import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
+import { cpUtils } from './cpUtils';
 import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 import { getSingleRootFsPath } from './workspaceUtils';
@@ -70,7 +71,10 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
             handleGitError(err);
         }
 
-        newRepo = await gitApi.openRepository(uri);
+        if (!newRepo) {
+            await cpUtils.executeCommand(undefined, undefined, 'git', 'init');
+            newRepo = await gitApi.openRepository(uri);
+        }
 
         if (!newRepo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
