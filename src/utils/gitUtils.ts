@@ -28,6 +28,7 @@ export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository }
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
     const gitApi: API = await getGitApi();
+    console.log(gitApi.git.path);
     let repo: Repository | null = null;
 
     try {
