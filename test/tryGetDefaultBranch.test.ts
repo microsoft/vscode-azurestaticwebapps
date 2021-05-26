@@ -10,36 +10,38 @@ import { cleanTestWorkspace, createTestActionContext, testFolderPath } from './g
 
 suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
     this.timeout(30 * 1000);
-    let gitWorkspaceState: GitWorkspaceState;
+    const context = createTestActionContext();
+    const testFolderUri: Uri = Uri.file(testFolderPath);
     const localDefaultBranch: string = 'localDefault';
     const globalDefaultBranch: string = 'globalDefault';
 
     suiteSetup(async () => {
         await cleanTestWorkspace();
-        const context = createTestActionContext();
-        const testFolderUri: Uri = Uri.file(testFolderPath);
-        gitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
-
         await cpUtils.executeCommand(undefined, testFolderPath, 'git', 'config', '--local', 'init.defaultBranch', localDefaultBranch);
         await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'init.defaultBranch', globalDefaultBranch);
+
+
     });
 
     test('Workspace with default branch set in local config', async () => {
+        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
+
         if (!gitWorkspaceState.repo) {
             throw new Error('Could not retrieve git repository.');
         }
 
         await gitWorkspaceState.repo.createBranch(localDefaultBranch, false);
         assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), localDefaultBranch);
-        // needs to be reset for global config test
-        await cpUtils.executeCommand(undefined, testFolderPath, 'git', 'config', '--local', 'init.defaultBranch', '');
     });
 
     test('Workspace with default branch set in global config', async () => {
+        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
+
         if (!gitWorkspaceState.repo) {
             throw new Error('Could not retrieve git repository.');
         }
 
+        await cpUtils.executeCommand(undefined, testFolderPath, 'git', 'config', '--local', 'init.defaultBranch', '');
         await gitWorkspaceState.repo.createBranch(globalDefaultBranch, false);
         assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), globalDefaultBranch);
     });
