@@ -29,7 +29,7 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
     const gitApi: API = await getGitApi();
     console.log('gitApi.git.path:', gitApi.git.path);
-    console.log('which git:', await cpUtils.executeCommand(undefined, undefined, 'which', 'git'));
+    console.log('which git:', await cpUtils.executeCommand(undefined, uri.fsPath, 'which', 'git'));
     let repo: Repository | null = null;
 
     try {
@@ -74,11 +74,11 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         }
 
         if (!newRepo) {
-            await cpUtils.executeCommand(undefined, undefined, 'git', 'init');
+            await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'init');
             newRepo = await gitApi.openRepository(uri);
         }
 
-        console.log('git status:', await cpUtils.executeCommand(undefined, undefined, 'git', 'status'));
+        console.log('git status:', await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'status'));
 
         if (!newRepo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
