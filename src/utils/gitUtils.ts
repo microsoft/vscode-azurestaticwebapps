@@ -28,8 +28,7 @@ export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository }
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
     const gitApi: API = await getGitApi();
-    console.log('gitApi.git.path:', gitApi.git.path);
-    console.log('which git:', await cpUtils.executeCommand(undefined, uri.fsPath, 'which', 'git'));
+
     let repo: Repository | null = null;
 
     try {
@@ -66,6 +65,8 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
         await ext.ui.showWarningMessage(gitRequired, { modal: true }, { title: localize('create', 'Create') });
         const gitApi: API = await getGitApi();
+
+        console.log('repositories_1', gitApi.repositories.map(repo => repo.rootUri.fsPath));
         let newRepo: Repository | null = null;
         try {
             newRepo = await gitApi.init(uri)
@@ -73,14 +74,14 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
             handleGitError(err);
         }
 
-        console.log('git status_1:', await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'status'));
+        console.log('repositories_2', gitApi.repositories.map(repo => repo.rootUri.fsPath));
 
         if (!newRepo) {
             await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'init');
             newRepo = await gitApi.openRepository(uri);
         }
 
-        console.log('git status_2:', await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'status'));
+        console.log('repositories_3', gitApi.repositories.map(repo => repo.rootUri.fsPath));
 
         if (!newRepo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));

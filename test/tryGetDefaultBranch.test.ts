@@ -17,13 +17,22 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
 
     suiteSetup(async () => {
         await cleanTestWorkspace();
-        await cpUtils.executeCommand(undefined, testFolderPath, 'git', 'config', '--local', 'init.defaultBranch', localDefaultBranch);
+    });
+
+    test('Workspace with default branch set in global config', async () => {
         await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'init.defaultBranch', globalDefaultBranch);
+        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
 
+        if (!gitWorkspaceState.repo) {
+            throw new Error('Could not retrieve git repository.');
+        }
 
+        await gitWorkspaceState.repo.createBranch(globalDefaultBranch, false);
+        assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), globalDefaultBranch);
     });
 
     test('Workspace with default branch set in local config', async () => {
+        await cpUtils.executeCommand(undefined, testFolderPath, 'git', 'config', '--local', 'init.defaultBranch', localDefaultBranch);
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
 
         if (!gitWorkspaceState.repo) {
@@ -32,18 +41,6 @@ suite('Get default branch for Git repo', function (this: Mocha.Suite): void {
 
         await gitWorkspaceState.repo.createBranch(localDefaultBranch, false);
         assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), localDefaultBranch);
-    });
-
-    test('Workspace with default branch set in global config', async () => {
-        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
-
-        if (!gitWorkspaceState.repo) {
-            throw new Error('Could not retrieve git repository.');
-        }
-
-        await cpUtils.executeCommand(undefined, testFolderPath, 'git', 'config', '--local', 'init.defaultBranch', '');
-        await gitWorkspaceState.repo.createBranch(globalDefaultBranch, false);
-        assert.strictEqual(await tryGetDefaultBranch(gitWorkspaceState.repo), globalDefaultBranch);
     });
 
     suiteTeardown(async () => {
