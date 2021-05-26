@@ -73,12 +73,14 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
             handleGitError(err);
         }
 
+        console.log('git status_1:', await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'status'));
+
         if (!newRepo) {
             await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'init');
             newRepo = await gitApi.openRepository(uri);
         }
 
-        console.log('git status:', await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'status'));
+        console.log('git status_2:', await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'status'));
 
         if (!newRepo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
