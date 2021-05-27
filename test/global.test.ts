@@ -18,7 +18,7 @@ export const testUserInput: TestUserInput = new TestUserInput(vscode);
 /**
  * Folder for most tests that do not need a workspace open
  */
-export const testFolderPath: string = path.join(os.tmpdir(), `azSwaTest${getRandomHexString()}`);
+export const testFolderPath: string = path.join(os.homedir(), `azSwaTest${getRandomHexString()}`);
 /**
  * Folder for tests that require a workspace
  */
