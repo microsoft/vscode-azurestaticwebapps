@@ -67,9 +67,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         }
 
         promptSteps.push(new SkuListStep());
+        const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
 
         // if the local project doesn't have a GitHub remote, we will create it for them
-        if (!wizardContext.originExists) {
+        if (!gotRemote) {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
             executeSteps.push(new RepoCreateStep());
         }
@@ -108,7 +109,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             executeSteps
         });
 
-        const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
         wizardContext.fsPath = wizardContext.fsPath || getSingleRootFsPath();
         addWorkspaceTelemetry(wizardContext);
 
