@@ -53,6 +53,11 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
     await cpUtils.executeCommand(undefined, undefined, 'git', 'config', '--global', 'user.email', 'automated@testing.com');
 });
 
+suiteTeardown(async function (this: Mocha.Context): Promise<void> {
+    await fse.emptyDir(testFolderPath);
+    await fse.remove(testFolderPath);
+});
+
 export async function cleanTestWorkspace(): Promise<void> {
     await fse.emptyDir(testWorkspacePath);
 }

@@ -17,7 +17,6 @@ import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
 import { API, CommitOptions, Ref, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
-import { cpUtils } from './cpUtils';
 import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 import { getSingleRootFsPath } from './workspaceUtils';
@@ -66,22 +65,12 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         await ext.ui.showWarningMessage(gitRequired, { modal: true }, { title: localize('create', 'Create') });
         const gitApi: API = await getGitApi();
 
-        console.log('repositories_1', gitApi.repositories.map(repo => repo.rootUri.fsPath));
         let newRepo: Repository | null = null;
         try {
             newRepo = await gitApi.init(uri)
         } catch (err) {
             handleGitError(err);
         }
-
-        console.log('repositories_2', gitApi.repositories.map(repo => repo.rootUri.fsPath));
-
-        if (!newRepo) {
-            await cpUtils.executeCommand(undefined, uri.fsPath, 'git', 'init');
-            newRepo = await gitApi.openRepository(uri);
-        }
-
-        console.log('repositories_3', gitApi.repositories.map(repo => repo.rootUri.fsPath));
 
         if (!newRepo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
