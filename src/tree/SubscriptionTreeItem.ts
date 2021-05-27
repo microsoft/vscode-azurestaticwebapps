@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
+import { workspace } from 'vscode';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
 import { RepoPrivacyStep } from '../commands/createRepo/RepoPrivacyStep';
-import { addWorkspaceTelemetry } from '../commands/createStaticWebApp/addWorkspaceTelemetry';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
@@ -109,8 +109,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         });
 
         const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
+        wizardContext.telemetry.properties.gotRemote = String(gotRemote);
+
         wizardContext.fsPath = wizardContext.fsPath || getSingleRootFsPath();
-        addWorkspaceTelemetry(wizardContext);
+        wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
 
         await wizard.prompt();
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
