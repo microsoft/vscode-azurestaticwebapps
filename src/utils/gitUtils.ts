@@ -27,7 +27,6 @@ export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository }
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
     const gitApi: API = await getGitApi();
-
     let repo: Repository | null = null;
 
     try {
@@ -64,7 +63,6 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
         await ext.ui.showWarningMessage(gitRequired, { modal: true }, { title: localize('create', 'Create') });
         const gitApi: API = await getGitApi();
-
         let newRepo: Repository | null = null;
         try {
             newRepo = await gitApi.init(uri)

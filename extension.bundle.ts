@@ -19,7 +19,6 @@ export { tryGetSelection } from './src/commands/openYAMLConfigFile';
 // Export activate/deactivate for main.js
 export { activateInternal, deactivateInternal } from './src/extension';
 export * from './src/extensionVariables';
-export * from './src/getExtensionApi';
 export { BuildConfig } from './src/tree/GitHubConfigGroupTreeItem';
 export { cpUtils } from './src/utils/cpUtils';
 export * from './src/utils/gitUtils';
