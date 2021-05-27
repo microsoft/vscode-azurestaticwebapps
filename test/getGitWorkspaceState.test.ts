@@ -13,10 +13,10 @@ import { createTestActionContext, testFolderPath, testUserInput } from "./global
 
 suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite): void {
     this.timeout(2 * 60 * 1000);
+    const context = createTestActionContext();
+    const testFolderUri: Uri = Uri.file(testFolderPath);
 
     test('Empty workspace with no git repository', async () => {
-        const context = createTestActionContext();
-        const testFolderUri: Uri = Uri.file(testFolderPath);
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri)
         let message: string = '';
         try {
@@ -30,9 +30,7 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     });
 
     test('Workspace with no git repository', async () => {
-        const context = createTestActionContext();
         await fse.writeFile(join(testFolderPath, 'test.txt'), 'Test');
-        const testFolderUri: Uri = Uri.file(testFolderPath);
 
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
         assert.strictEqual(gitWorkspaceState.repo, null, `Workspace contained a repository prior to test "${gitWorkspaceState.repo?.rootUri.fsPath}"`);
@@ -46,10 +44,6 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     });
 
     test('Workspace on default branch', async () => {
-
-        const context = createTestActionContext();
-        const testFolderUri: Uri = Uri.file(testFolderPath);
-
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
         if (!gitWorkspaceState.repo) {
             throw new Error('Could not retrieve git repository.');
@@ -62,8 +56,6 @@ suite('Workspace Configurations for SWA Creation', function (this: Mocha.Suite):
     });
 
     test('Workspace not on default branch', async () => {
-        const context = createTestActionContext();
-        const testFolderUri: Uri = Uri.file(testFolderPath);
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, testFolderUri);
         if (!gitWorkspaceState.repo) {
             throw new Error('Could not retrieve git repository.');
