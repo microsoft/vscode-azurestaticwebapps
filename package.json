@@ -461,7 +461,6 @@
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
         "open": "^8.0.4",
-        "simple-git": "^2.37.0",
         "vscode-azureappservice": "^0.76.1",
         "vscode-azureextensionui": "^0.43.0",
         "vscode-nls": "^4.1.1",

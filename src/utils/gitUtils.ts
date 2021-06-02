@@ -6,7 +6,6 @@
 import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
 import { join } from 'path';
-import * as git from 'simple-git/promise';
 import { MessageItem, ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
@@ -15,7 +14,7 @@ import { defaultGitignoreContents } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
-import { API, CommitOptions, Ref, Repository } from "../git";
+import { API, CommitOptions, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
 import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
@@ -121,8 +120,9 @@ export async function tryGetRemote(localProjectPath?: string): Promise<string | 
     // only try to get remote if provided a path or if there's only a single workspace opened
     if (localProjectPath) {
         try {
-            const localGit: git.SimpleGit = git(localProjectPath);
-            originUrl = await localGit.remote(['get-url', 'origin']);
+            const gitApi: API = await getGitApi();
+            const repo = await gitApi.openRepository(Uri.file(localProjectPath));
+            return repo?.state.remotes.find(remote => remote.name === 'origin')?.fetchUrl;
         } catch (err) {
             // do nothing, remote origin does not exist
         }
@@ -138,15 +138,17 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 
 
 export async function remoteShortnameExists(fsPath: string, remoteName: string): Promise<boolean> {
-    const localGit: git.SimpleGit = git(fsPath);
-    let hasOrigin: boolean = false;
+    const gitApi: API = await getGitApi();
+    const repo = await gitApi.openRepository(Uri.file(fsPath));
+    let remoteExists: boolean = false;
+
     try {
-        hasOrigin = !!(await localGit.getRemotes(false)).find(r => { return r.name === remoteName; });
+        remoteExists = !!repo?.state.remotes.some(r => { return r.name === remoteName; });
     } catch (error) {
         // ignore the error and assume there is no origin
     }
 
-    return hasOrigin;
+    return remoteExists;
 }
 
 
@@ -167,12 +169,12 @@ export async function tryGetLocalBranch(): Promise<string | undefined> {
         const localProjectPath: string | undefined = getSingleRootFsPath();
         if (localProjectPath) {
             // only try to get branch if there's only a single workspace opened
-            const localGit: git.SimpleGit = git(localProjectPath);
-
-            return (await localGit.branch()).current;
+            const gitApi: API = await getGitApi();
+            const repo = await gitApi.openRepository(Uri.file(localProjectPath));
+            return repo?.state.HEAD?.name;
         }
     } catch (error) {
-        // an error here should be ignored, it probably means that they don't have git installed
+        handleGitError(error);
     }
     return;
 }
@@ -231,16 +233,9 @@ async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined
         }
     }
 
-    let localBranches: Ref[] = [];
-    try {
-        localBranches = await repo.getBranches({ remote: false })
-    } catch (err) {
-        handleGitError(err);
-    }
-
     // order matters here because we want the setting, main, then master respectively so use indexing
     for (let i = 0; i < defaultBranches.length; i++) {
-        if (localBranches.some(lBranch => lBranch.name === defaultBranches[i])) {
+        if (repo.state.refs.some(lBranch => lBranch.name === defaultBranches[i])) {
             // only return the branch if we can find it locally, otherwise we won't be able to checkout
             return defaultBranches[i];
         }
