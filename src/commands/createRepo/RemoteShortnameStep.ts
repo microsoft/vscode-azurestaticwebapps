@@ -27,12 +27,11 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
                     // remotes have same naming rules as branches
                     // https://stackoverflow.com/questions/41461152/which-characters-are-illegal-within-a-git-remote-name
                     try {
-                        await cpUtils.executeCommand(undefined, undefined, 'git', 'check-ref-format', '--branch', cpUtils.wrapArgInQuotes(value));
+                        await cpUtils.executeCommand(undefined, wizardContext.fsPath, 'git', 'check-ref-format', '--branch', cpUtils.wrapArgInQuotes(value));
                     } catch (err) {
                         if (/is not a valid branch name/g.test(parseError(err).message)) {
                             return localize('notValid', '"{0}" is not a valid remote shortname.', value);
                         }
-
                         // ignore other errors, we may not be able to access git so we shouldn't block users here
                     }
 
