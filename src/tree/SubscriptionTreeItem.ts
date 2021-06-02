@@ -67,10 +67,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         }
 
         promptSteps.push(new SkuListStep());
-        const gotRemote: boolean = !!wizardContext.repoHtmlUrl;
+        const hasRemote: boolean = !!wizardContext.repoHtmlUrl;
 
         // if the local project doesn't have a GitHub remote, we will create it for them
-        if (!gotRemote) {
+        if (!hasRemote) {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
             executeSteps.push(new RepoCreateStep());
         }
@@ -122,7 +122,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         await wizard.execute();
         context.showCreatingTreeItem(newStaticWebAppName);
 
-        if (wizardContext.fsPath && gotRemote) {
+        if (wizardContext.fsPath && hasRemote) {
             await updateWorkspaceSetting(appSubpathSetting, wizardContext.appLocation, wizardContext.fsPath);
             await updateWorkspaceSetting(apiSubpathSetting, wizardContext.apiLocation, wizardContext.fsPath);
             await updateWorkspaceSetting(outputSubpathSetting, wizardContext.outputLocation, wizardContext.fsPath);
