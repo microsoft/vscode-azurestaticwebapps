@@ -34,7 +34,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
         const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
-        await promptForDefaultBranch(context, verifiedWorkspace.repo);
         context.telemetry.properties.cancelStep = undefined;
 
         context.fsPath = folder.uri.fsPath;
@@ -52,6 +51,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             }
         }
 
+        await promptForDefaultBranch(context, verifiedWorkspace.repo);
         await setWorkspaceContexts(context, context.fsPath);
     });
 
