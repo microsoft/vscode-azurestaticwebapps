@@ -10,7 +10,7 @@ import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { getGitWorkspaceState, gitPull, GitWorkspaceState, promptForDefaultBranch, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation } from '../../utils/gitUtils';
+import { getGitWorkspaceState, gitPull, GitWorkspaceState, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation, warnIfNotOnDefaultBranch } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
@@ -34,6 +34,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
         const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
+        await warnIfNotOnDefaultBranch(context, verifiedWorkspace);
         context.telemetry.properties.cancelStep = undefined;
 
         context.fsPath = folder.uri.fsPath;
@@ -51,7 +52,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             }
         }
 
-        await promptForDefaultBranch(context, verifiedWorkspace.repo);
         await setWorkspaceContexts(context, context.fsPath);
     });
 
