@@ -179,9 +179,10 @@ export async function tryGetLocalBranch(): Promise<string | undefined> {
     return;
 }
 
-export async function promptForDefaultBranch(context: IActionContext, repo: Repository): Promise<void> {
-    const defaultBranch: string | undefined = await tryGetDefaultBranch(repo)
+export async function warnIfNotOnDefaultBranch(context: IActionContext, gitState: VerifiedGitWorkspaceState): Promise<void> {
+    const defaultBranch: string | undefined = await tryGetDefaultBranch(gitState)
     context.telemetry.properties.defaultBranch = defaultBranch;
+    const { repo } = gitState;
 
     if (defaultBranch && repo.state.HEAD?.name !== defaultBranch) {
         context.telemetry.properties.cancelStep = 'defaultBranch';
@@ -217,25 +218,31 @@ export async function gitPull(repo: Repository): Promise<void> {
     });
 }
 
-async function tryGetDefaultBranch(repo: Repository): Promise<string | undefined> {
-    // currently git still uses master as the default branch but will be updated to main so handle both cases
-    // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
-    const defaultBranches: string[] = ['main', 'master'];
-    try {
-        // don't use handleGitError because we're handling the errors differently here
-        defaultBranches.unshift(await repo.getConfig('init.defaultBranch'));
-    } catch (err) {
-        // if no local config setting is found, try global
+async function tryGetDefaultBranch(gitState: VerifiedGitWorkspaceState): Promise<string | undefined> {
+    let defaultBranches: string[];
+
+    if (gitState.remoteRepo) {
+        defaultBranches = [gitState.remoteRepo.default_branch]
+    } else {
+        defaultBranches = ['main', 'master'];
+        // currently git still uses master as the default branch but will be updated to main so handle both cases
+        // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
         try {
-            defaultBranches.unshift(await repo.getGlobalConfig('init.defaultBranch'));
+            // don't use handleGitError because we're handling the errors differently here
+            defaultBranches.unshift(await gitState.repo.getConfig('init.defaultBranch'));
         } catch (err) {
-            // VS Code's git API doesn't fail gracefully if no config is found, so swallow the error
+            // if no local config setting is found, try global
+            try {
+                defaultBranches.unshift(await gitState.repo.getGlobalConfig('init.defaultBranch'));
+            } catch (err) {
+                // VS Code's git API doesn't fail gracefully if no config is found, so swallow the error
+            }
         }
     }
 
-    // order matters here because we want the setting, main, then master respectively so use indexing
+    // order matters here because we want the remote/setting, main, then master respectively so use indexing
     for (let i = 0; i < defaultBranches.length; i++) {
-        if (repo.state.refs.some(lBranch => lBranch.name === defaultBranches[i])) {
+        if (gitState.repo.state.refs.some(lBranch => lBranch.name === defaultBranches[i])) {
             // only return the branch if we can find it locally, otherwise we won't be able to checkout
             return defaultBranches[i];
         }
