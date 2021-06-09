@@ -9,6 +9,7 @@ import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { handleGitError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { Branch, Repository } from '../../git';
+import { delay } from '../../utils/delay';
 import { isUser } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
@@ -53,9 +54,19 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
             ext.outputChannel.appendLog(pushedBranch);
             progress.report({ message: pushedBranch });
 
-            wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+            // getBranch will return undefined sometimes, most likely a timing issue so try to retrieve it for a minute
+            const maxTimeout = Date.now() + 60 * 1000;
+            while (!wizardContext.branchData && Date.now() < maxTimeout) {
+                wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+                await delay(2000);
+            }
         } catch (err) {
             handleGitError(err);
+        }
+
+        if (!wizardContext.branchData) {
+            // the repo should exist on next create so if the user tries again, it should automatically select the repo
+            throw new Error(localize('cantGetBranch', 'Unable to get branch from repo "{0}".  Please try "Create Static Web App..." again.', wizardContext.newRepoName));
         }
     }
 
