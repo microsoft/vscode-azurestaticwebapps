@@ -56,8 +56,17 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
 
             // getBranch will return undefined sometimes, most likely a timing issue so try to retrieve it for a minute
             const maxTimeout = Date.now() + 60 * 1000;
-            while (!wizardContext.branchData && Date.now() < maxTimeout) {
+            let numOfTries: number = 0;
+
+            while (true) {
+                numOfTries++;
+
                 wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+                if (wizardContext.branchData || Date.now() > maxTimeout) {
+                    wizardContext.telemetry.properties.getBranchAttempts = String(numOfTries);
+                    break;
+                }
+
                 await delay(2000);
             }
         } catch (err) {
@@ -66,6 +75,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
 
         if (!wizardContext.branchData) {
             // the repo should exist on next create so if the user tries again, it should automatically select the repo
+            wizardContext.telemetry.properties.getBranchAttempts = 'timeout';
             throw new Error(localize('cantGetBranch', 'Unable to get branch from repo "{0}".  Please try "Create Static Web App..." again.', wizardContext.newRepoName));
         }
     }
