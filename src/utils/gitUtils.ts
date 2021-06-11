@@ -18,6 +18,7 @@ import { API, CommitOptions, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
 import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
+import { nonNullValue } from './nonNull';
 import { getSingleRootFsPath } from './workspaceUtils';
 
 export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteRepo: ReposGetResponseData | undefined; hasAdminAccess: boolean };
@@ -56,20 +57,21 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         throw new Error(localize('emptyWorkspace', 'Cannot create a Static Web App with an empty workspace.'));
     }
 
+    let repo: Repository | null = gitWorkspaceState.repo;
+
     if (!gitWorkspaceState.repo) {
         const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to proceed. Create a local git repository and GitHub remote to create a Static Web App.');
         context.telemetry.properties.cancelStep = 'initRepo';
 
         await ext.ui.showWarningMessage(gitRequired, { modal: true }, { title: localize('create', 'Create') });
         const gitApi: API = await getGitApi();
-        let newRepo: Repository | null = null;
         try {
-            newRepo = await gitApi.init(uri)
+            repo = await gitApi.init(uri)
         } catch (err) {
             handleGitError(err);
         }
 
-        if (!newRepo) {
+        if (!repo) {
             throw new Error(localize('gitInitFailed', 'Local git initialization failed.  Create a git repository manually and try to create again.'));
         }
 
@@ -79,8 +81,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
             await fse.writeFile(gitignorePath, defaultGitignoreContents);
         }
 
-        await promptForCommit(newRepo, localize('initCommit', 'Initial commit'));
-        gitWorkspaceState.repo = newRepo;
+        await promptForCommit(repo, localize('initCommit', 'Initial commit'));
     } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {
         context.telemetry.properties.cancelStep = 'adminAccess';
         const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository "{0}" is required. Would you like to create a fork?', gitWorkspaceState.remoteRepo.name);
@@ -108,10 +109,10 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const commitChanges: string = localize('commitChanges', 'Commit all working changes to create a Static Web App.');
         await ext.ui.showWarningMessage(commitChanges, { modal: true }, { title: localize('commit', 'Commit') });
         await promptForCommit(gitWorkspaceState.repo, localize('commitMade', 'Commit made from VS Code Azure Static Web Apps'));
-        gitWorkspaceState.dirty = false;
     }
 
-    return <VerifiedGitWorkspaceState>gitWorkspaceState;
+    const verifiedRepo: Repository = nonNullValue(repo);
+    return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo }
 }
 
 export async function tryGetRemote(localProjectPath?: string): Promise<string | undefined> {
