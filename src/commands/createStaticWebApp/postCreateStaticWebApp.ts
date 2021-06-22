@@ -31,26 +31,31 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
             const maxTime: number = Date.now() + 30 * 1000; // it can take a little for the action to queue in GitHub, wait for 30 seconds
 
             while (!deployActionNode) {
-                await productionEnv.actionsTreeItem.refresh(context);
-                const actionTreeItems: ActionTreeItem[] = <ActionTreeItem[]>(await productionEnv.actionsTreeItem.loadAllChildren(context));
-                const filteredTreeItems: ActionTreeItem[] = actionTreeItems.filter(ti => { return ti.data.status !== Status.Completed; }); // only looking at on-going or queued jobs
+                try {
+                    await productionEnv.actionsTreeItem.refresh(context);
+                    const actionTreeItems: ActionTreeItem[] = <ActionTreeItem[]>(await productionEnv.actionsTreeItem.loadAllChildren(context));
+                    const filteredTreeItems: ActionTreeItem[] = actionTreeItems.filter(ti => { return ti.data.status !== Status.Completed; }); // only looking at on-going or queued jobs
 
-                const promises: Promise<void>[] = filteredTreeItems.map(async ti => {
-                    const workflow: ActionsGetWorkflowResponseData = (await octokitClient.actions.getWorkflow({ owner, repo: name, workflow_id: ti.data.workflow_id })).data;
-                    // example of defaultHostname: 'black-bay-07228711e.azurestaticapps.net'
-                    // example of workflow path: '.github/workflows/azure-static-web-apps-black-bay-07228711e.yml'
-                    // to verify the workflow matches the current default host, we need to remove the 'azurestaticapps.net' portions of the defaultHostname
-                    if (workflow.path.includes(swaNode.defaultHostname.split('.')[0])) {
-                        deployActionNode = ti;
-                    }
-                });
+                    const promises: Promise<void>[] = filteredTreeItems.map(async ti => {
+                        const workflow: ActionsGetWorkflowResponseData = (await octokitClient.actions.getWorkflow({ owner, repo: name, workflow_id: ti.data.workflow_id })).data;
+                        // example of defaultHostname: 'black-bay-07228711e.azurestaticapps.net'
+                        // example of workflow path: '.github/workflows/azure-static-web-apps-black-bay-07228711e.yml'
+                        // to verify the workflow matches the current default host, we need to remove the 'azurestaticapps.net' portions of the defaultHostname
+                        if (workflow.path.includes(swaNode.defaultHostname.split('.')[0])) {
+                            deployActionNode = ti;
+                        }
+                    });
 
-                // the map will create an array of promises that will get resolved in parallel here
-                await Promise.all(promises);
+                    // the map will create an array of promises that will get resolved in parallel here
+                    await Promise.all(promises);
+                } catch (err) {
+                    // ignore and retry
+                }
 
                 if (Date.now() > maxTime) {
                     throw new UserCancelledError();
                 }
+
                 await delay(1000);
             }
 
