@@ -31,8 +31,8 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
             const maxTime: number = Date.now() + 30 * 1000; // it can take a little for the action to queue in GitHub, wait for 30 seconds
 
             while (!deployActionNode) {
-                await productionEnv.actionsTreeItem.refresh(context);
                 try {
+                    await productionEnv.actionsTreeItem.refresh(context);
                     const actionTreeItems: ActionTreeItem[] = <ActionTreeItem[]>(await productionEnv.actionsTreeItem.loadAllChildren(context));
                     const filteredTreeItems: ActionTreeItem[] = actionTreeItems.filter(ti => { return ti.data.status !== Status.Completed; }); // only looking at on-going or queued jobs
 
@@ -49,8 +49,7 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
                     // the map will create an array of promises that will get resolved in parallel here
                     await Promise.all(promises);
                 } catch (err) {
-                    // sometimes the web app is not ready and will throw "Cannot find StaticSite with name ---"
-                    // just ignore it, users shouldn't see this
+                    // ignore and retry
                 }
 
                 if (Date.now() > maxTime) {
