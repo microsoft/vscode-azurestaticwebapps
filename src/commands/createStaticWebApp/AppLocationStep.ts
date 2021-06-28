@@ -13,14 +13,15 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const defaultValue: string = context.presetAppLocation || defaultAppLocation
+        const defaultValue: string = context.presetAppLocation || defaultAppLocation;
+        const workspaceSetting: string | undefined = getWorkspaceSetting(appSubpathSetting, context.fsPath);
 
         context.appLocation = (await ext.ui.showInputBox({
-            value: getWorkspaceSetting(appSubpathSetting, context.fsPath) || defaultValue,
+            value: workspaceSetting || defaultValue,
             prompt: localize('enterAppLocation', "Enter the location of your application code. For example, '/' represents the root of your app, while '/app' represents a directory called 'app'.")
         })).trim();
 
-        addLocationTelemetry(context, 'appLocation', defaultValue);
+        addLocationTelemetry(context, 'appLocation', defaultValue, workspaceSetting);
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {

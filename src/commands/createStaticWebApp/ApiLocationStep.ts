@@ -14,13 +14,14 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const defaultValue: string = context.presetApiLocation || defaultApiLocation;
+        const workspaceSetting: string | undefined = getWorkspaceSetting(apiSubpathSetting, context.fsPath);
 
         context.apiLocation = (await ext.ui.showInputBox({
-            value: getWorkspaceSetting(apiSubpathSetting, context.fsPath) || defaultValue,
+            value: workspaceSetting || defaultValue,
             prompt: localize('enterApiLocation', "Enter the location of your Azure Functions code or leave blank to skip this step. For example, 'api' represents a folder called 'api'."),
         })).trim();
 
-        addLocationTelemetry(context, 'apiLocation', defaultValue);
+        addLocationTelemetry(context, 'apiLocation', defaultValue, workspaceSetting);
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
