@@ -13,7 +13,7 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const defaultValue: string = context.presetAppLocation || defaultAppLocation;
+        const defaultValue: string = context.buildPreset?.appLocation ?? defaultAppLocation;
         const workspaceSetting: string | undefined = getWorkspaceSetting(appSubpathSetting, context.fsPath);
 
         context.appLocation = (await ext.ui.showInputBox({
