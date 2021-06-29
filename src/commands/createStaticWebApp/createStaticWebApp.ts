@@ -10,9 +10,8 @@ import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { getGitWorkspaceState, gitPull, GitWorkspaceState, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation, warnIfNotOnDefaultBranch } from '../../utils/gitUtils';
+import { getGitWorkspaceState, GitWorkspaceState, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation, warnIfNotOnDefaultBranch } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
-import { nonNullProp } from '../../utils/nonNull';
 import { getWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showSwaCreated } from '../showSwaCreated';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
@@ -56,8 +55,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     });
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
-
-    await gitPull(nonNullProp(context, 'repo'));
     void showSwaCreated(swaNode);
 
     const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
@@ -66,7 +63,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
 
     void postCreateStaticWebApp(swaNode);
-
     return swaNode;
 }
 

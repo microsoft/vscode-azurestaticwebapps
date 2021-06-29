@@ -22,6 +22,7 @@ import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAp
 import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
 import { createWebSiteClient } from '../utils/azureClients';
 import { getGitHubAccessToken } from '../utils/gitHubUtils';
+import { gitPull } from '../utils/gitUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 import { updateWorkspaceSetting } from '../utils/settingsUtils';
@@ -123,6 +124,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         await wizard.execute();
         context.showCreatingTreeItem(newStaticWebAppName);
 
+        await gitPull(nonNullProp(wizardContext, 'repo'));
         if (wizardContext.fsPath && hasRemote) {
             await updateWorkspaceSetting(appSubpathSetting, wizardContext.appLocation, wizardContext.fsPath);
             await updateWorkspaceSetting(apiSubpathSetting, wizardContext.apiLocation, wizardContext.fsPath);
