@@ -231,21 +231,21 @@ async function tryGetDefaultBranch(context: IActionContext, gitState: VerifiedGi
 
     if (gitState.remoteRepo) {
         defaultBranches = [gitState.remoteRepo.default_branch]
-        context.telemetry.properties.defaultBranch = 'remoteConfig';
+        context.telemetry.properties.defaultBranchSource = 'remoteConfig';
     } else {
-        context.telemetry.properties.defaultBranch = 'defaultConfig';
+        context.telemetry.properties.defaultBranchSource = 'defaultConfig';
         defaultBranches = ['main', 'master'];
         // currently git still uses master as the default branch but will be updated to main so handle both cases
         // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
         try {
             // don't use handleGitError because we're handling the errors differently here
             defaultBranches.unshift(await gitState.repo.getConfig('init.defaultBranch'));
-            context.telemetry.properties.defaultBranch = 'localConfig';
+            context.telemetry.properties.defaultBranchSource = 'localConfig';
         } catch (err) {
             // if no local config setting is found, try global
             try {
                 defaultBranches.unshift(await gitState.repo.getGlobalConfig('init.defaultBranch'));
-                context.telemetry.properties.defaultBranch = 'globalConfig';
+                context.telemetry.properties.defaultBranchSource = 'globalConfig';
             } catch (err) {
                 // VS Code's git API doesn't fail gracefully if no config is found, so swallow the error
             }
