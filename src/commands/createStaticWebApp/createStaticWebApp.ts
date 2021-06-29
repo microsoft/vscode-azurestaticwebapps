@@ -22,6 +22,7 @@ import { setWorkspaceContexts } from './setWorkspaceContexts';
 
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     if (!node) {
+        context.telemetry.properties.cancelStep = 'showTreeItemPicker';
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 
@@ -35,7 +36,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
         await warnIfNotOnDefaultBranch(context, verifiedWorkspace);
-        context.telemetry.properties.cancelStep = undefined;
 
         context.fsPath = folder.uri.fsPath;
         context.repo = verifiedWorkspace.repo;
