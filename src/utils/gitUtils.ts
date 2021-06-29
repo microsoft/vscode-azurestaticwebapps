@@ -231,30 +231,33 @@ async function tryGetDefaultBranch(context: IActionContext, gitState: VerifiedGi
 
     if (gitState.remoteRepo) {
         defaultBranches = [gitState.remoteRepo.default_branch]
+        context.telemetry.properties.defaultBranch = 'remoteConfig';
     } else {
+        context.telemetry.properties.defaultBranch = 'defaultConfig';
         defaultBranches = ['main', 'master'];
         // currently git still uses master as the default branch but will be updated to main so handle both cases
         // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
         try {
             // don't use handleGitError because we're handling the errors differently here
             defaultBranches.unshift(await gitState.repo.getConfig('init.defaultBranch'));
+            context.telemetry.properties.defaultBranch = 'localConfig';
         } catch (err) {
             // if no local config setting is found, try global
             try {
                 defaultBranches.unshift(await gitState.repo.getGlobalConfig('init.defaultBranch'));
+                context.telemetry.properties.defaultBranch = 'globalConfig';
             } catch (err) {
                 // VS Code's git API doesn't fail gracefully if no config is found, so swallow the error
             }
         }
     }
 
-    context.telemetry.properties.defaultBranches = defaultBranches.toString();
-    context.telemetry.properties.branchFoundLocally = 'false';
+    context.telemetry.properties.foundLocalBranch = 'false';
 
     // order matters here because we want the remote/setting, main, then master respectively so use indexing
     for (let i = 0; i < defaultBranches.length; i++) {
         if (gitState.repo.state.refs.some(lBranch => lBranch.name === defaultBranches[i])) {
-            context.telemetry.properties.branchFoundLocally = 'true';
+            context.telemetry.properties.foundLocalBranch = 'true';
             // only return the branch if we can find it locally, otherwise we won't be able to checkout
             return defaultBranches[i];
         }
