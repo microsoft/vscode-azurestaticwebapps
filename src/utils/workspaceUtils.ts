@@ -50,7 +50,7 @@ export async function selectWorkspaceItem(placeHolder: string, options: OpenDial
 export async function getWorkspaceFolder(context: IActionContext): Promise<WorkspaceFolder> {
     let folder: WorkspaceFolder | undefined;
     context.telemetry.properties.cancelStep = 'getWorkspaceFolder';
-    context.telemetry.properties.noWorkspaceResult = 'cancelled';
+    context.telemetry.properties.noWorkspaceResult = 'canceled';
 
     if (!workspace.workspaceFolders || workspace.workspaceFolders.length === 0) {
         const message: string = localize('noWorkspaceWarning', 'You must have a git project open to create a Static Web App.');
