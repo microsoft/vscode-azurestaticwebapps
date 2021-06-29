@@ -89,7 +89,6 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
         context.telemetry.properties.noWorkspaceResult = 'multiRootProject';
     }
 
-    context.telemetry.properties.noWorkspaceResult = undefined;
     context.telemetry.properties.cancelStep = undefined;
     return folder;
 }
