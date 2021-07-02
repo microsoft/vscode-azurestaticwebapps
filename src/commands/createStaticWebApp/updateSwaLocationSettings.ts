@@ -9,11 +9,11 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export async function updateSwaLocationSettings(wizardContext: IStaticWebAppWizardContext): Promise<void> {
     if (wizardContext.fsPath) {
-        if (wizardContext.appLocation !== wizardContext.buildPreset?.appLocation ?? defaultAppLocation) {
+        if (wizardContext.appLocation !== (wizardContext.buildPreset?.appLocation ?? defaultAppLocation)) {
             await updateWorkspaceSetting(appSubpathSetting, wizardContext.appLocation, wizardContext.fsPath);
         }
 
-        if (wizardContext.apiLocation !== wizardContext.buildPreset?.apiLocation ?? defaultApiLocation) {
+        if (wizardContext.apiLocation !== (wizardContext.buildPreset?.apiLocation ?? defaultApiLocation)) {
             await updateWorkspaceSetting(apiSubpathSetting, wizardContext.apiLocation, wizardContext.fsPath);
         }
 
