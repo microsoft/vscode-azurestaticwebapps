@@ -80,8 +80,9 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         if (!await fse.pathExists(gitignorePath)) {
             await fse.writeFile(gitignorePath, defaultGitignoreContents);
         }
-
         await promptForCommit(repo, localize('initCommit', 'Initial commit'));
+
+        context.telemetry.properties.cancelStep = undefined;
     } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {
         context.telemetry.properties.cancelStep = 'adminAccess';
         const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository "{0}" is required. Would you like to create a fork?', gitWorkspaceState.remoteRepo.name);
@@ -91,15 +92,16 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const repoUrl: string = (await createFork(context, gitWorkspaceState.remoteRepo)).data.html_url;
 
         context.telemetry.properties.cancelStep = 'cloneFork';
+
         let forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}".', gitWorkspaceState.remoteRepo.name);
         ext.outputChannel.appendLog(forkSuccess);
         forkSuccess += localize('cloneNewRepo', ' Would you like to clone your new repository?');
+
         const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
         const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, clone)
-
         if (result === clone) {
-            context.telemetry.properties.cancelStep = 'afterCloneFork';
             void cloneRepo(context, repoUrl);
+            context.telemetry.properties.cancelStep = 'afterCloneFork';
         }
 
         throw new UserCancelledError();
@@ -109,6 +111,8 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const commitChanges: string = localize('commitChanges', 'Commit all working changes to create a Static Web App.');
         await ext.ui.showWarningMessage(commitChanges, { modal: true }, { title: localize('commit', 'Commit') });
         await promptForCommit(gitWorkspaceState.repo, localize('commitMade', 'Commit made from VS Code Azure Static Web Apps'));
+
+        context.telemetry.properties.cancelStep = undefined;
     }
 
     const verifiedRepo: Repository = nonNullValue(repo);
@@ -181,8 +185,9 @@ export async function tryGetLocalBranch(): Promise<string | undefined> {
 }
 
 export async function warnIfNotOnDefaultBranch(context: IActionContext, gitState: VerifiedGitWorkspaceState): Promise<void> {
-    const defaultBranch: string | undefined = await tryGetDefaultBranch(gitState)
+    const defaultBranch: string | undefined = await tryGetDefaultBranch(context, gitState)
     context.telemetry.properties.defaultBranch = defaultBranch;
+    context.telemetry.properties.notOnDefault = 'false';
     const { repo } = gitState;
 
     if (defaultBranch && repo.state.HEAD?.name !== defaultBranch) {
@@ -202,6 +207,8 @@ export async function warnIfNotOnDefaultBranch(context: IActionContext, gitState
         } else {
             context.telemetry.properties.checkoutDefault = 'false';
         }
+
+        context.telemetry.properties.cancelStep = undefined;
     }
 }
 
@@ -219,31 +226,38 @@ export async function gitPull(repo: Repository): Promise<void> {
     });
 }
 
-async function tryGetDefaultBranch(gitState: VerifiedGitWorkspaceState): Promise<string | undefined> {
+async function tryGetDefaultBranch(context: IActionContext, gitState: VerifiedGitWorkspaceState): Promise<string | undefined> {
     let defaultBranches: string[];
 
     if (gitState.remoteRepo) {
         defaultBranches = [gitState.remoteRepo.default_branch]
+        context.telemetry.properties.defaultBranchSource = 'remoteConfig';
     } else {
+        context.telemetry.properties.defaultBranchSource = 'defaultConfig';
         defaultBranches = ['main', 'master'];
         // currently git still uses master as the default branch but will be updated to main so handle both cases
         // https://about.gitlab.com/blog/2021/03/10/new-git-default-branch-name/#:~:text=Every%20Git%20repository%20has%20an,Bitkeeper%2C%20a%20predecessor%20to%20Git.
         try {
             // don't use handleGitError because we're handling the errors differently here
             defaultBranches.unshift(await gitState.repo.getConfig('init.defaultBranch'));
+            context.telemetry.properties.defaultBranchSource = 'localConfig';
         } catch (err) {
             // if no local config setting is found, try global
             try {
                 defaultBranches.unshift(await gitState.repo.getGlobalConfig('init.defaultBranch'));
+                context.telemetry.properties.defaultBranchSource = 'globalConfig';
             } catch (err) {
                 // VS Code's git API doesn't fail gracefully if no config is found, so swallow the error
             }
         }
     }
 
+    context.telemetry.properties.foundLocalBranch = 'false';
+
     // order matters here because we want the remote/setting, main, then master respectively so use indexing
     for (let i = 0; i < defaultBranches.length; i++) {
         if (gitState.repo.state.refs.some(lBranch => lBranch.name === defaultBranches[i])) {
+            context.telemetry.properties.foundLocalBranch = 'true';
             // only return the branch if we can find it locally, otherwise we won't be able to checkout
             return defaultBranches[i];
         }
