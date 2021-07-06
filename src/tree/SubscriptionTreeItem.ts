@@ -19,7 +19,6 @@ import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocatio
 import { SkuListStep } from '../commands/createStaticWebApp/SkuListStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
-import { updateSwaLocationSettings } from '../commands/createStaticWebApp/updateSwaLocationSettings';
 import { createWebSiteClient } from '../utils/azureClients';
 import { getGitHubAccessToken } from '../utils/gitHubUtils';
 import { gitPull } from '../utils/gitUtils';
@@ -124,8 +123,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         context.showCreatingTreeItem(newStaticWebAppName);
 
         await gitPull(nonNullProp(wizardContext, 'repo'));
-        await updateSwaLocationSettings(wizardContext);
-
         return new StaticWebAppTreeItem(this, nonNullProp(wizardContext, 'staticWebApp'));
     }
 }
