@@ -13,7 +13,7 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const defaultValue: string = wizardContext.presetOutputLocation || 'build';
+        const defaultValue: string = wizardContext.buildPreset?.outputLocation ?? 'build';
         const workspaceSetting: string | undefined = getWorkspaceSetting(outputSubpathSetting, wizardContext.fsPath);
 
         wizardContext.outputLocation = (await ext.ui.showInputBox({

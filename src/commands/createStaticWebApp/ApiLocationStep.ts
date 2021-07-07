@@ -13,7 +13,7 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const defaultValue: string = context.presetApiLocation || defaultApiLocation;
+        const defaultValue: string = context.buildPreset?.apiLocation ?? defaultApiLocation;
         const workspaceSetting: string | undefined = getWorkspaceSetting(apiSubpathSetting, context.fsPath);
 
         context.apiLocation = (await ext.ui.showInputBox({
@@ -26,7 +26,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
         if (!context.advancedCreation) {
-            context.apiLocation = context.presetApiLocation || defaultApiLocation;
+            context.apiLocation = context.buildPreset?.apiLocation ?? defaultApiLocation;
         }
 
         return context.apiLocation === undefined;

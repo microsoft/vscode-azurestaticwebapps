@@ -19,13 +19,11 @@ import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocatio
 import { SkuListStep } from '../commands/createStaticWebApp/SkuListStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
-import { apiSubpathSetting, appSubpathSetting, outputSubpathSetting } from '../constants';
 import { createWebSiteClient } from '../utils/azureClients';
 import { getGitHubAccessToken } from '../utils/gitHubUtils';
 import { gitPull } from '../utils/gitUtils';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
-import { updateWorkspaceSetting } from '../utils/settingsUtils';
 import { getSingleRootFsPath } from '../utils/workspaceUtils';
 import { StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 
@@ -125,12 +123,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         context.showCreatingTreeItem(newStaticWebAppName);
 
         await gitPull(nonNullProp(wizardContext, 'repo'));
-        if (wizardContext.fsPath && hasRemote) {
-            await updateWorkspaceSetting(appSubpathSetting, wizardContext.appLocation, wizardContext.fsPath);
-            await updateWorkspaceSetting(apiSubpathSetting, wizardContext.apiLocation, wizardContext.fsPath);
-            await updateWorkspaceSetting(outputSubpathSetting, wizardContext.outputLocation, wizardContext.fsPath);
-        }
-
         return new StaticWebAppTreeItem(this, nonNullProp(wizardContext, 'staticWebApp'));
     }
 }

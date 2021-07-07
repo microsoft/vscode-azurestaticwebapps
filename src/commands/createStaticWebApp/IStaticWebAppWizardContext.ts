@@ -5,6 +5,7 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
+import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { Repository } from '../../git';
 import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
 
@@ -29,9 +30,7 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     // prefill the input boxes with preset build values;
     // projects are too flexible for us to force users to use these values
-    presetAppLocation?: string;
-    presetApiLocation?: string;
-    presetOutputLocation?: string;
+    buildPreset?: IBuildPreset;
 
     appLocation?: string;
     apiLocation?: string;
