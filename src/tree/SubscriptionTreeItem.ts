@@ -118,7 +118,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
         if (!context.advancedCreation) {
-            wizardContext.newResourceGroupName = await StaticWebAppNameStep.getRelatedName(wizardContext, newStaticWebAppName);
+            wizardContext.newResourceGroupName = await wizardContext.relatedNameTask;
         }
 
         await wizard.execute();

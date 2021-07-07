@@ -24,13 +24,13 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         wizardContext.newStaticWebAppName = (await ext.ui.showInputBox({
             prompt,
-            value: await StaticWebAppNameStep.getRelatedName(wizardContext, folderName),
+            value: await this.getRelatedName(wizardContext, folderName),
             validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(wizardContext, value)
         })).trim();
         wizardContext.valuesToMask.push(wizardContext.newStaticWebAppName);
 
         if (wizardContext.advancedCreation) {
-            wizardContext.relatedNameTask = StaticWebAppNameStep.getRelatedName(wizardContext, wizardContext.newStaticWebAppName);
+            wizardContext.relatedNameTask = this.getRelatedName(wizardContext, wizardContext.newStaticWebAppName);
         }
     }
 
@@ -47,8 +47,8 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
         return await ResourceGroupListStep.isNameAvailable(wizardContext, name);
     }
 
-    public static async getRelatedName(wizardContext: IStaticWebAppWizardContext, name: string): Promise<string | undefined> {
-        return await new StaticWebAppNameStep().generateRelatedName(wizardContext, name, [staticWebAppNamingRules, resourceGroupNamingRules]);
+    public async getRelatedName(wizardContext: IStaticWebAppWizardContext, name: string): Promise<string | undefined> {
+        return await this.generateRelatedName(wizardContext, name, [staticWebAppNamingRules, resourceGroupNamingRules]);
     }
 
     private async validateStaticWebAppName(wizardContext: IStaticWebAppWizardContext, name: string | undefined): Promise<string | undefined> {
