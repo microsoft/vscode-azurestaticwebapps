@@ -3,5 +3,8 @@
         {
             "path": "../testWorkspace"
         }
-    ]
+    ],
+    "settings": {
+        "security.workspace.trust.enabled": false
+    }
 }
