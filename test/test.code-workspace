@@ -5,6 +5,7 @@
         }
     ],
     "settings": {
-        "security.workspace.trust.enabled": false
+        "security.workspace.trust.enabled": true,
+        "security.workspace.trust.startupPrompt": "never"
     }
 }
