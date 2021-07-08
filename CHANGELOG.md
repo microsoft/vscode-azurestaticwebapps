@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.7.1 - 2021-07-08
+### Fixed
+-  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/13?closed=1)
+
 ## 0.7.0 - 2021-05-12
 ### Added
 - Git project validation prior to `Create Static Web App...`
