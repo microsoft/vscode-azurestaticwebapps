@@ -6,13 +6,9 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { TestOutputChannel } from 'vscode-azureextensiondev';
-import { ext, IActionContext } from '../extension.bundle';
+import { ext } from '../extension.bundle';
 
 export let longRunningTestsEnabled: boolean;
-
-export function createTestActionContext(): IActionContext {
-    return { telemetry: { properties: {}, measurements: {} }, errorHandling: { issueProperties: {} }, ui: testUserInput, valuesToMask: [] };
-}
 
 // Runs before all tests
 suiteSetup(async function (this: Mocha.Context): Promise<void> {
