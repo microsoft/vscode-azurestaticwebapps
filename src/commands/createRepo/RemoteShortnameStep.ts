@@ -5,7 +5,6 @@
 
 import { basename } from 'path';
 import { AzureWizardPromptStep, parseError } from 'vscode-azureextensionui';
-import { ext } from '../../extensionVariables';
 import { cpUtils } from '../../utils/cpUtils';
 import { remoteShortnameExists } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
@@ -14,12 +13,12 @@ import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppW
 
 export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 
-    public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const prompt: string = wizardContext.originExists ? localize('enterRemote', 'Remote "origin" already exists in the local repository. Enter a unique shortname for the new remote') :
+    public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
+        const prompt: string = context.originExists ? localize('enterRemote', 'Remote "origin" already exists in the local repository. Enter a unique shortname for the new remote') :
             localize('enterRemote', 'Enter a unique shortname for the remote Git repository');
-        wizardContext.newRemoteShortname = await ext.ui.showInputBox({
+        context.newRemoteShortname = await context.ui.showInputBox({
             prompt,
-            value: wizardContext.originExists ? undefined : 'origin',
+            value: context.originExists ? undefined : 'origin',
             validateInput: async (value) => {
                 if (value.length === 0) {
                     return localize('invalidLength', 'The name must be at least 1 character.');
@@ -27,7 +26,7 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
                     // remotes have same naming rules as branches
                     // https://stackoverflow.com/questions/41461152/which-characters-are-illegal-within-a-git-remote-name
                     try {
-                        await cpUtils.executeCommand(undefined, wizardContext.fsPath, 'git', 'check-ref-format', '--branch', cpUtils.wrapArgInQuotes(value));
+                        await cpUtils.executeCommand(undefined, context.fsPath, 'git', 'check-ref-format', '--branch', cpUtils.wrapArgInQuotes(value));
                     } catch (err) {
                         if (/is not a valid branch name/g.test(parseError(err).message)) {
                             return localize('notValid', '"{0}" is not a valid remote shortname.', value);
@@ -35,7 +34,7 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
                         // ignore other errors, we may not be able to access git so we shouldn't block users here
                     }
 
-                    const fsPath: string = nonNullProp(wizardContext, 'fsPath');
+                    const fsPath: string = nonNullProp(context, 'fsPath');
                     if (await remoteShortnameExists(fsPath, value)) {
                         return localize('remoteExists', 'Remote shortname "{0}" already exists in "{1}".', value, basename(fsPath));
                     }
@@ -46,7 +45,7 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
         });
     }
 
-    public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !!wizardContext.originExists || !!wizardContext.advancedCreation;
+    public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
+        return !!context.originExists || !!context.advancedCreation;
     }
 }

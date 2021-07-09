@@ -7,8 +7,8 @@ import { IActionContext } from "vscode-azureextensionui";
 import { remoteShortnameExists } from "../../utils/gitUtils";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export async function setWorkspaceContexts(wizardContext: IActionContext & Partial<IStaticWebAppWizardContext>, fsPath: string): Promise<void> {
+export async function setWorkspaceContexts(context: IActionContext & Partial<IStaticWebAppWizardContext>, fsPath: string): Promise<void> {
     const origin: string = 'origin';
-    wizardContext.originExists = await remoteShortnameExists(fsPath, origin);
-    wizardContext.newRemoteShortname = wizardContext.originExists ? undefined : origin;
+    context.originExists = await remoteShortnameExists(fsPath, origin);
+    context.newRemoteShortname = context.originExists ? undefined : origin;
 }

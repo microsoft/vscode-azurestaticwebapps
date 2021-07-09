@@ -6,7 +6,6 @@
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { buildPresets } from '../../buildPresets/buildPresets';
 import { IBuildPreset } from '../../buildPresets/IBuildPreset';
-import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
 import { openUrl } from '../../utils/openUrl';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
@@ -22,7 +21,7 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
         let pick: IAzureQuickPickItem<IBuildPreset | undefined>;
 
         do {
-            pick = await ext.ui.showQuickPick(picks, { placeHolder, suppressPersistence: true });
+            pick = await context.ui.showQuickPick(picks, { placeHolder, suppressPersistence: true });
             if (pick === learnMore) {
                 await openUrl('https://aka.ms/SWABuildPresets');
             }

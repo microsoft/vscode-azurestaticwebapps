@@ -10,7 +10,7 @@ import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
-    public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
+    public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const skus: IAzureQuickPickItem<WebSiteManagementModels.SkuDescription>[] = SkuListStep.getSkus().map(s => {
             return {
                 label: nonNullProp(s, 'name'),
@@ -19,11 +19,11 @@ export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContex
         });
 
         const placeHolder: string = localize('selectSku', 'Select a sku');
-        wizardContext.sku = (await wizardContext.ui.showQuickPick(skus, { placeHolder, suppressPersistence: true })).data;
+        context.sku = (await context.ui.showQuickPick(skus, { placeHolder, suppressPersistence: true })).data;
     }
 
-    public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !wizardContext.sku;
+    public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
+        return !context.sku;
     }
 
     public static getSkus(): WebSiteManagementModels.SkuDescription[] {
