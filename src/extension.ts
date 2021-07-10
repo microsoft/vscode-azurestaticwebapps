@@ -7,7 +7,7 @@
 
 import * as vscode from 'vscode';
 import { registerAppServiceExtensionVariables } from 'vscode-azureappservice';
-import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext } from 'vscode-azureextensionui';
+import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerCommands } from './commands/registerCommands';
@@ -31,7 +31,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'staticWebApps.loadMore');
         ext.treeView = vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true });
         context.subscriptions.push(ext.treeView);
-
+        registerUIExtensionVariables(ext);
         registerCommands();
 
         ext.experimentationService = await createExperimentationService(context);
