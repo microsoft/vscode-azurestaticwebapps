@@ -21,6 +21,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
     context.subscriptions.push(ext.outputChannel);
 
     registerAppServiceExtensionVariables(ext);
+    registerUIExtensionVariables(ext);
 
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
@@ -31,7 +32,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'staticWebApps.loadMore');
         ext.treeView = vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true });
         context.subscriptions.push(ext.treeView);
-        registerUIExtensionVariables(ext);
+
         registerCommands();
 
         ext.experimentationService = await createExperimentationService(context);
