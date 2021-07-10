@@ -14,6 +14,6 @@ export async function deleteStaticWebApp(context: IActionContext, node?: StaticW
     }
 
     const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete "{0}"?', node.name);
-    await ext.ui.showWarningMessage(confirmMessage, { modal: true }, DialogResponses.deleteResponse);
+    await context.ui.showWarningMessage(confirmMessage, { modal: true }, DialogResponses.deleteResponse);
     await node.deleteTreeItem(context);
 }

@@ -5,27 +5,26 @@
 
 import { Octokit } from '@octokit/rest';
 import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureextensionui';
-import { ext } from '../../extensionVariables';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../github/createOctokitClient';
 
 export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
-    public async prompt(wizardContext: IStaticWebAppWizardContext): Promise<void> {
-        const name: string | undefined = wizardContext.newStaticWebAppName;
-        const value: string | undefined = await this.validateRepoName(wizardContext, name) === undefined ? name : undefined;
+    public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
+        const name: string | undefined = context.newStaticWebAppName;
+        const value: string | undefined = await this.validateRepoName(context, name) === undefined ? name : undefined;
 
-        wizardContext.newRepoName = (await ext.ui.showInputBox({
+        context.newRepoName = (await context.ui.showInputBox({
             prompt: localize('newRepoPrompt', 'Enter the name of the new GitHub repository. Azure Static Web Apps automatically builds and deploys using GitHub Actions.'),
-            validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(wizardContext, value),
+            validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(context, value),
             value
         })).trim();
-        wizardContext.valuesToMask.push(wizardContext.newRepoName);
+        context.valuesToMask.push(context.newRepoName);
     }
 
-    public shouldPrompt(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !wizardContext.newRepoName;
+    public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
+        return !context.newRepoName;
     }
 
     protected async isRepoAvailable(context: IStaticWebAppWizardContext, repo: string): Promise<boolean> {

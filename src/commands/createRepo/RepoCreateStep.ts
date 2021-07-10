@@ -20,37 +20,37 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
     // should happen before resource group create step
     public priority: number = 90;
 
-    public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
-        const newRepoName: string = nonNullProp(wizardContext, 'newRepoName');
-        const newRepoIsPrivate: boolean = nonNullProp(wizardContext, 'newRepoIsPrivate');
+    public async execute(context: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
+        const newRepoName: string = nonNullProp(context, 'newRepoName');
+        const newRepoIsPrivate: boolean = nonNullProp(context, 'newRepoIsPrivate');
         const creatingGitHubRepo: string = newRepoIsPrivate ? localize('creatingPrivateGitHubRepo', 'Creating new private GitHub repository "{0}"...', newRepoName) :
             localize('creatingPublicGitHubRepo', 'Creating new public GitHub repository "{0}"...', newRepoName);
         ext.outputChannel.appendLog(creatingGitHubRepo);
         progress.report({ message: creatingGitHubRepo });
 
-        const client: Octokit = await createOctokitClient(wizardContext);
-        const gitHubRepoRes = (isUser(wizardContext.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
-            await client.repos.createInOrg({ org: nonNullProp(wizardContext, 'orgData').login, name: newRepoName, private: newRepoIsPrivate })).data;
-        wizardContext.repoHtmlUrl = gitHubRepoRes.html_url;
+        const client: Octokit = await createOctokitClient(context);
+        const gitHubRepoRes = (isUser(context.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
+            await client.repos.createInOrg({ org: nonNullProp(context, 'orgData').login, name: newRepoName, private: newRepoIsPrivate })).data;
+        context.repoHtmlUrl = gitHubRepoRes.html_url;
 
         const createdGitHubRepo: string = newRepoIsPrivate ? localize('createdPrivateGitHubRepo', 'Created new private GitHub repository "{0}".', newRepoName) :
             localize('createdPublicGitHubRepo', 'Created new public GitHub repository "{0}".', newRepoName);
         ext.outputChannel.appendLog(createdGitHubRepo);
         progress.report({ message: createdGitHubRepo });
 
-        const repo: Repository = nonNullProp(wizardContext, 'repo');
-        const remoteName: string = nonNullProp(wizardContext, 'newRemoteShortname');
+        const repo: Repository = nonNullProp(context, 'repo');
+        const remoteName: string = nonNullProp(context, 'newRemoteShortname');
 
         try {
             await repo.addRemote(remoteName, gitHubRepoRes.clone_url)
             const branch: Branch = await repo.getBranch('HEAD');
-            const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, wizardContext.newRepoName);
+            const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, context.newRepoName);
             ext.outputChannel.appendLog(pushingBranch);
 
             progress.report({ message: pushingBranch });
             await repo.push(remoteName, branch.name, true);
 
-            const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, wizardContext.newRepoName);
+            const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, context.newRepoName);
             ext.outputChannel.appendLog(pushedBranch);
             progress.report({ message: pushedBranch });
 
@@ -61,9 +61,9 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
             while (true) {
                 numOfTries++;
 
-                wizardContext.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(wizardContext, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
-                if (wizardContext.branchData || Date.now() > maxTimeout) {
-                    wizardContext.telemetry.properties.getBranchAttempts = String(numOfTries);
+                context.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(context, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+                if (context.branchData || Date.now() > maxTimeout) {
+                    context.telemetry.properties.getBranchAttempts = String(numOfTries);
                     break;
                 }
 
@@ -73,14 +73,14 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
             handleGitError(err);
         }
 
-        if (!wizardContext.branchData) {
+        if (!context.branchData) {
             // the repo should exist on next create so if the user tries again, it should automatically select the repo
-            wizardContext.telemetry.properties.getBranchAttempts = 'timeout';
-            throw new Error(localize('cantGetBranch', 'Unable to get branch from repo "{0}".  Please try "Create Static Web App..." again.', wizardContext.newRepoName));
+            context.telemetry.properties.getBranchAttempts = 'timeout';
+            throw new Error(localize('cantGetBranch', 'Unable to get branch from repo "{0}".  Please try "Create Static Web App..." again.', context.newRepoName));
         }
     }
 
-    public shouldExecute(wizardContext: IStaticWebAppWizardContext): boolean {
-        return !!(wizardContext.accessToken && wizardContext.newRepoName);
+    public shouldExecute(context: IStaticWebAppWizardContext): boolean {
+        return !!(context.accessToken && context.newRepoName);
     }
 }

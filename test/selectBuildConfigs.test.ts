@@ -5,6 +5,7 @@
 
 import * as assert from 'assert';
 import { Position, Range, TextDocument, TextDocumentContentProvider, Uri, workspace } from 'vscode';
+import { createTestActionContext } from 'vscode-azureextensiondev';
 import { BuildConfig, tryGetSelection } from "../extension.bundle";
 
 interface ISelectBuildConfigTestCase {
@@ -27,7 +28,7 @@ suite('Select Build Configurations in GitHub Workflow Files', () => {
         { workflowIndex: 1, buildConfig: 'api_location', expectedSelection: { line: 7, startChar: 24, endChar: 38 } },
         { workflowIndex: 1, buildConfig: 'app_location', expectedSelection: { line: 6, startChar: 24, endChar: 38 } },
         { workflowIndex: 1, buildConfig: 'output_location', expectedSelection: undefined },
-        { workflowIndex: 1, buildConfig: 'app_artifact_location', expectedSelection: { line: 8, startChar: 33, endChar: 54 }},
+        { workflowIndex: 1, buildConfig: 'app_artifact_location', expectedSelection: { line: 8, startChar: 33, endChar: 54 } },
 
         { workflowIndex: 2, buildConfig: 'api_location', expectedSelection: { line: 7, startChar: 24, endChar: 50 } },
         { workflowIndex: 2, buildConfig: 'app_location', expectedSelection: { line: 6, startChar: 24, endChar: 30 } },
@@ -39,9 +40,9 @@ suite('Select Build Configurations in GitHub Workflow Files', () => {
         { workflowIndex: 3, buildConfig: 'output_location', expectedSelection: undefined },
         { workflowIndex: 3, buildConfig: 'app_artifact_location', expectedSelection: undefined },
 
-        { workflowIndex: 4, buildConfig: 'api_location', expectedSelection: { line: 30, startChar: 24, endChar: 39 }},
-        { workflowIndex: 4, buildConfig: 'app_location', expectedSelection: { line: 29, startChar: 24, endChar: 57 }},
-        { workflowIndex: 4, buildConfig: 'output_location', expectedSelection: { line: 31, startChar: 27, endChar: 54 }},
+        { workflowIndex: 4, buildConfig: 'api_location', expectedSelection: { line: 30, startChar: 24, endChar: 39 } },
+        { workflowIndex: 4, buildConfig: 'app_location', expectedSelection: { line: 29, startChar: 24, endChar: 57 } },
+        { workflowIndex: 4, buildConfig: 'output_location', expectedSelection: { line: 31, startChar: 27, endChar: 54 } },
         { workflowIndex: 4, buildConfig: 'app_artifact_location', expectedSelection: undefined },
     ];
 
@@ -59,7 +60,7 @@ suite('Select Build Configurations in GitHub Workflow Files', () => {
         test(title, async () => {
             const uri: Uri = Uri.parse(`${scheme}:${testCase.workflowIndex}`);
             const configDocument: TextDocument = await workspace.openTextDocument(uri);
-            const selection: Range | undefined = await tryGetSelection(configDocument, testCase.buildConfig);
+            const selection: Range | undefined = await tryGetSelection(await createTestActionContext(), configDocument, testCase.buildConfig);
             let expectedSelection: Range | undefined;
 
             if (testCase.expectedSelection) {
@@ -74,7 +75,7 @@ suite('Select Build Configurations in GitHub Workflow Files', () => {
 });
 
 const workflows: string[] = [
-`jobs:
+    `jobs:
   build_and_deploy_job:
     steps:
       - uses: Azure/static-web-apps-deploy@v0.0.1-preview
@@ -84,7 +85,7 @@ const workflows: string[] = [
           api_location: ""
           output_location: ""`,
 
-`jobs:
+    `jobs:
   build_and_deploy_job:
     steps:
       - uses: Azure/static-web-apps-deploy@v0.0.1-preview
@@ -94,7 +95,7 @@ const workflows: string[] = [
           api_location: 'api/location'
           app_artifact_location: app/artifact/location`,
 
-`jobs:
+    `jobs:
   build_and_deploy_job:
     steps:
       - uses: Azure/static-web-apps-deploy@v0.0.1-preview
@@ -104,7 +105,7 @@ const workflows: string[] = [
           api_location: $p3c!@L-ÇhärãçΤΕrs &()%^*? # Comment
           output_location: "한국어 할 줄 아세요"`,
 
-`jobs:
+    `jobs:
   build_and_deploy_job1:
     steps:
       - uses: Azure/static-web-apps-deploy@v0.0.1-preview
@@ -123,7 +124,7 @@ const workflows: string[] = [
           api_location: "api"
           output_location: "build"`,
 
-`name: Azure Static Web Apps CI/CD
+    `name: Azure Static Web Apps CI/CD
 
 on:
   push:

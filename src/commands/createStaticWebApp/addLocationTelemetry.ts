@@ -5,10 +5,10 @@
 
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export function addLocationTelemetry(wizardContext: IStaticWebAppWizardContext, key: 'appLocation' | 'apiLocation' | 'outputLocation', defaultValue: string, valueFromSetting?: string): void {
-    const value: string | undefined = wizardContext[key];
-    wizardContext.telemetry.properties[`${key}HasSetting`] = (!!valueFromSetting).toString();
-    wizardContext.telemetry.properties[`${key}MatchesSetting`] = (defaultValue === valueFromSetting).toString();
+export function addLocationTelemetry(context: IStaticWebAppWizardContext, key: 'appLocation' | 'apiLocation' | 'outputLocation', defaultValue: string, valueFromSetting?: string): void {
+    const value: string | undefined = context[key];
+    context.telemetry.properties[`${key}HasSetting`] = (!!valueFromSetting).toString();
+    context.telemetry.properties[`${key}MatchesSetting`] = (defaultValue === valueFromSetting).toString();
 
     let telemValue: string;
     if (value === undefined) {
@@ -24,5 +24,5 @@ export function addLocationTelemetry(wizardContext: IStaticWebAppWizardContext, 
         telemValue = 'nonDefault';
     }
 
-    wizardContext.telemetry.properties[key] = telemValue;
+    context.telemetry.properties[key] = telemValue;
 }

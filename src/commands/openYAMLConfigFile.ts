@@ -22,7 +22,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
 
     let yamlFilePath: string | undefined;
 
-    if (node instanceof GitHubConfigGroupTreeItem ){
+    if (node instanceof GitHubConfigGroupTreeItem) {
         yamlFilePath = node.yamlFilePath;
     } else if (node instanceof EnvironmentTreeItem && node.gitHubConfigGroupTreeItems.length) {
         const picks: IAzureQuickPickItem<string>[] = node.gitHubConfigGroupTreeItems.map(configNode => {
@@ -33,7 +33,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
             yamlFilePath = picks[0].data;
         } else {
             const placeHolder: string = localize('selectGitHubConfig', 'Select the GitHub workflow file to open.');
-            yamlFilePath = (await ext.ui.showQuickPick(picks, { placeHolder })).data;
+            yamlFilePath = (await context.ui.showQuickPick(picks, { placeHolder })).data;
         }
     } else {
         const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
@@ -48,17 +48,17 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
     }
 
     const configDocument: TextDocument = await workspace.openTextDocument(yamlFilePath);
-    const selection: Range | undefined = buildConfigToSelect ? await tryGetSelection(configDocument, buildConfigToSelect) : undefined;
+    const selection: Range | undefined = buildConfigToSelect ? await tryGetSelection(context, configDocument, buildConfigToSelect) : undefined;
     await window.showTextDocument(configDocument, { selection });
 }
 
-export async function tryGetSelection(configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {
+export async function tryGetSelection(context: IActionContext, configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {
     const configDocumentText: string = configDocument.getText();
     const buildConfigRegex: RegExp = new RegExp(`${buildConfigToSelect}:`, 'g');
     const buildConfigMatches: RegExpMatchArray | null = configDocumentText.match(buildConfigRegex);
 
     if (buildConfigMatches && buildConfigMatches.length > 1) {
-        void ext.ui.showWarningMessage(localize('foundMultipleBuildConfigs', 'Multiple "{0}" build configurations were found in "{1}".', buildConfigToSelect, basename(configDocument.uri.fsPath)));
+        void context.ui.showWarningMessage(localize('foundMultipleBuildConfigs', 'Multiple "{0}" build configurations were found in "{1}".', buildConfigToSelect, basename(configDocument.uri.fsPath)));
         return undefined;
     }
 

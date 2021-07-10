@@ -6,7 +6,6 @@
 import { Octokit } from "@octokit/rest";
 import { OctokitResponse } from "@octokit/types";
 import { AzureWizardPromptStep, IActionContext, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { ext } from '../../extensionVariables';
 import { ListOrgsForUserData, OrgForAuthenticatedUserData } from "../../gitHubTypings";
 import { createQuickPickFromJsons } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
@@ -19,7 +18,7 @@ export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizard
         let orgData: OrgForAuthenticatedUserData | ListOrgsForUserData | undefined;
 
         do {
-            orgData = (await ext.ui.showQuickPick(this.getOrganizations(context), { placeHolder })).data;
+            orgData = (await context.ui.showQuickPick(this.getOrganizations(context), { placeHolder })).data;
         } while (!orgData);
 
         context.orgData = orgData;

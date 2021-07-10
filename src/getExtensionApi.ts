@@ -6,7 +6,6 @@
 import { commands, Extension, extensions } from "vscode";
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { AzureExtensionApiProvider } from "vscode-azureextensionui/api";
-import { ext } from "./extensionVariables";
 import { API, GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
@@ -19,7 +18,7 @@ export async function getFunctionsApi(context: IActionContext): Promise<AzureFun
         return funcExtension.getApi<AzureFunctionsExtensionApi>('^1.3.0');
     }
 
-    await ext.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install' });
+    await context.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install' });
     const commandToRun: string = 'extension.open';
     void commands.executeCommand(commandToRun, funcExtensionId);
 

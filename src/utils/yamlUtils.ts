@@ -5,7 +5,7 @@
 
 import { readFile } from "fs-extra";
 import { basename } from "path";
-import { ext } from "vscode-azureappservice/out/src/extensionVariables";
+import { IActionContext } from "vscode-azureextensionui";
 import { parse } from "yaml";
 import { BuildConfig, BuildConfigs } from "../tree/GitHubConfigGroupTreeItem";
 import { localize } from "./localize";
@@ -15,9 +15,9 @@ type BuildDeployStep = {
     with?: BuildConfigs
 }
 
-export async function parseYamlFile(yamlFilePath: string): Promise<BuildConfigs | undefined> {
+export async function parseYamlFile(context: IActionContext, yamlFilePath: string): Promise<BuildConfigs | undefined> {
     const contents: string = (await readFile(yamlFilePath)).toString();
-    const buildDeployStep: BuildDeployStep | undefined = await getBuildDeployStep(contents, basename(yamlFilePath));
+    const buildDeployStep: BuildDeployStep | undefined = await getBuildDeployStep(context, contents, basename(yamlFilePath));
 
     if (buildDeployStep) {
         return {
@@ -31,7 +31,7 @@ export async function parseYamlFile(yamlFilePath: string): Promise<BuildConfigs 
     return undefined;
 }
 
-async function getBuildDeployStep(yamlFileContents: string, yamlFileName: string): Promise<BuildDeployStep | undefined> {
+async function getBuildDeployStep(context: IActionContext, yamlFileContents: string, yamlFileName: string): Promise<BuildDeployStep | undefined> {
     if (/Azure\/static-web-apps-deploy/.test(yamlFileContents)) {
         const parsedYaml = <{ jobs?: { steps?: BuildDeployStep[] }[] }>await parse(yamlFileContents);
 
@@ -44,12 +44,12 @@ async function getBuildDeployStep(yamlFileContents: string, yamlFileName: string
 
                     if (stepIncludesAppLocation && stepIncludesApiLocation && stepIncludesOutputLocation) {
                         return <BuildDeployStep>step;
-                    } else if(!stepIncludesAppLocation) {
-                        showYamlWarningMessage(yamlFileName, 'app_location');
+                    } else if (!stepIncludesAppLocation) {
+                        showYamlWarningMessage(context, yamlFileName, 'app_location');
                     } else if (!stepIncludesApiLocation) {
-                        showYamlWarningMessage(yamlFileName, 'api_location');
+                        showYamlWarningMessage(context, yamlFileName, 'api_location');
                     } else {
-                        showYamlWarningMessage(yamlFileName, 'output_location');
+                        showYamlWarningMessage(context, yamlFileName, 'output_location');
                     }
 
                     // Ignore any other builddeploy steps
@@ -67,6 +67,6 @@ function stepIncludesBuildConfig(step: BuildDeployStep, buildConfig: BuildConfig
     return !!step.with?.hasOwnProperty(buildConfig);
 }
 
-function showYamlWarningMessage(yamlFileName: string, buildConfig: BuildConfig): void {
-    void ext.ui.showWarningMessage(localize('mustIncludeBuildConfig', `"{0}" must include "{1}". See the [workflow file guide](https://aka.ms/AAbrcox).`, yamlFileName, buildConfig));
+function showYamlWarningMessage(context: IActionContext, yamlFileName: string, buildConfig: BuildConfig): void {
+    void context.ui.showWarningMessage(localize('mustIncludeBuildConfig', `"{0}" must include "{1}". See the [workflow file guide](https://aka.ms/AAbrcox).`, yamlFileName, buildConfig));
 }

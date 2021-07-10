@@ -49,7 +49,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
 
             for (const yamlFile of yamlFiles) {
                 const yamlFilePath: string = join(workflowsDir, yamlFile);
-                const buildConfigs: BuildConfigs | undefined = await parseYamlFile(yamlFilePath);
+                const buildConfigs: BuildConfigs | undefined = await parseYamlFile(context, yamlFilePath);
                 buildConfigs && treeItems.push(new GitHubConfigGroupTreeItem(parent, yamlFilePath, buildConfigs));
             }
         }
@@ -80,7 +80,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
         return treeItems;
     }
 
-    public async refreshImpl(): Promise<void> {
-        this.buildConfigs = await parseYamlFile(this.yamlFilePath);
+    public async refreshImpl(context: IActionContext): Promise<void> {
+        this.buildConfigs = await parseYamlFile(context, this.yamlFilePath);
     }
 }

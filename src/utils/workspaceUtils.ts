@@ -8,7 +8,6 @@ import { commands, MessageItem, OpenDialogOptions, Uri, window, workspace, Works
 import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { NoWorkspaceError } from '../errors';
-import { ext } from '../extensionVariables';
 import { localize } from "./localize";
 
 export function getSingleRootFsPath(): string | undefined {
@@ -16,8 +15,9 @@ export function getSingleRootFsPath(): string | undefined {
     return workspace.workspaceFolders && workspace.workspaceFolders.length === 1 ? workspace.workspaceFolders[0].uri.fsPath : undefined;
 }
 
-export async function selectWorkspaceFolder(placeHolder: string, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {
+export async function selectWorkspaceFolder(context: IActionContext, placeHolder: string, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {
     return await selectWorkspaceItem(
+        context,
         placeHolder,
         {
             canSelectFiles: false,
@@ -29,7 +29,7 @@ export async function selectWorkspaceFolder(placeHolder: string, getSubPath?: (f
         getSubPath);
 }
 
-export async function selectWorkspaceItem(placeHolder: string, options: OpenDialogOptions, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {
+export async function selectWorkspaceItem(context: IActionContext, placeHolder: string, options: OpenDialogOptions, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {
     const folders: readonly WorkspaceFolder[] = workspace.workspaceFolders || [];
     const folderPicks: IAzureQuickPickItem<string | undefined>[] = await Promise.all(folders.map(async (f: WorkspaceFolder) => {
         let subpath: string | undefined;
@@ -42,9 +42,9 @@ export async function selectWorkspaceItem(placeHolder: string, options: OpenDial
     }));
 
     folderPicks.push({ label: localize('browse', '$(file-directory) Browse...'), description: '', data: undefined });
-    const folder: IAzureQuickPickItem<string | undefined> = await ext.ui.showQuickPick(folderPicks, { placeHolder });
+    const folder: IAzureQuickPickItem<string | undefined> = await context.ui.showQuickPick(folderPicks, { placeHolder });
 
-    return folder.data ? folder.data : (await ext.ui.showOpenDialog(options))[0].fsPath;
+    return folder.data ? folder.data : (await context.ui.showOpenDialog(options))[0].fsPath;
 }
 
 export async function getWorkspaceFolder(context: IActionContext): Promise<WorkspaceFolder> {

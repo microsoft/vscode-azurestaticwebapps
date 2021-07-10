@@ -5,7 +5,6 @@
 
 import { AzureWizardPromptStep } from "vscode-azureextensionui";
 import { apiSubpathSetting, defaultApiLocation } from "../../constants";
-import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
@@ -16,7 +15,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
         const defaultValue: string = context.buildPreset?.apiLocation ?? defaultApiLocation;
         const workspaceSetting: string | undefined = getWorkspaceSetting(apiSubpathSetting, context.fsPath);
 
-        context.apiLocation = (await ext.ui.showInputBox({
+        context.apiLocation = (await context.ui.showInputBox({
             value: workspaceSetting || defaultValue,
             prompt: localize('enterApiLocation', "Enter the location of your Azure Functions code or leave blank to skip this step. For example, 'api' represents a folder called 'api'."),
         })).trim();
