@@ -58,7 +58,7 @@ export async function tryGetSelection(context: IActionContext, configDocument: T
     const buildConfigMatches: RegExpMatchArray | null = configDocumentText.match(buildConfigRegex);
 
     if (buildConfigMatches && buildConfigMatches.length > 1) {
-        void context.ui.showWarningMessage(localize('foundMultipleBuildConfigs', 'Multiple "{0}" build configurations were found in "{1}".', buildConfigToSelect, basename(configDocument.uri.fsPath)));
+        void context.ui.showWarningMessage(localize('foundMultipleBuildConfigs', 'Multiple "{0}" workflow files were found in "{1}".', buildConfigToSelect, basename(configDocument.uri.fsPath)));
         return undefined;
     }
 

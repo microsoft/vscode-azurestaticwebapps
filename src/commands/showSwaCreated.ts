@@ -17,13 +17,13 @@ export async function showSwaCreated(swaNode: StaticWebAppTreeItem): Promise<voi
         const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);
         ext.outputChannel.appendLog(createdSs);
 
-        const viewEditConfig: MessageItem = { title: localize('viewEditConfig', 'View/Edit Config') };
-        await window.showInformationMessage(createdSs, showActionsMsg, viewEditConfig).then(async (result) => {
+        const viewEditWorkflow: MessageItem = { title: localize('viewEditWorkflow', 'View/Edit Workflow') };
+        await window.showInformationMessage(createdSs, showActionsMsg, viewEditWorkflow).then(async (result) => {
             context.telemetry.properties.clicked = 'canceled';
             if (result === showActionsMsg) {
                 await showActions(context, swaNode);
                 context.telemetry.properties.clicked = 'showActions';
-            } else if (result === viewEditConfig) {
+            } else if (result === viewEditWorkflow) {
                 await openYAMLConfigFile(context, swaNode);
                 context.telemetry.properties.clicked = 'openConfig';
             }
