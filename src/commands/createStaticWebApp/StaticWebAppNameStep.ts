@@ -8,6 +8,7 @@ import * as path from 'path';
 import { AzureNameStep, IAzureNamingRules, ResourceGroupListStep, resourceGroupNamingRules } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from '../../utils/nonNull';
+import { uiUtils } from '../../utils/uiUtils';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
@@ -17,7 +18,7 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
     invalidCharsRegExp: /[^a-zA-Z0-9\-]/
 };
 
-let listOfSites: WebSiteManagementModels.StaticSitesListResponse | undefined;
+let listOfSites: WebSiteManagementModels.StaticSiteARMResource[] | undefined;
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
@@ -66,9 +67,9 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
 
     private async isSwaNameAvailable(context: IStaticWebAppWizardContext, resourceName: string): Promise<boolean> {
         // Our implementation is that Static Web app names must be unique to the subscription.
-        listOfSites = listOfSites || await context.client.staticSites.list();
+        listOfSites = listOfSites || await uiUtils.listAll(context.client.staticSites, context.client.staticSites.list());
         return !listOfSites.some(ss => {
-            return ss.name === resourceName;
+            return ss.name?.toLocaleLowerCase() === resourceName.toLocaleLowerCase();
         });
 
     }
