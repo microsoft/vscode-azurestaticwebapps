@@ -36,14 +36,13 @@ export function createQuickPickFromJsons<T>(data: T[], label: string): IAzureQui
     return quickPicks;
 }
 
-export async function getGitHubAccessToken(context: IActionContext): Promise<string> {
+export async function getGitHubAccessToken(): Promise<string> {
     const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
     try {
         return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
     } catch (error) {
         if (parseError(error).message === 'User did not consent to login.') {
-            context.telemetry.properties.cancelStep = 'getGitHubToken';
-            throw new UserCancelledError();
+            throw new UserCancelledError('getGitHubToken');
         }
 
         throw error;

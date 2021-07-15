@@ -52,7 +52,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
         const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(context), client, ...context, ...this.root };
+        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...this.root };
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];

@@ -21,7 +21,6 @@ import { setWorkspaceContexts } from './setWorkspaceContexts';
 
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
     if (!node) {
-        context.telemetry.properties.cancelStep = 'showTreeItemPicker';
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
 

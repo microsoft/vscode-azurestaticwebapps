@@ -61,9 +61,8 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
     if (!gitWorkspaceState.repo) {
         const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to proceed. Create a local git repository and GitHub remote to create a Static Web App.');
-        context.telemetry.properties.cancelStep = 'initRepo';
 
-        await context.ui.showWarningMessage(gitRequired, { modal: true }, { title: localize('create', 'Create') });
+        await context.ui.showWarningMessage(gitRequired, { modal: true, stepName: 'initRepo' }, { title: localize('create', 'Create') });
         const gitApi: API = await getGitApi();
         try {
             repo = await gitApi.init(uri)
@@ -80,19 +79,16 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         if (!await fse.pathExists(gitignorePath)) {
             await fse.writeFile(gitignorePath, defaultGitignoreContents);
         }
-        await promptForCommit(context, repo, localize('initCommit', 'Initial commit'));
-
-        context.telemetry.properties.cancelStep = undefined;
+        await promptForCommit(context, repo, localize('initCommit', 'Initial commit'), 'initCommit');
     } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {
-        context.telemetry.properties.cancelStep = 'adminAccess';
+
         const adminAccess: string = localize('adminAccess', 'Admin access to the GitHub repository "{0}" is required. Would you like to create a fork?', gitWorkspaceState.remoteRepo.name);
         const createForkItem: MessageItem = { title: localize('createFork', 'Create Fork') };
-        await context.ui.showWarningMessage(adminAccess, { modal: true }, createForkItem);
+        await context.ui.showWarningMessage(adminAccess, { modal: true, stepName: 'adminAccess' }, createForkItem);
 
         const repoUrl: string = (await createFork(context, gitWorkspaceState.remoteRepo)).data.html_url;
 
-        context.telemetry.properties.cancelStep = 'cloneFork';
-
+        let cancelStep: string = 'cloneFork';
         let forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}".', gitWorkspaceState.remoteRepo.name);
         ext.outputChannel.appendLog(forkSuccess);
         forkSuccess += localize('cloneNewRepo', ' Would you like to clone your new repository?');
@@ -101,18 +97,14 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, clone)
         if (result === clone) {
             void cloneRepo(context, repoUrl);
-            context.telemetry.properties.cancelStep = 'afterCloneFork';
+            cancelStep = 'afterCloneFork';
         }
 
-        throw new UserCancelledError();
+        throw new UserCancelledError(cancelStep);
     } else if (gitWorkspaceState.dirty && gitWorkspaceState.repo) {
-        context.telemetry.properties.cancelStep = 'dirtyWorkspace';
-
         const commitChanges: string = localize('commitChanges', 'Commit all working changes to create a Static Web App.');
-        await context.ui.showWarningMessage(commitChanges, { modal: true }, { title: localize('commit', 'Commit') });
-        await promptForCommit(context, gitWorkspaceState.repo, localize('commitMade', 'Commit made from VS Code Azure Static Web Apps'));
-
-        context.telemetry.properties.cancelStep = undefined;
+        await context.ui.showWarningMessage(commitChanges, { modal: true, stepName: 'dirtyWorkspace' }, { title: localize('commit', 'Commit') });
+        await promptForCommit(context, gitWorkspaceState.repo, localize('commitMade', 'Commit made from VS Code Azure Static Web Apps'), 'dirtyCommit');
     }
 
     const verifiedRepo: Repository = nonNullValue(repo);
@@ -157,11 +149,11 @@ export async function remoteShortnameExists(fsPath: string, remoteName: string):
 }
 
 
-async function promptForCommit(context: IActionContext, repo: Repository, value?: string): Promise<void> {
+async function promptForCommit(context: IActionContext, repo: Repository, value?: string, stepName?: string): Promise<void> {
     const commitPrompt: string = localize('commitPrompt', 'Enter a commit message.');
     const commitOptions: CommitOptions = { all: true };
 
-    const commitMsg: string = await context.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value });
+    const commitMsg: string = await context.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value, stepName });
     try {
         await repo.commit(commitMsg, commitOptions)
     } catch (err) {
@@ -191,12 +183,11 @@ export async function warnIfNotOnDefaultBranch(context: IActionContext, gitState
     const { repo } = gitState;
 
     if (defaultBranch && repo.state.HEAD?.name !== defaultBranch) {
-        context.telemetry.properties.cancelStep = 'defaultBranch';
         context.telemetry.properties.notOnDefault = 'true';
 
         const checkoutButton: MessageItem = { title: localize('checkout', 'Checkout "{0}"', defaultBranch) };
         const result: MessageItem = await context.ui.showWarningMessage(localize('deployBranch', 'It is recommended to connect your SWA to the default branch "{0}".  Would you like to continue with branch "{1}"?',
-            defaultBranch, repo.state.HEAD?.name), { modal: true }, checkoutButton, { title: localize('continue', 'Continue') });
+            defaultBranch, repo.state.HEAD?.name), { modal: true, stepName: 'defaultBranch' }, checkoutButton, { title: localize('continue', 'Continue') });
         if (result === checkoutButton) {
             try {
                 await repo.checkout(defaultBranch);
@@ -207,8 +198,6 @@ export async function warnIfNotOnDefaultBranch(context: IActionContext, gitState
         } else {
             context.telemetry.properties.checkoutDefault = 'false';
         }
-
-        context.telemetry.properties.cancelStep = undefined;
     }
 }
 

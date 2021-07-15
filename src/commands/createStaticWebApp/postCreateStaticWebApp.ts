@@ -53,7 +53,7 @@ export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Pro
                 }
 
                 if (Date.now() > maxTime) {
-                    throw new UserCancelledError();
+                    throw new UserCancelledError('postCreateStaticWebAppTimedOut');
                 }
 
                 await delay(1000);
