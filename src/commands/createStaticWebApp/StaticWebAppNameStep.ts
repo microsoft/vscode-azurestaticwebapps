@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { WebSiteManagementModels } from '@azure/arm-appservice';
 import * as path from 'path';
 import { AzureNameStep, IAzureNamingRules, ResourceGroupListStep, resourceGroupNamingRules } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
@@ -15,6 +16,8 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
     // only accepts alphanumeric and "-"
     invalidCharsRegExp: /[^a-zA-Z0-9\-]/
 };
+
+let listOfSites: WebSiteManagementModels.StaticSitesListResponse | undefined;
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
@@ -62,14 +65,11 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
     }
 
     private async isSwaNameAvailable(context: IStaticWebAppWizardContext, resourceName: string): Promise<boolean> {
-        // Static Web app names must be unique to the current resource group.
-        try {
-            await context.client.staticSites.getStaticSite(resourceName, resourceName);
-            return false;
+        // Our implementation is that Static Web app names must be unique to the subscription.
+        listOfSites = listOfSites || await context.client.staticSites.list();
+        return !listOfSites.some(ss => {
+            return ss.name === resourceName;
+        });
 
-        } catch (error) {
-            // if an error is thrown, it means the SWA name is available
-            return true;
-        }
     }
 }
