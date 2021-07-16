@@ -25,7 +25,6 @@ export class StaticWebAppTreeItem extends AzureParentTreeItem implements IAzureR
     public readonly childTypeLabel: string = localize('environment', 'Environment');
 
     public name: string;
-    public id: string;
     public resourceGroup: string;
     public label: string;
     public repositoryUrl: string;

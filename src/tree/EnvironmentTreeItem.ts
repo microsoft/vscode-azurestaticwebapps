@@ -39,7 +39,6 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     public data: WebSiteManagementModels.StaticSiteBuildARMResource;
 
     public name: string;
-    public id: string;
     public label: string;
     public repositoryUrl: string;
     public branch: string;
