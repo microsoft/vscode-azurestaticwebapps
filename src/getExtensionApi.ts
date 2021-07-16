@@ -18,13 +18,12 @@ export async function getFunctionsApi(context: IActionContext): Promise<AzureFun
         return funcExtension.getApi<AzureFunctionsExtensionApi>('^1.3.0');
     }
 
-    await context.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install' });
+    await context.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install', stepName: 'installFunctions' });
     const commandToRun: string = 'extension.open';
     void commands.executeCommand(commandToRun, funcExtensionId);
 
-    context.telemetry.properties.cancelStep = 'installFunctions';
     // we still need to throw an error even if the user installs
-    throw new UserCancelledError();
+    throw new UserCancelledError('postInstallFunctions');
 }
 
 export async function getGitApi(): Promise<API> {
