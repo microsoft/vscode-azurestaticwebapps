@@ -10,7 +10,7 @@ import { IStaticWebAppWizardContext } from "../createStaticWebApp/IStaticWebAppW
 
 // token should only be passed in during a wizard; otherwise retrieve a new token for the request
 export async function createOctokitClient(context: IActionContext & Partial<IStaticWebAppWizardContext>): Promise<Octokit> {
-    const token: string = context.accessToken || await getGitHubAccessToken(context);
+    const token: string = context.accessToken || await getGitHubAccessToken();
     return new Octokit(
         {
             userAgent: appendExtensionUserAgent(),

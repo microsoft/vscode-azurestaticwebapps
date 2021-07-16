@@ -49,14 +49,15 @@ export async function selectWorkspaceItem(context: IActionContext, placeHolder: 
 
 export async function getWorkspaceFolder(context: IActionContext): Promise<WorkspaceFolder> {
     let folder: WorkspaceFolder | undefined;
-    context.telemetry.properties.cancelStep = 'getWorkspaceFolder';
     context.telemetry.properties.noWorkspaceResult = 'canceled';
 
     if (!workspace.workspaceFolders || workspace.workspaceFolders.length === 0) {
-        const message: string = localize('noWorkspaceWarning', 'You must have a git project open to create a Static Web App.');
+        const noWorkspaceWarning: string = 'noWorkspaceWarning';
+        const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
         const cloneProject: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
-        const openExistingProject: MessageItem = { title: localize('openExistingProject', 'Open existing project') };
-        const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true }, openExistingProject, cloneProject);
+        const openExistingProject: string = 'openExistingProject';
+        const openExistingProjectMi: MessageItem = { title: localize(openExistingProject, 'Open existing project') };
+        const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMi, cloneProject);
 
         if (result === cloneProject) {
             await cloneRepo(context, '');
@@ -66,29 +67,29 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
                 canSelectFiles: false,
                 canSelectFolders: true,
                 canSelectMany: false,
-                openLabel: localize('open', 'Open')
+                openLabel: localize('open', 'Open'),
+                stepName: openExistingProject
             });
             // don't wait
             void commands.executeCommand('vscode.openFolder', uri[0]);
-            context.telemetry.properties.noWorkspaceResult = 'openExistingProject';
+            context.telemetry.properties.noWorkspaceResult = openExistingProject;
         }
 
-        context.telemetry.properties.cancelStep = undefined;
         context.errorHandling.suppressDisplay = true;
         throw new NoWorkspaceError();
     } else if (workspace.workspaceFolders.length === 1) {
         folder = workspace.workspaceFolders[0];
         context.telemetry.properties.noWorkspaceResult = 'singleRootProject';
     } else {
-        const placeHolder: string = localize('selectProjectFolder', 'Select the folder containing your SWA project');
+        const selectProjectFolder: string = 'selectProjectFolder';
+        const placeHolder: string = localize(selectProjectFolder, 'Select the folder containing your SWA project');
         folder = await window.showWorkspaceFolderPick({ placeHolder });
         if (!folder) {
-            throw new UserCancelledError();
+            throw new UserCancelledError(selectProjectFolder);
         }
 
         context.telemetry.properties.noWorkspaceResult = 'multiRootProject';
     }
 
-    context.telemetry.properties.cancelStep = undefined;
     return folder;
 }
