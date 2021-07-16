@@ -10,7 +10,7 @@ import { BuildConfig, GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeI
 export class GitHubConfigTreeItem extends AzExtTreeItem {
     public static contextValue: string = 'azureStaticGitHubConfig';
     public contextValue: string = GitHubConfigTreeItem.contextValue;
-    public commandId: string = 'staticWebApps.openYAMLConfigFile';
+
     public commandArgs: unknown[];
     public readonly buildConfig: string;
     public buildConfigValue: string;
@@ -20,6 +20,8 @@ export class GitHubConfigTreeItem extends AzExtTreeItem {
         super(parent);
         this.buildConfig = buildConfig;
         this.buildConfigValue = buildConfigValue;
+
+        this.commandId = 'staticWebApps.openYAMLConfigFile';
         this.commandArgs = [this.parent, this.buildConfig];
     }
 

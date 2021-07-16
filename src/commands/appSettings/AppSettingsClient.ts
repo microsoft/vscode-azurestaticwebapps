@@ -12,7 +12,6 @@ import { createWebSiteClient } from '../../utils/azureClients';
 export class AppSettingsClient implements IAppSettingsClient {
 
     public isLinux: boolean;
-    public ssId: string;
     public parentName: string;
     public fullName: string;
     public resourceGroup: string;
@@ -21,7 +20,6 @@ export class AppSettingsClient implements IAppSettingsClient {
     public isBuild: boolean;
 
     constructor(node: EnvironmentTreeItem) {
-        this.ssId = node.id;
         this.parentName = node.parent.name;
         this.fullName = `${this.parentName}/${node.branch}`;
         this.resourceGroup = node.parent.resourceGroup;
