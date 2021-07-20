@@ -7,6 +7,7 @@ import { Octokit } from '@octokit/rest';
 import { authentication, ProgressLocation, window } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
+import { githubAuthProviderId, githubScopes } from '../constants';
 import { ext } from '../extensionVariables';
 import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposCreateForkResponse, ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
@@ -37,9 +38,8 @@ export function createQuickPickFromJsons<T>(data: T[], label: string): IAzureQui
 }
 
 export async function getGitHubAccessToken(): Promise<string> {
-    const scopes: string[] = ['repo', 'workflow', 'admin:public_key'];
     try {
-        return (await authentication.getSession('github', scopes, { createIfNone: true })).accessToken;
+        return (await authentication.getSession(githubAuthProviderId, githubScopes, { createIfNone: true })).accessToken;
     } catch (error) {
         if (parseError(error).message === 'User did not consent to login.') {
             throw new UserCancelledError('getGitHubToken');
