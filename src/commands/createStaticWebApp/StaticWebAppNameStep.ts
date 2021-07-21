@@ -58,10 +58,9 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
             if (!await this.isSwaNameAvailable(context, context.resourceGroup?.name, name)) {
                 return localize('nameAlreadyExists', 'Static web app name "{0}" already exists in your resource group "{1}".', name, context.resourceGroup?.name);
             }
-
-        } else {
-            return undefined;
         }
+
+        return undefined;
     }
 
     private async isSwaNameAvailable(context: IStaticWebAppWizardContext, rgName: string | undefined, name: string): Promise<boolean> {
