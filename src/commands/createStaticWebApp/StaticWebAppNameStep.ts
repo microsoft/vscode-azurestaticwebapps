@@ -3,12 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementModels } from '@azure/arm-appservice';
 import * as path from 'path';
 import { AzureNameStep, IAzureNamingRules, ResourceGroupListStep, resourceGroupNamingRules } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
 import { nonNullProp } from '../../utils/nonNull';
-import { uiUtils } from '../../utils/uiUtils';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
@@ -17,8 +15,6 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
     // only accepts alphanumeric and "-"
     invalidCharsRegExp: /[^a-zA-Z0-9\-]/
 };
-
-let listOfSites: WebSiteManagementModels.StaticSiteARMResource[] | undefined;
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
@@ -41,7 +37,7 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
 
     protected async isRelatedNameAvailable(context: IStaticWebAppWizardContext, name: string): Promise<boolean> {
         if (!context.newStaticWebAppName) {
-            return await this.isSwaNameAvailable(context, name);
+            return await this.isSwaNameAvailable(context, context.resourceGroup?.name, name);
         }
 
         // if we already have a swa name, then we're checking for resource group name
@@ -58,19 +54,29 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
             return localize('invalidLength', 'The name must be between {0} and {1} characters.', staticWebAppNamingRules.minLength, staticWebAppNamingRules.maxLength);
         } else if (staticWebAppNamingRules.invalidCharsRegExp.test(name)) {
             return localize('invalidChars', 'The name can only contain alphanumeric characters and the symbol "-"');
-        } else if (!await this.isSwaNameAvailable(context, name)) {
-            return localize('nameAlreadyExists', 'Static web app name "{0}" already exists in your subscription.', name, name);
+        } else if (context.advancedCreation) {
+            if (!await this.isSwaNameAvailable(context, context.resourceGroup?.name, name)) {
+                return localize('nameAlreadyExists', 'Static web app name "{0}" already exists in your resource group "{1}".', name, context.resourceGroup?.name);
+            }
+
         } else {
             return undefined;
         }
     }
 
-    private async isSwaNameAvailable(context: IStaticWebAppWizardContext, resourceName: string): Promise<boolean> {
-        // Our implementation is that Static Web app names must be unique to the subscription.
-        listOfSites = listOfSites || await uiUtils.listAll(context.client.staticSites, context.client.staticSites.list());
-        return !listOfSites.some(ss => {
-            return ss.name?.toLocaleLowerCase() === resourceName.toLocaleLowerCase();
-        });
+    private async isSwaNameAvailable(context: IStaticWebAppWizardContext, rgName: string | undefined, name: string): Promise<boolean> {
+        if (!rgName) {
+            // if the resource doesn't exist, any name is available
+            return true;
+        }
+        // Static Web app names must be unique to the current resource group.
+        try {
+            await context.client.staticSites.getStaticSite(rgName, name);
+            return false;
 
+        } catch (error) {
+            // if an error is thrown, it means the SWA name is available
+            return true;
+        }
     }
 }

@@ -57,15 +57,13 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
-        promptSteps.push(new StaticWebAppNameStep());
-
         if (!context.advancedCreation) {
             executeSteps.push(new ResourceGroupCreateStep());
         } else {
             promptSteps.push(new ResourceGroupListStep());
         }
 
-        promptSteps.push(new SkuListStep());
+        promptSteps.push(new StaticWebAppNameStep(), new SkuListStep());
         const hasRemote: boolean = !!wizardContext.repoHtmlUrl;
 
         // if the local project doesn't have a GitHub remote, we will create it for them
