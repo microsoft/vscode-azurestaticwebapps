@@ -18,6 +18,7 @@ export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeIte
     constructor(parent: JobTreeItem, data: ActionWorkflowStepData) {
         super(parent);
         this.data = data;
+        this.commandId = 'staticWebApps.openActionLog';
     }
 
     public get iconPath(): TreeItemIconPath {

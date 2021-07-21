@@ -35,5 +35,6 @@
     "staticWebApps.openYAMLConfigFile": "Edit Configuration...",
     "staticWebApps.outputSubpath": "The default value for the location of your build output relative to your application code location",
     "staticWebApps.reportIssue": "Report Issue...",
-    "staticWebApps.createSwaConfigFile": "Create Configuration File"
+    "staticWebApps.createSwaConfigFile": "Create Configuration File",
+    "staticWebApps.openActionLog": "Open GitHub Action Log"
 }
