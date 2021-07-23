@@ -22,7 +22,7 @@ module.exports = {
         "no-useless-escape": "off",
         "no-inner-declarations": "off",
         "no-constant-condition": ["error", { "checkLoops": false }],
-        "no-restricted-imports": ["error", { "paths": ["vscode-azureappservice/out/src/extensionVariables", "**/*/extension.bundle"] }],
+        "no-restricted-imports": ["error", { "patterns": ["vscode-azureappservice/out/src/extensionVariables", "**/*/extension.bundle"] }],
         "@typescript-eslint/prefer-regexp-exec": "off",
         "@typescript-eslint/no-unused-vars": [
             "error",
