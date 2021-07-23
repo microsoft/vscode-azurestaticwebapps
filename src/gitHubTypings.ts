@@ -24,6 +24,7 @@ export type BranchData = Endpoints["GET /repos/{owner}/{repo}/branches"]["respon
 export type RepoResponse = Endpoints["GET /orgs/{org}/repos"]["response"] | Endpoints["GET /users/{username}/repos"]["response"];
 
 export type ReposCreateForkResponse = RestEndpointMethodTypes["repos"]["createFork"]["response"];
+export type ReposCreateUsingTemplateResponse = RestEndpointMethodTypes["repos"]["createUsingTemplate"]["response"];
 
 // Doc for these parameter values: https://developer.github.com/v3/checks/runs/#parameters
 export enum Conclusion {

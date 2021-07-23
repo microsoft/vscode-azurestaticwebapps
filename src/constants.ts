@@ -26,6 +26,8 @@ export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'Only
 export const githubAuthProviderId: string = 'github';
 export const githubScopes: string[] = ['repo', 'workflow', 'admin:public_key'];
 
+export const templateReposUsername: string = 'staticwebdev';
+
 // Source: https://github.com/github/gitignore/blob/master/Node.gitignore
 export const defaultGitignoreContents: string = `# Logs
 logs

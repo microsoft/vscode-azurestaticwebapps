@@ -14,6 +14,12 @@ export async function createOctokitClient(context: IActionContext & Partial<ISta
     return new Octokit(
         {
             userAgent: appendExtensionUserAgent(),
-            auth: token
+            auth: token,
+            /**
+             * 'baptiste' preview needed to work with template repos
+             * see https://docs.github.com/en/rest/overview/api-previews#create-and-use-repository-templates
+             * and https://developer.github.com/changes/2019-07-16-repository-templates-api/
+             */
+            previews: ['baptiste']
         });
 }

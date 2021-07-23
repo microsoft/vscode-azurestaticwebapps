@@ -6,8 +6,13 @@
 import * as path from 'path';
 import { commands, MessageItem, OpenDialogOptions, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
+import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
+import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { NoWorkspaceError } from '../errors';
+import { RepoData } from '../gitHubTypings';
+import { createRepoFromTemplate, getTemplateRepos } from './gitHubUtils';
 import { localize } from "./localize";
 
 export function getSingleRootFsPath(): string | undefined {
@@ -54,15 +59,16 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
     if (!workspace.workspaceFolders || workspace.workspaceFolders.length === 0) {
         const noWorkspaceWarning: string = 'noWorkspaceWarning';
         const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
-        const cloneProject: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
+        const cloneProject: MessageItem = { title: localize('cloneProject', 'Clone from GitHub') };
         const openExistingProject: string = 'openExistingProject';
-        const openExistingProjectMi: MessageItem = { title: localize(openExistingProject, 'Open existing project') };
-        const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMi, cloneProject);
+        const openExistingProjectMi: MessageItem = { title: localize(openExistingProject, 'Open existing') };
+        const createFromTemplate: MessageItem = { title: localize('createFromTemplate', 'Create from template')};
+        const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMi, cloneProject, createFromTemplate);
 
         if (result === cloneProject) {
             await cloneRepo(context, '');
             context.telemetry.properties.noWorkspaceResult = 'cloneProject';
-        } else {
+        } else if (result === openExistingProjectMi) {
             const uri: Uri[] = await context.ui.showOpenDialog({
                 canSelectFiles: false,
                 canSelectFolders: true,
@@ -73,6 +79,12 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
             // don't wait
             void commands.executeCommand('vscode.openFolder', uri[0]);
             context.telemetry.properties.noWorkspaceResult = openExistingProject;
+        } else {
+            const pickedTemplate = await pickTemplate(context);
+            const newRepoName = await promptForTemplateRepoName(context, pickedTemplate);
+            const repoCreatedFromTemplate = await createRepoFromTemplate(context, pickedTemplate, newRepoName);
+            await cloneRepo(context, repoCreatedFromTemplate.data.html_url);
+            context.telemetry.properties.noWorkspaceResult = 'template';
         }
 
         context.errorHandling.suppressDisplay = true;
@@ -92,4 +104,33 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
     }
 
     return folder;
+}
+
+async function pickTemplate(context: IActionContext): Promise<RepoData> {
+    const templateRepos: RepoData[] = await getTemplateRepos(context);
+
+    const placeHolder: string = localize('chooseTemplatePrompt', 'Choose a static web app template for the new repository.');
+    const picks: IAzureQuickPickItem<RepoData>[] = templateRepos.map((repo) => { return { label: repo.name, data: repo }; });
+    const pick: IAzureQuickPickItem<RepoData> = await context.ui.showQuickPick(picks, { placeHolder, suppressPersistence: true });
+
+    return pick.data;
+}
+
+async function promptForTemplateRepoName(context: IActionContext, template: RepoData): Promise<string> {
+    const templateName = template.name;
+
+    const validateNameContext: Partial<IStaticWebAppWizardContext> & IActionContext = {
+        ...context,
+        orgData: await GitHubOrgListStep.getAuthenticatedUser(context)
+    }
+
+    const validateRepoName = async (value: string): Promise<string | undefined> => await RepoNameStep.validateRepoName(validateNameContext, value);
+    const isTemplateNameAValidRepoName = !(await validateRepoName(templateName));
+    const newRepoName = await context.ui.showInputBox({
+        validateInput: validateRepoName,
+        prompt: localize('newRepoFromTemplatePrompt', 'Enter the name of the new GitHub repository to create from the "{0}" template.', templateName),
+        value: isTemplateNameAValidRepoName ? templateName : ''
+    });
+
+    return newRepoName;
 }
