@@ -3,6 +3,6 @@ module.exports = {
         "../.eslintrc.js"
     ],
     "rules": {
-        "no-restricted-imports": "off",
+        "no-restricted-imports": ["error", { "patterns": ["**/src/"] }],
     }
 };
