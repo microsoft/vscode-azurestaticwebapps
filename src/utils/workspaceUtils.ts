@@ -81,7 +81,7 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
             const newRepoName = await promptForTemplateRepoName(context, pickedTemplate);
             const repoCreatedFromTemplate = await createRepoFromTemplate(context, pickedTemplate, newRepoName);
             await cloneRepo(context, repoCreatedFromTemplate.data.html_url);
-            context.telemetry.properties.noWorkspaceResult = 'template';
+            context.telemetry.properties.noWorkspaceResult = 'createFromTemplate';
         }
 
         context.errorHandling.suppressDisplay = true;
