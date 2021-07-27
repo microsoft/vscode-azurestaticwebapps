@@ -7,9 +7,9 @@ import { Octokit } from '@octokit/rest';
 import { authentication, ProgressLocation, window } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { githubAuthProviderId, githubScopes, templateReposUsername } from '../constants';
+import { githubAuthProviderId, githubScopes } from '../constants';
 import { ext } from '../extensionVariables';
-import { ListOrgsForUserData, OrgForAuthenticatedUserData, RepoData, RepoResponse, ReposCreateForkResponse, ReposCreateUsingTemplateResponse, ReposGetResponseData } from '../gitHubTypings';
+import { ListOrgsForUserData, OrgForAuthenticatedUserData, RepoData, ReposCreateForkResponse, ReposCreateUsingTemplateResponse, ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
 import { localize } from './localize';
 import { nonNullProp } from './nonNull';
@@ -124,14 +124,4 @@ export async function createRepoFromTemplate(context: IActionContext, templateRe
         const generateUrl: string = `${templateRepo.html_url}/generate`;
         throw new Error(localize('createFromTemplateFail', 'Could not create repository from template. [Click here to create it manually]({0}).', generateUrl));
     }
-}
-
-export async function getTemplateRepos(context: IActionContext): Promise<RepoData[]> {
-    const client: Octokit = await createOctokitClient(context);
-
-    const allRepositories: RepoResponse = await client.repos.listForUser({
-        username: templateReposUsername
-    });
-
-    return allRepositories.data.filter((repo) => repo.is_template);
 }

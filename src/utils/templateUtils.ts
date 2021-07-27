@@ -3,16 +3,28 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Octokit } from '@octokit/rest';
 import { IActionContext, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
 import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
-import { RepoData } from '../gitHubTypings';
-import { getTemplateRepos } from './gitHubUtils';
+import { createOctokitClient } from '../commands/github/createOctokitClient';
+import { templateReposUsername } from '../constants';
+import { RepoData, RepoResponse } from '../gitHubTypings';
 import { localize } from './localize';
 
+export async function getTemplateReposFromGitHub(context: IActionContext): Promise<RepoData[]> {
+    const client: Octokit = await createOctokitClient(context);
+
+    const allRepositories: RepoResponse = await client.repos.listForUser({
+        username: templateReposUsername
+    });
+
+    return allRepositories.data.filter((repo) => repo.is_template);
+}
+
 export async function pickTemplate(context: IActionContext): Promise<RepoData> {
-    const templateRepos: RepoData[] = await getTemplateRepos(context);
+    const templateRepos: RepoData[] = await getTemplateReposFromGitHub(context);
 
     const placeHolder: string = localize('chooseTemplatePrompt', 'Choose a static web app template for the new repository.');
     const picks: IAzureQuickPickItem<RepoData>[] = templateRepos.map((repo) => { return { label: repo.name, data: repo }; });
