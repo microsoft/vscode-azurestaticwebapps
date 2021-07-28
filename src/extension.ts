@@ -7,10 +7,10 @@
 
 import * as vscode from 'vscode';
 import { registerAppServiceExtensionVariables } from 'vscode-azureappservice';
-import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, getOrGenerateContentScheme, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
+import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { revealTreeItem } from './commands/api/revealTreeItem';
-import GitHubLogFoldingProvider from './commands/github/GitHubLogFoldingProvider';
+import GitHubLogFoldingProvider from './commands/github/foldingProvider/GitHubLogFoldingProvider';
 import { registerCommands } from './commands/registerCommands';
 import { ext } from './extensionVariables';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItemWithProjects';
@@ -33,7 +33,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'staticWebApps.loadMore');
         ext.treeView = vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true });
         context.subscriptions.push(ext.treeView);
-        context.subscriptions.push(vscode.languages.registerFoldingRangeProvider({ scheme: getOrGenerateContentScheme() }, new GitHubLogFoldingProvider()));
+        context.subscriptions.push(vscode.languages.registerFoldingRangeProvider({ "pattern": '**/*-gh.log' }, new GitHubLogFoldingProvider()));
 
         registerCommands();
 

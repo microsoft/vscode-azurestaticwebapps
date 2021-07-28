@@ -22,7 +22,7 @@ import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
 import { cancelAction, rerunAction } from './github/actionCommands';
 import { cloneRepo } from './github/cloneRepo';
-import { openActionLog } from './github/openActionLog';
+import { openGitHubLog } from './github/openGitHubLog';
 import { openGitHubRepo } from './github/openGitHubRepo';
 import { showActions } from './github/showActions';
 import { openInPortal } from './openInPortal';
@@ -57,7 +57,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
     registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
     registerCommand('staticWebApps.createSwaConfigFile', createSwaConfigFile);
-    registerCommand('staticWebApps.openActionLog', openActionLog);
+    registerCommand('staticWebApps.openGitHubLog', openGitHubLog);
 
     // Suppress "Report an Issue" button for all errors in favor of the command
     registerErrorHandler(c => c.errorHandling.suppressReportIssue = true);

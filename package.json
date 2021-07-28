@@ -202,8 +202,8 @@
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.openActionLog",
-                "title": "%staticWebApps.openActionLog%",
+                "command": "staticWebApps.openGitHubLog",
+                "title": "%staticWebApps.openGitHubLog%",
                 "category": "Azure Static Web Apps"
             }
         ],
@@ -300,7 +300,7 @@
                     "group": "3@2"
                 },
                 {
-                    "command": "staticWebApps.openActionLog",
+                    "command": "staticWebApps.openGitHubLog",
                     "when": "view == staticWebApps && viewItem =~ /azureStatic(Job|Step$)/",
                     "group": "1@1"
                 },
@@ -470,10 +470,9 @@
         "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
-        "moment-js": "^1.1.15",
         "open": "^8.0.4",
         "vscode-azureappservice": "^0.84.0",
-        "vscode-azureextensionui": "file:..\\vscode-azuretools\\ui\\vscode-azureextensionui-0.46.1.tgz",
+        "vscode-azureextensionui": "0.46.0",
         "vscode-nls": "^4.1.1",
         "yaml": "^1.10.2"
     },
