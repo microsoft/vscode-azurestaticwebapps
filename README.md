@@ -31,6 +31,8 @@ Use this extension to quickly create and manage Azure Static Web Apps directly f
 1. Provide the build artifact folder name
     > The path of your build output relative to your apps location. For example, setting a value of 'build' when your app location is set to '/app' will cause the content at '/app/build' to be served.
 
+✨ [See recommended settings for popular frameworks and libraries](https://docs.microsoft.com/en-us/azure/static-web-apps/front-end-frameworks)
+
 ## Updating your static web app
 
 Commit and push your changes to the GitHub repository that your static web app is configured to.  It will then use [GitHub Actions](https://github.com/features/actions) to update your app.
