@@ -22,6 +22,10 @@ module.exports = {
         "no-useless-escape": "off",
         "no-inner-declarations": "off",
         "no-constant-condition": ["error", { "checkLoops": false }],
+        "no-restricted-imports": ["error", { "patterns": ["**/*/extension.bundle"] }],
+        "import/no-internal-modules": ["error", {
+            "allow": ["yaml/types"],
+        }],
         "@typescript-eslint/prefer-regexp-exec": "off",
         "@typescript-eslint/no-unused-vars": [
             "error",

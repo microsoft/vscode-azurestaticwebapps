@@ -5,7 +5,7 @@
 
 import { Octokit } from '@octokit/rest';
 import { OctokitResponse } from '@octokit/types';
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunResponseData } from '../gitHubTypings';
 import { ensureStatus, getActionIconPath } from '../utils/actionUtils';
@@ -14,7 +14,7 @@ import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
 
-export class ActionTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
+export class ActionTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValueCompleted: string = 'azureStaticActionCompleted';
     public static contextValueInProgress: string = 'azureStaticActionInProgress';
     public parent: ActionsTreeItem;
