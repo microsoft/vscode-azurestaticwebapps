@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementModels } from "@azure/arm-appservice";
-import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { nonNullProp } from "../utils/nonNull";
 import { treeUtils } from "../utils/treeUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 
-export class FunctionTreeItem extends AzureTreeItem {
+export class FunctionTreeItem extends AzExtTreeItem {
 
     public static contextValue: string = 'azureStaticFunction';
     public readonly contextValue: string = FunctionTreeItem.contextValue;

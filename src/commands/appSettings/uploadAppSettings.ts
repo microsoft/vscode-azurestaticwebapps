@@ -17,7 +17,7 @@ export async function uploadAppSettings(context: IActionContext, node?: AppSetti
         node = await ext.tree.showTreeItemPicker<AppSettingsTreeItem>(AppSettingsTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
-    const client: IAppSettingsClient = node.client;
+    const client: IAppSettingsClient = await node.clientProvider.createClient(context);
     await node.runWithTemporaryDescription(context, localize('uploading', 'Uploading...'), async () => {
         await funcApi.uploadAppSettings(client);
     });
