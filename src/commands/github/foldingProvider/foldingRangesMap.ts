@@ -13,5 +13,4 @@ export function getFoldingRanges(uri: Uri): FoldingRange[] {
 
 export function setFoldingRanges(uri: Uri, foldingRanges: FoldingRange[]): void {
     foldingRangeMap[uri.fsPath] = foldingRanges;
-
 }

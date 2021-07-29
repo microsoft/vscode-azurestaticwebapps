@@ -12,6 +12,3 @@ export default class GitHubLogFoldingProvider implements FoldingRangeProvider {
         return getFoldingRanges(document.uri);
     }
 }
-
-
-
