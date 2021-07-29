@@ -4,29 +4,41 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { IAppSettingsClient } from 'vscode-azureappservice';
-import { ISubscriptionContext } from 'vscode-azureextensionui';
+import { AppSettingsClientProvider, IAppSettingsClient } from 'vscode-azureappservice';
+import { IActionContext } from 'vscode-azureextensionui';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { createWebSiteClient } from '../../utils/azureClients';
 
-export class AppSettingsClient implements IAppSettingsClient {
-
-    public isLinux: boolean;
-    public parentName: string;
-    public fullName: string;
-    public resourceGroup: string;
-    public root: ISubscriptionContext;
-    public prId: string;
-    public isBuild: boolean;
-
+export class SwaAppSettingsClientProvider implements AppSettingsClientProvider {
+    private _node: EnvironmentTreeItem;
     constructor(node: EnvironmentTreeItem) {
-        this.parentName = node.parent.name;
-        this.fullName = `${this.parentName}/${node.branch}`;
-        this.resourceGroup = node.parent.resourceGroup;
-        this.root = node.root;
+        this._node = node;
+    }
 
-        this.prId = node.buildId;
-        this.isBuild = !node.isProduction;
+    public async createClient(context: IActionContext): Promise<IAppSettingsClient> {
+        const websiteClient = await createWebSiteClient([context, this._node]);
+        return new SwaAppSettingsClient(this._node, websiteClient);
+    }
+}
+
+export class SwaAppSettingsClient implements IAppSettingsClient {
+    public fullName: string;
+    public isLinux: boolean;
+
+    private _parentName: string;
+    private _resourceGroup: string;
+    private _prId: string;
+    private _isBuild: boolean;
+    private _client: WebSiteManagementClient;
+
+    constructor(node: EnvironmentTreeItem, client: WebSiteManagementClient) {
+        this._client = client;
+        this._parentName = node.parent.name;
+        this.fullName = `${this._parentName}/${node.branch}`;
+        this._resourceGroup = node.parent.resourceGroup;
+
+        this._prId = node.buildId;
+        this._isBuild = !node.isProduction;
 
         // For IAppSettingsClient, isLinux is used for app settings key validation and Linux app settings restrictions
         // apply to the keys
@@ -34,14 +46,12 @@ export class AppSettingsClient implements IAppSettingsClient {
     }
 
     public async listApplicationSettings(): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        return this.isBuild ? await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.resourceGroup, this.parentName, this.prId) :
-            await client.staticSites.listStaticSiteFunctionAppSettings(this.resourceGroup, this.parentName);
+        return this._isBuild ? await this._client.staticSites.listStaticSiteBuildFunctionAppSettings(this._resourceGroup, this._parentName, this._prId) :
+            await this._client.staticSites.listStaticSiteFunctionAppSettings(this._resourceGroup, this._parentName);
     }
 
     public async updateApplicationSettings(appSettings: WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        return this.isBuild ? await client.staticSites.createOrUpdateStaticSiteBuildFunctionAppSettings(this.resourceGroup, this.parentName, this.prId, appSettings) :
-            await client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this.resourceGroup, this.parentName, appSettings);
+        return this._isBuild ? await this._client.staticSites.createOrUpdateStaticSiteBuildFunctionAppSettings(this._resourceGroup, this._parentName, this._prId, appSettings) :
+            await this._client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this._resourceGroup, this._parentName, appSettings);
     }
 }

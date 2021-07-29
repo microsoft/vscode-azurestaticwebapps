@@ -6,8 +6,8 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
-import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
@@ -27,7 +27,7 @@ import { GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 
-export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
+export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
@@ -77,7 +77,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
 
         this.actionsTreeItem = new ActionsTreeItem(this);
-        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
+        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this));
         this.functionsTreeItem = new FunctionsTreeItem(this);
     }
 
@@ -104,7 +104,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = [this.actionsTreeItem];
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
+        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
         if (functions.length === 0) {
             context.telemetry.properties.hasFunctions = 'false';
@@ -130,12 +130,13 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return false;
     }
 
-    public async deleteTreeItemImpl(): Promise<void> {
+    public async deleteTreeItemImpl(context: IActionContext): Promise<void> {
         const deleting: string = localize('deleting', 'Deleting environment "{0}"...', this.label);
         await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
-            const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-            await pollAzureAsyncOperation(await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId), this.root.credentials);
+            const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
+            const deleteResponse = await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
+            await pollAzureAsyncOperation(context, deleteResponse, this.subscription);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted environment "{0}".', this.label);
             void window.showInformationMessage(deleteSucceeded);
@@ -178,7 +179,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async refreshImpl(context: IActionContext): Promise<void> {
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
+        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
         this.localProjectPath = getSingleRootFsPath();
 

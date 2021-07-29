@@ -17,7 +17,7 @@ export async function downloadAppSettings(context: IActionContext, node?: AppSet
         node = await ext.tree.showTreeItemPicker<AppSettingsTreeItem>(AppSettingsTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
-    const client: IAppSettingsClient = node.client;
+    const client: IAppSettingsClient = await node.clientProvider.createClient(context);
     await node.runWithTemporaryDescription(context, localize('downloading', 'Downloading...'), async () => {
         await funcApi.downloadAppSettings(client);
     });
