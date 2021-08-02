@@ -5,12 +5,15 @@
 
 import * as path from 'path';
 import { commands, MessageItem, OpenDialogOptions, Uri, window, workspace, WorkspaceFolder } from "vscode";
-import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
+import { AzureWizard, IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
+import { CreateRepoFromTemplateStep } from '../commands/createRepo/CreateRepoFromTemplateStep';
+import { PickTemplateStep } from '../commands/createRepo/PickTemplateStep';
+import { TemplateRepoNameStep } from '../commands/createRepo/TemplateRepoNameStep';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { NoWorkspaceError } from '../errors';
-import { createRepoFromTemplate } from './gitHubUtils';
 import { localize } from "./localize";
-import { pickTemplate, promptForTemplateRepoName } from './templateUtils';
+import { nonNullProp } from './nonNull';
 
 export function getSingleRootFsPath(): string | undefined {
     // if this is no workspace or a multi-root workspace, return undefined
@@ -77,10 +80,15 @@ export async function getWorkspaceFolder(context: IActionContext): Promise<Works
             void commands.executeCommand('vscode.openFolder', uri[0]);
             context.telemetry.properties.noWorkspaceResult = openExistingProject;
         } else {
-            const pickedTemplate = await pickTemplate(context);
-            const newRepoName = await promptForTemplateRepoName(context, pickedTemplate);
-            const repoCreatedFromTemplate = await createRepoFromTemplate(context, pickedTemplate, newRepoName);
-            await cloneRepo(context, repoCreatedFromTemplate.data.html_url);
+            const wizardContext: Partial<IStaticWebAppWizardContext> & IActionContext = context;
+            const createFromTemplateWizard = new AzureWizard(wizardContext, {
+                title: localize('createFromTemplateTitle', 'Create repository from template'),
+                promptSteps: [new PickTemplateStep(), new TemplateRepoNameStep()],
+                executeSteps: [new CreateRepoFromTemplateStep()]
+            });
+            await createFromTemplateWizard.prompt();
+            await createFromTemplateWizard.execute();
+            await cloneRepo(context, nonNullProp(wizardContext, 'repoCreatedFromTemplate').data.html_url);
             context.telemetry.properties.noWorkspaceResult = 'createFromTemplate';
         }
 
