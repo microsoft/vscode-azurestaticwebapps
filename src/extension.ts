@@ -12,6 +12,7 @@ import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextens
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import GitHubLogFoldingProvider from './commands/github/foldingProvider/GitHubLogFoldingProvider';
 import { registerCommands } from './commands/registerCommands';
+import { githubAuthProviderId, githubScopes } from './constants';
 import { ext } from './extensionVariables';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItemWithProjects';
 
@@ -27,6 +28,12 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
         activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
+
+        /**
+         * By passing `createIfNone: false`, a numbered badge will show up on the accounts activity bar icon.
+         * An entry for the extension will be added under the menu to sign in.
+         */
+        await vscode.authentication.getSession(githubAuthProviderId, githubScopes, { createIfNone: false });
 
         const accountTreeItem: AzureAccountTreeItem = new AzureAccountTreeItem();
         context.subscriptions.push(accountTreeItem);

@@ -5,7 +5,7 @@
 
 import { commands } from 'vscode';
 import { AppSettingsTreeItem, AppSettingTreeItem } from 'vscode-azureappservice';
-import { AzExtParentTreeItem, AzExtTreeItem, AzureTreeItem, IActionContext, registerCommand, registerErrorHandler, registerReportIssueCommand } from 'vscode-azureextensionui';
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, registerCommand, registerErrorHandler, registerReportIssueCommand } from 'vscode-azureextensionui';
 import { ext } from '../extensionVariables';
 import { openUrl } from '../utils/openUrl';
 import { downloadAppSettings } from './appSettings/downloadAppSettings';
@@ -34,9 +34,9 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
     registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
     registerCommand('staticWebApps.deleteEnvironment', deleteEnvironment);
-    registerCommand('staticWebApps.loadMore', async (context: IActionContext, node: AzureTreeItem) => await ext.tree.loadMore(node, context));
+    registerCommand('staticWebApps.loadMore', async (context: IActionContext, node: AzExtTreeItem) => await ext.tree.loadMore(node, context));
     registerCommand('staticWebApps.openInPortal', openInPortal);
-    registerCommand('staticWebApps.refresh', async (context: IActionContext, node?: AzureTreeItem) => await ext.tree.refresh(context, node));
+    registerCommand('staticWebApps.refresh', async (context: IActionContext, node?: AzExtTreeItem) => await ext.tree.refresh(context, node));
     registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('staticWebApps.viewProperties', viewProperties);
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);

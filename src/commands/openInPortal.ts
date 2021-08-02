@@ -9,7 +9,7 @@ import { ext } from '../extensionVariables';
 import { FunctionsTreeItem } from '../tree/FunctionsTreeItem';
 import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
-export async function openInPortal(context: ui.IActionContext, node?: ui.AzureTreeItem): Promise<void> {
+export async function openInPortal(context: ui.IActionContext, node?: ui.AzExtTreeItem): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
@@ -17,13 +17,13 @@ export async function openInPortal(context: ui.IActionContext, node?: ui.AzureTr
     switch (node.contextValue) {
         // since the parents of AppSettings & Functions are always an Environment, we need to get the parent.parent to use the SWA id
         case AppSettingsTreeItem.contextValue:
-            await ui.openInPortal((<StaticWebAppTreeItem>node.parent?.parent).root, `${node.parent?.parent?.fullId}/configurations`);
+            await ui.openInPortal(node, `${node.parent?.parent?.fullId}/configurations`);
             return;
         case FunctionsTreeItem.contextValue:
-            await ui.openInPortal(node.root, `${node.parent?.parent?.fullId}/${node.id}`);
+            await ui.openInPortal(node, `${node.parent?.parent?.fullId}/${node.id}`);
             return;
         default:
-            await ui.openInPortal(node.root, node.fullId);
+            await ui.openInPortal(node, node.fullId);
             return;
     }
 

@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
 import { ActionWorkflowStepData } from '../gitHubTypings';
 import { getActionDescription, getActionIconPath } from '../utils/actionUtils';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
 
-export class StepTreeItem extends AzureTreeItem implements IAzureResourceTreeItem {
+export class StepTreeItem extends AzExtTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticStep';
     public readonly contextValue: string = StepTreeItem.contextValue;
     public parent: JobTreeItem;

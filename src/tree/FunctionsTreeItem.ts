@@ -5,13 +5,13 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { ThemeIcon } from "vscode";
-import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createWebSiteClient } from "../utils/azureClients";
 import { localize } from '../utils/localize';
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 
-export class FunctionsTreeItem extends AzureParentTreeItem {
+export class FunctionsTreeItem extends AzExtParentTreeItem {
 
     public static contextValue: string = 'azureStaticFunctions';
     public readonly contextValue: string = FunctionsTreeItem.contextValue;
@@ -34,8 +34,8 @@ export class FunctionsTreeItem extends AzureParentTreeItem {
         return new ThemeIcon('list-unordered');
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = this.parent.isProduction ? await client.staticSites.listStaticSiteFunctions(this.parent.parent.resourceGroup, this.parent.parent.name) :
             await client.staticSites.listStaticSiteBuildFunctions(this.parent.parent.resourceGroup, this.parent.parent.name, this.parent.buildId);
 
