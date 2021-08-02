@@ -13,12 +13,10 @@ import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppW
 export class CreateRepoFromTemplateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     public priority: number = 100;
     public async execute(wizardContext: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined; }>): Promise<void> {
-
-
-        const creatingRepository: string = localize('creatingSwa', 'Creating repository from template');
-        progress.report({ message: creatingRepository });
-
-        wizardContext.repoCreatedFromTemplate = await createRepoFromTemplate(wizardContext, nonNullProp(wizardContext, 'templateRepo'), nonNullProp(wizardContext, 'newRepoName'));
+        const newRepoName = nonNullProp(wizardContext, 'newRepoName');
+        const creatingGitHubRepo: string = localize('creatingPublicGitHubRepo', 'Creating new public GitHub repository "{0}"...', newRepoName);
+        progress.report({ message: creatingGitHubRepo });
+        wizardContext.repoCreatedFromTemplate = await createRepoFromTemplate(wizardContext, nonNullProp(wizardContext, 'templateRepo'), newRepoName);
     }
     public shouldExecute(wizardContext: IStaticWebAppWizardContext): boolean {
         // only execute if a repo hasn't already been created
