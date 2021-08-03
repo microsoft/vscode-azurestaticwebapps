@@ -19,8 +19,6 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
     public parent: ActionTreeItem;
     public data: ActionsGetJobForWorkflowRunResponseData;
 
-    private _jobLog: string;
-
     constructor(parent: ActionTreeItem, data: ActionsGetJobForWorkflowRunResponseData) {
         super(parent);
         this.data = data;
@@ -74,12 +72,8 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
     }
 
     public async getRawJobLog(context: IActionContext): Promise<string> {
-        if (!this._jobLog) {
-            const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
-            const octokitClient: Octokit = await createOctokitClient(context);
-            this._jobLog = <string>(await octokitClient.actions.downloadJobLogsForWorkflowRun({ owner, repo: name, job_id: this.data.id, mediaType: { format: 'json' } })).data;
-        }
-
-        return this._jobLog;
+        const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
+        const octokitClient: Octokit = await createOctokitClient(context);
+        return <string>(await octokitClient.actions.downloadJobLogsForWorkflowRun({ owner, repo: name, job_id: this.data.id, mediaType: { format: 'json' } })).data;
     }
 }
