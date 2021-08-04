@@ -22,7 +22,7 @@ import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from './deleteStaticWebApp';
 import { cancelAction, rerunAction } from './github/actionCommands';
 import { cloneRepo } from './github/cloneRepo';
-import { openGitHubLog } from './github/logs/openGitHubLog';
+import { openGitHubLog } from './github/jobLogs/openGitHubLog';
 import { openGitHubRepo } from './github/openGitHubRepo';
 import { showActions } from './github/showActions';
 import { openInPortal } from './openInPortal';
