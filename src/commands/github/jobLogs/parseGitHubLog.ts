@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EOL } from "os";
 import { isEndGroup, isStartGroup } from "../../../constants";
 
 export type LogState = {
@@ -16,7 +15,7 @@ export type LogState = {
 }
 
 export function parseGitHubLog(rawLogs: string, startedAt: Date, completedAt: Date): LogState {
-    const linesArray = rawLogs.split(EOL);
+    const linesArray = rawLogs.split('\r\n');
     const state: LogState = {
         withinGroup: false,
         overlappingEntries: false,
