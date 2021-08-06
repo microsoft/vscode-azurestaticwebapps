@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { commands, MessageItem, OpenDialogOptions, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
 import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
 import { cloneProjectMsg, openExistingProject, openExistingProjectMsg } from '../constants';
 import { localize } from "./localize";
@@ -55,13 +55,12 @@ export async function tryGetWorkspaceFolder(context: IActionContext): Promise<Wo
         return workspace.workspaceFolders[0];
     } else {
         const selectAppFolder: string = 'selectAppFolder';
-        const placeHolder: string = localize(selectAppFolder, 'Select folder with your app');
-        const folder = await window.showWorkspaceFolderPick({ placeHolder });
-        if (!folder) {
+        const folder = await selectWorkspaceFolder(context, localize(selectAppFolder, 'Select folder with your app'));
+        if (folder === undefined) {
             throw new UserCancelledError(selectAppFolder);
         }
         context.telemetry.properties.noWorkspaceResult = 'multiRootProject';
-        return folder;
+        return workspace.getWorkspaceFolder(Uri.parse(folder));
     }
 }
 
