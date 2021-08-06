@@ -26,13 +26,6 @@ export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'Only
 export const githubAuthProviderId: string = 'github';
 export const githubScopes: string[] = ['repo', 'workflow', 'admin:public_key'];
 
-export const freeSkuDetail: string = localize('freeSkuDetail', 'Free SSL, 2 Custom Domains');
-export const standardSkuDetail: string = localize('standardSkuDetail', 'Free SSL, 5 Custom Domains, Custom Authentication, SLA');
-
-export const freeSkuDescription: string = localize('freeSkuDescription', 'For hobbies/personal projects');
-
-export const standardSkuDescription: string = localize('standardSkuDescription', 'For general purpose production app');
-
 // Source: https://github.com/github/gitignore/blob/master/Node.gitignore
 export const defaultGitignoreContents: string = `# Logs
 logs

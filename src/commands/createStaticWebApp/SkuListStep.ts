@@ -5,7 +5,6 @@
 
 import { WebSiteManagementModels } from '@azure/arm-appservice';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { freeSkuDescription, freeSkuDetail, standardSkuDescription, standardSkuDetail } from '../../constants';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
@@ -35,14 +34,14 @@ export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContex
             {
                 name: 'Free',
                 tier: 'Free',
-                description: freeSkuDescription,
-                detail: freeSkuDetail
+                description: localize('freeSkuDescription', 'For hobbies/personal projects'),
+                detail: localize('freeSkuDetail', 'Free SSL, 2 Custom Domains')
             },
             {
                 name: 'Standard',
                 tier: 'Standard',
-                description: standardSkuDescription,
-                detail: standardSkuDetail
+                description: localize('standardSkuDescription', 'For general purpose production app'),
+                detail: localize('standardSkuDetail', 'Free SSL, 5 Custom Domains, Custom Authentication, SLA')
             }
         ];
     }
