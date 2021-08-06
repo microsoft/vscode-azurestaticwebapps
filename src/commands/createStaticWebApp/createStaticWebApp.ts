@@ -5,15 +5,13 @@
 
 import { ProgressLocation, ProgressOptions, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
-import { cloneProjectMsg, openExistingProject, openExistingProjectMsg, productionEnvironmentName } from '../../constants';
-import { NoWorkspaceError } from '../../errors';
+import { productionEnvironmentName } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
-import { openFolder, showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
-import { cloneRepo } from '../github/cloneRepo';
+import { showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showSwaCreated } from '../showSwaCreated';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
@@ -33,17 +31,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         if (folder) {
             await setWorkspaceContexts(context, folder);
         } else {
-            const result = await showNoWorkspacePrompt(context);
-
-            if (result === cloneProjectMsg) {
-                await cloneRepo(context, '');
-                context.telemetry.properties.noWorkspaceResult = 'cloneProject';
-            } else if (result === openExistingProjectMsg) {
-                await openFolder(context)
-                context.telemetry.properties.noWorkspaceResult = openExistingProject;
-            }
-            context.errorHandling.suppressDisplay = true;
-            throw new NoWorkspaceError();
+            await showNoWorkspacePrompt(context);
         }
     });
 

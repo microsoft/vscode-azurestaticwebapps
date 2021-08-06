@@ -4,9 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { commands, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
+import { commands, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
 import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
+import { cloneRepo } from '../commands/github/cloneRepo';
 import { cloneProjectMsg, openExistingProject, openExistingProjectMsg } from '../constants';
+import { NoWorkspaceError } from '../errors';
 import { localize } from "./localize";
 
 export function getSingleRootFsPath(): string | undefined {
@@ -64,10 +66,19 @@ export async function tryGetWorkspaceFolder(context: IActionContext): Promise<Wo
     }
 }
 
-export async function showNoWorkspacePrompt(context: IActionContext): Promise<MessageItem> {
+export async function showNoWorkspacePrompt(context: IActionContext): Promise<void> {
     const noWorkspaceWarning: string = 'noWorkspaceWarning';
     const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
-    return await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg);
+    const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg);
+    if (result === cloneProjectMsg) {
+        await cloneRepo(context, '');
+        context.telemetry.properties.noWorkspaceResult = 'cloneProject';
+    } else if (result === openExistingProjectMsg) {
+        await openFolder(context)
+        context.telemetry.properties.noWorkspaceResult = openExistingProject;
+    }
+    context.errorHandling.suppressDisplay = true;
+    throw new NoWorkspaceError();
 }
 
 export async function openFolder(context: IActionContext): Promise<void> {
