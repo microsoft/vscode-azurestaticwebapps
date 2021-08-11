@@ -15,6 +15,8 @@
 // The tests should import '../extension.bundle'. At design-time they live in tests/ and so will pick up this file (extension.bundle.ts).
 // At runtime the tests live in dist/tests and will therefore pick up the main webpack bundle at dist/extension.bundle.js.
 export * from 'vscode-azureextensionui';
+export { createFoldingRanges } from './src/commands/github/jobLogs/createFoldingRanges';
+export { LogState, parseGitHubLog } from './src/commands/github/jobLogs/parseGitHubLog';
 export { tryGetSelection } from './src/commands/openYAMLConfigFile';
 // Export activate/deactivate for main.js
 export { activateInternal, deactivateInternal } from './src/extension';

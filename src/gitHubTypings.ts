@@ -15,6 +15,7 @@ export type ActionWorkflowStepData = Endpoints["GET /repos/{owner}/{repo}/action
 export type ActionsGetWorkflowRunResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/runs/{run_id}"]["response"]["data"];
 export type ActionsGetWorkflowResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}"]["response"]["data"];
 export type ActionsListWorkflowRunsForRepoResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/runs"]["response"]["data"];
+export type JobLogsForWorkflowRun = Endpoints["GET /repos/{owner}/{repo}/actions/jobs/{job_id}/logs"]["response"]["data"];
 
 export type RepoParameters = Endpoints["GET /users/{username}/repos"]["parameters"] | Endpoints["GET /orgs/{org}/repos"]["parameters"];
 export type ReposGetResponseData = Endpoints["GET /repos/{owner}/{repo}"]["response"]["data"];
