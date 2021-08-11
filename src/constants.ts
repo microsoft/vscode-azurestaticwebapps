@@ -23,6 +23,9 @@ export const showActionsMsg: MessageItem = { title: localize('openActions', 'Ope
 
 export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'Only Static Web Apps linked to GitHub are supported at this time.');
 
+export const isStartGroup = (t: string): boolean => /##\[group\]/.test(t);
+export const isEndGroup = (t: string): boolean => /##\[endgroup\]/.test(t)
+
 export const githubAuthProviderId: string = 'github';
 export const githubScopes: string[] = ['repo', 'workflow', 'admin:public_key'];
 

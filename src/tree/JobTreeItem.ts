@@ -70,4 +70,10 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
     public compareChildrenImpl(ti1: StepTreeItem, ti2: StepTreeItem): number {
         return ti1.data.number - ti2.data.number;
     }
+
+    public async getRawJobLog(context: IActionContext): Promise<string> {
+        const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
+        const octokitClient: Octokit = await createOctokitClient(context);
+        return <string>(await octokitClient.actions.downloadJobLogsForWorkflowRun({ owner, repo: name, job_id: this.data.id, mediaType: { format: 'json' } })).data;
+    }
 }

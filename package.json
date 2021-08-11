@@ -200,6 +200,11 @@
                 "command": "staticWebApps.createSwaConfigFile",
                 "title": "%staticWebApps.createSwaConfigFile%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.openGitHubLog",
+                "title": "%staticWebApps.openGitHubLog%",
+                "category": "Azure Static Web Apps"
             }
         ],
         "views": {
@@ -293,6 +298,11 @@
                     "command": "staticWebApps.deleteEnvironment",
                     "when": "view == staticWebApps && viewItem == azureStaticEnvironment",
                     "group": "3@2"
+                },
+                {
+                    "command": "staticWebApps.openGitHubLog",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(Job|Step$)/",
+                    "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.viewProperties",
