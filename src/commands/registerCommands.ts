@@ -16,6 +16,7 @@ import { browse } from './browse';
 import { createChildNode } from './createChildNode';
 import { createHttpFunction } from './createHttpFunction';
 import { createStaticWebApp, createStaticWebAppAdvanced } from './createStaticWebApp/createStaticWebApp';
+import { createStaticWebAppFromTemplate } from './createStaticWebApp/createStaticWebAppFromTemplate';
 import { createSwaConfigFile } from './createSwaConfigFile';
 import { deleteEnvironment } from './deleteEnvironment';
 import { deleteNode } from './deleteNode';
@@ -30,6 +31,7 @@ import { openYAMLConfigFile } from './openYAMLConfigFile';
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
+    registerCommand('staticWebApps.createStaticWebAppFromTemplate', createStaticWebAppFromTemplate);
     registerCommand('staticWebApps.createStaticWebApp', createStaticWebApp);
     registerCommand('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
     registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);

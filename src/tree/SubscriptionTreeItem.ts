@@ -7,6 +7,7 @@ import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-app
 import { workspace } from 'vscode';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
+import { RepoCreateFromTemplateStep } from '../commands/createRepo/RepoCreateFromTemplateStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
 import { RepoPrivacyStep } from '../commands/createRepo/RepoPrivacyStep';
@@ -19,6 +20,7 @@ import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocatio
 import { SkuListStep } from '../commands/createStaticWebApp/SkuListStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
+import { TemplateListStep } from '../commands/createStaticWebApp/TemplateListStep';
 import { createWebSiteClient } from '../utils/azureClients';
 import { getGitHubAccessToken } from '../utils/gitHubUtils';
 import { gitPull } from '../utils/gitUtils';
@@ -63,13 +65,13 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             promptSteps.push(new ResourceGroupListStep());
         }
 
-        promptSteps.push(new StaticWebAppNameStep(), new SkuListStep());
+        promptSteps.push(new TemplateListStep(), new StaticWebAppNameStep(), new SkuListStep());
         const hasRemote: boolean = !!wizardContext.repoHtmlUrl;
 
         // if the local project doesn't have a GitHub remote, we will create it for them
         if (!hasRemote) {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
-            executeSteps.push(new RepoCreateStep());
+            executeSteps.push(wizardContext.fromTemplate ? new RepoCreateFromTemplateStep() : new RepoCreateStep());
         }
 
         promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
@@ -120,7 +122,9 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         await wizard.execute();
         context.showCreatingTreeItem(newStaticWebAppName);
 
-        await gitPull(nonNullProp(wizardContext, 'repo'));
+        if (!wizardContext.fromTemplate) {
+            await gitPull(nonNullProp(wizardContext, 'repo'));
+        }
         return new StaticWebAppTreeItem(this, nonNullProp(wizardContext, 'staticWebApp'));
     }
 }

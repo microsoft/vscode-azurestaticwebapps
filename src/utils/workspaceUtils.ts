@@ -6,6 +6,7 @@
 import * as path from 'path';
 import { commands, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
 import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
+import { createStaticWebAppFromTemplate } from '../commands/createStaticWebApp/createStaticWebAppFromTemplate';
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { openExistingProject } from '../constants';
 import { NoWorkspaceError } from '../errors';
@@ -66,15 +67,22 @@ export async function tryGetWorkspaceFolder(context: IActionContext): Promise<Wo
 export async function showNoWorkspacePrompt(context: IActionContext): Promise<void> {
     const noWorkspaceWarning: string = 'noWorkspaceWarning';
     const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
-    const cloneProjectMsg: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
-    const openExistingProjectMsg: MessageItem = { title: localize(openExistingProject, 'Open existing project') };
-    const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg);
+    const cloneProject = 'cloneProject';
+    const cloneProjectMsg: MessageItem = { title: localize(cloneProject, 'Clone from GitHub') };
+    const openExistingProjectMsg: MessageItem = { title: localize(openExistingProject, 'Open existing') };
+    const createFromTemplate = 'createFromTemplate';
+    const createFromTemplateMsg: MessageItem = { title: localize(createFromTemplate, 'Create from template') };
+
+    const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg, createFromTemplateMsg);
     if (result === cloneProjectMsg) {
         await cloneRepo(context, '');
-        context.telemetry.properties.noWorkspaceResult = 'cloneProject';
+        context.telemetry.properties.noWorkspaceResult = cloneProject;
     } else if (result === openExistingProjectMsg) {
         await openFolder(context)
         context.telemetry.properties.noWorkspaceResult = openExistingProject;
+    } else if (result === createFromTemplateMsg) {
+        await createStaticWebAppFromTemplate(context);
+        context.telemetry.properties.noWorkspaceResult = createFromTemplate;
     }
     context.errorHandling.suppressDisplay = true;
     throw new NoWorkspaceError();

@@ -3,12 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MessageItem, window } from "vscode";
+import { MessageItem, window, workspace } from "vscode";
 import { callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
-import { showActionsMsg } from "../constants";
+import { cloneRepoMsg, showActionsMsg } from "../constants";
 import { ext } from "../extensionVariables";
 import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { localize } from "../utils/localize";
+import { cloneRepo } from './github/cloneRepo';
 import { showActions } from "./github/showActions";
 import { openYAMLConfigFile } from "./openYAMLConfigFile";
 
@@ -18,7 +19,12 @@ export async function showSwaCreated(swaNode: StaticWebAppTreeItem): Promise<voi
         ext.outputChannel.appendLog(createdSs);
 
         const viewEditWorkflow: MessageItem = { title: localize('viewEditWorkflow', 'View/Edit Workflow') };
-        await window.showInformationMessage(createdSs, showActionsMsg, viewEditWorkflow).then(async (result) => {
+
+        const messageItems = [showActionsMsg, viewEditWorkflow];
+        if (!workspace.workspaceFolders || workspace.workspaceFolders.length === 0) {
+            messageItems.push(cloneRepoMsg)
+        }
+        await window.showInformationMessage(createdSs, ...messageItems).then(async (result) => {
             context.telemetry.properties.clicked = 'canceled';
             if (result === showActionsMsg) {
                 await showActions(context, swaNode);
@@ -26,6 +32,9 @@ export async function showSwaCreated(swaNode: StaticWebAppTreeItem): Promise<voi
             } else if (result === viewEditWorkflow) {
                 await openYAMLConfigFile(context, swaNode);
                 context.telemetry.properties.clicked = 'openConfig';
+            } else if (result === cloneRepoMsg) {
+                context.telemetry.properties.clicked = 'cloneRepo';
+                await cloneRepo(context, swaNode);
             }
         });
     });

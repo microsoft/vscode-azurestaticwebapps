@@ -10,7 +10,7 @@ import { MessageItem, ProgressLocation, ProgressOptions, Uri, window } from 'vsc
 import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { defaultGitignoreContents } from '../constants';
+import { cloneRepoMsg, defaultGitignoreContents } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -93,9 +93,8 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         ext.outputChannel.appendLog(forkSuccess);
         forkSuccess += localize('cloneNewRepo', ' Would you like to clone your new repository?');
 
-        const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
-        const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, clone)
-        if (result === clone) {
+        const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, cloneRepoMsg)
+        if (result === cloneRepoMsg) {
             void cloneRepo(context, repoUrl);
             cancelStep = 'afterCloneFork';
         }

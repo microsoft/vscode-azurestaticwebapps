@@ -7,7 +7,7 @@ import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-app
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
 import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { Repository } from '../../git';
-import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
+import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData, RepoData } from '../../gitHubTypings';
 
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, ICreateChildImplContext {
     accessToken: string;
@@ -40,4 +40,7 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     // created when the wizard is done executing
     staticWebApp?: WebSiteManagementModels.StaticSiteARMResource;
+
+    fromTemplate?: boolean;
+    templateRepo?: RepoData;
 }

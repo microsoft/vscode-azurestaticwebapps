@@ -23,6 +23,8 @@ export const showActionsMsg: MessageItem = { title: localize('openActions', 'Ope
 
 export const openExistingProject = 'openExistingProject';
 
+export const cloneRepoMsg: MessageItem = { title: localize('clone', 'Clone Repo') };
+
 export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'Only Static Web Apps linked to GitHub are supported at this time.');
 
 export const isStartGroup = (t: string): boolean => /##\[group\]/.test(t);
@@ -30,6 +32,8 @@ export const isEndGroup = (t: string): boolean => /##\[endgroup\]/.test(t)
 
 export const githubAuthProviderId: string = 'github';
 export const githubScopes: string[] = ['repo', 'workflow', 'admin:public_key'];
+
+export const templateReposUsername: string = 'staticwebdev';
 
 // Source: https://github.com/github/gitignore/blob/master/Node.gitignore
 export const defaultGitignoreContents: string = `# Logs

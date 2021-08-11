@@ -6,7 +6,7 @@
 import * as path from 'path';
 import { AzureNameStep, IAzureNamingRules, ResourceGroupListStep, resourceGroupNamingRules } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
-import { nonNullProp } from '../../utils/nonNull';
+import { nonNullProp, nonNullValueAndProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
@@ -18,12 +18,12 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const folderName: string = path.basename(nonNullProp(context, 'fsPath'));
+        const defaultName: string = context.fromTemplate ? nonNullValueAndProp(context.templateRepo, 'name') : path.basename(nonNullProp(context, 'fsPath'));
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         context.newStaticWebAppName = (await context.ui.showInputBox({
             prompt,
-            value: await this.getRelatedName(context, folderName),
+            value: await this.getRelatedName(context, defaultName),
             validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(context, value)
         })).trim();
 
