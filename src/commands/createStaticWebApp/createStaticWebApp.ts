@@ -3,18 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProgressLocation, ProgressOptions, window, WorkspaceFolder } from 'vscode';
+import { ProgressLocation, ProgressOptions, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { productionEnvironmentName } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
-import { getGitWorkspaceState, GitWorkspaceState, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation, warnIfNotOnDefaultBranch } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
-import { getWorkspaceFolder } from '../../utils/workspaceUtils';
+import { showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showSwaCreated } from '../showSwaCreated';
-import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 import { setWorkspaceContexts } from './setWorkspaceContexts';
@@ -29,28 +27,12 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         title: localize('verifyingWorkspace', 'Verifying workspace...')
     };
     await window.withProgress(progressOptions, async () => {
-        const folder: WorkspaceFolder = await getWorkspaceFolder(context);
-        const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
-        const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
-
-        await warnIfNotOnDefaultBranch(context, verifiedWorkspace);
-
-        context.fsPath = folder.uri.fsPath;
-        context.repo = verifiedWorkspace.repo;
-
-        if (gitWorkspaceState.remoteRepo) {
-            context.repoHtmlUrl = gitWorkspaceState.remoteRepo.html_url;
-            context.branchData = { name: gitWorkspaceState.remoteRepo.default_branch };
+        const folder = await tryGetWorkspaceFolder(context);
+        if (folder) {
+            await setWorkspaceContexts(context, folder);
         } else {
-            if (!context.advancedCreation) {
-                // default repo to private for basic create
-                context.newRepoIsPrivate = true;
-                // set the org to the authenticated user for creation
-                context.orgData = await GitHubOrgListStep.getAuthenticatedUser(context);
-            }
+            await showNoWorkspacePrompt(context);
         }
-
-        await setWorkspaceContexts(context, context.fsPath);
     });
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
