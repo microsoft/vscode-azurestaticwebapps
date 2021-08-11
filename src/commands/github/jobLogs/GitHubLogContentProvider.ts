@@ -54,15 +54,7 @@ export class GitHubLogContent {
 class GitHubLogContentProvider implements TextDocumentContentProvider {
     private _contentMap: Map<string, GitHubLogContent> = new Map<string, GitHubLogContent>();
 
-    public constructor() {
-        workspace.onDidCloseTextDocument(e => {
-            // there's a pretty long lag after closing when this actually fires, but it still seems like the most reliable way to see if a user has closed the log
-            if (this._contentMap.has(e.uri.toString())) { this._contentMap.delete(e.uri.toString()); }
-        })
-    }
-
     public async openGitHubLogContent(node: JobTreeItem | StepTreeItem, content: string, foldingRanges: FoldingRange[]): Promise<GitHubLogContent> {
-
         // Remove special characters which may prove troublesome when parsing the uri. We'll allow the same set as `encodeUriComponent`
         const removeSpecialCharRegExp: RegExp = /[^a-z0-9\-\_\.\!\~\*\'\(\)]/gi;
         // the job id is a unique number identifier, but step id is a non-unique integer so include job id as well
@@ -71,14 +63,10 @@ class GitHubLogContentProvider implements TextDocumentContentProvider {
         const uri: Uri = Uri.parse(`${contentScheme}:///${id}/${fileName}.log`);
 
         const gitHubLogContent: GitHubLogContent = new GitHubLogContent(content, foldingRanges);
-        const wasInContentMap: boolean = this._contentMap.has(uri.toString());
         this._contentMap.set(uri.toString(), gitHubLogContent);
 
         await window.showTextDocument(uri);
-        // only fold if this is the first time it's being opened in a while
-        if (!wasInContentMap) {
-            await commands.executeCommand('editor.foldAll', uri);
-        }
+        await commands.executeCommand('editor.foldAll', uri);
 
         return gitHubLogContent;
     }
