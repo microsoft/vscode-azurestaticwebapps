@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { commands, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
-import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
+import { commands, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
+import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { cloneProjectMsg, openExistingProject, openExistingProjectMsg } from '../constants';
+import { openExistingProject } from '../constants';
 import { NoWorkspaceError } from '../errors';
 import { localize } from "./localize";
 
@@ -58,9 +58,6 @@ export async function tryGetWorkspaceFolder(context: IActionContext): Promise<Wo
     } else {
         const selectAppFolder: string = 'selectAppFolder';
         const folder = await selectWorkspaceFolder(context, localize(selectAppFolder, 'Select folder with your app'));
-        if (folder === undefined) {
-            throw new UserCancelledError(selectAppFolder);
-        }
         context.telemetry.properties.noWorkspaceResult = 'multiRootProject';
         return workspace.getWorkspaceFolder(Uri.parse(folder));
     }
@@ -69,6 +66,8 @@ export async function tryGetWorkspaceFolder(context: IActionContext): Promise<Wo
 export async function showNoWorkspacePrompt(context: IActionContext): Promise<void> {
     const noWorkspaceWarning: string = 'noWorkspaceWarning';
     const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
+    const cloneProjectMsg: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
+    const openExistingProjectMsg: MessageItem = { title: localize(openExistingProject, 'Open existing project') };
     const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg);
     if (result === cloneProjectMsg) {
         await cloneRepo(context, '');

@@ -21,11 +21,7 @@ export const configFileName: string = 'staticwebapp.config.json';
 
 export const showActionsMsg: MessageItem = { title: localize('openActions', 'Open Actions in GitHub') };
 
-export const cloneProjectMsg: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
-
 export const openExistingProject = 'openExistingProject';
-
-export const openExistingProjectMsg: MessageItem = { title: localize(openExistingProject, 'Open existing project') };
 
 export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'Only Static Web Apps linked to GitHub are supported at this time.');
 
