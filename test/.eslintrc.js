@@ -1,8 +1,6 @@
 module.exports = {
     "extends": [
-        "../.eslintrc.js"
-    ],
-    "rules": {
-        "no-restricted-imports": ["error", { "patterns": ["**/src/"] }],
-    }
+        "@microsoft/eslint-config-azuretools",
+        "@microsoft/eslint-config-azuretools/test"
+    ]
 };
