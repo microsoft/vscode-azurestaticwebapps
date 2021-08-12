@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { commands, MessageItem, OpenDialogOptions, Uri, window, workspace, WorkspaceFolder } from "vscode";
-import { IActionContext, IAzureQuickPickItem, UserCancelledError } from "vscode-azureextensionui";
+import { commands, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
+import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
 import { cloneRepo } from '../commands/github/cloneRepo';
+import { openExistingProject } from '../constants';
 import { NoWorkspaceError } from '../errors';
 import { localize } from "./localize";
 
@@ -47,49 +48,46 @@ export async function selectWorkspaceItem(context: IActionContext, placeHolder: 
     return folder.data ? folder.data : (await context.ui.showOpenDialog(options))[0].fsPath;
 }
 
-export async function getWorkspaceFolder(context: IActionContext): Promise<WorkspaceFolder> {
-    let folder: WorkspaceFolder | undefined;
+export async function tryGetWorkspaceFolder(context: IActionContext): Promise<WorkspaceFolder | undefined> {
     context.telemetry.properties.noWorkspaceResult = 'canceled';
-
     if (!workspace.workspaceFolders || workspace.workspaceFolders.length === 0) {
-        const noWorkspaceWarning: string = 'noWorkspaceWarning';
-        const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
-        const cloneProject: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
-        const openExistingProject: string = 'openExistingProject';
-        const openExistingProjectMi: MessageItem = { title: localize(openExistingProject, 'Open existing project') };
-        const result: MessageItem = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMi, cloneProject);
-
-        if (result === cloneProject) {
-            await cloneRepo(context, '');
-            context.telemetry.properties.noWorkspaceResult = 'cloneProject';
-        } else {
-            const uri: Uri[] = await context.ui.showOpenDialog({
-                canSelectFiles: false,
-                canSelectFolders: true,
-                canSelectMany: false,
-                openLabel: localize('open', 'Open'),
-                stepName: openExistingProject
-            });
-            // don't wait
-            void commands.executeCommand('vscode.openFolder', uri[0]);
-            context.telemetry.properties.noWorkspaceResult = openExistingProject;
-        }
-
-        context.errorHandling.suppressDisplay = true;
-        throw new NoWorkspaceError();
+        return;
     } else if (workspace.workspaceFolders.length === 1) {
-        folder = workspace.workspaceFolders[0];
         context.telemetry.properties.noWorkspaceResult = 'singleRootProject';
+        return workspace.workspaceFolders[0];
     } else {
-        const selectProjectFolder: string = 'selectProjectFolder';
-        const placeHolder: string = localize(selectProjectFolder, 'Select the folder containing your SWA project');
-        folder = await window.showWorkspaceFolderPick({ placeHolder });
-        if (!folder) {
-            throw new UserCancelledError(selectProjectFolder);
-        }
-
+        const selectAppFolder: string = 'selectAppFolder';
+        const folder = await selectWorkspaceFolder(context, localize(selectAppFolder, 'Select folder with your app'));
         context.telemetry.properties.noWorkspaceResult = 'multiRootProject';
+        return workspace.getWorkspaceFolder(Uri.parse(folder));
     }
+}
 
-    return folder;
+export async function showNoWorkspacePrompt(context: IActionContext): Promise<void> {
+    const noWorkspaceWarning: string = 'noWorkspaceWarning';
+    const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
+    const cloneProjectMsg: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
+    const openExistingProjectMsg: MessageItem = { title: localize(openExistingProject, 'Open existing project') };
+    const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg);
+    if (result === cloneProjectMsg) {
+        await cloneRepo(context, '');
+        context.telemetry.properties.noWorkspaceResult = 'cloneProject';
+    } else if (result === openExistingProjectMsg) {
+        await openFolder(context)
+        context.telemetry.properties.noWorkspaceResult = openExistingProject;
+    }
+    context.errorHandling.suppressDisplay = true;
+    throw new NoWorkspaceError();
+}
+
+export async function openFolder(context: IActionContext): Promise<void> {
+    const uri: Uri[] = await context.ui.showOpenDialog({
+        canSelectFiles: false,
+        canSelectFolders: true,
+        canSelectMany: false,
+        openLabel: localize('open', 'Open'),
+        stepName: openExistingProject
+    });
+    // don't wait
+    void commands.executeCommand('vscode.openFolder', uri[0]);
 }

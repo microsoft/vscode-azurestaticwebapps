@@ -439,6 +439,7 @@
         "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats"
     },
     "devDependencies": {
+        "@microsoft/eslint-config-azuretools": "^0.1.0",
         "@octokit/types": "^6.13.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
@@ -447,7 +448,6 @@
         "@types/node": "^12.12.53",
         "@types/vscode": "1.53.0",
         "@typescript-eslint/eslint-plugin": "^4.28.3",
-        "@typescript-eslint/parser": "^4.28.3",
         "eslint": "^7.19.0",
         "eslint-plugin-import": "^2.22.1",
         "glob": "^7.1.6",
