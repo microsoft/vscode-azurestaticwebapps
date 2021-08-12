@@ -43,4 +43,5 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     fromTemplate?: boolean;
     templateRepo?: RepoData;
+    templateRepos?: RepoData[];
 }

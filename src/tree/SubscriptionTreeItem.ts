@@ -65,6 +65,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             promptSteps.push(new ResourceGroupListStep());
         }
 
+        // Setting to empty array here so we only have to fetch the templates on the first prompt of TemplateListStep.
+        if (wizardContext.fromTemplate) {
+            wizardContext.templateRepos = [];
+        }
         promptSteps.push(new TemplateListStep(), new StaticWebAppNameStep(), new SkuListStep());
         const hasRemote: boolean = !!wizardContext.repoHtmlUrl;
 

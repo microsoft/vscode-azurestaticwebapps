@@ -7,16 +7,19 @@ import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensio
 import { RepoData } from '../../gitHubTypings';
 import { getTemplateRepos } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
+import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class TemplateListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
 
+        const templateRepos = nonNullProp(context, 'templateRepos');
         const placeHolder: string = localize('chooseTemplatePrompt', 'Choose a template for the new static web app.');
 
         const getPicks = async () => {
-            const templateReps: RepoData[] = await getTemplateRepos(context);
-            return templateReps.map((repo: RepoData) => ({ label: repo.name, data: repo }));
+            // Only fetch templates the first time the step is shown
+            context.templateRepos = templateRepos.length > 0 ? templateRepos : await getTemplateRepos(context);
+            return context.templateRepos.map((repo: RepoData) => ({ label: repo.name, data: repo }));
         }
 
         const pick: IAzureQuickPickItem<RepoData> = await context.ui.showQuickPick<IAzureQuickPickItem<RepoData>>(getPicks(), { placeHolder, suppressPersistence: true, loadingPlaceHolder: 'Loading templates...' });
