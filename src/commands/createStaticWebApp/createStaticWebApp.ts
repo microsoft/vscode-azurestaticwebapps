@@ -58,7 +58,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
 
         void postCreateStaticWebApp(swaNode);
-        return swaNode;;
+        return swaNode;
     } finally {
         isVerifyingWorkspaceEmitter.fire(false);
     }
