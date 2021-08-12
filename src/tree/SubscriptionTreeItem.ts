@@ -13,6 +13,7 @@ import { RepoPrivacyStep } from '../commands/createRepo/RepoPrivacyStep';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
+import { isVerifyingWorkspaceEmitter } from '../commands/createStaticWebApp/createStaticWebApp';
 import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
@@ -111,6 +112,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
 
         await wizard.prompt();
+        isVerifyingWorkspaceEmitter.fire(false);
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
         if (!context.advancedCreation) {

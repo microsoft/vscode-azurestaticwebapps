@@ -3,9 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProgressLocation, ProgressOptions, window } from 'vscode';
+import { EventEmitter, ProgressLocation, ProgressOptions, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { productionEnvironmentName } from '../../constants';
+import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
@@ -17,7 +18,18 @@ import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 import { setWorkspaceContexts } from './setWorkspaceContexts';
 
+export const isVerifyingWorkspaceEmitter: EventEmitter<boolean> = new EventEmitter<boolean>()
+let _isVerifyingWorkspace: boolean = false;
+
+isVerifyingWorkspaceEmitter.event(e => _isVerifyingWorkspace = e);
+
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
+    if (_isVerifyingWorkspace) {
+        throw new VerifyingWorkspaceError(context);
+    }
+
+    isVerifyingWorkspaceEmitter.fire(true);
+
     if (!node) {
         node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
     }
@@ -26,25 +38,30 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         location: ProgressLocation.Notification,
         title: localize('verifyingWorkspace', 'Verifying workspace...')
     };
-    await window.withProgress(progressOptions, async () => {
-        const folder = await tryGetWorkspaceFolder(context);
-        if (folder) {
-            await setWorkspaceContexts(context, folder);
-        } else {
-            await showNoWorkspacePrompt(context);
-        }
-    });
 
-    const swaNode: StaticWebAppTreeItem = await node.createChild(context);
-    void showSwaCreated(swaNode);
+    try {
+        await window.withProgress(progressOptions, async () => {
+            const folder = await tryGetWorkspaceFolder(context);
+            if (folder) {
+                await setWorkspaceContexts(context, folder);
+            } else {
+                await showNoWorkspacePrompt(context);
+            }
+        })
 
-    const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
-        return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
-    });
-    environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
+        const swaNode: StaticWebAppTreeItem = await node.createChild(context);
+        void showSwaCreated(swaNode);
 
-    void postCreateStaticWebApp(swaNode);
-    return swaNode;
+        const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
+            return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
+        });
+        environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
+
+        void postCreateStaticWebApp(swaNode);
+        return swaNode;;
+    } finally {
+        isVerifyingWorkspaceEmitter.fire(false);
+    }
 }
 
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
