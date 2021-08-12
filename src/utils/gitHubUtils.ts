@@ -122,7 +122,7 @@ export async function createRepoFromTemplate(context: IActionContext, templateRe
         });
     } catch (e) {
         const generateUrl: string = `${templateRepo.html_url}/generate`;
-        throw new Error(localize('createFromTemplateFail', 'Could not create repository from template. [Click here to create it manually]({0}).', generateUrl));
+        throw new Error(localize('createFromTemplateFail', 'Could not create repository from template. [Create it manually]({0}).', generateUrl));
     }
 }
 
