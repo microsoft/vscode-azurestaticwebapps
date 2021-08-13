@@ -5,6 +5,7 @@
 
 import { AzureWizardPromptStep } from "vscode-azureextensionui";
 import { appArtifactSubpathSetting, outputSubpathSetting } from "../../constants";
+import { trimQuotes } from "../../utils/inputUtils";
 import { localize } from "../../utils/localize";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
@@ -15,10 +16,10 @@ export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizar
         const defaultValue: string = context.buildPreset?.outputLocation ?? 'build';
         const workspaceSetting: string | undefined = getWorkspaceSetting(outputSubpathSetting, context.fsPath);
 
-        context.outputLocation = (await context.ui.showInputBox({
+        context.outputLocation = trimQuotes(await context.ui.showInputBox({
             value: workspaceSetting || getWorkspaceSetting(appArtifactSubpathSetting, context.fsPath) || defaultValue,
             prompt: localize('publishLocation', "Enter the location of your build output relative to your app's location or leave blank if it has no build. For example, setting a value of 'build' when your app location is set to 'app' will cause the content at 'app/build' to be served.")
-        })).trim();
+        }));
 
         addLocationTelemetry(context, 'outputLocation', defaultValue, workspaceSetting);
     }
