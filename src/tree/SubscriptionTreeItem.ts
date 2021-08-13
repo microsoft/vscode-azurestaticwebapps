@@ -7,7 +7,6 @@ import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-app
 import { workspace } from 'vscode';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
-import { RepoCreateFromTemplateStep } from '../commands/createRepo/RepoCreateFromTemplateStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
 import { RepoPrivacyStep } from '../commands/createRepo/RepoPrivacyStep';
@@ -65,17 +64,13 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             promptSteps.push(new ResourceGroupListStep());
         }
 
-        // Setting to empty array here so we only have to fetch the templates on the first prompt of TemplateListStep.
-        if (wizardContext.fromTemplate) {
-            wizardContext.templateRepos = [];
-        }
         promptSteps.push(new TemplateListStep(), new StaticWebAppNameStep(), new SkuListStep());
         const hasRemote: boolean = !!wizardContext.repoHtmlUrl;
 
         // if the local project doesn't have a GitHub remote, we will create it for them
         if (!hasRemote) {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
-            executeSteps.push(wizardContext.fromTemplate ? new RepoCreateFromTemplateStep() : new RepoCreateStep());
+            executeSteps.push(new RepoCreateStep());
         }
 
         promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());

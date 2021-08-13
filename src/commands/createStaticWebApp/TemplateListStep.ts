@@ -3,23 +3,22 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensionui';
-import { RepoData } from '../../gitHubTypings';
-import { getTemplateRepos } from '../../utils/gitHubUtils';
+import { Octokit } from '@octokit/rest';
+import { AzureWizardPromptStep, IActionContext, IAzureQuickPickItem } from 'vscode-azureextensionui';
+import { RepoData, RepoResponse } from '../../gitHubTypings';
 import { localize } from '../../utils/localize';
-import { nonNullProp } from '../../utils/nonNull';
+import { createOctokitClient } from '../github/createOctokitClient';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class TemplateListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
+    private _templateRepos: RepoData[];
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
 
-        const templateRepos = nonNullProp(context, 'templateRepos');
         const placeHolder: string = localize('chooseTemplatePrompt', 'Choose a template for the new static web app.');
 
         const getPicks = async () => {
-            // Only fetch templates the first time the step is shown
-            context.templateRepos = templateRepos.length > 0 ? templateRepos : await getTemplateRepos(context);
-            return context.templateRepos.map((repo: RepoData) => ({ label: repo.name, data: repo }));
+            this._templateRepos ||= await getTemplateRepos(context);
+            return this._templateRepos.map((repo: RepoData) => ({ label: repo.name, data: repo }));
         }
 
         const pick: IAzureQuickPickItem<RepoData> = await context.ui.showQuickPick<IAzureQuickPickItem<RepoData>>(getPicks(), { placeHolder, suppressPersistence: true, loadingPlaceHolder: 'Loading templates...' });
@@ -30,4 +29,15 @@ export class TemplateListStep extends AzureWizardPromptStep<IStaticWebAppWizardC
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
         return !!context.fromTemplate && !context.templateRepo;
     }
+}
+
+async function getTemplateRepos(context: IActionContext): Promise<RepoData[]> {
+    const client: Octokit = await createOctokitClient(context);
+    const templateReposUsername: string = 'staticwebdev';
+
+    const allRepositories: RepoResponse = await client.repos.listForUser({
+        username: templateReposUsername
+    });
+
+    return allRepositories.data.filter((repo) => repo.is_template);
 }

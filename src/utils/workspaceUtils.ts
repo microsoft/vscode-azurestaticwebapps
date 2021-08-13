@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { commands, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
+import { commands, MessageItem, OpenDialogOptions, ProgressLocation, ProgressOptions, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
-import { createStaticWebAppFromTemplate } from '../commands/createStaticWebApp/createStaticWebAppFromTemplate';
+import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
+import { setWorkspaceContexts } from '../commands/createStaticWebApp/setWorkspaceContexts';
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { openExistingProject } from '../constants';
 import { NoWorkspaceError } from '../errors';
@@ -64,7 +65,7 @@ export async function tryGetWorkspaceFolder(context: IActionContext): Promise<Wo
     }
 }
 
-export async function showNoWorkspacePrompt(context: IActionContext): Promise<void> {
+export async function showNoWorkspacePrompt(context: IActionContext & Partial<IStaticWebAppWizardContext>): Promise<void> {
     const noWorkspaceWarning: string = 'noWorkspaceWarning';
     const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
     const cloneProject = 'cloneProject';
@@ -81,8 +82,9 @@ export async function showNoWorkspacePrompt(context: IActionContext): Promise<vo
         await openFolder(context)
         context.telemetry.properties.noWorkspaceResult = openExistingProject;
     } else if (result === createFromTemplateMsg) {
-        await createStaticWebAppFromTemplate(context);
+        context.fromTemplate = true;
         context.telemetry.properties.noWorkspaceResult = createFromTemplate;
+        return;
     }
     context.errorHandling.suppressDisplay = true;
     throw new NoWorkspaceError();
@@ -98,4 +100,19 @@ export async function openFolder(context: IActionContext): Promise<void> {
     });
     // don't wait
     void commands.executeCommand('vscode.openFolder', uri[0]);
+}
+
+export async function verifyWorkSpace(context: IActionContext & Partial<IStaticWebAppWizardContext>): Promise<void> {
+    const progressOptions: ProgressOptions = {
+        location: ProgressLocation.Notification,
+        title: localize('verifyingWorkspace', 'Verifying workspace...')
+    };
+    await window.withProgress(progressOptions, async () => {
+        const folder = await tryGetWorkspaceFolder(context);
+        if (folder) {
+            await setWorkspaceContexts(context, folder);
+        } else {
+            await showNoWorkspacePrompt(context);
+        }
+    });
 }

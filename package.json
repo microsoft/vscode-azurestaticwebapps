@@ -62,8 +62,7 @@
             {
                 "command": "staticWebApps.createStaticWebAppFromTemplate",
                 "title": "%staticWebApps.createStaticWebAppFromTemplate%",
-                "category": "Azure Static Web Apps",
-                "icon": "$(add)"
+                "category": "Azure Static Web Apps"
             },
             {
                 "command": "staticWebApps.createStaticWebApp",

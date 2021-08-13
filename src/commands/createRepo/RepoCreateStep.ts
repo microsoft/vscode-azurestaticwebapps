@@ -29,8 +29,8 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         progress.report({ message: creatingGitHubRepo });
 
         const client: Octokit = await createOctokitClient(context);
-        const gitHubRepoRes = (isUser(context.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
-            await client.repos.createInOrg({ org: nonNullProp(context, 'orgData').login, name: newRepoName, private: newRepoIsPrivate })).data;
+
+        const gitHubRepoRes = context.fromTemplate ? await createRepoFromTemplate(context, client, newRepoIsPrivate, newRepoName) : await createRepo(context, client, newRepoIsPrivate, newRepoName);
         context.repoHtmlUrl = gitHubRepoRes.html_url;
 
         const createdGitHubRepo: string = newRepoIsPrivate ? localize('createdPrivateGitHubRepo', 'Created new private GitHub repository "{0}".', newRepoName) :
@@ -38,49 +38,70 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         ext.outputChannel.appendLog(createdGitHubRepo);
         progress.report({ message: createdGitHubRepo });
 
-        const repo: Repository = nonNullProp(context, 'repo');
-        const remoteName: string = nonNullProp(context, 'newRemoteShortname');
+        if (!context.fromTemplate) {
+            const repo: Repository = nonNullProp(context, 'repo');
+            const remoteName: string = nonNullProp(context, 'newRemoteShortname');
 
-        try {
-            await repo.addRemote(remoteName, gitHubRepoRes.clone_url)
-            const branch: Branch = await repo.getBranch('HEAD');
-            const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, context.newRepoName);
-            ext.outputChannel.appendLog(pushingBranch);
+            try {
+                await repo.addRemote(remoteName, gitHubRepoRes.clone_url)
+                const branch: Branch = await repo.getBranch('HEAD');
+                const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, context.newRepoName);
+                ext.outputChannel.appendLog(pushingBranch);
 
-            progress.report({ message: pushingBranch });
-            await repo.push(remoteName, branch.name, true);
+                progress.report({ message: pushingBranch });
+                await repo.push(remoteName, branch.name, true);
 
-            const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, context.newRepoName);
-            ext.outputChannel.appendLog(pushedBranch);
-            progress.report({ message: pushedBranch });
+                const pushedBranch: string = localize('pushedBranch', 'Pushed local branch "{0}" to GitHub repository "{1}".', branch.name, context.newRepoName);
+                ext.outputChannel.appendLog(pushedBranch);
+                progress.report({ message: pushedBranch });
 
-            // getBranch will return undefined sometimes, most likely a timing issue so try to retrieve it for a minute
-            const maxTimeout = Date.now() + 60 * 1000;
-            let numOfTries: number = 0;
+                // getBranch will return undefined sometimes, most likely a timing issue so try to retrieve it for a minute
+                const maxTimeout = Date.now() + 60 * 1000;
+                let numOfTries: number = 0;
 
-            while (true) {
-                numOfTries++;
+                while (true) {
+                    numOfTries++;
 
-                context.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(context, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
-                if (context.branchData || Date.now() > maxTimeout) {
-                    context.telemetry.properties.getBranchAttempts = String(numOfTries);
-                    break;
+                    context.branchData = (await client.repos.getBranch({ repo: newRepoName, owner: nonNullProp(context, 'orgData').login, branch: nonNullProp(branch, 'name') })).data;
+                    if (context.branchData || Date.now() > maxTimeout) {
+                        context.telemetry.properties.getBranchAttempts = String(numOfTries);
+                        break;
+                    }
+
+                    await delay(2000);
                 }
-
-                await delay(2000);
+            } catch (err) {
+                handleGitError(err);
             }
-        } catch (err) {
-            handleGitError(err);
-        }
 
-        if (!context.branchData) {
-            // the repo should exist on next create so if the user tries again, it should automatically select the repo
-            context.telemetry.properties.getBranchAttempts = 'timeout';
-            throw new Error(localize('cantGetBranch', 'Unable to get branch from repo "{0}".  Please try "Create Static Web App..." again.', context.newRepoName));
+            if (!context.branchData) {
+                // the repo should exist on next create so if the user tries again, it should automatically select the repo
+                context.telemetry.properties.getBranchAttempts = 'timeout';
+                throw new Error(localize('cantGetBranch', 'Unable to get branch from repo "{0}".  Please try "Create Static Web App..." again.', context.newRepoName));
+            }
+        } else {
+            context.branchData = { name: gitHubRepoRes.default_branch };
         }
     }
 
     public shouldExecute(context: IStaticWebAppWizardContext): boolean {
         return !!(context.accessToken && context.newRepoName);
     }
+}
+
+async function createRepo(context: IStaticWebAppWizardContext, client: Octokit, newRepoIsPrivate: boolean, newRepoName: string) {
+    return (isUser(context.orgData) ? await client.repos.createForAuthenticatedUser({ name: newRepoName, private: newRepoIsPrivate }) :
+        await client.repos.createInOrg({ org: nonNullProp(context, 'orgData').login, name: newRepoName, private: newRepoIsPrivate })).data;
+
+}
+
+async function createRepoFromTemplate(context: IStaticWebAppWizardContext, client: Octokit, newRepoIsPrivate: boolean, newRepoName: string) {
+    const templateRepo = nonNullProp(context, 'templateRepo');
+    return (await client.rest.repos.createUsingTemplate({
+        template_owner: nonNullProp(templateRepo, 'owner').login,
+        template_repo: templateRepo.name,
+        name: newRepoName ?? templateRepo.name,
+        private: newRepoIsPrivate,
+        description: templateRepo.description ?? undefined
+    })).data;
 }

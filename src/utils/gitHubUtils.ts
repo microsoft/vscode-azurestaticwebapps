@@ -7,9 +7,9 @@ import { Octokit } from '@octokit/rest';
 import { authentication, ProgressLocation, window } from 'vscode';
 import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { githubAuthProviderId, githubScopes, templateReposUsername } from '../constants';
+import { githubAuthProviderId, githubScopes } from '../constants';
 import { ext } from '../extensionVariables';
-import { ListOrgsForUserData, OrgForAuthenticatedUserData, RepoData, RepoResponse, ReposCreateForkResponse, ReposCreateUsingTemplateResponse, ReposGetResponseData } from '../gitHubTypings';
+import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposCreateForkResponse, ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
 import { localize } from './localize';
 import { nonNullProp } from './nonNull';
@@ -106,32 +106,5 @@ export async function createFork(context: IActionContext, remoteRepo: ReposGetRe
     }
 }
 
-export async function createRepoFromTemplate(context: IActionContext, templateRepo: RepoData, newRepoName?: string, isPrivate?: boolean, description?: string): Promise<ReposCreateUsingTemplateResponse> {
-    if (!templateRepo.is_template) {
-        throw new Error(localize('repoNotATemplate', 'Could not create repository. "{0}" is not a template.', templateRepo.full_name));
-    }
 
-    const client: Octokit = await createOctokitClient(context);
-    try {
-        return client.rest.repos.createUsingTemplate({
-            template_owner: nonNullProp(templateRepo, 'owner').login,
-            template_repo: templateRepo.name,
-            name: newRepoName ?? templateRepo.name,
-            private: isPrivate ?? false,
-            description: description ?? undefined
-        });
-    } catch (e) {
-        const generateUrl: string = `${templateRepo.html_url}/generate`;
-        throw new Error(localize('createFromTemplateFail', 'Could not create repository from template. [Create it manually]({0}).', generateUrl));
-    }
-}
 
-export async function getTemplateRepos(context: IActionContext): Promise<RepoData[]> {
-    const client: Octokit = await createOctokitClient(context);
-
-    const allRepositories: RepoResponse = await client.repos.listForUser({
-        username: templateReposUsername
-    });
-
-    return allRepositories.data.filter((repo) => repo.is_template);
-}
