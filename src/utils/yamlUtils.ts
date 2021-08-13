@@ -62,6 +62,16 @@ async function getBuildDeployStep(context: IActionContext, yamlFileContents: str
     return undefined;
 }
 
+export function validateLocationYaml(value: string, buildConfig: BuildConfig): string | undefined {
+    const yamlString = `${buildConfig}: "${value}"`;
+    try {
+        parse(yamlString);
+        return;
+    } catch (e) {
+        return `Invalid YAML syntax: ${yamlString}`;
+    }
+}
+
 function stepIncludesBuildConfig(step: BuildDeployStep, buildConfig: BuildConfig): boolean {
     // eslint-disable-next-line no-prototype-builtins
     return !!step.with?.hasOwnProperty(buildConfig);
