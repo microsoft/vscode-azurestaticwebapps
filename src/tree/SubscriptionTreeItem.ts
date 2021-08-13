@@ -16,6 +16,7 @@ import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetL
 import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
+import { setNewRepoDefaults } from '../commands/createStaticWebApp/setWorkspaceContexts';
 import { SkuListStep } from '../commands/createStaticWebApp/SkuListStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
@@ -71,6 +72,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         if (!hasRemote) {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
             executeSteps.push(new RepoCreateStep());
+        }
+
+        if (wizardContext.fromTemplate) {
+            await setNewRepoDefaults(wizardContext);
         }
 
         promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());

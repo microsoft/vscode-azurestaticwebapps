@@ -22,13 +22,17 @@ export async function setWorkspaceContexts(context: IActionContext & Partial<ISt
         context.branchData = { name: gitWorkspaceState.remoteRepo.default_branch };
     } else {
         if (!context.advancedCreation) {
-            // default repo to private for basic create
-            context.newRepoIsPrivate = true;
-            // set the org to the authenticated user for creation
-            context.orgData = await GitHubOrgListStep.getAuthenticatedUser(context);
+            await setNewRepoDefaults(context);
         }
     }
     const origin: string = 'origin';
     context.originExists = await remoteShortnameExists(context.fsPath, origin);
     context.newRemoteShortname = context.originExists ? undefined : origin;
+}
+
+export async function setNewRepoDefaults(context: IActionContext & Partial<IStaticWebAppWizardContext>): Promise<void> {
+    // default repo to private for basic create
+    context.newRepoIsPrivate = true;
+    // set the org to the authenticated user for creation
+    context.orgData = await GitHubOrgListStep.getAuthenticatedUser(context);
 }
