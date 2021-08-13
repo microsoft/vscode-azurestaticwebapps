@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+### Changed
+- Minimum version of VS Code is now 1.57.0
+
 ## 0.7.1 - 2021-07-08
 ### Fixed
 -  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/13?closed=1)
