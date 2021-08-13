@@ -105,6 +105,3 @@ export async function createFork(context: IActionContext, remoteRepo: ReposGetRe
         throw new Error(localize('forkFail', 'Could not automatically fork repository. Please fork [{0}]({1}) manually.', remoteRepo.name, remoteRepo.html_url));
     }
 }
-
-
-
