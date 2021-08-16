@@ -27,14 +27,14 @@ export async function getFunctionsApi(context: IActionContext): Promise<AzureFun
     throw new UserCancelledError('postInstallFunctions');
 }
 
-export async function getGitApi(fsPath?: string): Promise<API> {
+export async function getGitApi(): Promise<API> {
     try {
         const gitExtension: GitExtension | undefined = await getApiExport('vscode.git');
         if (gitExtension) {
             return gitExtension.getAPI(1);
         }
     } catch (err) {
-        if (!getWorkspaceSetting<boolean>('enabled', fsPath, 'git')) {
+        if (!getWorkspaceSetting<boolean>('enabled', undefined, 'git')) {
             // the getExtension error is very vague and unactionable so throw our own error if git isn't enabled
             throw new Error(localize('gitEnabled', 'If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D). To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).'));
         } else {
