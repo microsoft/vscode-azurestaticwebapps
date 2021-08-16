@@ -12,7 +12,7 @@ export const buildPresets: IBuildPreset[] = [
         displayName: 'Angular',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: 'dist'
+        outputLocation: 'dist/<Project name>'
     },
     {
         id: 'react',
