@@ -33,7 +33,7 @@ export async function getGitApi(): Promise<API> {
         if (gitExtension) {
             return gitExtension.getAPI(1);
         } else {
-         	throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
+            throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
         }
     } catch (err) {
         if (!getWorkspaceSetting<boolean>('enabled', undefined, 'git')) {
@@ -43,8 +43,6 @@ export async function getGitApi(): Promise<API> {
             throw err;
         }
     }
-
-    throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API.  Please ensure git is properly installed and reload VS Code.'));
 }
 
 export async function getApiExport<T>(extensionId: string): Promise<T | undefined> {
