@@ -8,6 +8,7 @@ import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { AzureExtensionApiProvider } from "vscode-azureextensionui/api";
 import { API, GitExtension } from "./git";
 import { localize } from "./utils/localize";
+import { getWorkspaceSetting } from "./utils/settingsUtils";
 import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
 
 export async function getFunctionsApi(context: IActionContext): Promise<AzureFunctionsExtensionApi> {
@@ -26,17 +27,22 @@ export async function getFunctionsApi(context: IActionContext): Promise<AzureFun
     throw new UserCancelledError('postInstallFunctions');
 }
 
-export async function getGitApi(): Promise<API> {
+export async function getGitApi(fsPath?: string): Promise<API> {
     try {
         const gitExtension: GitExtension | undefined = await getApiExport('vscode.git');
         if (gitExtension) {
             return gitExtension.getAPI(1);
         }
     } catch (err) {
-        // the getExtension error is very vague and unactionable so swallow and throw our own error
+        if (!getWorkspaceSetting<boolean>('enabled', fsPath, 'git')) {
+            // the getExtension error is very vague and unactionable so throw our own error if git isn't enabled
+            throw new Error(localize('gitEnabled', 'If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D). To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).'));
+        } else {
+            throw err;
+        }
     }
 
-    throw new Error(localize('gitEnabled', 'If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D). To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).'));
+    throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API.  Please ensure git is properly installed and reload VS Code.'));
 }
 
 export async function getApiExport<T>(extensionId: string): Promise<T | undefined> {
