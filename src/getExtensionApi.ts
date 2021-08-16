@@ -32,6 +32,8 @@ export async function getGitApi(): Promise<API> {
         const gitExtension: GitExtension | undefined = await getApiExport('vscode.git');
         if (gitExtension) {
             return gitExtension.getAPI(1);
+        } else {
+         	throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
         }
     } catch (err) {
         if (!getWorkspaceSetting<boolean>('enabled', undefined, 'git')) {
