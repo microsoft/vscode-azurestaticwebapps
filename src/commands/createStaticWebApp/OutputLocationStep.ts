@@ -7,6 +7,7 @@ import { AzureWizardPromptStep } from "vscode-azureextensionui";
 import { appArtifactSubpathSetting, outputSubpathSetting } from "../../constants";
 import { localize } from "../../utils/localize";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
+import { validateLocationYaml } from "../../utils/yamlUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
@@ -17,6 +18,7 @@ export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizar
 
         context.outputLocation = (await context.ui.showInputBox({
             value: workspaceSetting || getWorkspaceSetting(appArtifactSubpathSetting, context.fsPath) || defaultValue,
+            validateInput: (value) => validateLocationYaml(value, 'output_location'),
             prompt: localize('publishLocation', "Enter the location of your build output relative to your app's location or leave blank if it has no build. For example, setting a value of 'build' when your app location is set to 'app' will cause the content at 'app/build' to be served.")
         })).trim();
 
