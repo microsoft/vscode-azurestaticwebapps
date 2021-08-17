@@ -13,7 +13,6 @@ import { RepoPrivacyStep } from '../commands/createRepo/RepoPrivacyStep';
 import { ApiLocationStep } from '../commands/createStaticWebApp/ApiLocationStep';
 import { AppLocationStep } from '../commands/createStaticWebApp/AppLocationStep';
 import { BuildPresetListStep } from '../commands/createStaticWebApp/BuildPresetListStep';
-import { isVerifyingWorkspaceEmitter } from '../commands/createStaticWebApp/createStaticWebApp';
 import { GitHubOrgListStep } from '../commands/createStaticWebApp/GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from '../commands/createStaticWebApp/IStaticWebAppWizardContext';
 import { OutputLocationStep } from '../commands/createStaticWebApp/OutputLocationStep';
@@ -54,6 +53,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...this.subscription };
+
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
@@ -86,6 +86,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         ];
 
         const webProvider: string = 'Microsoft.Web';
+        let setLocationPromise: Promise<void> | undefined; // to be used to await later to reduce latency in showing prompts
         if (context.advancedCreation) {
             LocationListStep.setLocationSubset(wizardContext, new Promise((resolve) => {
                 resolve(locations);
@@ -93,7 +94,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
             LocationListStep.addStep(wizardContext, promptSteps);
         } else {
-            await LocationListStep.setLocation(wizardContext, locations[0]);
+            setLocationPromise = LocationListStep.setLocation(wizardContext, locations[0]);
             // default to free for basic
             wizardContext.sku = SkuListStep.getSkus()[0];
         }
@@ -112,7 +113,11 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
 
         await wizard.prompt();
-        isVerifyingWorkspaceEmitter.fire(false);
+
+        if (setLocationPromise) {
+            await setLocationPromise;
+        }
+
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
         if (!context.advancedCreation) {
