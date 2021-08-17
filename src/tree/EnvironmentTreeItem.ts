@@ -32,11 +32,12 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
     public parent: StaticWebAppTreeItem;
+    public data: WebSiteManagementModels.StaticSiteBuildARMResource;
+
     public actionsTreeItem: ActionsTreeItem;
     public gitHubConfigGroupTreeItems: GitHubConfigGroupTreeItem[];
-    public appSettingsTreeItem: AppSettingsTreeItem;
-    public functionsTreeItem: FunctionsTreeItem;
-    public data: WebSiteManagementModels.StaticSiteBuildARMResource;
+    public appSettingsTreeItem?: AppSettingsTreeItem;
+    public functionsTreeItem?: FunctionsTreeItem;
 
     public name: string;
     public label: string;
@@ -74,11 +75,8 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
                 this.branch = this.branch.split(colon)[1];
             }
         }
-        this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
 
-        this.actionsTreeItem = new ActionsTreeItem(this);
-        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this));
-        this.functionsTreeItem = new FunctionsTreeItem(this);
+        this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
     public static async createEnvironmentTreeItem(context: IActionContext, parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
@@ -104,9 +102,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = [this.actionsTreeItem];
-        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-        const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
-        if (functions.length === 0) {
+        if (!this.functionsTreeItem || !this.appSettingsTreeItem) {
             context.telemetry.properties.hasFunctions = 'false';
             children.push(new GenericTreeItem(this, {
                 label: localize('noFunctions', 'Learn how to add an API with Azure Functions...'),
@@ -149,10 +145,15 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     }
 
     public pickTreeItemImpl(expectedContextValues: (string | RegExp)[]): AzExtTreeItem | undefined {
+        const noApiError: string = localize('noAPI', 'No Functions API associated with "{0}"', `${this.parent.label}/${this.label}`);
         for (const expectedContextValue of expectedContextValues) {
             switch (expectedContextValue) {
                 case AppSettingsTreeItem.contextValue:
                 case AppSettingTreeItem.contextValue:
+                    if (!this.appSettingsTreeItem) {
+                        throw new Error(noApiError);
+                    }
+
                     return this.appSettingsTreeItem;
                 case ActionsTreeItem.contextValue:
                 case ActionTreeItem.contextValueCompleted:
@@ -160,6 +161,10 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
                     return this.actionsTreeItem;
                 case FunctionsTreeItem.contextValue:
                 case FunctionTreeItem.contextValue:
+                    if (!this.functionsTreeItem) {
+                        throw new Error(noApiError);
+                    }
+
                     return this.functionsTreeItem;
                 default:
             }
@@ -183,10 +188,22 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
         this.localProjectPath = getSingleRootFsPath();
 
+        this.actionsTreeItem = new ActionsTreeItem(this);
+        try {
+            await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.parent.resourceGroup, this.parent.name, this.buildId);
+            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this));
+            this.functionsTreeItem = new FunctionsTreeItem(this);
+        } catch {
+            // if it errors here, then there is no Functions API
+            this.appSettingsTreeItem = undefined;
+            this.functionsTreeItem = undefined;
+        }
+
         const remote: string | undefined = (await tryGetRepoDataForCreation(context))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
 
         this.gitHubConfigGroupTreeItems = await GitHubConfigGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
+
     }
 }
