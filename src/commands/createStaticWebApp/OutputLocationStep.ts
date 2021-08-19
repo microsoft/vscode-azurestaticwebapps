@@ -7,6 +7,7 @@ import { AzureWizardPromptStep } from "vscode-azureextensionui";
 import { angularOutputLocation, appArtifactSubpathSetting, outputSubpathSetting } from "../../constants";
 import { localize } from "../../utils/localize";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
+import { validateLocationYaml } from "../../utils/yamlUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
@@ -22,7 +23,7 @@ export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizar
                 if (value === angularOutputLocation) {
                     return localize('fillProjectName', 'Fill in the name of your Angular project.')
                 }
-                return undefined;
+                return validateLocationYaml(value, 'output_location');
             }
         })).trim();
 
