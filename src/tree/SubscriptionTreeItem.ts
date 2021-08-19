@@ -84,9 +84,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         ];
 
         const webProvider: string = 'Microsoft.Web';
-        LocationListStep.setLocationSubset(wizardContext, new Promise((resolve) => {
-            resolve(locations);
-        }), webProvider);
+        LocationListStep.setLocationSubset(wizardContext, Promise.resolve(locations), webProvider);
 
         LocationListStep.addStep(wizardContext, promptSteps);
 
