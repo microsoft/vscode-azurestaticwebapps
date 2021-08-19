@@ -426,7 +426,9 @@
                     }
                 }
             }
-        ],
+        ]
+    },
+    "capabilities": {
         "virtualWorkspaces": {
             "supported": "limited",
             "description": "In virtual workspaces, creating static web apps is not supported."
