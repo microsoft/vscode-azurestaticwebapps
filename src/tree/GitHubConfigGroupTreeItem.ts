@@ -101,10 +101,13 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
         if (this.parseYamlError) {
-            return [new GenericTreeItem(this, {
+            const errorTreeItem = new GenericTreeItem(this, {
                 label: getYamlErrorMessage(this.parseYamlError),
-                contextValue: 'parseYamlErrorTreeItem'
-            })];
+                contextValue: 'parseYamlErrorTreeItem',
+                commandId: 'staticWebApps.openYAMLConfigFile'
+            });
+            errorTreeItem.commandArgs = [this];
+            return [errorTreeItem];
         }
 
         const treeItems: GitHubConfigTreeItem[] = [];
