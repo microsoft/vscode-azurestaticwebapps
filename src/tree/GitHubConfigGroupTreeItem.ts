@@ -46,13 +46,12 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     public parent: EnvironmentTreeItem;
     public yamlFilePath: string;
     public buildConfigs: BuildConfigs | undefined;
+    public parseYamlError: unknown;
 
-    public constructor(parent: EnvironmentTreeItem, yamlFilePath: string, buildConfigs: BuildConfigs, public parseYamlError?: unknown) {
+    public constructor(parent: EnvironmentTreeItem, yamlFilePath: string) {
         super(parent);
         this.yamlFilePath = yamlFilePath;
-        this.buildConfigs = buildConfigs;
         this.id = `${parent.id}-${this.yamlFilePath}`;
-        this.commandArgs = [this];
     }
 
     public get label(): string {
@@ -75,13 +74,9 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
             context.telemetry.properties.numWorkflows = yamlFiles.length.toString();
 
             for (const yamlFile of yamlFiles) {
-                const yamlFilePath: string = join(workflowsDir, yamlFile);
-                try {
-                    const buildConfigs: BuildConfigs | undefined = await parseYamlFile(context, yamlFilePath);
-                    buildConfigs && treeItems.push(new GitHubConfigGroupTreeItem(parent, yamlFilePath, buildConfigs));
-                } catch (e) {
-                    treeItems.push(new GitHubConfigGroupTreeItem(parent, yamlFilePath, {}, e));
-                }
+                const ti = new GitHubConfigGroupTreeItem(parent, join(workflowsDir, yamlFile));
+                await ti.refreshImpl(context);
+                treeItems.push(ti);
             }
         }
 
@@ -105,7 +100,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
-        if (this.errorRange) {
+        if (this.parseYamlError) {
             return [new GenericTreeItem(this, {
                 label: getYamlErrorMessage(this.parseYamlError),
                 contextValue: 'parseYamlErrorTreeItem'
