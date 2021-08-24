@@ -7,6 +7,7 @@ import { AzureWizardPromptStep } from "vscode-azureextensionui";
 import { appSubpathSetting, defaultAppLocation } from "../../constants";
 import { localize } from "../../utils/localize";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
+import { validateLocationYaml } from "../../utils/yamlUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
@@ -17,6 +18,7 @@ export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
 
         context.appLocation = (await context.ui.showInputBox({
             value: workspaceSetting || defaultValue,
+            validateInput: (value) => validateLocationYaml(value, 'app_location'),
             prompt: localize('enterAppLocation', "Enter the location of your application code. For example, '/' represents the root of your app, while '/app' represents a directory called 'app'.")
         })).trim();
 

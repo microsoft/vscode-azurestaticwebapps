@@ -60,6 +60,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
         if (!context.advancedCreation) {
+            wizardContext.sku = SkuListStep.getSkus()[0];
             executeSteps.push(new ResourceGroupCreateStep());
         } else {
             promptSteps.push(new ResourceGroupListStep());
@@ -73,12 +74,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
             executeSteps.push(new RepoCreateStep());
         }
-
+      
         if (wizardContext.fromTemplate) {
             await setNewRepoDefaults(wizardContext);
         }
-
-        promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
 
         // hard-coding locations available during preview
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
@@ -91,17 +90,11 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         ];
 
         const webProvider: string = 'Microsoft.Web';
-        if (context.advancedCreation) {
-            LocationListStep.setLocationSubset(wizardContext, new Promise((resolve) => {
-                resolve(locations);
-            }), webProvider);
+        LocationListStep.setLocationSubset(wizardContext, Promise.resolve(locations), webProvider);
 
-            LocationListStep.addStep(wizardContext, promptSteps);
-        } else {
-            await LocationListStep.setLocation(wizardContext, locations[0]);
-            // default to free for basic
-            wizardContext.sku = SkuListStep.getSkus()[0];
-        }
+        LocationListStep.addStep(wizardContext, promptSteps);
+
+        promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
 
         executeSteps.push(new VerifyProvidersStep([webProvider]));
         executeSteps.push(new StaticWebAppCreateStep());

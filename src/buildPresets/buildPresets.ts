@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { angularOutputLocation } from "../constants";
 import { IBuildPreset } from "./IBuildPreset";
 
 // hard-coded defaults for build presets until there is an API that supports this
@@ -11,7 +12,7 @@ const internalBuildPresets = {
         displayName: 'Angular',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: 'dist'
+        outputLocation: angularOutputLocation
     },
     react: {
         displayName: 'React',
