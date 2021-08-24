@@ -74,9 +74,10 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
             executeSteps.push(new RepoCreateStep());
         }
-      
+
         if (wizardContext.fromTemplate) {
             await setNewRepoDefaults(wizardContext);
+            await LocationListStep.setLocation(wizardContext, 'Central US');
         }
 
         // hard-coding locations available during preview
