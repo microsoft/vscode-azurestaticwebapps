@@ -11,6 +11,7 @@ import { quickstartTemplates } from '../../quickstarts/quickstartTemplates';
 import { localize } from '../../utils/localize';
 import { createOctokitClient } from '../github/createOctokitClient';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { StaticWebAppNameStep } from './StaticWebAppNameStep';
 
 export class TemplateListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     private _templateRepos: RepoData[];
@@ -25,10 +26,23 @@ export class TemplateListStep extends AzureWizardPromptStep<IStaticWebAppWizardC
 
         const pick: IAzureQuickPickItem<RepoData> = await context.ui.showQuickPick<IAzureQuickPickItem<RepoData>>(getPicks(), { placeHolder, suppressPersistence: true, loadingPlaceHolder: 'Loading templates...' });
         context.templateRepo = pick.data;
-        await this.setTemplateContexts(context, context.templateRepo.html_url);
+        context.telemetry.properties.quickstartTemplate = context.templateRepo.name;
+        await this.trySetSwaAndRepoName(context, context.templateRepo.name);
+        await this.setBuildConfigs(context, context.templateRepo.html_url);
     }
 
-    private async setTemplateContexts(context: IStaticWebAppWizardContext, templateUrl: string): Promise<void> {
+    private async trySetSwaAndRepoName(context: IStaticWebAppWizardContext, templateName: string): Promise<void> {
+        const swaNameStep = new StaticWebAppNameStep();
+        const name = await swaNameStep.getRelatedName(context, templateName);
+        if (name) {
+            context.newStaticWebAppName = name;
+            context.newRepoName = name;
+            context.valuesToMask.push(context.newStaticWebAppName);
+            context.relatedNameTask = swaNameStep.getRelatedName(context, context.newStaticWebAppName);
+        }
+    }
+
+    private async setBuildConfigs(context: IStaticWebAppWizardContext, templateUrl: string): Promise<void> {
         const quickstartTemplate = quickstartTemplates.find((quickstart) => quickstart.gitUrl === templateUrl);
         if (quickstartTemplate) {
             context.buildPreset = quickstartTemplate.buildPreset;

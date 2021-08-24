@@ -13,11 +13,11 @@ import { createOctokitClient } from '../github/createOctokitClient';
 export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const name: string | undefined = context.newStaticWebAppName;
-        const value: string | undefined = await this.validateRepoName(context, name) === undefined ? name : undefined;
+        const value: string | undefined = await RepoNameStep.validateRepoName(context, name) === undefined ? name : undefined;
 
         context.newRepoName = (await context.ui.showInputBox({
             prompt: localize('newRepoPrompt', 'Enter the name of the new GitHub repository. Azure Static Web Apps automatically builds and deploys using GitHub Actions.'),
-            validateInput: async (value: string): Promise<string | undefined> => await this.validateRepoName(context, value),
+            validateInput: async (value: string): Promise<string | undefined> => await RepoNameStep.validateRepoName(context, value),
             value
         })).trim();
         context.valuesToMask.push(context.newRepoName);
@@ -44,7 +44,7 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
         return false;
     }
 
-    private async validateRepoName(context: IStaticWebAppWizardContext, name: string | undefined): Promise<string | undefined> {
+    public static async validateRepoName(context: IStaticWebAppWizardContext, name: string | undefined): Promise<string | undefined> {
         name = name ? name.trim() : '';
 
         if (name === '.' || name === '..') {

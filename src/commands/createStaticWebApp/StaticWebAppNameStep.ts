@@ -21,21 +21,12 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const defaultName: string = context.fromTemplate ? nonNullValueAndProp(context.templateRepo, 'name') : path.basename(nonNullProp(context, 'fsPath'));
 
-        const skipPrompt = context.fromTemplate && await this.validateStaticWebAppName(context, defaultName) === undefined;
-        context.newStaticWebAppName = defaultName;
-
-        if (!skipPrompt) {
-            const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
-            context.newStaticWebAppName = (await context.ui.showInputBox({
-                prompt,
-                value: await this.getRelatedName(context, defaultName),
-                validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(context, value)
-            })).trim();
-        }
-
-        if (await RepoNameStep.isRepoAvailable(context, context.newStaticWebAppName)) {
-            context.newRepoName = context.newStaticWebAppName;
-        }
+        const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
+        context.newStaticWebAppName = (await context.ui.showInputBox({
+            prompt,
+            value: await this.getRelatedName(context, defaultName),
+            validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(context, value)
+        })).trim();
 
         context.valuesToMask.push(context.newStaticWebAppName);
         context.relatedNameTask = this.getRelatedName(context, context.newStaticWebAppName);
@@ -47,7 +38,13 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
 
     protected async isRelatedNameAvailable(context: IStaticWebAppWizardContext, name: string): Promise<boolean> {
         if (!context.newStaticWebAppName) {
-            return await this.isSwaNameAvailable(context, context.resourceGroup?.name, name);
+            const swaNameAvailable = await this.isSwaNameAvailable(context, context.resourceGroup?.name, name);
+
+            if (swaNameAvailable && context.fromTemplate) {
+                return RepoNameStep.isRepoAvailable(context, name);
+            }
+
+            return swaNameAvailable;
         }
 
         // if we already have a swa name, then we're checking for resource group name
