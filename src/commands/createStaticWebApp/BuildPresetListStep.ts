@@ -14,7 +14,7 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
 
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('choosePreset', 'Choose build preset to configure default project structure');
-        const picks: IAzureQuickPickItem<IBuildPreset | undefined>[] = buildPresets.map((pb) => { return { label: pb.displayName, data: pb }; });
+        const picks: IAzureQuickPickItem<IBuildPreset | undefined>[] = Object.values(buildPresets).map((pb) => { return { label: pb.displayName, data: pb }; });
         picks.push({ label: localize('custom', '$(keyboard) Custom'), data: undefined });
         const learnMore: IAzureQuickPickItem = { label: localize('learnMore', '$(link-external) Learn more...'), description: '', data: undefined };
         picks.push(learnMore);

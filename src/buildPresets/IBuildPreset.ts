@@ -8,7 +8,6 @@
  */
 
 export interface IBuildPreset {
-    id: string;
     displayName: string;
     appLocation: string;
     apiLocation: string;

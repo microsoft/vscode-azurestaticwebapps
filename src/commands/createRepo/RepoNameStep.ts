@@ -27,7 +27,7 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
         return !context.newRepoName;
     }
 
-    protected async isRepoAvailable(context: IStaticWebAppWizardContext, repo: string): Promise<boolean> {
+    public static async isRepoAvailable(context: IStaticWebAppWizardContext, repo: string): Promise<boolean> {
         const client: Octokit = await createOctokitClient(context);
         try {
             await client.repos.get({ owner: nonNullProp(context, 'orgData').login, repo });
@@ -51,7 +51,7 @@ export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardConte
             return localize('reserved', 'The repository "{0}" is reserved.', name);
         } else if (name.length < 1) {
             return localize('invalidLength', 'The name must be between at least 1 character.');
-        } else if (!await this.isRepoAvailable(context, name)) {
+        } else if (!await RepoNameStep.isRepoAvailable(context, name)) {
             return localize('nameUnavailable', 'The repository "{0}" already exists on this account.', name);
         } else {
             return undefined;

@@ -7,6 +7,7 @@ import * as path from 'path';
 import { AzureNameStep, IAzureNamingRules, ResourceGroupListStep, resourceGroupNamingRules } from "vscode-azureextensionui";
 import { localize } from "../../utils/localize";
 import { nonNullProp, nonNullValueAndProp } from '../../utils/nonNull';
+import { RepoNameStep } from '../createRepo/RepoNameStep';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
@@ -20,12 +21,21 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const defaultName: string = context.fromTemplate ? nonNullValueAndProp(context.templateRepo, 'name') : path.basename(nonNullProp(context, 'fsPath'));
 
-        const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
-        context.newStaticWebAppName = (await context.ui.showInputBox({
-            prompt,
-            value: await this.getRelatedName(context, defaultName),
-            validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(context, value)
-        })).trim();
+        const skipPrompt = context.fromTemplate && await this.validateStaticWebAppName(context, defaultName) === undefined;
+        context.newStaticWebAppName = defaultName;
+
+        if (!skipPrompt) {
+            const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
+            context.newStaticWebAppName = (await context.ui.showInputBox({
+                prompt,
+                value: await this.getRelatedName(context, defaultName),
+                validateInput: async (value: string | undefined): Promise<string | undefined> => await this.validateStaticWebAppName(context, value)
+            })).trim();
+        }
+
+        if (await RepoNameStep.isRepoAvailable(context, context.newStaticWebAppName)) {
+            context.newRepoName = context.newStaticWebAppName;
+        }
 
         context.valuesToMask.push(context.newStaticWebAppName);
         context.relatedNameTask = this.getRelatedName(context, context.newStaticWebAppName);
@@ -48,7 +58,7 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
         return await this.generateRelatedName(context, name, [staticWebAppNamingRules, resourceGroupNamingRules]);
     }
 
-    private async validateStaticWebAppName(context: IStaticWebAppWizardContext, name: string | undefined): Promise<string | undefined> {
+    public async validateStaticWebAppName(context: IStaticWebAppWizardContext, name: string | undefined): Promise<string | undefined> {
         name = name ? name.trim() : '';
         if (name.length < staticWebAppNamingRules.minLength || name.length > staticWebAppNamingRules.maxLength) {
             return localize('invalidLength', 'The name must be between {0} and {1} characters.', staticWebAppNamingRules.minLength, staticWebAppNamingRules.maxLength);
@@ -63,7 +73,7 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
         return undefined;
     }
 
-    private async isSwaNameAvailable(context: IStaticWebAppWizardContext, rgName: string | undefined, name: string): Promise<boolean> {
+    public async isSwaNameAvailable(context: IStaticWebAppWizardContext, rgName: string | undefined, name: string): Promise<boolean> {
         if (!rgName) {
             // if the resource doesn't exist, any name is available
             return true;
