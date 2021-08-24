@@ -19,7 +19,7 @@ export const quickstartTemplates: IQuickstartTemplate[] = [
         displayName: 'Vanilla JavaScript',
         buildPreset: {
             outputLocation: 'build',
-            appLocation: '/',
+            appLocation: './src',
             apiLocation: '',
             displayName: 'vanilla'
         },
