@@ -104,7 +104,7 @@ export async function openFolder(context: IActionContext): Promise<void> {
 
 export async function verifyWorkSpace(context: IActionContext & Partial<IStaticWebAppWizardContext>): Promise<void> {
     const progressOptions: ProgressOptions = {
-        location: ProgressLocation.Notification,
+        location: ProgressLocation.Window,
         title: localize('verifyingWorkspace', 'Verifying workspace...')
     };
     await window.withProgress(progressOptions, async () => {
