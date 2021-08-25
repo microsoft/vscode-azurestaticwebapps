@@ -4,8 +4,10 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { basename, join } from "path";
-import { FileType, ThemeIcon, Uri, workspace } from "vscode";
-import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { FileType, Range, ThemeIcon, Uri, workspace } from "vscode";
+import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, parseError, TreeItemIconPath } from "vscode-azureextensionui";
+// eslint-disable-next-line import/no-internal-modules
+import { YAMLSyntaxError } from "yaml/util";
 import { localize } from "../utils/localize";
 import { parseYamlFile } from "../utils/yamlUtils";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
@@ -20,19 +22,43 @@ export type BuildConfigs = {
     'app_artifact_location'?: string
 }
 
+function getRangeFromError(error: YAMLSyntaxError): Range {
+    if (error.linePos) {
+        const { start, end } = error.linePos;
+        return new Range(start.line - 1, start.col - 1, end.line - 1, end.col - 1);
+    }
+    return new Range(0, 0, 0, 0);
+}
+
+function getYamlErrorMessage(error: unknown): string {
+    if (error instanceof YAMLSyntaxError) {
+        const range = getRangeFromError(error);
+        return `Error: Invalid YAML between lines ${range.start.line} and ${range.end.line}`;
+    } else {
+        return parseError(error).message;
+    }
+}
+
 export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = 'azureStaticGitHubConfigGroup';
     public contextValue: string = GitHubConfigGroupTreeItem.contextValue;
-    public readonly label: string = localize('gitHubConfig', 'GitHub Configuration');
     public parent: EnvironmentTreeItem;
     public yamlFilePath: string;
     public buildConfigs: BuildConfigs | undefined;
+    public parseYamlError: unknown;
 
-    public constructor(parent: EnvironmentTreeItem, yamlFilePath: string, buildConfigs: BuildConfigs) {
+    public constructor(parent: EnvironmentTreeItem, yamlFilePath: string) {
         super(parent);
         this.yamlFilePath = yamlFilePath;
-        this.buildConfigs = buildConfigs;
         this.id = `${parent.id}-${this.yamlFilePath}`;
+    }
+
+    public get label(): string {
+        return this.parseYamlError ? localize('invalidGitHubConfig', 'Invalid GitHub Configuration') : localize('gitHubConfig', 'GitHub Configuration');
+    }
+
+    public get commandId(): string | undefined {
+        return this.parseYamlError ? 'staticWebApps.openYAMLConfigFile' : undefined;
     }
 
     public static async createGitHubConfigGroupTreeItems(context: IActionContext, parent: EnvironmentTreeItem): Promise<GitHubConfigGroupTreeItem[]> {
@@ -47,9 +73,9 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
             context.telemetry.properties.numWorkflows = yamlFiles.length.toString();
 
             for (const yamlFile of yamlFiles) {
-                const yamlFilePath: string = join(workflowsDir, yamlFile);
-                const buildConfigs: BuildConfigs | undefined = await parseYamlFile(context, yamlFilePath);
-                buildConfigs && treeItems.push(new GitHubConfigGroupTreeItem(parent, yamlFilePath, buildConfigs));
+                const ti = new GitHubConfigGroupTreeItem(parent, join(workflowsDir, yamlFile));
+                await ti.refreshImpl(context);
+                treeItems.push(ti);
             }
         }
 
@@ -57,7 +83,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public get iconPath(): TreeItemIconPath {
-        return new ThemeIcon('settings-gear');
+        return this.parseYamlError ? new ThemeIcon('warning') : new ThemeIcon('settings-gear');
     }
 
     public get description(): string {
@@ -68,7 +94,21 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
         return false;
     }
 
+    public get errorRange(): Range | undefined {
+        return this.parseYamlError instanceof YAMLSyntaxError ? getRangeFromError(this.parseYamlError) : undefined;
+    }
+
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {
+        if (this.parseYamlError) {
+            const errorTreeItem = new GenericTreeItem(this, {
+                label: getYamlErrorMessage(this.parseYamlError),
+                contextValue: 'parseYamlErrorTreeItem',
+                commandId: 'staticWebApps.openYAMLConfigFile'
+            });
+            errorTreeItem.commandArgs = [this];
+            return [errorTreeItem];
+        }
+
         const treeItems: GitHubConfigTreeItem[] = [];
 
         for (const buildConfig in this.buildConfigs) {
@@ -80,6 +120,11 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public async refreshImpl(context: IActionContext): Promise<void> {
-        this.buildConfigs = await parseYamlFile(context, this.yamlFilePath);
+        try {
+            this.buildConfigs = await parseYamlFile(context, this.yamlFilePath);
+            this.parseYamlError = undefined;
+        } catch (e) {
+            this.parseYamlError = e;
+        }
     }
 }

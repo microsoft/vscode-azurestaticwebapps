@@ -32,7 +32,8 @@ export async function parseYamlFile(context: IActionContext, yamlFilePath: strin
 
 async function getBuildDeployStep(context: IActionContext, yamlFileContents: string, yamlFileName: string): Promise<BuildDeployStep | undefined> {
     if (/Azure\/static-web-apps-deploy/.test(yamlFileContents)) {
-        const parsedYaml = <{ jobs?: { steps?: BuildDeployStep[] }[] }>await parse(yamlFileContents);
+        // prettyErrors option gives range of error. See https://eemeli.org/yaml/v1/#options
+        const parsedYaml = <{ jobs?: { steps?: BuildDeployStep[] }[] }>await parse(yamlFileContents, { prettyErrors: true });
 
         for (const job of Object.values(parsedYaml.jobs || {})) {
             for (const step of Object.values(job.steps || {})) {
