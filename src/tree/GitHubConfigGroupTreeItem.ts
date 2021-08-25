@@ -3,10 +3,9 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { pathExists, readdir } from "fs-extra";
 import { basename, join } from "path";
-import { Range, ThemeIcon } from "vscode";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, parseError, TreeItemIconPath } from "vscode-azureextensionui";
+import { FileType, Range, ThemeIcon, Uri, workspace } from "vscode";
+import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, parseError, TreeItemIconPath } from "vscode-azureextensionui";
 // eslint-disable-next-line import/no-internal-modules
 import { YAMLSyntaxError } from "yaml/util";
 import { localize } from "../utils/localize";
@@ -67,8 +66,8 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
 
         if (parent.localProjectPath && parent.inWorkspace) {
             const workflowsDir: string = join(parent.localProjectPath, '.github/workflows');
-            const yamlFiles: string[] = await pathExists(workflowsDir) ?
-                (await readdir(workflowsDir)).filter(file => /\.(yml|yaml)$/i.test(file)) :
+            const yamlFiles: string[] = await AzExtFsExtra.pathExists(workflowsDir) ?
+                (await workspace.fs.readDirectory(Uri.file(workflowsDir))).filter(file => file[1] === FileType.File && /\.(yml|yaml)$/i.test(file[0])).map(file => file[0]) :
                 [];
 
             context.telemetry.properties.numWorkflows = yamlFiles.length.toString();

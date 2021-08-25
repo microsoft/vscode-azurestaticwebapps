@@ -19,6 +19,8 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     repo?: Repository;
     fsPath?: string;
+    // Function projects detected via host.json at SWA create time
+    detectedApiLocations?: string[];
 
     newStaticWebAppName?: string;
 
