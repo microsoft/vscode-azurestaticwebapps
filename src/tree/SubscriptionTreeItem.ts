@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { workspace } from 'vscode';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { ThemeIcon, workspace } from 'vscode';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, GenericTreeItem, IActionContext, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
@@ -42,6 +42,17 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         const staticWebApps: WebSiteManagementModels.StaticSitesListResponse = await client.staticSites.list();
+
+        if (staticWebApps.length === 0) {
+            const quickstartTreeItem = new GenericTreeItem(this, {
+                label: 'Quickstart: Building your first static site',
+                contextValue: 'quickstarts',
+                iconPath: new ThemeIcon('wand'),
+                commandId: 'staticWebApps.createStaticWebAppFromTemplate'
+            });
+            quickstartTreeItem.commandArgs = [this];
+            return [quickstartTreeItem];
+        }
 
         return await this.createTreeItemsWithErrorHandling(
             staticWebApps,
