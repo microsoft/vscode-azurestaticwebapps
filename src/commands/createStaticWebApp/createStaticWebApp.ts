@@ -6,6 +6,7 @@
 import { ProgressLocation, ProgressOptions, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { productionEnvironmentName } from '../../constants';
+import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
@@ -17,23 +18,35 @@ import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 import { setWorkspaceContexts } from './setWorkspaceContexts';
 
+let isVerifyingWorkspace: boolean = false;
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
-    if (!node) {
-        node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
+    if (isVerifyingWorkspace) {
+        throw new VerifyingWorkspaceError(context);
     }
 
     const progressOptions: ProgressOptions = {
-        location: ProgressLocation.Notification,
+        location: ProgressLocation.Window,
         title: localize('verifyingWorkspace', 'Verifying workspace...')
     };
-    await window.withProgress(progressOptions, async () => {
-        const folder = await tryGetWorkspaceFolder(context);
-        if (folder) {
-            await setWorkspaceContexts(context, folder);
-        } else {
-            await showNoWorkspacePrompt(context);
+
+    isVerifyingWorkspace = true;
+    try {
+        if (!node) {
+            node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
         }
-    });
+
+        await window.withProgress(progressOptions, async () => {
+            const folder = await tryGetWorkspaceFolder(context);
+            if (folder) {
+                await setWorkspaceContexts(context, folder);
+            } else {
+                await showNoWorkspacePrompt(context);
+            }
+        });
+
+    } finally {
+        isVerifyingWorkspace = false;
+    }
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
     void showSwaCreated(swaNode);
