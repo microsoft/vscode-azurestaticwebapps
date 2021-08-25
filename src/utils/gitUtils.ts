@@ -3,11 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fse from 'fs-extra';
 import * as gitUrlParse from 'git-url-parse';
 import { join } from 'path';
-import { MessageItem, ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
-import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
+import { MessageItem, ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
+import { AzExtFsExtra, IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { defaultGitignoreContents } from '../constants';
@@ -52,7 +51,7 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
 /* Function used to enforce all our opinionated requirements for creating a Static Web App */
 export async function verifyGitWorkspaceForCreation(context: IActionContext, gitWorkspaceState: GitWorkspaceState, uri: Uri): Promise<VerifiedGitWorkspaceState> {
     const gitFolderName: string = '.git';
-    if ((await fse.readdir(uri.fsPath)).filter(file => file !== gitFolderName).length === 0) {
+    if ((await workspace.fs.readDirectory(uri)).filter(file => file[0] !== gitFolderName).length === 0) {
         // if the git repo is empty, git push will fail and create an empty GitHub repo so throw an error here
         throw new Error(localize('emptyWorkspace', 'Cannot create a Static Web App with an empty workspace.'));
     }
@@ -76,8 +75,8 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
 
         // create a generic .gitignore for user if we do not detect one
         const gitignorePath: string = join(uri.fsPath, '.gitignore');
-        if (!await fse.pathExists(gitignorePath)) {
-            await fse.writeFile(gitignorePath, defaultGitignoreContents);
+        if (!await AzExtFsExtra.pathExists(gitignorePath)) {
+            await AzExtFsExtra.writeFile(gitignorePath, defaultGitignoreContents);
         }
         await promptForCommit(context, repo, localize('initCommit', 'Initial commit'), 'initCommit');
     } else if (!!gitWorkspaceState.remoteRepo && !gitWorkspaceState.hasAdminAccess) {

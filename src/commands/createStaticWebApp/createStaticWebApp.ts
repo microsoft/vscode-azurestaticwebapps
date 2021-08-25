@@ -17,6 +17,7 @@ import { showSwaCreated } from '../showSwaCreated';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 import { setWorkspaceContexts } from './setWorkspaceContexts';
+import { tryGetApiLocations } from './tryGetApiLocations';
 
 let isVerifyingWorkspace: boolean = false;
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
@@ -39,6 +40,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             const folder = await tryGetWorkspaceFolder(context);
             if (folder) {
                 await setWorkspaceContexts(context, folder);
+                context.detectedApiLocations = await tryGetApiLocations(context, folder);
             } else {
                 await showNoWorkspacePrompt(context);
             }
