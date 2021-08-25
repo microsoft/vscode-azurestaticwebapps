@@ -3,10 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fse from 'fs-extra';
 import * as path from 'path';
 import { RelativePattern, workspace, WorkspaceFolder } from "vscode";
-import { IActionContext } from "vscode-azureextensionui";
+import { AzExtFsExtra, IActionContext } from "vscode-azureextensionui";
 import { telemetryUtils } from '../../utils/telemetryUtils';
 
 const hostFileName: string = 'host.json';
@@ -20,7 +19,7 @@ const hostFileName: string = 'host.json';
 export async function tryGetApiLocations(context: IActionContext, workspaceFolder: WorkspaceFolder | string): Promise<string[] | undefined> {
     return await telemetryUtils.runWithDurationTelemetry(context, 'tryGetProject', async () => {
         const folderPath = typeof workspaceFolder === 'string' ? workspaceFolder : workspaceFolder.uri.fsPath;
-        if (await fse.pathExists(folderPath)) {
+        if (await AzExtFsExtra.pathExists(folderPath)) {
             if (await isFunctionProject(folderPath)) {
                 return [folderPath];
             } else {
@@ -43,5 +42,5 @@ export async function tryGetApiLocations(context: IActionContext, workspaceFolde
 
 // Use 'host.json' as an indicator that this is a functions project
 async function isFunctionProject(folderPath: string): Promise<boolean> {
-    return await fse.pathExists(path.join(folderPath, hostFileName));
+    return await AzExtFsExtra.pathExists(path.join(folderPath, hostFileName));
 }
