@@ -3,9 +3,8 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { readFile } from "fs-extra";
 import { basename } from "path";
-import { IActionContext } from "vscode-azureextensionui";
+import { AzExtFsExtra, IActionContext } from "vscode-azureextensionui";
 import { parse } from "yaml";
 import { BuildConfig, BuildConfigs } from "../tree/GitHubConfigGroupTreeItem";
 import { localize } from "./localize";
@@ -16,7 +15,7 @@ type BuildDeployStep = {
 }
 
 export async function parseYamlFile(context: IActionContext, yamlFilePath: string): Promise<BuildConfigs | undefined> {
-    const contents: string = (await readFile(yamlFilePath)).toString();
+    const contents: string = (await AzExtFsExtra.readFile(yamlFilePath));
     const buildDeployStep: BuildDeployStep | undefined = await getBuildDeployStep(context, contents, basename(yamlFilePath));
 
     if (buildDeployStep) {
@@ -33,7 +32,8 @@ export async function parseYamlFile(context: IActionContext, yamlFilePath: strin
 
 async function getBuildDeployStep(context: IActionContext, yamlFileContents: string, yamlFileName: string): Promise<BuildDeployStep | undefined> {
     if (/Azure\/static-web-apps-deploy/.test(yamlFileContents)) {
-        const parsedYaml = <{ jobs?: { steps?: BuildDeployStep[] }[] }>await parse(yamlFileContents);
+        // prettyErrors option gives range of error. See https://eemeli.org/yaml/v1/#options
+        const parsedYaml = <{ jobs?: { steps?: BuildDeployStep[] }[] }>await parse(yamlFileContents, { prettyErrors: true });
 
         for (const job of Object.values(parsedYaml.jobs || {})) {
             for (const step of Object.values(job.steps || {})) {

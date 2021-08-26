@@ -48,11 +48,19 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
     }
 
     const configDocument: TextDocument = await workspace.openTextDocument(yamlFileUri);
-    const selection: Range | undefined = buildConfigToSelect ? await tryGetSelection(context, configDocument, buildConfigToSelect) : undefined;
+    const selection: Range | undefined = await tryGetSelection(context, configDocument, buildConfigToSelect, node instanceof GitHubConfigGroupTreeItem ? node : undefined);
     await window.showTextDocument(configDocument, { selection });
 }
 
-export async function tryGetSelection(context: IActionContext, configDocument: TextDocument, buildConfigToSelect: BuildConfig): Promise<Range | undefined> {
+export async function tryGetSelection(context: IActionContext, configDocument: TextDocument, buildConfigToSelect?: BuildConfig, node?: GitHubConfigGroupTreeItem): Promise<Range | undefined> {
+    if (node?.errorRange) {
+        return node.errorRange;
+    }
+
+    if (!buildConfigToSelect) {
+        return undefined;
+    }
+
     const configDocumentText: string = configDocument.getText();
     const buildConfigRegex: RegExp = new RegExp(`${buildConfigToSelect}:`, 'g');
     const buildConfigMatches: RegExpMatchArray | null = configDocumentText.match(buildConfigRegex);

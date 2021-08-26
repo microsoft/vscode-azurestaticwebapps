@@ -19,6 +19,7 @@ export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
         context.appLocation = (await context.ui.showInputBox({
             value: workspaceSetting || defaultValue,
             validateInput: (value) => validateLocationYaml(value, 'app_location'),
+            learnMoreLink: 'https://aka.ms/SwaAppLoc',
             prompt: localize('enterAppLocation', "Enter the location of your application code. For example, '/' represents the root of your app, while '/app' represents a directory called 'app'.")
         })).trim();
 
