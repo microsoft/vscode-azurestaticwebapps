@@ -11,6 +11,7 @@ import { getFunctionsApi } from '../getExtensionApi';
 import { localize } from '../utils/localize';
 import { getWorkspaceSetting } from '../utils/settingsUtils';
 import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
+import { promptForApiFolder, tryGetApiLocations } from './createStaticWebApp/tryGetApiLocations';
 
 export async function createHttpFunction(context: IActionContext): Promise<void> {
     if (!workspace.workspaceFolders || workspace.workspaceFolders.length <= 0) {
@@ -21,7 +22,11 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
 
     const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
 
-    const apiLocation: string = getWorkspaceSetting(apiSubpathSetting, workspace.workspaceFolders[0].uri.fsPath) || defaultApiLocation;
+    const detectedApiLocations = await tryGetApiLocations(context, workspace.workspaceFolders[0].uri.fsPath);
+
+    const apiLocation: string = detectedApiLocations?.length ?
+        await promptForApiFolder(context, detectedApiLocations) :
+        getWorkspaceSetting(apiSubpathSetting, workspace.workspaceFolders[0].uri.fsPath) || defaultApiLocation;
     const folderPath: string = path.join(workspace.workspaceFolders[0].uri.fsPath, apiLocation);
 
     await funcApi.createFunction({
