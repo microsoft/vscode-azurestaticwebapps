@@ -203,7 +203,8 @@
             {
                 "command": "staticWebApps.createSwaConfigFile",
                 "title": "%staticWebApps.createSwaConfigFile%",
-                "category": "Azure Static Web Apps"
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.openGitHubLog",
