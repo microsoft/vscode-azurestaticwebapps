@@ -19,6 +19,7 @@ export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizar
         context.outputLocation = (await context.ui.showInputBox({
             value: workspaceSetting || getWorkspaceSetting(appArtifactSubpathSetting, context.fsPath) || defaultValue,
             prompt: localize('publishLocation', "Enter the location of your build output relative to your app's location or leave blank if it has no build. For example, setting a value of 'build' when your app location is set to 'app' will cause the content at 'app/build' to be served."),
+            learnMoreLink: 'https://aka.ms/SwaOutLoc',
             validateInput: (value: string): string | undefined => {
                 if (value === angularOutputLocation) {
                     return localize('fillProjectName', 'Fill in the name of your Angular project.')

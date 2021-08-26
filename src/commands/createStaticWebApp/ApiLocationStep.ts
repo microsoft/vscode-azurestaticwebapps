@@ -17,11 +17,12 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
         const defaultValue: string = context.buildPreset?.apiLocation ?? defaultApiLocation;
         const workspaceSetting: string | undefined = getWorkspaceSetting(apiSubpathSetting, context.fsPath);
 
-        context.apiLocation = context.detectedApiLocations ?
+        context.apiLocation = context.detectedApiLocations?.length ?
             await promptForApiFolder(context, context.detectedApiLocations) :
             (await context.ui.showInputBox({
                 value: workspaceSetting || defaultValue,
                 validateInput: (value) => validateLocationYaml(value, 'api_location'),
+                learnMoreLink: 'https://aka.ms/SwaApiLoc',
                 prompt: localize('enterApiLocation', "Enter the location of your Azure Functions code or leave blank to skip this step. For example, 'api' represents a folder called 'api'."),
             })).trim();
 
