@@ -97,7 +97,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
             title,
             promptSteps,
-            executeSteps
+            executeSteps,
+            showLoadingPrompt: true
         });
 
         wizardContext.telemetry.properties.gotRemote = String(hasRemote);
