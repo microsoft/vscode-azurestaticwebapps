@@ -28,7 +28,7 @@
     ],
     "preview": true,
     "activationEvents": [
-        "onCommand:staticWebApps.createStaticWebAppFromTemplate",
+        "onCommand:staticWebApps.deploySampleStaticWebApp",
         "onCommand:staticWebApps.createStaticWebApp",
         "onCommand:staticWebApps.createStaticWebAppAdvanced",
         "onCommand:staticWebApps.deleteStaticWebApp",
@@ -60,8 +60,8 @@
     "contributes": {
         "commands": [
             {
-                "command": "staticWebApps.createStaticWebAppFromTemplate",
-                "title": "%staticWebApps.createStaticWebAppFromTemplate%",
+                "command": "staticWebApps.deploySampleStaticWebApp",
+                "title": "%staticWebApps.deploySampleStaticWebApp%",
                 "category": "Azure Static Web Apps"
             },
             {

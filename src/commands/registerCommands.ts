@@ -15,7 +15,7 @@ import { uploadAppSettings } from './appSettings/uploadAppSettings';
 import { browse } from './browse';
 import { createChildNode } from './createChildNode';
 import { createHttpFunction } from './createHttpFunction';
-import { createStaticWebApp, createStaticWebAppAdvanced, createStaticWebAppFromTemplate } from './createStaticWebApp/createStaticWebApp';
+import { createStaticWebApp, createStaticWebAppAdvanced, deploySampleStaticWebApp } from './createStaticWebApp/createStaticWebApp';
 import { createSwaConfigFile } from './createSwaConfigFile';
 import { deleteEnvironment } from './deleteEnvironment';
 import { deleteNode } from './deleteNode';
@@ -30,7 +30,7 @@ import { openYAMLConfigFile } from './openYAMLConfigFile';
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
-    registerCommand('staticWebApps.createStaticWebAppFromTemplate', createStaticWebAppFromTemplate);
+    registerCommand('staticWebApps.deploySampleStaticWebApp', deploySampleStaticWebApp);
     registerCommand('staticWebApps.createStaticWebApp', createStaticWebApp);
     registerCommand('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
     registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);

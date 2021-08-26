@@ -71,19 +71,19 @@ export async function showNoWorkspacePrompt(context: IActionContext & Partial<IS
     const cloneProject = 'cloneProject';
     const cloneProjectMsg: MessageItem = { title: localize(cloneProject, 'Clone from GitHub') };
     const openExistingProjectMsg: MessageItem = { title: localize(openExistingProject, 'Open existing') };
-    const createFromTemplate = 'createFromTemplate';
-    const createFromTemplateMsg: MessageItem = { title: localize(createFromTemplate, 'Create from template') };
+    const deploySample = 'deploySample';
+    const deploySampleMsg: MessageItem = { title: localize(deploySample, 'Deploy a sample for free') };
 
-    const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg, createFromTemplateMsg);
+    const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg, deploySampleMsg);
     if (result === cloneProjectMsg) {
         await cloneRepo(context, '');
         context.telemetry.properties.noWorkspaceResult = cloneProject;
     } else if (result === openExistingProjectMsg) {
         await openFolder(context)
         context.telemetry.properties.noWorkspaceResult = openExistingProject;
-    } else if (result === createFromTemplateMsg) {
-        context.fromTemplate = true;
-        context.telemetry.properties.noWorkspaceResult = createFromTemplate;
+    } else if (result === deploySampleMsg) {
+        context.isSample = true;
+        context.telemetry.properties.noWorkspaceResult = deploySample;
         return;
     }
     context.errorHandling.suppressDisplay = true;

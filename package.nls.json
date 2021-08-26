@@ -1,7 +1,7 @@
 {
     "staticWebApps.createStaticWebApp": "Create Static Web App...",
     "staticWebApps.createStaticWebAppAdvanced": "Create Static Web App... (Advanced)",
-    "staticWebApps.createStaticWebAppFromTemplate": "Create Static Web App from Template...",
+    "staticWebApps.deploySampleStaticWebApp": "Deploy a Sample for Free...",
     "staticWebApps.deleteStaticWebApp": "Delete...",
     "staticWebApps.deleteEnvironment": "Delete Environment...",
     "staticWebApps.description": "An Azure Static Web Apps extension for Visual Studio Code.",

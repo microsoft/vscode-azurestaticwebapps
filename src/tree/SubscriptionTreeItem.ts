@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { ThemeIcon, workspace } from 'vscode';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, GenericTreeItem, IActionContext, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { workspace } from 'vscode';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
@@ -43,17 +43,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         const staticWebApps: WebSiteManagementModels.StaticSitesListResponse = await client.staticSites.list();
 
-        if (staticWebApps.length === 0) {
-            const quickstartTreeItem = new GenericTreeItem(this, {
-                label: 'Quickstart: Building your first static site',
-                contextValue: 'quickstarts',
-                iconPath: new ThemeIcon('wand'),
-                commandId: 'staticWebApps.createStaticWebAppFromTemplate'
-            });
-            quickstartTreeItem.commandArgs = [this];
-            return [quickstartTreeItem];
-        }
-
         return await this.createTreeItemsWithErrorHandling(
             staticWebApps,
             'invalidStaticWebApp',
@@ -67,7 +56,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...this.subscription };
 
-        const title: string = localize('createStaticApp', 'Create Static Web App');
+        const title: string = wizardContext.isSample ? localize('deploySample', 'Deploy a Sample for Free') : localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
@@ -87,7 +76,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             executeSteps.push(new RepoCreateStep());
         }
 
-        if (wizardContext.fromTemplate) {
+        if (wizardContext.isSample) {
             await setNewRepoDefaults(wizardContext);
             await LocationListStep.setLocation(wizardContext, 'Central US');
         }
@@ -116,7 +105,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             title,
             promptSteps,
             executeSteps,
-            hideStepCount: wizardContext.fromTemplate
+            hideStepCount: wizardContext.isSample
         });
 
         wizardContext.telemetry.properties.gotRemote = String(hasRemote);
@@ -134,7 +123,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         await wizard.execute();
         context.showCreatingTreeItem(newStaticWebAppName);
 
-        if (!wizardContext.fromTemplate) {
+        if (!wizardContext.isSample) {
             await gitPull(nonNullProp(wizardContext, 'repo'));
         }
         return new StaticWebAppTreeItem(this, nonNullProp(wizardContext, 'staticWebApp'));

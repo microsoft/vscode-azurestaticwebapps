@@ -41,6 +41,6 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     // created when the wizard is done executing
     staticWebApp?: WebSiteManagementModels.StaticSiteARMResource;
 
-    fromTemplate?: boolean;
-    templateRepo?: RepoData;
+    isSample?: boolean;
+    sampleTemplateRepo?: RepoData;
 }

@@ -19,7 +19,7 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const defaultName: string = context.fromTemplate ? nonNullValueAndProp(context.templateRepo, 'name') : path.basename(nonNullProp(context, 'fsPath'));
+        const defaultName: string = context.isSample ? nonNullValueAndProp(context.sampleTemplateRepo, 'name') : path.basename(nonNullProp(context, 'fsPath'));
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         context.newStaticWebAppName = (await context.ui.showInputBox({
@@ -40,7 +40,7 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
         if (!context.newStaticWebAppName) {
             const swaNameAvailable = await this.isSwaNameAvailable(context, context.resourceGroup?.name, name);
 
-            if (swaNameAvailable && context.fromTemplate) {
+            if (swaNameAvailable && context.isSample) {
                 return RepoNameStep.isRepoAvailable(context, name);
             }
 

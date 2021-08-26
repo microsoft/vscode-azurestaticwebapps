@@ -30,7 +30,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
 
         const client: Octokit = await createOctokitClient(context);
 
-        const gitHubRepoRes = context.fromTemplate ? await createRepoFromTemplate(context, client, newRepoIsPrivate, newRepoName) : await createRepo(context, client, newRepoIsPrivate, newRepoName);
+        const gitHubRepoRes = context.isSample ? await createRepoFromTemplate(context, client, newRepoIsPrivate, newRepoName) : await createRepo(context, client, newRepoIsPrivate, newRepoName);
         context.repoHtmlUrl = gitHubRepoRes.html_url;
 
         const createdGitHubRepo: string = newRepoIsPrivate ? localize('createdPrivateGitHubRepo', 'Created new private GitHub repository "{0}".', newRepoName) :
@@ -38,7 +38,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         ext.outputChannel.appendLog(createdGitHubRepo);
         progress.report({ message: createdGitHubRepo });
 
-        if (!context.fromTemplate) {
+        if (!context.isSample) {
             const repo: Repository = nonNullProp(context, 'repo');
             const remoteName: string = nonNullProp(context, 'newRemoteShortname');
 
@@ -96,7 +96,7 @@ async function createRepo(context: IStaticWebAppWizardContext, client: Octokit, 
 }
 
 async function createRepoFromTemplate(context: IStaticWebAppWizardContext, client: Octokit, newRepoIsPrivate: boolean, newRepoName: string) {
-    const templateRepo = nonNullProp(context, 'templateRepo');
+    const templateRepo = nonNullProp(context, 'sampleTemplateRepo');
     return (await client.rest.repos.createUsingTemplate({
         template_owner: nonNullProp(templateRepo, 'owner').login,
         template_repo: templateRepo.name,

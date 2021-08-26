@@ -1,7 +1,7 @@
 import { buildPresets } from "../buildPresets/buildPresets";
-import { IQuickstartTemplate } from "./IQuickstartTemplate";
+import { ISampleTemplate } from "./ISampleTemplate";
 
-export const quickstartTemplates: IQuickstartTemplate[] = [
+export const quickstartTemplates: ISampleTemplate[] = [
     {
         displayName: 'Angular',
         buildPreset: {

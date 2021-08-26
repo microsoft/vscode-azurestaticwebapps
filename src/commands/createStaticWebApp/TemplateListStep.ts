@@ -6,8 +6,8 @@
 import { Octokit } from '@octokit/rest';
 import { AzureWizardPromptStep, IActionContext, IAzureQuickPickItem } from 'vscode-azureextensionui';
 import { RepoData, RepoResponse } from '../../gitHubTypings';
-import { IQuickstartTemplate } from '../../quickstarts/IQuickstartTemplate';
-import { quickstartTemplates } from '../../quickstarts/quickstartTemplates';
+import { ISampleTemplate } from '../../samples/ISampleTemplate';
+import { quickstartTemplates as sampleTemplates } from '../../samples/sampleTemplates';
 import { localize } from '../../utils/localize';
 import { createOctokitClient } from '../github/createOctokitClient';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
@@ -17,18 +17,18 @@ export class TemplateListStep extends AzureWizardPromptStep<IStaticWebAppWizardC
     private _templateRepos: RepoData[];
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
 
-        const placeHolder: string = localize('chooseTemplatePrompt', 'Choose a quickstart template for the new static web app.');
+        const placeHolder: string = localize('chooseSampleTemplatePrompt', 'Choose a sample template to deploy.');
 
         const getPicks = async () => {
-            this._templateRepos ||= await getTemplateRepos(context);
-            return this._templateRepos.map((quickstart: (RepoData & IQuickstartTemplate)) => ({ label: quickstart.displayName, data: quickstart }));
+            this._templateRepos ||= await getSampleTemplateRepos(context);
+            return this._templateRepos.map((quickstart: (RepoData & ISampleTemplate)) => ({ label: quickstart.displayName, data: quickstart }));
         }
 
         const pick: IAzureQuickPickItem<RepoData> = await context.ui.showQuickPick<IAzureQuickPickItem<RepoData>>(getPicks(), { placeHolder, suppressPersistence: true, loadingPlaceHolder: 'Loading templates...' });
-        context.templateRepo = pick.data;
-        context.telemetry.properties.quickstartTemplate = context.templateRepo.name;
-        await this.trySetSwaAndRepoName(context, context.templateRepo.name);
-        await this.setBuildConfigs(context, context.templateRepo.html_url);
+        context.sampleTemplateRepo = pick.data;
+        context.telemetry.properties.quickstartTemplate = context.sampleTemplateRepo.name;
+        await this.trySetSwaAndRepoName(context, context.sampleTemplateRepo.name);
+        await this.setBuildConfigs(context, context.sampleTemplateRepo.html_url);
     }
 
     private async trySetSwaAndRepoName(context: IStaticWebAppWizardContext, templateName: string): Promise<void> {
@@ -43,22 +43,22 @@ export class TemplateListStep extends AzureWizardPromptStep<IStaticWebAppWizardC
     }
 
     private async setBuildConfigs(context: IStaticWebAppWizardContext, templateUrl: string): Promise<void> {
-        const quickstartTemplate = quickstartTemplates.find((quickstart) => quickstart.gitUrl === templateUrl);
-        if (quickstartTemplate) {
-            context.buildPreset = quickstartTemplate.buildPreset;
-            context.outputLocation = quickstartTemplate.buildPreset.outputLocation;
-            context.appLocation = quickstartTemplate.buildPreset.appLocation;
-            context.apiLocation = quickstartTemplate.buildPreset.apiLocation;
+        const sampleTemplate = sampleTemplates.find((template) => template.gitUrl === templateUrl);
+        if (sampleTemplate) {
+            context.buildPreset = sampleTemplate.buildPreset;
+            context.outputLocation = sampleTemplate.buildPreset.outputLocation;
+            context.appLocation = sampleTemplate.buildPreset.appLocation;
+            context.apiLocation = sampleTemplate.buildPreset.apiLocation;
         }
     }
 
-    // Only prompt if we're creating from template, and a template hasn't been selected yet.
+    // Only prompt if we're deploying a sample, and a sample template hasn't been selected yet.
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
-        return !!context.fromTemplate && !context.templateRepo;
+        return !!context.isSample && !context.sampleTemplateRepo;
     }
 }
 
-async function getTemplateRepos(context: IActionContext): Promise<(RepoData & IQuickstartTemplate)[]> {
+async function getSampleTemplateRepos(context: IActionContext): Promise<(RepoData & ISampleTemplate)[]> {
     const client: Octokit = await createOctokitClient(context);
     const templateReposUsername: string = 'staticwebdev';
 
@@ -66,8 +66,8 @@ async function getTemplateRepos(context: IActionContext): Promise<(RepoData & IQ
         username: templateReposUsername
     });
 
-    const quickstartRepos: (RepoData & IQuickstartTemplate)[] = [];
-    quickstartTemplates.forEach((quickstartTemplate) => {
+    const quickstartRepos: (RepoData & ISampleTemplate)[] = [];
+    sampleTemplates.forEach((quickstartTemplate) => {
         const repo: RepoData | undefined = allRepositories.data.find((repo) => repo.html_url === quickstartTemplate.gitUrl);
         if (repo) {
             quickstartRepos.push({

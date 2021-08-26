@@ -23,7 +23,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         throw new VerifyingWorkspaceError(context);
     }
 
-
     const progressOptions: ProgressOptions = {
         location: ProgressLocation.Window,
         title: localize('verifyingWorkspace', 'Verifying workspace...')
@@ -35,7 +34,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
         }
 
-        if (!context.fromTemplate) {
+        if (!context.isSample) {
             await window.withProgress(progressOptions, async () => {
                 await verifyWorkSpace(context);
             });
@@ -46,7 +45,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     }
 
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
-    void showSwaCreated(swaNode);
+    void showSwaCreated(swaNode, context.isSample);
 
     const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
         return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
@@ -57,8 +56,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     return swaNode;
 }
 
-export async function createStaticWebAppFromTemplate(context: IActionContext, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
-    return await createStaticWebApp({ ...context, fromTemplate: true }, node);
+export async function deploySampleStaticWebApp(context: IActionContext, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
+    return await createStaticWebApp({ ...context, isSample: true }, node);
 }
 
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {

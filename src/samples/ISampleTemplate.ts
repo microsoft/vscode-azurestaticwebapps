@@ -1,6 +1,6 @@
 import { IBuildPreset } from "../buildPresets/IBuildPreset";
 
-export interface IQuickstartTemplate {
+export interface ISampleTemplate {
     displayName: string;
     gitUrl: string;
     buildPreset: IBuildPreset;
