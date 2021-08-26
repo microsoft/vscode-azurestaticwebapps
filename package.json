@@ -62,7 +62,8 @@
                 "command": "staticWebApps.createStaticWebApp",
                 "title": "%staticWebApps.createStaticWebApp%",
                 "category": "Azure Static Web Apps",
-                "icon": "$(add)"
+                "icon": "$(add)",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.showDocumentation",
@@ -73,7 +74,8 @@
             {
                 "command": "staticWebApps.createStaticWebAppAdvanced",
                 "title": "%staticWebApps.createStaticWebAppAdvanced%",
-                "category": "Azure Static Web Apps"
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.deleteStaticWebApp",
@@ -118,7 +120,8 @@
                 "icon": {
                     "light": "resources/light/AddFunction.svg",
                     "dark": "resources/dark/AddFunction.svg"
-                }
+                },
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.browse",
@@ -199,7 +202,8 @@
             {
                 "command": "staticWebApps.createSwaConfigFile",
                 "title": "%staticWebApps.createSwaConfigFile%",
-                "category": "Azure Static Web Apps"
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.openGitHubLog",
@@ -423,6 +427,12 @@
                 }
             }
         ]
+    },
+    "capabilities": {
+        "virtualWorkspaces": {
+            "supported": "limited",
+            "description": "Some features are not supported in virtual workspaces."
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run webpack-prod",

@@ -20,20 +20,20 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
-    let yamlFilePath: string | undefined;
+    let yamlFileUri: Uri | undefined;
 
     if (node instanceof GitHubConfigGroupTreeItem) {
-        yamlFilePath = node.yamlFilePath;
+        yamlFileUri = Uri.parse(node.yamlFilePath);
     } else if (node instanceof EnvironmentTreeItem && node.gitHubConfigGroupTreeItems.length) {
         const picks: IAzureQuickPickItem<string>[] = node.gitHubConfigGroupTreeItems.map(configNode => {
             return { label: basename(configNode.yamlFilePath), data: configNode.yamlFilePath };
         });
 
         if (picks.length === 1) {
-            yamlFilePath = picks[0].data;
+            yamlFileUri = Uri.parse(picks[0].data);
         } else {
             const placeHolder: string = localize('selectGitHubConfig', 'Select the GitHub workflow file to open.');
-            yamlFilePath = (await context.ui.showQuickPick(picks, { placeHolder })).data;
+            yamlFileUri = Uri.parse((await context.ui.showQuickPick(picks, { placeHolder })).data);
         }
     } else {
         const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
@@ -41,13 +41,13 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
         const localYamlFiles: Uri[] = await workspace.findFiles(ymlFileName);
 
         if (localYamlFiles.length === 1) {
-            yamlFilePath = localYamlFiles[0].fsPath;
+            yamlFileUri = localYamlFiles[0];
         } else {
             return await openUrl(`${node.repositoryUrl}/edit/${node.branch}/${ymlFileName}`);
         }
     }
 
-    const configDocument: TextDocument = await workspace.openTextDocument(yamlFilePath);
+    const configDocument: TextDocument = await workspace.openTextDocument(yamlFileUri);
     const selection: Range | undefined = await tryGetSelection(context, configDocument, buildConfigToSelect, node instanceof GitHubConfigGroupTreeItem ? node : undefined);
     await window.showTextDocument(configDocument, { selection });
 }
