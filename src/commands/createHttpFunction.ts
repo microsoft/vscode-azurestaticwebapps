@@ -20,7 +20,6 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
         throw new Error(noWorkspaceError);
     }
 
-    const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
 
     const detectedApiLocations = await tryGetApiLocations(context, workspace.workspaceFolders[0].uri.fsPath);
 
@@ -29,6 +28,7 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
         getWorkspaceSetting(apiSubpathSetting, workspace.workspaceFolders[0].uri.fsPath) || defaultApiLocation;
     const folderPath: string = path.join(workspace.workspaceFolders[0].uri.fsPath, apiLocation);
 
+    const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
     await funcApi.createFunction({
         folderPath,
         suppressCreateProjectPrompt: true,

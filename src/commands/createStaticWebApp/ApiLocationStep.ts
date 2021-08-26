@@ -32,7 +32,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
         if (context.detectedApiLocations?.length === 1) {
             context.apiLocation = context.detectedApiLocations[0];
-        } else if (!context.advancedCreation && !context.detectedApiLocations) {
+        } else if (!context.advancedCreation && !context.detectedApiLocations?.length) {
             context.apiLocation = context.buildPreset?.apiLocation ?? defaultApiLocation;
         }
 
