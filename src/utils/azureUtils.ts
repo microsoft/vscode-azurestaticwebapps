@@ -50,14 +50,20 @@ export async function pollAsyncOperation(pollingOperation: () => Promise<boolean
             }
 
             pollingComplete = await pollingOperation();
-            await delay(pollIntervalInSeconds * 1000);
+            if (!pollingComplete) {
+                await delay(pollIntervalInSeconds * 1000);
+            }
         }
+
+        return pollingComplete;
     } finally {
-        activeAsyncTokens[id] = undefined;
+        if (!token.isCancellationRequested) {
+            // only clear the token if it wasn't canceled (it gets overwritten with the new one)
+            activeAsyncTokens[id] = undefined;
+        }
+
         tokenSource.dispose();
     }
-
-    return pollingComplete;
 }
 
 //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations

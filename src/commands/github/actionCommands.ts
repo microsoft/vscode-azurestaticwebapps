@@ -57,8 +57,8 @@ export async function checkActionStatus(context: IActionContext, node: ActionTre
 
         workflowRun = (await client.actions.getWorkflowRun({ owner: owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
         if (ensureStatus(workflowRun) === Status.Completed) {
-            const actionCompleted: string = localize('actionCompleted', 'Action "{0}" has completed with the conclusion "{1}".', node.data.id, workflowRun.conclusion);
             if (!initialCreate) {
+                const actionCompleted: string = localize('actionCompleted', 'Action "{0}" has completed with the conclusion "{1}".', node.data.id, workflowRun.conclusion);
                 ext.outputChannel.appendLog(actionCompleted);
                 void window.showInformationMessage(actionCompleted);
             }
