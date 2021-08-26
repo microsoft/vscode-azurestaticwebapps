@@ -431,7 +431,7 @@
     "capabilities": {
         "virtualWorkspaces": {
             "supported": "limited",
-            "description": "In virtual workspaces, creating static web apps is not supported."
+            "description": "Some features are not supported in virtual workspaces."
         }
     },
     "scripts": {
