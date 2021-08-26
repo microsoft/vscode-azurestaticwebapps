@@ -16,7 +16,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
         const defaultValue: string = context.buildPreset?.apiLocation ?? defaultApiLocation;
         const workspaceSetting: string | undefined = getWorkspaceSetting(apiSubpathSetting, context.fsPath);
 
-        context.apiLocation = context.detectedApiLocations ?
+        context.apiLocation = context.detectedApiLocations?.length ?
             (await context.ui.showQuickPick(context.detectedApiLocations.map((apiPaths) => ({ label: apiPaths })), { placeHolder: localize('selectApi', 'Select the location of your Azure Functions code') })).label :
             (await context.ui.showInputBox({
                 value: workspaceSetting || defaultValue,
