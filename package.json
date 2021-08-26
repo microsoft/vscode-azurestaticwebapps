@@ -192,8 +192,7 @@
             {
                 "command": "staticWebApps.openYAMLConfigFile",
                 "title": "%staticWebApps.openYAMLConfigFile%",
-                "category": "Azure Static Web Apps",
-                "enablement": "!virtualWorkspace"
+                "category": "Azure Static Web Apps"
             },
             {
                 "command": "staticWebApps.reportIssue",
