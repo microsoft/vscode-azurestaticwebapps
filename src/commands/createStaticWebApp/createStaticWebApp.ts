@@ -53,10 +53,13 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     const swaNode: StaticWebAppTreeItem = await node.createChild(context);
     void showSwaCreated(swaNode);
 
-    const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
-        return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
-    });
-    environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
+    // only reveal SWA node when tree is visible to avoid changing their tree view just to reveal the node
+    if (ext.treeView.visible) {
+        const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
+            return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
+        });
+        environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
+    }
 
     void postCreateStaticWebApp(swaNode);
     return swaNode;
