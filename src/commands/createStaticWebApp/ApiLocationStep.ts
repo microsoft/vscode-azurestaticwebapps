@@ -10,6 +10,7 @@ import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { validateLocationYaml } from "../../utils/yamlUtils";
 import { addLocationTelemetry } from "./addLocationTelemetry";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import { promptForApiFolder } from "./tryGetApiLocations";
 
 export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
@@ -17,7 +18,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
         const workspaceSetting: string | undefined = getWorkspaceSetting(apiSubpathSetting, context.fsPath);
 
         context.apiLocation = context.detectedApiLocations?.length ?
-            (await context.ui.showQuickPick(context.detectedApiLocations.map((apiPaths) => ({ label: apiPaths })), { placeHolder: localize('selectApi', 'Select the location of your Azure Functions code') })).label :
+            await promptForApiFolder(context, context.detectedApiLocations) :
             (await context.ui.showInputBox({
                 value: workspaceSetting || defaultValue,
                 validateInput: (value) => validateLocationYaml(value, 'api_location'),
@@ -31,7 +32,7 @@ export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardCo
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
         if (context.detectedApiLocations?.length === 1) {
             context.apiLocation = context.detectedApiLocations[0];
-        } else if (!context.advancedCreation && !context.detectedApiLocations) {
+        } else if (!context.advancedCreation && !context.detectedApiLocations?.length) {
             context.apiLocation = context.buildPreset?.apiLocation ?? defaultApiLocation;
         }
 

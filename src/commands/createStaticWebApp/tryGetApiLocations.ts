@@ -6,6 +6,7 @@
 import * as path from 'path';
 import { RelativePattern, workspace, WorkspaceFolder } from "vscode";
 import { AzExtFsExtra, IActionContext } from "vscode-azureextensionui";
+import { localize } from '../../utils/localize';
 import { telemetryUtils } from '../../utils/telemetryUtils';
 
 const hostFileName: string = 'host.json';
@@ -38,6 +39,16 @@ export async function tryGetApiLocations(context: IActionContext, workspaceFolde
 
         return undefined;
     });
+}
+
+export async function promptForApiFolder(context: IActionContext, detectedApiLocations: string[]): Promise<string> {
+    if (detectedApiLocations.length === 1) {
+        return detectedApiLocations[0];
+    }
+
+    return (await context.ui.showQuickPick(detectedApiLocations.map((apiPaths) => ({ label: apiPaths })), {
+        placeHolder: localize('selectApi', 'Select the location of your Azure Functions code')
+    })).label;
 }
 
 // Use 'host.json' as an indicator that this is a functions project
