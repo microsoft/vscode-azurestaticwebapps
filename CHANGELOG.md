@@ -1,9 +1,20 @@
 # Change Log
 
-## Unreleased
+## 0.8.0 - 2021-09-01
+### Added
+- View GitHub action logs from Actions tree node
+- Limited support for [virtual workspaces](https://code.visualstudio.com/updates/v1_56#_remote-repositories-remotehub)
+- Learn More buttons (?) for select prompts to help clarify unfamiliar concepts
 
 ### Changed
 - Minimum version of VS Code is now 1.57.0
+- Auto-detects Function API folders for `Create Static Web App...` and `Create HTTP Trigger...`
+- Location prompt included in `Create Static Web App...`
+- Resource Group prompt is first in `Create Static Web App... (Advanced)`
+- Output location default for Angular includes placeholder to add project name
+
+### Fixed
+-  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/14?closed=1)
 
 ## 0.7.1 - 2021-07-08
 ### Fixed
