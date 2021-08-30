@@ -4,7 +4,7 @@
 ### Added
 - View GitHub action logs from Actions tree node
 - Limited support for [virtual workspaces](https://code.visualstudio.com/updates/v1_56#_remote-repositories-remotehub)
-- Learn More buttons (?) to select prompts to help clarify unclear steps
+- Learn More buttons (?) for select prompts to help clarify unfamiliar concepts
 
 ### Changed
 - Minimum version of VS Code is now 1.57.0
