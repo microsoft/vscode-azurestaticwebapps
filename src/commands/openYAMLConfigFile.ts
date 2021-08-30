@@ -47,7 +47,8 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
         }
     }
 
-    const configDocument: TextDocument = await workspace.openTextDocument(yamlFileUri);
+    // temporariy workaround for https://github.com/microsoft/vscode/issues/131925
+    const configDocument: TextDocument = process.platform === 'win32' ? await workspace.openTextDocument(yamlFileUri.fsPath) : await workspace.openTextDocument(yamlFileUri);
     const selection: Range | undefined = await tryGetSelection(context, configDocument, buildConfigToSelect, node instanceof GitHubConfigGroupTreeItem ? node : undefined);
     await window.showTextDocument(configDocument, { selection });
 }
