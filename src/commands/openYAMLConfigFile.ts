@@ -23,17 +23,17 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
     let yamlFileUri: Uri | undefined;
 
     if (node instanceof GitHubConfigGroupTreeItem) {
-        yamlFileUri = Uri.parse(node.yamlFilePath);
+        yamlFileUri = Uri.file(node.yamlFilePath);
     } else if (node instanceof EnvironmentTreeItem && node.gitHubConfigGroupTreeItems.length) {
         const picks: IAzureQuickPickItem<string>[] = node.gitHubConfigGroupTreeItems.map(configNode => {
             return { label: basename(configNode.yamlFilePath), data: configNode.yamlFilePath };
         });
 
         if (picks.length === 1) {
-            yamlFileUri = Uri.parse(picks[0].data);
+            yamlFileUri = Uri.file(picks[0].data);
         } else {
             const placeHolder: string = localize('selectGitHubConfig', 'Select the GitHub workflow file to open.');
-            yamlFileUri = Uri.parse((await context.ui.showQuickPick(picks, { placeHolder })).data);
+            yamlFileUri = Uri.file((await context.ui.showQuickPick(picks, { placeHolder })).data);
         }
     } else {
         const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
