@@ -25,7 +25,9 @@ import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 import { GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
+import { JobTreeItem } from "./JobTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
+import { StepTreeItem } from "./StepTreeItem";
 
 export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticEnvironment';
@@ -153,11 +155,12 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
                     if (!this.appSettingsTreeItem) {
                         throw new Error(noApiError);
                     }
-
                     return this.appSettingsTreeItem;
                 case ActionsTreeItem.contextValue:
                 case ActionTreeItem.contextValueCompleted:
                 case ActionTreeItem.contextValueInProgress:
+                case JobTreeItem.contextValue:
+                case StepTreeItem.contextValue:
                     return this.actionsTreeItem;
                 case FunctionsTreeItem.contextValue:
                 case FunctionTreeItem.contextValue:
