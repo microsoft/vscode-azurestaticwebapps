@@ -79,7 +79,7 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
         return <string>(await octokitClient.actions.downloadJobLogsForWorkflowRun({ owner, repo: name, job_id: this.data.id, mediaType: { format: 'json' } })).data;
     }
 
-    public isAncestorOfImpl(contextValue: string | RegExp): boolean {
-        return contextValue === StepTreeItem.contextValue && this.data.steps.length > 0;
+    public isAncestorOfImpl(_contextValue: string | RegExp): boolean {
+        return this.data.steps.length > 0;
     }
 }
