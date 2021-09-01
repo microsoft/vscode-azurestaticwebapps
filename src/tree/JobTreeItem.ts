@@ -9,6 +9,7 @@ import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { ActionsGetJobForWorkflowRunResponseData } from '../gitHubTypings';
 import { getActionDescription, getActionIconPath } from '../utils/actionUtils';
 import { getRepoFullname } from '../utils/gitUtils';
+import { localize } from '../utils/localize';
 import { ActionTreeItem } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { StepTreeItem } from './StepTreeItem';
@@ -17,6 +18,7 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
     public static contextValue: string = 'azureStaticJob';
     public readonly contextValue: string = JobTreeItem.contextValue;
     public parent: ActionTreeItem;
+    public childTypeLabel: string = localize('step', 'step');
     public data: ActionsGetJobForWorkflowRunResponseData;
 
     constructor(parent: ActionTreeItem, data: ActionsGetJobForWorkflowRunResponseData) {
@@ -75,5 +77,9 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
         const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
         const octokitClient: Octokit = await createOctokitClient(context);
         return <string>(await octokitClient.actions.downloadJobLogsForWorkflowRun({ owner, repo: name, job_id: this.data.id, mediaType: { format: 'json' } })).data;
+    }
+
+    public isAncestorOfImpl(contextValue: string | RegExp): boolean {
+        return contextValue === StepTreeItem.contextValue && this.data.steps.length > 0;
     }
 }
