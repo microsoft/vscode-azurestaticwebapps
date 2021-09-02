@@ -53,6 +53,7 @@
         "onCommand:staticWebApps.openYAMLConfigFile",
         "onCommand:staticWebApps.reportIssue",
         "onCommand:staticWebApps.createSwaConfigFile",
+        "onCommand:staticWebApps.openGitHubLog",
         "onView:staticWebApps"
     ],
     "main": "./main.js",

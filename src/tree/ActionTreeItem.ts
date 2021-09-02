@@ -10,6 +10,7 @@ import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { ActionsGetWorkflowRunResponseData, ActionsListJobsForWorkflowRunResponseData } from '../gitHubTypings';
 import { ensureStatus, getActionIconPath } from '../utils/actionUtils';
 import { getRepoFullname } from '../utils/gitUtils';
+import { localize } from '../utils/localize';
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
@@ -18,6 +19,7 @@ export class ActionTreeItem extends AzExtParentTreeItem implements IAzureResourc
     public static contextValueCompleted: string = 'azureStaticActionCompleted';
     public static contextValueInProgress: string = 'azureStaticActionInProgress';
     public parent: ActionsTreeItem;
+    public childTypeLabel: string = localize('job', 'job');
     public data: ActionsGetWorkflowRunResponseData;
 
     constructor(parent: ActionsTreeItem, data: ActionsGetWorkflowRunResponseData) {
