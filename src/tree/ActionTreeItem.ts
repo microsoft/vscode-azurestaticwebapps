@@ -40,7 +40,7 @@ export class ActionTreeItem extends AzExtParentTreeItem implements IAzureResourc
     }
 
     public get name(): string {
-        return this.data.head_commit.message;
+        return this.data.head_commit?.message || this.data.head_sha;
     }
 
     public get label(): string {

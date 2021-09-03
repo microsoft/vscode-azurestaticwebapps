@@ -11,7 +11,15 @@ export type ListOrgsForUserData = Endpoints["GET /user/orgs"]["response"]["data"
 
 export type ActionsListJobsForWorkflowRunResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs"]["response"]["data"];
 export type ActionsGetJobForWorkflowRunResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs"]["response"]["data"]["jobs"][0];
-export type ActionWorkflowStepData = Endpoints["GET /repos/{owner}/{repo}/actions/runs/{run_id}/jobs"]["response"]["data"]["jobs"][0]["steps"][0];
+export type ActionWorkflowStepData = {
+    status: "queued" | "in_progress" | "completed";
+    conclusion: string | null;
+    name: string;
+    number: number;
+    started_at?: string | null | undefined;
+    completed_at?: string | null | undefined;
+};
+
 export type ActionsGetWorkflowRunResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/runs/{run_id}"]["response"]["data"];
 export type ActionsGetWorkflowResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}"]["response"]["data"];
 export type ActionsListWorkflowRunsForRepoResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/runs"]["response"]["data"];

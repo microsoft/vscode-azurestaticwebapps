@@ -52,7 +52,7 @@ export class ActionsTreeItem extends AzExtParentTreeItem {
             response.data.workflow_runs,
             'invalidActionTreeItem',
             (act) => new ActionTreeItem(this, act),
-            act => act.head_commit.message
+            act => act.head_commit?.message
         );
     }
 
