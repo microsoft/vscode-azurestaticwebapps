@@ -24,7 +24,7 @@ export async function openGitHubLog(context: IActionContext, node?: StepTreeItem
 
     try {
         const rawLogs = node instanceof JobTreeItem ? await node.getRawJobLog(context) : await node.parent.getRawJobLog(context);
-        const logState: LogState = parseGitHubLog(rawLogs, new Date(node.data.started_at), new Date(node.data.completed_at));
+        const logState: LogState = parseGitHubLog(rawLogs, new Date(node.data.started_at ?? ''), new Date(node.data.completed_at ?? ''));
         content = logState.filteredJobsLog.length ? logState.filteredJobsLog.join(EOL) : localize('noLogs', 'There are no logs to display for this step.');
         foldingRanges = createFoldingRanges(logState);
     } catch (err) {

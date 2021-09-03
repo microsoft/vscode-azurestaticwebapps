@@ -52,11 +52,12 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
         return await this.createTreeItemsWithErrorHandling(
-            this.data.steps,
+            this.data.steps || [],
             'invalidStepTreeItem',
             (step) => new StepTreeItem(this, step),
             step => step.name
         );
+
     }
 
     public hasMoreChildrenImpl(): boolean {
@@ -80,6 +81,6 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
     }
 
     public isAncestorOfImpl(_contextValue: string | RegExp): boolean {
-        return this.data.steps.length > 0;
+        return this.data.steps?.length !== 0;
     }
 }
