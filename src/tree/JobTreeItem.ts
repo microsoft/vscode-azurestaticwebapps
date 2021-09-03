@@ -81,6 +81,6 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
     }
 
     public isAncestorOfImpl(_contextValue: string | RegExp): boolean {
-        return !!(this.data.steps && this.data.steps.length !== 0);
+        return !!this.data.steps && this.data.steps.length > 0;
     }
 }
