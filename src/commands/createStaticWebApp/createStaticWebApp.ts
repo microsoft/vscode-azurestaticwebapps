@@ -8,6 +8,7 @@ import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui
 import { productionEnvironmentName } from '../../constants';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
+import { DetectorResults, NodeDetector } from '../../NodeDetector';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
@@ -39,6 +40,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         await window.withProgress(progressOptions, async () => {
             const folder = await tryGetWorkspaceFolder(context);
             if (folder) {
+                const framework: DetectorResults | undefined = await new NodeDetector().detect(folder);
+                console.log(framework);
                 await setWorkspaceContexts(context, folder);
                 context.detectedApiLocations = await tryGetApiLocations(context, folder);
             } else {
