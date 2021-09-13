@@ -11,7 +11,7 @@ import { localize } from "./localize";
 
 export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData | ActionsGetWorkflowRunResponseData): TreeItemIconPath {
     let id: string;
-    let colorId: string | undefined = undefined;
+    let colorId: string | undefined;
     if (data.conclusion !== null) {
         switch (ensureConclusion(data)) {
             case Conclusion.Cancelled:
