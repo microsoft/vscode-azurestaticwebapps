@@ -4,43 +4,51 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as moment from 'moment';
-import { ThemeIcon } from 'vscode';
+import { ThemeColor, ThemeIcon } from 'vscode';
 import { TreeItemIconPath } from 'vscode-azureextensionui';
 import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData, ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
 import { localize } from "./localize";
 
 export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData | ActionsGetWorkflowRunResponseData): TreeItemIconPath {
     let id: string;
+    let colorId: string | undefined;
     if (data.conclusion !== null) {
         switch (ensureConclusion(data)) {
             case Conclusion.Cancelled:
                 id = 'circle-slash';
+                colorId = 'testing.iconUnset';
                 break;
             case Conclusion.Failure:
                 id = 'error';
+                colorId = 'testing.iconFailed';
                 break;
             case Conclusion.Skipped:
                 id = 'debug-step-over';
+                colorId = 'testing.iconSkipped';
                 break;
             case Conclusion.Success:
                 id = 'pass'
+                colorId = 'testing.iconPassed';
                 break;
         }
     } else {
         switch (ensureStatus(data)) {
             case Status.Queued:
                 id = 'clock';
+                colorId = 'testing.iconQueued';
                 break;
             case Status.InProgress:
                 id = 'play-circle';
+                colorId = 'testing.iconUnset';
                 break;
             case Status.Completed:
                 id = 'pass';
+                colorId = 'testing.iconPassed';
                 break;
         }
     }
 
-    return new ThemeIcon(id);
+    return new ThemeIcon(id, colorId ? new ThemeColor(colorId) : undefined);
 }
 
 export function getActionDescription(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData): string {
