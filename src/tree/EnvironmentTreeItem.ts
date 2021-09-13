@@ -6,8 +6,8 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
-import { AzExtTreeItem, AzureParentTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
-import { AppSettingsClient } from "../commands/appSettings/AppSettingsClient";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
@@ -25,18 +25,21 @@ import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 import { GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
+import { JobTreeItem } from "./JobTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
+import { StepTreeItem } from "./StepTreeItem";
 
-export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
+export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
     public parent: StaticWebAppTreeItem;
+    public data: WebSiteManagementModels.StaticSiteBuildARMResource;
+
     public actionsTreeItem: ActionsTreeItem;
     public gitHubConfigGroupTreeItems: GitHubConfigGroupTreeItem[];
-    public appSettingsTreeItem: AppSettingsTreeItem;
-    public functionsTreeItem: FunctionsTreeItem;
-    public data: WebSiteManagementModels.StaticSiteBuildARMResource;
+    public appSettingsTreeItem?: AppSettingsTreeItem;
+    public functionsTreeItem?: FunctionsTreeItem;
 
     public name: string;
     public label: string;
@@ -74,11 +77,8 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
                 this.branch = this.branch.split(colon)[1];
             }
         }
-        this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
 
-        this.actionsTreeItem = new ActionsTreeItem(this);
-        this.appSettingsTreeItem = new AppSettingsTreeItem(this, new AppSettingsClient(this));
-        this.functionsTreeItem = new FunctionsTreeItem(this);
+        this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
     public static async createEnvironmentTreeItem(context: IActionContext, parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
@@ -104,9 +104,7 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const children: AzExtTreeItem[] = [this.actionsTreeItem];
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = await client.staticSites.listStaticSiteBuildFunctions(this.parent.resourceGroup, this.parent.name, this.buildId);
-        if (functions.length === 0) {
+        if (!this.functionsTreeItem || !this.appSettingsTreeItem) {
             context.telemetry.properties.hasFunctions = 'false';
             children.push(new GenericTreeItem(this, {
                 label: localize('noFunctions', 'Learn how to add an API with Azure Functions...'),
@@ -130,12 +128,13 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
         return false;
     }
 
-    public async deleteTreeItemImpl(): Promise<void> {
+    public async deleteTreeItemImpl(context: IActionContext): Promise<void> {
         const deleting: string = localize('deleting', 'Deleting environment "{0}"...', this.label);
         await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
-            const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-            await pollAzureAsyncOperation(await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId), this.root.credentials);
+            const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
+            const deleteResponse = await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
+            await pollAzureAsyncOperation(context, deleteResponse, this.subscription);
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted environment "{0}".', this.label);
             void window.showInformationMessage(deleteSucceeded);
@@ -148,17 +147,27 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public pickTreeItemImpl(expectedContextValues: (string | RegExp)[]): AzExtTreeItem | undefined {
+        const noApiError: string = localize('noAPI', 'No Functions API associated with "{0}"', `${this.parent.label}/${this.label}`);
         for (const expectedContextValue of expectedContextValues) {
             switch (expectedContextValue) {
                 case AppSettingsTreeItem.contextValue:
                 case AppSettingTreeItem.contextValue:
+                    if (!this.appSettingsTreeItem) {
+                        throw new Error(noApiError);
+                    }
                     return this.appSettingsTreeItem;
                 case ActionsTreeItem.contextValue:
                 case ActionTreeItem.contextValueCompleted:
                 case ActionTreeItem.contextValueInProgress:
+                case JobTreeItem.contextValue:
+                case StepTreeItem.contextValue:
                     return this.actionsTreeItem;
                 case FunctionsTreeItem.contextValue:
                 case FunctionTreeItem.contextValue:
+                    if (!this.functionsTreeItem) {
+                        throw new Error(noApiError);
+                    }
+
                     return this.functionsTreeItem;
                 default:
             }
@@ -178,14 +187,26 @@ export class EnvironmentTreeItem extends AzureParentTreeItem implements IAzureRe
     }
 
     public async refreshImpl(context: IActionContext): Promise<void> {
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
+        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
         this.localProjectPath = getSingleRootFsPath();
+
+        this.actionsTreeItem = new ActionsTreeItem(this);
+        try {
+            await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.parent.resourceGroup, this.parent.name, this.buildId);
+            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this));
+            this.functionsTreeItem = new FunctionsTreeItem(this);
+        } catch {
+            // if it errors here, then there is no Functions API
+            this.appSettingsTreeItem = undefined;
+            this.functionsTreeItem = undefined;
+        }
 
         const remote: string | undefined = (await tryGetRepoDataForCreation(context))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
 
         this.gitHubConfigGroupTreeItems = await GitHubConfigGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
+
     }
 }

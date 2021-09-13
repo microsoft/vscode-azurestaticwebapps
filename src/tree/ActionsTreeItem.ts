@@ -6,7 +6,7 @@
 import { Octokit } from "@octokit/rest";
 import { OctokitResponse } from "@octokit/types";
 import { ThemeIcon } from "vscode";
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from "../commands/github/createOctokitClient";
 import { ActionsListWorkflowRunsForRepoResponseData } from "../gitHubTypings";
 import { getRepoFullname } from '../utils/gitUtils';
@@ -14,7 +14,7 @@ import { localize } from "../utils/localize";
 import { ActionTreeItem } from './ActionTreeItem';
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 
-export class ActionsTreeItem extends AzureParentTreeItem {
+export class ActionsTreeItem extends AzExtParentTreeItem {
 
     public static contextValue: string = 'azureStaticActions';
     public readonly contextValue: string = ActionsTreeItem.contextValue;
@@ -52,7 +52,7 @@ export class ActionsTreeItem extends AzureParentTreeItem {
             response.data.workflow_runs,
             'invalidActionTreeItem',
             (act) => new ActionTreeItem(this, act),
-            act => act.head_commit.message
+            act => act.head_commit?.message
         );
     }
 

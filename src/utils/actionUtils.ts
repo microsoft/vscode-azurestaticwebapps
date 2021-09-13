@@ -56,7 +56,7 @@ export function getActionDescription(data: ActionWorkflowStepData | ActionsGetJo
         return localize('conclusionDescription', '{0} {1}', convertConclusionToVerb(ensureConclusion(data)), moment(data.completed_at).fromNow());
     } else {
         const nowStr: string = localize('now', 'now');
-        return localize('statusDescription', '{0} {1}', convertStatusToVerb(ensureStatus(data)), new Date(data.started_at).getTime() === 0 ? nowStr : moment(data.started_at).fromNow());
+        return localize('statusDescription', '{0} {1}', convertStatusToVerb(ensureStatus(data)), new Date(data.started_at ?? '').getTime() === 0 ? nowStr : moment(data.started_at).fromNow());
     }
 }
 

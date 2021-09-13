@@ -7,30 +7,18 @@ import { AzureWizardPromptStep, IAzureQuickPickItem } from 'vscode-azureextensio
 import { buildPresets } from '../../buildPresets/buildPresets';
 import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { localize } from '../../utils/localize';
-import { openUrl } from '../../utils/openUrl';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
-
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const placeHolder: string = localize('choosePreset', 'Choose build preset to configure default project structure');
         const picks: IAzureQuickPickItem<IBuildPreset | undefined>[] = buildPresets.map((pb) => { return { label: pb.displayName, data: pb }; });
         picks.push({ label: localize('custom', '$(keyboard) Custom'), data: undefined });
-        const learnMore: IAzureQuickPickItem = { label: localize('learnMore', '$(link-external) Learn more...'), description: '', data: undefined };
-        picks.push(learnMore);
-        let pick: IAzureQuickPickItem<IBuildPreset | undefined>;
-
-        do {
-            pick = await context.ui.showQuickPick(picks, { placeHolder, suppressPersistence: true });
-            if (pick === learnMore) {
-                await openUrl('https://aka.ms/SWABuildPresets');
-            }
-        } while (pick === learnMore);
+        const pick: IAzureQuickPickItem<IBuildPreset | undefined> = await context.ui.showQuickPick(picks, { placeHolder, suppressPersistence: true, learnMoreLink: 'https://aka.ms/SWABuildPresets' });
 
         // prefill locations with the preset locations, but don't force the users to use them
         context.buildPreset = pick.data;
         context.telemetry.properties.buildPreset = pick.data?.displayName || 'Custom';
-
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {

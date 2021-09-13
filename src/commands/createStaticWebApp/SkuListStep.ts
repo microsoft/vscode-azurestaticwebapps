@@ -14,11 +14,13 @@ export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContex
         const skus: IAzureQuickPickItem<WebSiteManagementModels.SkuDescription>[] = SkuListStep.getSkus().map(s => {
             return {
                 label: nonNullProp(s, 'name'),
+                detail: s.detail,
+                description: s.description,
                 data: s
             };
         });
 
-        const placeHolder: string = localize('selectSku', 'Select a sku');
+        const placeHolder: string = localize('selectPricingOption', 'Select pricing option');
         context.sku = (await context.ui.showQuickPick(skus, { placeHolder, suppressPersistence: true })).data;
     }
 
@@ -26,16 +28,21 @@ export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContex
         return !context.sku;
     }
 
-    public static getSkus(): WebSiteManagementModels.SkuDescription[] {
+    public static getSkus(): (WebSiteManagementModels.SkuDescription & { description: string, detail: string })[] {
         // seems incomplete, but only name/tier are necessary for the SiteEnvelope to pick the right sku
         return [
             {
                 name: 'Free',
                 tier: 'Free',
+                description: localize('freeSkuDescription', 'For hobbies/personal projects'),
+                detail: localize('freeSkuDetail', 'Free SSL, 2 Custom Domains')
             },
             {
                 name: 'Standard',
                 tier: 'Standard',
-            }];
+                description: localize('standardSkuDescription', 'For general purpose production app'),
+                detail: localize('standardSkuDetail', 'Free SSL, 5 Custom Domains, Custom Authentication, SLA')
+            }
+        ];
     }
 }

@@ -5,7 +5,7 @@
 
 import * as msRest from "@azure/ms-rest-js";
 import { CancellationToken, CancellationTokenSource } from "vscode";
-import { createGenericClient, UserCancelledError } from "vscode-azureextensionui";
+import { createGenericClient, IActionContext, ISubscriptionContext, UserCancelledError } from "vscode-azureextensionui";
 import { delay } from "./delay";
 import { localize } from './localize';
 
@@ -50,18 +50,24 @@ export async function pollAsyncOperation(pollingOperation: () => Promise<boolean
             }
 
             pollingComplete = await pollingOperation();
-            await delay(pollIntervalInSeconds * 1000);
+            if (!pollingComplete) {
+                await delay(pollIntervalInSeconds * 1000);
+            }
         }
+
+        return pollingComplete;
     } finally {
-        activeAsyncTokens[id] = undefined;
+        if (!token.isCancellationRequested) {
+            // only clear the token if it wasn't canceled (it gets overwritten with the new one)
+            activeAsyncTokens[id] = undefined;
+        }
+
         tokenSource.dispose();
     }
-
-    return pollingComplete;
 }
 
 //https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
-export async function pollAzureAsyncOperation(restResponse: msRest.RestResponse, credentials: msRest.ServiceClientCredentials): Promise<void> {
+export async function pollAzureAsyncOperation(context: IActionContext, restResponse: msRest.RestResponse, subscription: ISubscriptionContext): Promise<void> {
     const url: string | undefined = restResponse._response.headers.get('azure-asyncoperation');
     if (!url) {
         // if there is no asyncoperation url, just return as the delete was still initiated
@@ -70,9 +76,8 @@ export async function pollAzureAsyncOperation(restResponse: msRest.RestResponse,
 
     const request: msRest.WebResource = new msRest.WebResource();
     request.prepare({ method: 'GET', url });
-    await credentials.signRequest(request);
 
-    const client: msRest.ServiceClient = await createGenericClient();
+    const client: msRest.ServiceClient = await createGenericClient(context, subscription);
     const pollingOperation: () => Promise<boolean> = async () => {
         const statusJsonString: msRest.HttpOperationResponse = await client.sendRequest(request);
         const operationResponse: AzureAsyncOperationResponse | undefined = <AzureAsyncOperationResponse>statusJsonString.parsedBody;

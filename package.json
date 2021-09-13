@@ -2,12 +2,12 @@
     "name": "vscode-azurestaticwebapps",
     "displayName": "Azure Static Web Apps",
     "description": "%staticWebApps.description%",
-    "version": "0.7.2-alpha",
+    "version": "0.8.1-alpha",
     "publisher": "ms-azuretools",
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "engines": {
-        "vscode": "^1.53.0"
+        "vscode": "^1.57.0"
     },
     "repository": {
         "type": "git",
@@ -53,6 +53,7 @@
         "onCommand:staticWebApps.openYAMLConfigFile",
         "onCommand:staticWebApps.reportIssue",
         "onCommand:staticWebApps.createSwaConfigFile",
+        "onCommand:staticWebApps.openGitHubLog",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -62,7 +63,8 @@
                 "command": "staticWebApps.createStaticWebApp",
                 "title": "%staticWebApps.createStaticWebApp%",
                 "category": "Azure Static Web Apps",
-                "icon": "$(add)"
+                "icon": "$(add)",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.showDocumentation",
@@ -73,7 +75,8 @@
             {
                 "command": "staticWebApps.createStaticWebAppAdvanced",
                 "title": "%staticWebApps.createStaticWebAppAdvanced%",
-                "category": "Azure Static Web Apps"
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.deleteStaticWebApp",
@@ -118,7 +121,8 @@
                 "icon": {
                     "light": "resources/light/AddFunction.svg",
                     "dark": "resources/dark/AddFunction.svg"
-                }
+                },
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.browse",
@@ -199,6 +203,12 @@
             {
                 "command": "staticWebApps.createSwaConfigFile",
                 "title": "%staticWebApps.createSwaConfigFile%",
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
+            },
+            {
+                "command": "staticWebApps.openGitHubLog",
+                "title": "%staticWebApps.openGitHubLog%",
                 "category": "Azure Static Web Apps"
             }
         ],
@@ -293,6 +303,11 @@
                     "command": "staticWebApps.deleteEnvironment",
                     "when": "view == staticWebApps && viewItem == azureStaticEnvironment",
                     "group": "3@2"
+                },
+                {
+                    "command": "staticWebApps.openGitHubLog",
+                    "when": "view == staticWebApps && viewItem =~ /azureStatic(Job|Step$)/",
+                    "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.viewProperties",
@@ -414,14 +429,20 @@
             }
         ]
     },
+    "capabilities": {
+        "virtualWorkspaces": {
+            "supported": "limited",
+            "description": "Some features are not supported in virtual workspaces."
+        }
+    },
     "scripts": {
         "vscode:prepublish": "npm run webpack-prod",
         "build": "tsc",
         "cleanReadme": "gulp cleanReadme",
         "compile": "tsc -watch",
         "package": "vsce package --githubBranch main",
-        "lint": "eslint -c .eslintrc.js --ext .ts .",
-        "lint-fix": "eslint -c .eslintrc.js --ext .ts . --fix",
+        "lint": "eslint --ext .ts .",
+        "lint-fix": "eslint --ext .ts . --fix",
         "pretest": "npm run webpack-prod && gulp preTest",
         "test": "node ./out/test/runTest.js",
         "webpack": "npm run build && gulp webpack-dev",
@@ -429,17 +450,18 @@
         "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats"
     },
     "devDependencies": {
+        "@microsoft/eslint-config-azuretools": "^0.1.0",
         "@octokit/types": "^6.13.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
         "@types/gulp": "^4.0.6",
         "@types/mocha": "^8.2.2",
-        "@types/node": "^12.12.53",
-        "@types/vscode": "1.53.0",
+        "@types/node": "^14.0.0",
+        "@types/vscode": "1.57.0",
         "@typescript-eslint/eslint-plugin": "^4.28.3",
-        "@typescript-eslint/parser": "^4.28.3",
         "eslint": "^7.19.0",
         "eslint-plugin-import": "^2.22.1",
+        "fs-extra": "^8.1.0",
         "glob": "^7.1.6",
         "gulp": "^4.0.2",
         "mocha": "^8.3.2",
@@ -448,7 +470,7 @@
         "ts-node": "^7.0.1",
         "typescript": "^4.3.5",
         "vsce": "^1.87.1",
-        "vscode-azureextensiondev": "^0.9.5",
+        "vscode-azureextensiondev": "^0.10.0",
         "vscode-test": "^1.5.2",
         "webpack": "^5.28.0",
         "webpack-cli": "^4.6.0"
@@ -457,12 +479,11 @@
         "@azure/arm-appservice": "^6.0.0",
         "@azure/ms-rest-js": "^2.2.1",
         "@octokit/rest": "^18.5.2",
-        "fs-extra": "^8.1.0",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
         "open": "^8.0.4",
-        "vscode-azureappservice": "^0.84.0",
-        "vscode-azureextensionui": "^0.46.0",
+        "vscode-azureappservice": "^0.86.1",
+        "vscode-azureextensionui": "0.48.3",
         "vscode-nls": "^4.1.1",
         "yaml": "^1.10.2"
     },

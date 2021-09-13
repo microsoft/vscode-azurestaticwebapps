@@ -4,19 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Octokit } from '@octokit/rest';
-import { AzExtTreeItem, AzureParentTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { ActionsGetJobForWorkflowRunResponseData } from '../gitHubTypings';
 import { getActionDescription, getActionIconPath } from '../utils/actionUtils';
 import { getRepoFullname } from '../utils/gitUtils';
+import { localize } from '../utils/localize';
 import { ActionTreeItem } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { StepTreeItem } from './StepTreeItem';
 
-export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTreeItem {
+export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticJob';
     public readonly contextValue: string = JobTreeItem.contextValue;
     public parent: ActionTreeItem;
+    public childTypeLabel: string = localize('step', 'step');
     public data: ActionsGetJobForWorkflowRunResponseData;
 
     constructor(parent: ActionTreeItem, data: ActionsGetJobForWorkflowRunResponseData) {
@@ -50,11 +52,12 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
 
     public async loadMoreChildrenImpl(_clearCache: boolean, _context: IActionContext): Promise<AzExtTreeItem[]> {
         return await this.createTreeItemsWithErrorHandling(
-            this.data.steps,
+            this.data.steps || [],
             'invalidStepTreeItem',
             (step) => new StepTreeItem(this, step),
             step => step.name
         );
+
     }
 
     public hasMoreChildrenImpl(): boolean {
@@ -69,5 +72,15 @@ export class JobTreeItem extends AzureParentTreeItem implements IAzureResourceTr
 
     public compareChildrenImpl(ti1: StepTreeItem, ti2: StepTreeItem): number {
         return ti1.data.number - ti2.data.number;
+    }
+
+    public async getRawJobLog(context: IActionContext): Promise<string> {
+        const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
+        const octokitClient: Octokit = await createOctokitClient(context);
+        return <string>(await octokitClient.actions.downloadJobLogsForWorkflowRun({ owner, repo: name, job_id: this.data.id, mediaType: { format: 'json' } })).data;
+    }
+
+    public isAncestorOfImpl(_contextValue: string | RegExp): boolean {
+        return !!this.data.steps && this.data.steps.length > 0;
     }
 }

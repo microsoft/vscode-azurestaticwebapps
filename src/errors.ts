@@ -3,11 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IActionContext } from "vscode-azureextensionui";
 import { GitErrorCodes } from "./git";
 import { localize } from "./utils/localize";
 
 export class NoWorkspaceError extends Error {
     public message: string = localize('noWorkspaceError', 'You must have a workspace open to perform this operation.');
+}
+
+export class VerifyingWorkspaceError extends Error {
+    constructor(context: IActionContext) {
+        super('Internal error: User is currently verifying their workspace');
+        context.errorHandling.suppressDisplay = true;
+    }
 }
 
 // use only when using the gitApi

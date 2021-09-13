@@ -5,7 +5,7 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { workspace } from 'vscode';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext, LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from 'vscode-azureextensionui';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
@@ -37,8 +37,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         return !!this._nextLink;
     }
 
-    public async loadMoreChildrenImpl(_clearCache: boolean): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
+    public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
+        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
         const staticWebApps: WebSiteManagementModels.StaticSitesListResponse = await client.staticSites.list();
 
         return await this.createTreeItemsWithErrorHandling(
@@ -51,13 +51,15 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     }
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
-        const client: WebSiteManagementClient = await createWebSiteClient(this.root);
-        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...this.root };
+        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
+        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...this.subscription };
+
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
         const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
         if (!context.advancedCreation) {
+            wizardContext.sku = SkuListStep.getSkus()[0];
             executeSteps.push(new ResourceGroupCreateStep());
         } else {
             promptSteps.push(new ResourceGroupListStep());
@@ -72,8 +74,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             executeSteps.push(new RepoCreateStep());
         }
 
-        promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
-
         // hard-coding locations available during preview
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
         const locations = [
@@ -85,17 +85,11 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         ];
 
         const webProvider: string = 'Microsoft.Web';
-        if (context.advancedCreation) {
-            LocationListStep.setLocationSubset(wizardContext, new Promise((resolve) => {
-                resolve(locations);
-            }), webProvider);
 
-            LocationListStep.addStep(wizardContext, promptSteps);
-        } else {
-            await LocationListStep.setLocation(wizardContext, locations[0]);
-            // default to free for basic
-            wizardContext.sku = SkuListStep.getSkus()[0];
-        }
+        LocationListStep.setLocationSubset(wizardContext, Promise.resolve(locations), webProvider);
+        LocationListStep.addStep(wizardContext, promptSteps);
+
+        promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
 
         executeSteps.push(new VerifyProvidersStep([webProvider]));
         executeSteps.push(new StaticWebAppCreateStep());
@@ -103,7 +97,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
             title,
             promptSteps,
-            executeSteps
+            executeSteps,
+            showLoadingPrompt: true
         });
 
         wizardContext.telemetry.properties.gotRemote = String(hasRemote);
@@ -111,6 +106,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
 
         await wizard.prompt();
+
         const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
         if (!context.advancedCreation) {
