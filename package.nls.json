@@ -39,5 +39,5 @@
     "staticWebApps.openGitHubLog": "Open GitHub Action Log",
     "staticWebApps.installOrUpdateStaticWebAppsCli": "Install or Update Azure Static Web Apps CLI",
     "staticWebApps.uninstallStaticWebAppsCli": "Uninstall Azure Static Web Apps CLI",
-    "staticWebApps.showStaticWebAppsCliWarning": "Show a warning if your installed version of the Azure Static Web Apps CLI is out-of-date."
+    "staticWebApps.showStaticWebAppsCliWarning": "Show a warning if the installed version of the Azure Static Web Apps CLI is out-of-date."
 }
