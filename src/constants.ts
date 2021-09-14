@@ -33,6 +33,8 @@ export const githubScopes: string[] = ['repo', 'workflow', 'admin:public_key'];
 
 export const angularOutputLocation = 'dist/<project-name>';
 
+export const swaCliPackageName = '@azure/static-web-apps-cli';
+
 // Source: https://github.com/github/gitignore/blob/master/Node.gitignore
 export const defaultGitignoreContents: string = `# Logs
 logs

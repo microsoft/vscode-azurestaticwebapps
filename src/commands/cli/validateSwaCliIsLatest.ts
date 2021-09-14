@@ -1,0 +1,78 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import * as semver from 'semver';
+import * as vscode from 'vscode';
+import { callWithTelemetryAndErrorHandling, DialogResponses, IActionContext } from 'vscode-azureextensionui';
+import { cpUtils } from '../../utils/cpUtils';
+import { localize } from '../../utils/localize';
+import { openUrl } from '../../utils/openUrl';
+import { getWorkspaceSetting, updateGlobalSetting } from '../../utils/settingsUtils';
+import { getInstalledSwaCliVersion } from './getInstalledSwaCliVersion';
+import { getNewestSwaCliVersion } from './getNewestSwaCliVersion';
+import { installOrUpdateSwaCli } from './installOrUpdateSwaCli';
+
+const swaCliUrl: string = 'https://aka.ms/installSwaCli';
+
+export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
+    await callWithTelemetryAndErrorHandling('staticWebApps.validateStaticWebAppsCliIsLatest', async (context: IActionContext) => {
+        context.errorHandling.suppressDisplay = true;
+        context.telemetry.properties.isActivationEvent = 'true';
+
+        const showSwaCliWarningKey: string = 'showStaticWebAppsCliWarning';
+        const showSwaCliWarning: boolean = !!getWorkspaceSetting<boolean>(showSwaCliWarningKey);
+
+        if (!await hasNpm()) {
+            return;
+        }
+
+        if (showSwaCliWarning) {
+            const installedVersion: string | null = await getInstalledSwaCliVersion();
+            if (!installedVersion) {
+                return;
+            }
+            context.telemetry.properties.localVersion = installedVersion;
+
+            const newestVersion: string | undefined = await getNewestSwaCliVersion(context);
+            if (!newestVersion) {
+                return;
+            }
+
+            if (semver.major(newestVersion) === semver.major(installedVersion) && semver.gt(newestVersion, installedVersion)) {
+                context.telemetry.properties.outOfDateFunc = 'true';
+                const message: string = localize(
+                    'outdatedSwaCli',
+                    'Update the Azure Static Web Apps CLI ({0}) to the latest ({1}) for the best experience.',
+                    installedVersion,
+                    newestVersion
+                );
+
+                const update: vscode.MessageItem = { title: 'Update' };
+                let result: vscode.MessageItem;
+
+                do {
+                    result = await context.ui.showWarningMessage(message, update, DialogResponses.learnMore, DialogResponses.dontWarnAgain)
+                    if (result === DialogResponses.learnMore) {
+                        await openUrl(swaCliUrl);
+                    } else if (result === update) {
+                        await installOrUpdateSwaCli();
+                    } else if (result === DialogResponses.dontWarnAgain) {
+                        await updateGlobalSetting(showSwaCliWarningKey, false);
+                    }
+                }
+                while (result === DialogResponses.learnMore);
+            }
+        }
+    });
+}
+
+async function hasNpm(): Promise<boolean> {
+    try {
+        await cpUtils.executeCommand(undefined, undefined, 'npm', '--version');
+        return true;
+    } catch (e) {
+        return false;
+    }
+}

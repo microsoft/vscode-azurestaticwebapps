@@ -54,6 +54,8 @@
         "onCommand:staticWebApps.reportIssue",
         "onCommand:staticWebApps.createSwaConfigFile",
         "onCommand:staticWebApps.openGitHubLog",
+        "onCommand:staticWebApps.installOrUpdateStaticWebAppsCli",
+        "onCommand:staticWebApps.uninstallStaticWebAppsCli",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
@@ -210,6 +212,18 @@
                 "command": "staticWebApps.openGitHubLog",
                 "title": "%staticWebApps.openGitHubLog%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.installOrUpdateStaticWebAppsCli",
+                "title": "%staticWebApps.installOrUpdateStaticWebAppsCli%",
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
+            },
+            {
+                "command": "staticWebApps.uninstallStaticWebAppsCli",
+                "title": "%staticWebApps.uninstallStaticWebAppsCli%",
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
             }
         ],
         "views": {
@@ -424,6 +438,11 @@
                         "scope": "resource",
                         "type": "string",
                         "description": "%staticWebApps.outputSubpath%"
+                    },
+                    "staticWebApps.showStaticWebAppsCliWarning": {
+                        "type": "boolean",
+                        "description": "%staticWebApps.showStaticWebAppsCliWarning%",
+                        "default": true
                     }
                 }
             }
@@ -457,6 +476,7 @@
         "@types/gulp": "^4.0.6",
         "@types/mocha": "^8.2.2",
         "@types/node": "^14.0.0",
+        "@types/semver": "^7.3.8",
         "@types/vscode": "1.57.0",
         "@typescript-eslint/eslint-plugin": "^4.28.3",
         "eslint": "^7.19.0",
@@ -482,6 +502,7 @@
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",
         "open": "^8.0.4",
+        "semver": "^7.3.5",
         "vscode-azureappservice": "^0.86.1",
         "vscode-azureextensionui": "0.48.3",
         "vscode-nls": "^4.1.1",
