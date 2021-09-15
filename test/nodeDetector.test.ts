@@ -1,13 +1,13 @@
-import assert = require("assert");
-import path = require("path");
-import { workspace, WorkspaceFolder } from "vscode";
-import { DetectorResults, NodeConstants, NodeDetector } from '../extension.bundle';
-
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See LICENSE.md in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import * as assert from 'assert';
+import * as path from 'path';
+import { workspace, WorkspaceFolder } from "vscode";
+import { DetectorResults, NodeConstants, NodeDetector } from '../extension.bundle';
+
 interface ITestCase {
     /**
      * If undefined, use the version as the folder name
@@ -39,7 +39,6 @@ suite('Node detector', () => {
                 lernaNpmClient: "",
                 hasYarnrcYmlFile: false,
                 isYarnLockFileValidYamlFormat: false,
-                isFunctionApp: false,
             }
         },
         {
@@ -63,7 +62,6 @@ suite('Node detector', () => {
                 lernaNpmClient: "",
                 hasYarnrcYmlFile: false,
                 isYarnLockFileValidYamlFormat: false,
-                isFunctionApp: false,
             }
         },
         {
@@ -83,7 +81,6 @@ suite('Node detector', () => {
                 lernaNpmClient: "",
                 hasYarnrcYmlFile: false,
                 isYarnLockFileValidYamlFormat: false,
-                isFunctionApp: false,
             }
         },
         {
@@ -103,7 +100,6 @@ suite('Node detector', () => {
                 lernaNpmClient: "",
                 hasYarnrcYmlFile: false,
                 isYarnLockFileValidYamlFormat: false,
-                isFunctionApp: false,
             }
         },
         {
@@ -123,7 +119,6 @@ suite('Node detector', () => {
                 lernaNpmClient: "",
                 hasYarnrcYmlFile: false,
                 isYarnLockFileValidYamlFormat: false,
-                isFunctionApp: false,
             }
         },
         {
@@ -151,7 +146,6 @@ suite('Node detector', () => {
                 lernaNpmClient: "",
                 hasYarnrcYmlFile: false,
                 isYarnLockFileValidYamlFormat: false,
-                isFunctionApp: false,
             }
         }
     ]

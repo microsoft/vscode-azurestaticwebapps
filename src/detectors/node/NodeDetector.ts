@@ -6,13 +6,41 @@
 import { join } from 'path';
 import { AzExtFsExtra, parseError } from "vscode-azureextensionui";
 import { parse } from 'yaml';
-import { isFunctionProject } from './commands/createStaticWebApp/tryGetApiLocations';
 import { NodeConstants } from "./nodeConstants";
+
+type PackageJson = {
+    engines?: {
+        node?: string
+    },
+    devDependencies?: {
+        [key: string]: string
+    },
+    dependencies?: {
+        [key: string]: string
+    }
+}
+
+type FrameworkInfo = {
+    framework: string,
+    version: string
+}
+
+export type DetectorResults = {
+    platform: string | undefined,
+    platformVersion: string | undefined,
+    appDirectory: string | undefined,
+    frameworks: FrameworkInfo[],
+    hasLernaJsonFile: boolean,
+    hasLageConfigJSFile: boolean,
+    lernaNpmClient: string | undefined,
+    hasYarnrcYmlFile: boolean,
+    isYarnLockFileValidYamlFormat: boolean,
+}
+
 
 export class NodeDetector {
     public async detect(fsPath: string): Promise<DetectorResults | undefined> {
         let isNodeApp = false;
-        let isFunctionApp = false;
         let hasLernaJsonFile = false;
         let hasLageConfigJSFile = false;
         let hasYarnrcYmlFile = false;
@@ -23,8 +51,6 @@ export class NodeDetector {
         isNodeApp = (await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.PackageJsonFileName)) ||
             await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.PackageLockJsonFileName)) ||
             await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.YarnLockFileName)));
-
-        isFunctionApp = await isFunctionProject(fsPath)
 
         hasYarnrcYmlFile = await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.YarnrcYmlName));
         const yarnLockPath: string = join(fsPath, NodeConstants.YarnLockFileName);
@@ -79,7 +105,6 @@ export class NodeDetector {
             lernaNpmClient,
             hasYarnrcYmlFile,
             isYarnLockFileValidYamlFormat,
-            isFunctionApp
         };
     }
 
@@ -156,34 +181,4 @@ export class NodeDetector {
         }
         return npmClientName;
     }
-}
-
-type PackageJson = {
-    engines?: {
-        node?: string
-    },
-    devDependencies?: {
-        [key: string]: string
-    },
-    dependencies?: {
-        [key: string]: string
-    }
-}
-
-type FrameworkInfo = {
-    framework: string,
-    version: string
-}
-
-export type DetectorResults = {
-    platform: string | undefined,
-    platformVersion: string | undefined,
-    appDirectory: string | undefined,
-    frameworks: FrameworkInfo[],
-    hasLernaJsonFile: boolean,
-    hasLageConfigJSFile: boolean,
-    lernaNpmClient: string | undefined,
-    hasYarnrcYmlFile: boolean,
-    isYarnLockFileValidYamlFormat: boolean,
-    isFunctionApp: boolean
 }

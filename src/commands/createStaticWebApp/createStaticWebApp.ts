@@ -6,14 +6,15 @@
 import { ProgressLocation, ProgressOptions, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { productionEnvironmentName } from '../../constants';
+import { NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
-import { DetectorResults, NodeDetector } from '../../NodeDetector';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
-import { findSubFolders, showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
+import { telemetryUtils } from '../../utils/telemetryUtils';
+import { showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showSwaCreated } from '../showSwaCreated';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
@@ -40,16 +41,11 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         await window.withProgress(progressOptions, async () => {
             const folder = await tryGetWorkspaceFolder(context);
             if (folder) {
-
-                const fsPaths = await findSubFolders(folder);
-                // look for frameworks in subfolders as well
-                const detectedFrameworks: DetectorResults[] = [];
-                for (const fsPath of fsPaths) {
-                    const result = await new NodeDetector().detect(fsPath);
-                    if (result) { detectedFrameworks.push(result); }
-                }
-                // comma separated list of all frameworks detected in this project
-                context.telemetry.properties.detectedFrameworks = detectedFrameworks.filter(df => df.frameworks.length > 0).map(dr => dr.frameworks.map(fi => fi.framework)).join(', ');
+                await telemetryUtils.runWithDurationTelemetry(context, 'tryGetFrameworks', async () => {
+                    const detectorResult = await new NodeDetector().detect(folder.uri.fsPath);
+                    // comma separated list of all frameworks detected in this project
+                    context.telemetry.properties.detectedFrameworks = detectorResult?.frameworks.map(fi => fi.framework).join(', ') ?? 'N/A';
+                });
 
                 await setWorkspaceContexts(context, folder);
                 context.detectedApiLocations = await tryGetApiLocations(context, folder);
