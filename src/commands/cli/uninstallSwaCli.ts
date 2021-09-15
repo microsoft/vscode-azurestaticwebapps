@@ -13,7 +13,7 @@ export async function uninstallSwaCli(): Promise<void> {
     ext.outputChannel.show();
 
     if (await getInstalledSwaCliVersion() === null) {
-        throw new Error(localize('notInstalled', 'Cannot uninstall Azure Static Web Apps CLI because it is not installed.'));
+        throw new Error(localize('notInstalled', 'Cannot uninstall Azure Static Web Apps CLI because it is not installed with npm.'));
     }
 
     await cpUtils.executeCommand(ext.outputChannel, undefined, 'npm', 'uninstall', '--global', swaCliPackageName);
