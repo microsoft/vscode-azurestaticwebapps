@@ -49,7 +49,7 @@ export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
                     newestVersion
                 );
 
-                const update: vscode.MessageItem = { title: 'Update' };
+                const update: vscode.MessageItem = { title: localize('update', 'Update') };
                 let result: vscode.MessageItem;
 
                 do {
