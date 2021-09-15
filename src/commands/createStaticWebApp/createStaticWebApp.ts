@@ -13,7 +13,7 @@ import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
-import { showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
+import { findSubFolders, showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showSwaCreated } from '../showSwaCreated';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
@@ -40,15 +40,23 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         await window.withProgress(progressOptions, async () => {
             const folder = await tryGetWorkspaceFolder(context);
             if (folder) {
-                const framework: DetectorResults | undefined = await new NodeDetector().detect(folder);
-                console.log(framework);
+
+                const fsPaths = await findSubFolders(folder);
+                // look for frameworks in subfolders as well
+                const detectedFrameworks: DetectorResults[] = [];
+                for (const fsPath of fsPaths) {
+                    const result = await new NodeDetector().detect(fsPath);
+                    if (result) { detectedFrameworks.push(result); }
+                }
+                // comma separated list of all frameworks detected in this project
+                context.telemetry.properties.detectedFrameworks = detectedFrameworks.filter(df => df.frameworks.length > 0).map(dr => dr.frameworks.map(fi => fi.framework)).join(', ');
+
                 await setWorkspaceContexts(context, folder);
                 context.detectedApiLocations = await tryGetApiLocations(context, folder);
             } else {
                 await showNoWorkspacePrompt(context);
             }
         });
-
     } finally {
         isVerifyingWorkspace = false;
     }

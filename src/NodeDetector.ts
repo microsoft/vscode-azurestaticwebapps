@@ -4,17 +4,15 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { join } from 'path';
-import { WorkspaceFolder } from "vscode";
 import { AzExtFsExtra, parseError } from "vscode-azureextensionui";
 import { parse } from 'yaml';
+import { isFunctionProject } from './commands/createStaticWebApp/tryGetApiLocations';
 import { NodeConstants } from "./nodeConstants";
 
 export class NodeDetector {
-
-    public async detect(folder: WorkspaceFolder): Promise<DetectorResults | undefined> {
-        const fsPath = folder.uri.fsPath;
-
+    public async detect(fsPath: string): Promise<DetectorResults | undefined> {
         let isNodeApp = false;
+        let isFunctionApp = false;
         let hasLernaJsonFile = false;
         let hasLageConfigJSFile = false;
         let hasYarnrcYmlFile = false;
@@ -25,6 +23,8 @@ export class NodeDetector {
         isNodeApp = (await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.PackageJsonFileName)) ||
             await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.PackageLockJsonFileName)) ||
             await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.YarnLockFileName)));
+
+        isFunctionApp = await isFunctionProject(fsPath)
 
         hasYarnrcYmlFile = await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.YarnrcYmlName));
         const yarnLockPath: string = join(fsPath, NodeConstants.YarnLockFileName);
@@ -70,15 +70,16 @@ export class NodeDetector {
         const detectedFrameworkInfos = await this.detectFrameworkInfos(fsPath);
 
         return {
-            Platform: NodeConstants.PlatformName,
-            PlatformVersion: version,
-            AppDirectory: appDirectory,
-            Frameworks: detectedFrameworkInfos,
-            HasLernaJsonFile: hasLernaJsonFile,
-            HasLageConfigJSFile: hasLageConfigJSFile,
-            LernaNpmClient: lernaNpmClient,
-            HasYarnrcYmlFile: hasYarnrcYmlFile,
-            isYarnLockFileValidYamlFormat: isYarnLockFileValidYamlFormat,
+            platform: NodeConstants.PlatformName,
+            platformVersion: version,
+            appDirectory,
+            frameworks: detectedFrameworkInfos,
+            hasLernaJsonFile,
+            hasLageConfigJSFile,
+            lernaNpmClient,
+            hasYarnrcYmlFile,
+            isYarnLockFileValidYamlFormat,
+            isFunctionApp
         };
     }
 
@@ -115,7 +116,7 @@ export class NodeDetector {
             const devDependencies = packageJson.devDependencies;
             for (const framework of Object.keys(NodeConstants.DevDependencyFrameworkKeyWordToName)) {
                 if (devDependencies[framework]) {
-                    detectedFrameworkResult.push({ framework, version: devDependencies[framework] })
+                    detectedFrameworkResult.push({ framework: <string>NodeConstants.DevDependencyFrameworkKeyWordToName[framework], version: devDependencies[framework] })
                 }
             }
         }
@@ -124,7 +125,7 @@ export class NodeDetector {
             const dependencies = packageJson.dependencies;
             for (const framework of Object.keys(NodeConstants.DependencyFrameworkKeyWordToName)) {
                 if (dependencies[framework]) {
-                    detectedFrameworkResult.push({ framework, version: dependencies[framework] })
+                    detectedFrameworkResult.push({ framework: <string>NodeConstants.DependencyFrameworkKeyWordToName[framework], version: dependencies[framework] })
                 }
             }
         }
@@ -175,13 +176,14 @@ type FrameworkInfo = {
 }
 
 export type DetectorResults = {
-    Platform: string | undefined,
-    PlatformVersion: string | undefined,
-    AppDirectory: string | undefined,
-    Frameworks: FrameworkInfo[],
-    HasLernaJsonFile: boolean,
-    HasLageConfigJSFile: boolean,
-    LernaNpmClient: string | undefined,
-    HasYarnrcYmlFile: boolean,
+    platform: string | undefined,
+    platformVersion: string | undefined,
+    appDirectory: string | undefined,
+    frameworks: FrameworkInfo[],
+    hasLernaJsonFile: boolean,
+    hasLageConfigJSFile: boolean,
+    lernaNpmClient: string | undefined,
+    hasYarnrcYmlFile: boolean,
     isYarnLockFileValidYamlFormat: boolean,
+    isFunctionApp: boolean
 }

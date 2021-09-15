@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { commands, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
+import { commands, FileType, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
 import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { openExistingProject } from '../constants';
@@ -90,4 +90,18 @@ export async function openFolder(context: IActionContext): Promise<void> {
     });
     // don't wait
     void commands.executeCommand('vscode.openFolder', uri[0]);
+}
+
+export async function findSubFolders(folder: WorkspaceFolder): Promise<string[]> {
+    const fsPaths: string[] = [folder.uri.fsPath];
+    const rootDir = folder.uri;
+
+    const dirContents = await workspace.fs.readDirectory(rootDir);
+    for (const content of dirContents) {
+        if (content[1] === FileType.Directory) {
+            fsPaths.push(path.join(rootDir.fsPath, content[0]));
+        }
+    }
+
+    return fsPaths;
 }
