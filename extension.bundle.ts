@@ -18,6 +18,8 @@ export * from 'vscode-azureextensionui';
 export { createFoldingRanges } from './src/commands/github/jobLogs/createFoldingRanges';
 export { LogState, parseGitHubLog } from './src/commands/github/jobLogs/parseGitHubLog';
 export { tryGetSelection } from './src/commands/openYAMLConfigFile';
+export { NodeConstants } from './src/detectors/node/nodeConstants';
+export { DetectorResults, NodeDetector } from './src/detectors/node/NodeDetector';
 // Export activate/deactivate for main.js
 export { activateInternal, deactivateInternal } from './src/extension';
 export * from './src/extensionVariables';

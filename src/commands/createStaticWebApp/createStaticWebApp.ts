@@ -6,12 +6,14 @@
 import { ProgressLocation, ProgressOptions, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { productionEnvironmentName } from '../../constants';
+import { NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
+import { telemetryUtils } from '../../utils/telemetryUtils';
 import { showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showSwaCreated } from '../showSwaCreated';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
@@ -39,13 +41,18 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         await window.withProgress(progressOptions, async () => {
             const folder = await tryGetWorkspaceFolder(context);
             if (folder) {
+                await telemetryUtils.runWithDurationTelemetry(context, 'tryGetFrameworks', async () => {
+                    const detectorResult = await new NodeDetector().detect(folder.uri);
+                    // comma separated list of all frameworks detected in this project
+                    context.telemetry.properties.detectedFrameworks = detectorResult?.frameworks.map(fi => fi.framework).join(', ') ?? 'N/A';
+                });
+
                 await setWorkspaceContexts(context, folder);
                 context.detectedApiLocations = await tryGetApiLocations(context, folder);
             } else {
                 await showNoWorkspacePrompt(context);
             }
         });
-
     } finally {
         isVerifyingWorkspace = false;
     }

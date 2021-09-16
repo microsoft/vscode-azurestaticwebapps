@@ -20,7 +20,6 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
         throw new Error(noWorkspaceError);
     }
 
-
     const detectedApiLocations = await tryGetApiLocations(context, workspace.workspaceFolders[0].uri.fsPath);
 
     const apiLocation: string = detectedApiLocations?.length ?

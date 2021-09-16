@@ -1,7 +1,28 @@
 {
     "folders": [
         {
-            "path": "../testWorkspace"
+            "path": "./testWorkspace"
+        },
+        {
+            "path": "./testProject/angular-basic"
+        },
+        {
+            "path": "./testProject/nextjs-starter"
+        },
+        {
+            "path": "./testProject/nuxtjs-starter"
+        },
+        {
+            "path": "./testProject/react-basic"
+        },
+        {
+            "path": "./testProject/svelte-basic"
+        },
+        {
+            "path": "./testProject/vanilla-basic"
+        },
+        {
+            "path": "./testProject/vue-basic"
         }
     ]
 }
