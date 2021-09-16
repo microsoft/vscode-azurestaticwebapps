@@ -42,7 +42,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             const folder = await tryGetWorkspaceFolder(context);
             if (folder) {
                 await telemetryUtils.runWithDurationTelemetry(context, 'tryGetFrameworks', async () => {
-                    const detectorResult = await new NodeDetector().detect(folder.uri.fsPath);
+                    const detectorResult = await new NodeDetector().detect(folder.uri);
                     // comma separated list of all frameworks detected in this project
                     context.telemetry.properties.detectedFrameworks = detectorResult?.frameworks.map(fi => fi.framework).join(', ') ?? 'N/A';
                 });
