@@ -6,6 +6,7 @@
 import * as semver from 'semver';
 import * as vscode from 'vscode';
 import { callWithTelemetryAndErrorHandling, DialogResponses, IActionContext } from 'vscode-azureextensionui';
+import { installSwaCliUrl } from '../../constants';
 import { cpUtils } from '../../utils/cpUtils';
 import { localize } from '../../utils/localize';
 import { openUrl } from '../../utils/openUrl';
@@ -13,8 +14,7 @@ import { getWorkspaceSetting, updateGlobalSetting } from '../../utils/settingsUt
 import { getInstalledSwaCliVersion } from './getInstalledSwaCliVersion';
 import { getNewestSwaCliVersion } from './getNewestSwaCliVersion';
 import { installOrUpdateSwaCli } from './installOrUpdateSwaCli';
-
-const swaCliUrl: string = 'https://aka.ms/installSwaCli';
+import { verifyHasNpm } from './verifyHasNpm';
 
 export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
     await callWithTelemetryAndErrorHandling('staticWebApps.validateStaticWebAppsCliIsLatest', async (context: IActionContext) => {
@@ -24,9 +24,10 @@ export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
         const showSwaCliWarningKey: string = 'showStaticWebAppsCliWarning';
         const showSwaCliWarning: boolean = !!getWorkspaceSetting<boolean>(showSwaCliWarningKey);
 
-        if (!await hasNpm()) {
+        if (!await verifyHasNpm(context)) {
             return;
         }
+        context.telemetry.properties.hasNpm = 'true';
 
         if (showSwaCliWarning) {
             const installedVersion: string | null = await getInstalledSwaCliVersion();
@@ -55,9 +56,9 @@ export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
                 do {
                     result = await context.ui.showWarningMessage(message, update, DialogResponses.learnMore, DialogResponses.dontWarnAgain)
                     if (result === DialogResponses.learnMore) {
-                        await openUrl(swaCliUrl);
+                        await openUrl(installSwaCliUrl);
                     } else if (result === update) {
-                        await installOrUpdateSwaCli();
+                        await installOrUpdateSwaCli(context);
                     } else if (result === DialogResponses.dontWarnAgain) {
                         await updateGlobalSetting(showSwaCliWarningKey, false);
                     }
@@ -68,7 +69,7 @@ export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
     });
 }
 
-async function hasNpm(): Promise<boolean> {
+export async function hasNpm(): Promise<boolean> {
     try {
         await cpUtils.executeCommand(undefined, undefined, 'npm', '--version');
         return true;
