@@ -4,25 +4,25 @@
             "path": "./testWorkspace"
         },
         {
-            "path": "./testFolder/angular-basic"
+            "path": "./testProject/angular-basic"
         },
         {
-            "path": "./testFolder/nextjs-starter"
+            "path": "./testProject/nextjs-starter"
         },
         {
-            "path": "./testFolder/nuxtjs-starter"
+            "path": "./testProject/nuxtjs-starter"
         },
         {
-            "path": "./testFolder/react-basic"
+            "path": "./testProject/react-basic"
         },
         {
-            "path": "./testFolder/svelte-basic"
+            "path": "./testProject/svelte-basic"
         },
         {
-            "path": "./testFolder/vanilla-basic"
+            "path": "./testProject/vanilla-basic"
         },
         {
-            "path": "./testFolder/vue-basic"
+            "path": "./testProject/vue-basic"
         }
     ]
 }

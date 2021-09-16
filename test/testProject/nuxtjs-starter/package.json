@@ -1,0 +1,18 @@
+{
+  "name": "nuxtjs-static-website",
+  "version": "1.0.0",
+  "description": "My divine Nuxt.js project",
+  "author": "Christian Nwamba",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt generate",
+    "start": "nuxt start",
+    "generate": "nuxt build"
+  },
+  "dependencies": {
+    "isomorphic-unfetch": "^3.1.0",
+    "nuxt": "^2.15.7"
+  },
+  "devDependencies": {}
+}
