@@ -3,6 +3,9 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+// adapted from Oryx's C# implementation
+// https://github.com/microsoft/Oryx/blob/main/src/Detector/Node/NodeConstants.cs
+
 export namespace NodeConstants {
     export const PlatformName = "nodejs";
     export const NpmToolName = "npm";

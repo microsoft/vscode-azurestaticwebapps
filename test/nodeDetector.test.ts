@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as path from 'path';
-import { workspace, WorkspaceFolder } from "vscode";
+import { Uri, workspace, WorkspaceFolder } from "vscode";
 import { DetectorResults, NodeConstants, NodeDetector } from '../extension.bundle';
 
 interface ITestCase {
@@ -158,23 +158,25 @@ suite('Node detector', () => {
 });
 
 async function testNodeDetector(testCase: ITestCase): Promise<void> {
-    const workspacePath: string = getWorkspacePath(testCase.workspaceFolder);
-    const result = await new NodeDetector().detect(workspacePath);
+    const workspaceUri: Uri = getWorkspaceUri(testCase.workspaceFolder);
+    const result = await new NodeDetector().detect(workspaceUri);
     assert.deepStrictEqual(result, testCase.expectedResult);
 }
 
-function getWorkspacePath(testWorkspaceName: string): string {
-    let workspacePath: string = '';
+function getWorkspaceUri(testWorkspaceName: string): Uri {
+    let workspaceUri: Uri | undefined = undefined;
     const workspaceFolders: readonly WorkspaceFolder[] | undefined = workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) {
         throw new Error("No workspace is open");
     } else {
         for (const obj of workspaceFolders) {
             if (obj.name === testWorkspaceName) {
-                workspacePath = obj.uri.fsPath;
+                workspaceUri = obj.uri;
+                assert.strictEqual(path.basename(workspaceUri.fsPath), testWorkspaceName, "Opened against an unexpected workspace.");
+                return workspaceUri;
             }
         }
-        assert.strictEqual(path.basename(workspacePath), testWorkspaceName, "Opened against an unexpected workspace.");
-        return workspacePath;
     }
+
+    throw new Error(`Unable to find workspace "${testWorkspaceName}""`)
 }

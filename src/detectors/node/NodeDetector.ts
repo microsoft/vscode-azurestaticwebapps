@@ -3,7 +3,10 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { join } from 'path';
+// adapted from Oryx's C# implementation
+// https://github.com/microsoft/Oryx/blob/main/src/Detector/Node/NodeDetector.cs
+
+import { Uri } from 'vscode';
 import { AzExtFsExtra, parseError } from "vscode-azureextensionui";
 import { parse } from 'yaml';
 import { NodeConstants } from "./nodeConstants";
@@ -39,7 +42,7 @@ export type DetectorResults = {
 
 
 export class NodeDetector {
-    public async detect(fsPath: string): Promise<DetectorResults | undefined> {
+    public async detect(uri: Uri): Promise<DetectorResults | undefined> {
         let isNodeApp = false;
         let hasLernaJsonFile = false;
         let hasLageConfigJSFile = false;
@@ -48,26 +51,26 @@ export class NodeDetector {
         const appDirectory = '';
         let lernaNpmClient = '';
 
-        isNodeApp = (await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.PackageJsonFileName)) ||
-            await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.PackageLockJsonFileName)) ||
-            await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.YarnLockFileName)));
+        isNodeApp = (await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.PackageJsonFileName)) ||
+            await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.PackageLockJsonFileName)) ||
+            await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.YarnLockFileName)));
 
-        hasYarnrcYmlFile = await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.YarnrcYmlName));
-        const yarnLockPath: string = join(fsPath, NodeConstants.YarnLockFileName);
-        isYarnLockFileValidYamlFormat = await AzExtFsExtra.pathExists(yarnLockPath) && await this.isYarnLockFileYamlFile(yarnLockPath);
+        hasYarnrcYmlFile = await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.YarnrcYmlName));
+        const yarnLockUri: Uri = Uri.joinPath(uri, NodeConstants.YarnLockFileName);
+        isYarnLockFileValidYamlFormat = await AzExtFsExtra.pathExists(yarnLockUri) && await this.isYarnLockFileYamlFile(yarnLockUri);
 
-        if (await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.LernaJsonFileName))) {
+        if (await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.LernaJsonFileName))) {
             hasLernaJsonFile = true;
-            lernaNpmClient = await this.getLearnJsonNpmClient(fsPath);
+            lernaNpmClient = await this.getLearnJsonNpmClient(uri);
         }
 
-        hasLageConfigJSFile = await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.LageConfigJSFileName));
+        hasLageConfigJSFile = await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.LageConfigJSFileName));
 
         // Copying the logic currently running in Kudu:
         if (!isNodeApp) {
             let mightBeNode = false;
             for (const nodeFile of NodeConstants.TypicalNodeDetectionFiles) {
-                if (await AzExtFsExtra.pathExists(join(fsPath, nodeFile))) {
+                if (await AzExtFsExtra.pathExists(Uri.joinPath(uri, nodeFile))) {
                     mightBeNode = true;
                     break;
                 }
@@ -76,7 +79,7 @@ export class NodeDetector {
             // If so, then it is not a node.js web site otherwise it is
             if (mightBeNode) {
                 for (const iisStartupFile of NodeConstants.IisStartupFiles) {
-                    if (await AzExtFsExtra.pathExists(join(fsPath, iisStartupFile))) {
+                    if (await AzExtFsExtra.pathExists(Uri.joinPath(uri, iisStartupFile))) {
                         // "App in repo is not a Node.js app as it has the file {iisStartupFile}"
                         return undefined;
                     }
@@ -92,8 +95,8 @@ export class NodeDetector {
             return undefined;
         }
 
-        const version = await this.getVersionFromPackageJson(fsPath);
-        const detectedFrameworkInfos = await this.detectFrameworkInfos(fsPath);
+        const version = await this.getVersionFromPackageJson(uri);
+        const detectedFrameworkInfos = await this.detectFrameworkInfos(uri);
 
         return {
             platform: NodeConstants.PlatformName,
@@ -108,9 +111,9 @@ export class NodeDetector {
         };
     }
 
-    private async isYarnLockFileYamlFile(yamlFilePath: string): Promise<boolean> {
+    private async isYarnLockFileYamlFile(yamlFileUri: Uri): Promise<boolean> {
         try {
-            const yamlFile = await AzExtFsExtra.readFile(yamlFilePath);
+            const yamlFile = await AzExtFsExtra.readFile(yamlFileUri);
             parse(yamlFile);
             return true;
         } catch (err) {
@@ -118,14 +121,14 @@ export class NodeDetector {
         }
     }
 
-    private async getVersionFromPackageJson(fsPath: string): Promise<string | undefined> {
-        const packageJson = await this.getPackageJsonObject(fsPath);
+    private async getVersionFromPackageJson(uri: Uri): Promise<string | undefined> {
+        const packageJson = await this.getPackageJsonObject(uri);
         return packageJson?.engines?.node;
     }
 
-    private async getPackageJsonObject(fsPath: string): Promise<PackageJson | undefined> {
+    private async getPackageJsonObject(uri: Uri): Promise<PackageJson | undefined> {
         try {
-            return <{ engines?: { node?: string } }>JSON.parse((await AzExtFsExtra.readFile(join(fsPath, NodeConstants.PackageJsonFileName))));
+            return <{ engines?: { node?: string } }>JSON.parse((await AzExtFsExtra.readFile(Uri.joinPath(uri, NodeConstants.PackageJsonFileName))));
 
         } catch (err) {
             console.error(parseError(err).message);
@@ -133,9 +136,9 @@ export class NodeDetector {
         }
     }
 
-    private async detectFrameworkInfos(fsPath: string): Promise<FrameworkInfo[]> {
+    private async detectFrameworkInfos(uri: Uri): Promise<FrameworkInfo[]> {
         const detectedFrameworkResult: FrameworkInfo[] = [];
-        const packageJson = await this.getPackageJsonObject(fsPath);
+        const packageJson = await this.getPackageJsonObject(uri);
 
         if (packageJson?.devDependencies !== undefined) {
             const devDependencies = packageJson.devDependencies;
@@ -155,21 +158,21 @@ export class NodeDetector {
             }
         }
 
-        if (await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.FlutterYamlFileName))) {
+        if (await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.FlutterYamlFileName))) {
             detectedFrameworkResult.push({ framework: NodeConstants.FlutterFrameworkeName, version: '' });
         }
 
         return detectedFrameworkResult;
     }
 
-    private async getLearnJsonNpmClient(fsPath: string) {
+    private async getLearnJsonNpmClient(uri: Uri) {
         let npmClientName: string = '';
-        if (!await AzExtFsExtra.pathExists(join(fsPath, NodeConstants.LernaJsonFileName))) {
+        if (!await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.LernaJsonFileName))) {
             return npmClientName;
         }
 
         try {
-            const learnJson = <{ npmClient?: string }>JSON.parse((await AzExtFsExtra.readFile(join(fsPath, NodeConstants.LernaJsonFileName))));
+            const learnJson = <{ npmClient?: string }>JSON.parse((await AzExtFsExtra.readFile(Uri.joinPath(uri, NodeConstants.LernaJsonFileName))));
             if (learnJson?.npmClient) {
                 npmClientName = learnJson.npmClient;
             } else {
