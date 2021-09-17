@@ -36,5 +36,8 @@
     "staticWebApps.outputSubpath": "The default value for the location of your build output relative to your application code location",
     "staticWebApps.reportIssue": "Report Issue...",
     "staticWebApps.createSwaConfigFile": "Create Configuration File",
-    "staticWebApps.openGitHubLog": "Open GitHub Action Log"
+    "staticWebApps.openGitHubLog": "Open GitHub Action Log",
+    "staticWebApps.installOrUpdateStaticWebAppsCli": "Install or Update Azure Static Web Apps CLI",
+    "staticWebApps.uninstallStaticWebAppsCli": "Uninstall Azure Static Web Apps CLI",
+    "staticWebApps.showStaticWebAppsCliWarning": "Show a warning if the installed version of the Azure Static Web Apps CLI is out-of-date."
 }

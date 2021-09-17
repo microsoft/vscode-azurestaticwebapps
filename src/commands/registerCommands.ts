@@ -13,6 +13,8 @@ import { editAppSetting } from './appSettings/editAppSetting';
 import { renameAppSetting } from './appSettings/renameAppSetting';
 import { uploadAppSettings } from './appSettings/uploadAppSettings';
 import { browse } from './browse';
+import { installOrUpdateSwaCli } from './cli/installOrUpdateSwaCli';
+import { uninstallSwaCli } from './cli/uninstallSwaCli';
 import { createChildNode } from './createChildNode';
 import { createHttpFunction } from './createHttpFunction';
 import { createStaticWebApp, createStaticWebAppAdvanced } from './createStaticWebApp/createStaticWebApp';
@@ -58,6 +60,8 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
     registerCommand('staticWebApps.createSwaConfigFile', createSwaConfigFile);
     registerCommand('staticWebApps.openGitHubLog', openGitHubLog);
+    registerCommand('staticWebApps.installOrUpdateStaticWebAppsCli', installOrUpdateSwaCli);
+    registerCommand('staticWebApps.uninstallStaticWebAppsCli', uninstallSwaCli);
 
     // Suppress "Report an Issue" button for all errors in favor of the command
     registerErrorHandler(c => c.errorHandling.suppressReportIssue = true);

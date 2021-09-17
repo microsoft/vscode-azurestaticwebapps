@@ -10,6 +10,7 @@ import { registerAppServiceExtensionVariables } from 'vscode-azureappservice';
 import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { revealTreeItem } from './commands/api/revealTreeItem';
+import { validateStaticWebAppsCliIsLatest } from './commands/cli/validateSwaCliIsLatest';
 import { contentScheme } from './commands/github/jobLogs/GitHubLogContentProvider';
 import GitHubLogFoldingProvider from './commands/github/jobLogs/GitHubLogFoldingProvider';
 import { registerCommands } from './commands/registerCommands';
@@ -29,6 +30,8 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
         activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
+
+        void validateStaticWebAppsCliIsLatest();
 
         /**
          * By passing `createIfNone: false`, a numbered badge will show up on the accounts activity bar icon.
