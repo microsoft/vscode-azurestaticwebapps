@@ -6,7 +6,7 @@
 import { ProgressLocation, ProgressOptions, window } from 'vscode';
 import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { productionEnvironmentName } from '../../constants';
-import { NodeDetector } from '../../detectors/node/NodeDetector';
+import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
@@ -14,7 +14,7 @@ import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
 import { telemetryUtils } from '../../utils/telemetryUtils';
-import { showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
+import { getSubFolders, showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
 import { showSwaCreated } from '../showSwaCreated';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { postCreateStaticWebApp } from './postCreateStaticWebApp';
@@ -42,9 +42,25 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
             const folder = await tryGetWorkspaceFolder(context);
             if (folder) {
                 await telemetryUtils.runWithDurationTelemetry(context, 'tryGetFrameworks', async () => {
-                    const detectorResult = await new NodeDetector().detect(folder.uri);
+                    const detector = new NodeDetector();
+
+                    const detectorResult = await detector.detect(folder.uri);
                     // comma separated list of all frameworks detected in this project
                     context.telemetry.properties.detectedFrameworks = detectorResult?.frameworks.map(fi => fi.framework).join(', ') ?? 'N/A';
+
+                    const subfolderDetectorResults: DetectorResults[] = [];
+                    const subfolders = await getSubFolders(context, folder.uri);
+                    for (const subfolder of subfolders) {
+                        const subResult = await detector.detect(subfolder);
+                        if (subResult) {
+                            subfolderDetectorResults.push(subResult)
+                        }
+                    }
+
+                    if (subfolderDetectorResults.length > 0) {
+                        // example print: "(Angular,Typescript), (Next.js,React), (Nuxt.js), (React), (Svelte), (Vue.js,Vue.js)"
+                        context.telemetry.properties.detectedFrameworksSub = `(${subfolderDetectorResults.map(dr => dr.frameworks).map(fis => fis.map(fi => fi.framework)).join('), (')})`;
+                    }
                 });
 
                 await setWorkspaceContexts(context, folder);
