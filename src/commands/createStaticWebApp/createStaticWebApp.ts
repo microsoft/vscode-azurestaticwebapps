@@ -3,9 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProgressLocation, ProgressOptions, window } from 'vscode';
-import { IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
+import { ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
+import { AzExtFsExtra, IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
+import { Utils } from 'vscode-uri';
 import { productionEnvironmentName } from '../../constants';
+import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
@@ -47,19 +49,25 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
                     const detectorResult = await detector.detect(folder.uri);
                     // comma separated list of all frameworks detected in this project
                     context.telemetry.properties.detectedFrameworks = detectorResult?.frameworks.map(fi => fi.framework).join(', ') ?? 'N/A';
+                    context.telemetry.properties.rootHasSrcFolder = (await AzExtFsExtra.pathExists(Uri.joinPath(folder.uri, NodeConstants.srcFolderName))).toString();
 
                     const subfolderDetectorResults: DetectorResults[] = [];
+                    const subWithSrcFolder: string[] = []
                     const subfolders = await getSubFolders(context, folder.uri);
                     for (const subfolder of subfolders) {
                         const subResult = await detector.detect(subfolder);
                         if (subResult) {
-                            subfolderDetectorResults.push(subResult)
+                            subfolderDetectorResults.push(subResult);
+                            if (await AzExtFsExtra.pathExists(Uri.joinPath(subfolder, NodeConstants.srcFolderName))) {
+                                subWithSrcFolder.push(Utils.basename(subfolder));
+                            }
                         }
                     }
 
                     if (subfolderDetectorResults.length > 0) {
                         // example print: "(Angular,Typescript), (Next.js,React), (Nuxt.js), (React), (Svelte), (Vue.js,Vue.js)"
                         context.telemetry.properties.detectedFrameworksSub = `(${subfolderDetectorResults.map(dr => dr.frameworks).map(fis => fis.map(fi => fi.framework)).join('), (')})`;
+                        context.telemetry.properties.subFoldersWithSrc = subWithSrcFolder.join(', ');
                     }
                 });
 

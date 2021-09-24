@@ -79,4 +79,6 @@ export namespace NodeConstants {
         "three": "Three.js",
         "vue": "Vue.js"
     };
+
+    export const srcFolderName = 'src';
 }
