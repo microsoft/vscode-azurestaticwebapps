@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.8.1 - 2021-09-27
+### Added
+- Colored icons to the GitHub action job and step tree nodes
+
 ## 0.8.0 - 2021-09-01
 ### Added
 - View GitHub action logs from Actions tree node
