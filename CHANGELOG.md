@@ -3,6 +3,10 @@
 ## 0.8.1 - 2021-09-27
 ### Added
 - Colored icons to the GitHub action job and step tree nodes
+- [Static Web Apps CLI](https://github.com/Azure/static-web-apps-cli)
+    - Install or update the CLI using the `Install or Update Azure Static Web Apps CLI` command
+    - Uninstall the CLI using the `Uninstall Azure Static Web Apps CLI` command
+    - Check for a new version of the CLI on startup
 
 ## 0.8.0 - 2021-09-01
 ### Added
