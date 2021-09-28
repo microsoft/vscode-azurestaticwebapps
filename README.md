@@ -68,7 +68,7 @@ There are a couple of ways you can contribute to this repo:
 * **Code**: Contribute bug fixes, features or design changes:
   * Clone the repository locally and open in VS Code.
   * Run "Extensions: Show Recommended Extensions" from the [command palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette) and install all extensions listed under "Workspace Recommendations"
-  * Open the terminal (press `CTRL+`\`) and run `npm install`.
+  * Open the terminal (press <code>Ctrl + \`</code>) and run `npm install`.
   * To build, press `F1` and type in `Tasks: Run Build Task`.
   * Debug: press `F5` to start debugging the extension.
 
