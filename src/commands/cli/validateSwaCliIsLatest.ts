@@ -42,7 +42,7 @@ export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
             }
 
             if (semver.major(newestVersion) === semver.major(installedVersion) && semver.gt(newestVersion, installedVersion)) {
-                context.telemetry.properties.outOfDateFunc = 'true';
+                context.telemetry.properties.outOfDateSwaCli = 'true';
                 const message: string = localize(
                     'outdatedSwaCli',
                     'Update the Azure Static Web Apps CLI ({0}) to the latest ({1}) for the best experience.',
