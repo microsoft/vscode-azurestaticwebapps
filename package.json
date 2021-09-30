@@ -56,7 +56,9 @@
         "onCommand:staticWebApps.openGitHubLog",
         "onCommand:staticWebApps.installOrUpdateStaticWebAppsCli",
         "onCommand:staticWebApps.uninstallStaticWebAppsCli",
-        "onView:staticWebApps"
+        "onView:staticWebApps",
+        "workspaceContains:**/swa-cli.config.json",
+        "workspaceContains:**/staticwebapp.config.json"
     ],
     "main": "./main.js",
     "contributes": {
