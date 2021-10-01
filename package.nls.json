@@ -31,6 +31,7 @@
     "staticWebApps.openInPortal": "Open in Portal",
     "staticWebApps.openYAMLConfigFile": "Edit Configuration...",
     "staticWebApps.outputSubpath": "The default value for the location of your build output relative to your application code location",
+    "staticWebApps.problemMatchers.swaWatch": "Azure Static Web Apps CLI (watch mode)",
     "staticWebApps.refresh": "Refresh",
     "staticWebApps.reportIssue": "Report Issue...",
     "staticWebApps.revealResource": "Reveal Resource",

@@ -409,6 +409,25 @@
                 "url": "https://json.schemastore.org/staticwebapp.config.json"
             }
         ],
+        "problemMatchers": [
+            {
+                "name": "swa-watch",
+                "label": "%staticWebApps.problemMatchers.swaWatch%",
+                "owner": "Azure Static Web Apps",
+                "source": "swa",
+                "pattern": {
+                    "regexp": ".",
+                    "file": 1,
+                    "location": 2,
+                    "message": 3
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "Azure Static Web Apps emulator started"
+                }
+            }
+        ],
         "configuration": [
             {
                 "title": "Azure Static Web Apps",
