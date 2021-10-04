@@ -5,16 +5,23 @@
 
 import * as vscode from 'vscode';
 import { IActionContext, registerEvent } from 'vscode-azureextensionui';
-import { swaTaskLabel } from '../../constants';
-import { terminateSwaTasks } from '../../debug/StaticWebAppDebugProvider';
 
 export function registerSwaCliTaskEvents(): void {
-    registerEvent('azureStaticWebApps.onDidTerminateDebugSession', vscode.debug.onDidTerminateDebugSession, (context: IActionContext, debugSession: vscode.DebugSession) => {
+    registerEvent('azureStaticWebApps.onDidTerminateDebugSession', vscode.debug.onDidTerminateDebugSession, async (context: IActionContext, debugSession: vscode.DebugSession) => {
         context.errorHandling.suppressDisplay = true;
         context.telemetry.suppressIfSuccessful = true;
-
-        if (debugSession.configuration.preLaunchTask === swaTaskLabel) {
-            terminateSwaTasks();
+        if (await isSwaCliTaskExecution(debugSession.configuration.preLaunchTask)) {
+            const taskExecution = vscode.tasks.taskExecutions.find((te) => te.task.name === debugSession.configuration.preLaunchTask);
+            taskExecution?.terminate();
         }
     });
+}
+
+export function isSwaCliTask(task: vscode.Task): boolean {
+    return !!(task.execution instanceof vscode.ShellExecution && task.execution?.commandLine?.match(/^swa start/))
+}
+
+async function isSwaCliTaskExecution(label: string): Promise<boolean> {
+    const taskExecutions: readonly vscode.TaskExecution[] = vscode.tasks.taskExecutions;
+    return !!taskExecutions.some((te) => (te.task.name === label && isSwaCliTask(te.task)));
 }

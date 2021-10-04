@@ -50,9 +50,9 @@ export async function validateSwaCliInstalled(context: IActionContext, message: 
 
     // validate that SWA CLI was installed only if user confirmed
     if (input === install && !installed) {
-        if (await context.ui.showWarningMessage(localize('failedInstallSwaCli', 'The Azure Static Web Apps CLI installation has failed and will have to be installed manually.'), DialogResponses.learnMore) === DialogResponses.learnMore) {
-            await openUrl(installSwaCliUrl);
-        }
+        await context.ui.showWarningMessage(localize('failedInstallSwaCli', 'The Azure Static Web Apps CLI installation has failed and will have to be installed manually.'), {
+            learnMoreLink: installSwaCliUrl
+        });
     }
 
     return installed;

@@ -56,6 +56,7 @@
         "onCommand:staticWebApps.openGitHubLog",
         "onCommand:staticWebApps.installOrUpdateStaticWebAppsCli",
         "onCommand:staticWebApps.uninstallStaticWebAppsCli",
+        "onDebug",
         "onView:staticWebApps"
     ],
     "main": "./main.js",

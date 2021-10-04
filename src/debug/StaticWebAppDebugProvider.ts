@@ -3,11 +3,11 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { CancellationToken, DebugConfiguration, DebugConfigurationProvider, tasks, WorkspaceFolder } from "vscode";
+import { CancellationToken, DebugConfiguration, DebugConfigurationProvider, Task, tasks, WorkspaceFolder } from "vscode";
 import { callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
+import { isSwaCliTask } from "../commands/cli/swaCliTask";
 import { validateSwaCliInstalled } from '../commands/cli/validateSwaCliInstalled';
 import { tryGetApiLocations } from '../commands/createStaticWebApp/tryGetApiLocations';
-import { swaTaskLabel } from '../constants';
 import { getFunctionsApi } from '../getExtensionApi';
 import { localize } from '../utils/localize';
 import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
@@ -20,9 +20,12 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
 
     public async resolveDebugConfiguration(folder: WorkspaceFolder | undefined, debugConfiguration: DebugConfiguration, _token?: CancellationToken): Promise<DebugConfiguration | undefined> {
         return await callWithTelemetryAndErrorHandling('resolveSwaDebugConfiguration', async (context: IActionContext) => {
-            if (debugConfiguration.preLaunchTask === swaTaskLabel) {
+            context.telemetry.properties.isActivationEvent = 'true';
+            context.errorHandling.suppressDisplay = true;
+            context.telemetry.suppressIfSuccessful = true;
+            if (await isSwaDebugSession(debugConfiguration)) {
                 if (!folder) {
-                    return;
+                    return undefined;
                 }
                 const hasSwaCli = await validateSwaCliInstalled(context, localize('installSwaCli', 'You must have the Azure Static Web Apps CLI installed to debug your static web app.'));
                 if (!hasSwaCli) {
@@ -30,9 +33,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
                 }
 
                 const apiLocations = await tryGetApiLocations(context, folder);
-                const hasApi: boolean = !!apiLocations && apiLocations.length > 0;
-
-                if (hasApi) {
+                if (apiLocations?.length) {
                     // make sure functions core tools is installed
                     const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
                     const message: string = localize('installFuncTools', 'You must have the Azure Functions Core Tools installed to debug your local functions.');
@@ -47,6 +48,8 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
     }
 }
 
-export function terminateSwaTasks(): void {
-    tasks.taskExecutions.filter((execution) => execution.task.name === swaTaskLabel).forEach(te => te.terminate());
+async function isSwaDebugSession(debugConfiguration: DebugConfiguration): Promise<boolean> {
+    const fetchedTasks: Task[] = await tasks.fetchTasks();
+    const preLaunchTask: Task | undefined = fetchedTasks.find((task) => task.name === debugConfiguration.preLaunchTask);
+    return !!preLaunchTask && isSwaCliTask(preLaunchTask);
 }
