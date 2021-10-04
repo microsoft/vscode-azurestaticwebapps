@@ -28,34 +28,34 @@
     ],
     "preview": true,
     "activationEvents": [
-        "onCommand:staticWebApps.createStaticWebApp",
-        "onCommand:staticWebApps.createStaticWebAppAdvanced",
-        "onCommand:staticWebApps.deleteStaticWebApp",
-        "onCommand:staticWebApps.deleteEnvironment",
-        "onCommand:staticWebApps.loadMore",
-        "onCommand:staticWebApps.openInPortal",
-        "onCommand:staticWebApps.refresh",
-        "onCommand:staticWebApps.selectSubscriptions",
-        "onCommand:staticWebApps.viewProperties",
-        "onCommand:staticWebApps.createHttpFunction",
-        "onCommand:staticWebApps.browse",
-        "onCommand:staticWebApps.showActions",
-        "onCommand:staticWebApps.cloneRepo",
         "onCommand:staticWebApps.appSettings.add",
-        "onCommand:staticWebApps.appSettings.upload",
+        "onCommand:staticWebApps.appSettings.delete",
         "onCommand:staticWebApps.appSettings.download",
         "onCommand:staticWebApps.appSettings.edit",
         "onCommand:staticWebApps.appSettings.rename",
-        "onCommand:staticWebApps.appSettings.delete",
-        "onCommand:staticWebApps.openGitHubRepo",
-        "onCommand:staticWebApps.staticWebApps.action.rerun",
-        "onCommand:staticWebApps.staticWebApps.action.cancel",
-        "onCommand:staticWebApps.openYAMLConfigFile",
-        "onCommand:staticWebApps.reportIssue",
+        "onCommand:staticWebApps.appSettings.upload",
+        "onCommand:staticWebApps.browse",
+        "onCommand:staticWebApps.cloneRepo",
+        "onCommand:staticWebApps.createHttpFunction",
+        "onCommand:staticWebApps.createStaticWebApp",
+        "onCommand:staticWebApps.createStaticWebAppAdvanced",
         "onCommand:staticWebApps.createSwaConfigFile",
-        "onCommand:staticWebApps.openGitHubLog",
+        "onCommand:staticWebApps.deleteEnvironment",
+        "onCommand:staticWebApps.deleteStaticWebApp",
         "onCommand:staticWebApps.installOrUpdateStaticWebAppsCli",
+        "onCommand:staticWebApps.loadMore",
+        "onCommand:staticWebApps.openGitHubLog",
+        "onCommand:staticWebApps.openGitHubRepo",
+        "onCommand:staticWebApps.openInPortal",
+        "onCommand:staticWebApps.openYAMLConfigFile",
+        "onCommand:staticWebApps.refresh",
+        "onCommand:staticWebApps.reportIssue",
+        "onCommand:staticWebApps.selectSubscriptions",
+        "onCommand:staticWebApps.showActions",
+        "onCommand:staticWebApps.staticWebApps.action.cancel",
+        "onCommand:staticWebApps.staticWebApps.action.rerun",
         "onCommand:staticWebApps.uninstallStaticWebAppsCli",
+        "onCommand:staticWebApps.viewProperties",
         "onDebug",
         "onView:staticWebApps"
     ],
@@ -63,83 +63,13 @@
     "contributes": {
         "commands": [
             {
-                "command": "staticWebApps.createStaticWebApp",
-                "title": "%staticWebApps.createStaticWebApp%",
-                "category": "Azure Static Web Apps",
-                "icon": "$(add)",
-                "enablement": "!virtualWorkspace"
-            },
-            {
-                "command": "staticWebApps.showDocumentation",
-                "title": "%staticWebApps.showDocumentation%",
-                "category": "Azure Static Web Apps",
-                "icon": "$(book)"
-            },
-            {
-                "command": "staticWebApps.createStaticWebAppAdvanced",
-                "title": "%staticWebApps.createStaticWebAppAdvanced%",
-                "category": "Azure Static Web Apps",
-                "enablement": "!virtualWorkspace"
-            },
-            {
-                "command": "staticWebApps.deleteStaticWebApp",
-                "title": "%staticWebApps.deleteStaticWebApp%",
+                "command": "staticWebApps.action.cancel",
+                "title": "%staticWebApps.action.cancel%",
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.deleteEnvironment",
-                "title": "%staticWebApps.deleteEnvironment%",
-                "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.loadMore",
-                "title": "%staticWebApps.loadMore%",
-                "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.openInPortal",
-                "title": "%staticWebApps.openInPortal%",
-                "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.refresh",
-                "title": "%staticWebApps.refresh%",
-                "category": "Azure Static Web Apps",
-                "icon": "$(refresh)"
-            },
-            {
-                "command": "staticWebApps.selectSubscriptions",
-                "title": "Select Subscriptions...",
-                "icon": "$(filter)"
-            },
-            {
-                "command": "staticWebApps.viewProperties",
-                "title": "%staticWebApps.viewProperties%",
-                "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.createHttpFunction",
-                "title": "%staticWebApps.createHttpFunction%",
-                "category": "Azure Static Web Apps",
-                "icon": {
-                    "light": "resources/light/AddFunction.svg",
-                    "dark": "resources/dark/AddFunction.svg"
-                },
-                "enablement": "!virtualWorkspace"
-            },
-            {
-                "command": "staticWebApps.browse",
-                "title": "%staticWebApps.browse%",
-                "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.showActions",
-                "title": "%staticWebApps.showActions%",
-                "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.cloneRepo",
-                "title": "%staticWebApps.cloneRepo%",
+                "command": "staticWebApps.action.rerun",
+                "title": "%staticWebApps.action.rerun%",
                 "category": "Azure Static Web Apps"
             },
             {
@@ -148,8 +78,8 @@
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.appSettings.upload",
-                "title": "%staticWebApps.appSettings.upload%",
+                "command": "staticWebApps.appSettings.delete",
+                "title": "%staticWebApps.appSettings.delete%",
                 "category": "Azure Static Web Apps"
             },
             {
@@ -168,40 +98,42 @@
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.appSettings.delete",
-                "title": "%staticWebApps.appSettings.delete%",
+                "command": "staticWebApps.appSettings.upload",
+                "title": "%staticWebApps.appSettings.upload%",
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.action.rerun",
-                "title": "%staticWebApps.action.rerun%",
+                "command": "staticWebApps.browse",
+                "title": "%staticWebApps.browse%",
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.action.cancel",
-                "title": "%staticWebApps.action.cancel%",
+                "command": "staticWebApps.cloneRepo",
+                "title": "%staticWebApps.cloneRepo%",
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.toggleAppSettingVisibility",
-                "title": "%staticWebApps.toggleAppSettingVisibility%",
+                "command": "staticWebApps.createHttpFunction",
+                "title": "%staticWebApps.createHttpFunction%",
                 "category": "Azure Static Web Apps",
-                "icon": "$(eye)"
+                "icon": {
+                    "light": "resources/light/AddFunction.svg",
+                    "dark": "resources/dark/AddFunction.svg"
+                },
+                "enablement": "!virtualWorkspace"
             },
             {
-                "command": "staticWebApps.openGitHubRepo",
-                "title": "%staticWebApps.openGitHubRepo%",
-                "category": "Azure Static Web Apps"
+                "command": "staticWebApps.createStaticWebApp",
+                "title": "%staticWebApps.createStaticWebApp%",
+                "category": "Azure Static Web Apps",
+                "icon": "$(add)",
+                "enablement": "!virtualWorkspace"
             },
             {
-                "command": "staticWebApps.openYAMLConfigFile",
-                "title": "%staticWebApps.openYAMLConfigFile%",
-                "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.reportIssue",
-                "title": "%staticWebApps.reportIssue%",
-                "category": "Azure Static Web Apps"
+                "command": "staticWebApps.createStaticWebAppAdvanced",
+                "title": "%staticWebApps.createStaticWebAppAdvanced%",
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.createSwaConfigFile",
@@ -210,8 +142,13 @@
                 "enablement": "!virtualWorkspace"
             },
             {
-                "command": "staticWebApps.openGitHubLog",
-                "title": "%staticWebApps.openGitHubLog%",
+                "command": "staticWebApps.deleteEnvironment",
+                "title": "%staticWebApps.deleteEnvironment%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.deleteStaticWebApp",
+                "title": "%staticWebApps.deleteStaticWebApp%",
                 "category": "Azure Static Web Apps"
             },
             {
@@ -221,10 +158,73 @@
                 "enablement": "!virtualWorkspace"
             },
             {
+                "command": "staticWebApps.loadMore",
+                "title": "%staticWebApps.loadMore%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.openGitHubLog",
+                "title": "%staticWebApps.openGitHubLog%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.openGitHubRepo",
+                "title": "%staticWebApps.openGitHubRepo%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.openInPortal",
+                "title": "%staticWebApps.openInPortal%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.openYAMLConfigFile",
+                "title": "%staticWebApps.openYAMLConfigFile%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.refresh",
+                "title": "%staticWebApps.refresh%",
+                "category": "Azure Static Web Apps",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "staticWebApps.reportIssue",
+                "title": "%staticWebApps.reportIssue%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.selectSubscriptions",
+                "title": "Select Subscriptions...",
+                "icon": "$(filter)"
+            },
+            {
+                "command": "staticWebApps.showActions",
+                "title": "%staticWebApps.showActions%",
+                "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.showDocumentation",
+                "title": "%staticWebApps.showDocumentation%",
+                "category": "Azure Static Web Apps",
+                "icon": "$(book)"
+            },
+            {
+                "command": "staticWebApps.toggleAppSettingVisibility",
+                "title": "%staticWebApps.toggleAppSettingVisibility%",
+                "category": "Azure Static Web Apps",
+                "icon": "$(eye)"
+            },
+            {
                 "command": "staticWebApps.uninstallStaticWebAppsCli",
                 "title": "%staticWebApps.uninstallStaticWebAppsCli%",
                 "category": "Azure Static Web Apps",
                 "enablement": "!virtualWorkspace"
+            },
+            {
+                "command": "staticWebApps.viewProperties",
+                "title": "%staticWebApps.viewProperties%",
+                "category": "Azure Static Web Apps"
             }
         ],
         "views": {
@@ -238,14 +238,14 @@
         "menus": {
             "view/title": [
                 {
-                    "command": "staticWebApps.createStaticWebApp",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@1"
-                },
-                {
                     "command": "staticWebApps.createHttpFunction",
                     "when": "view == staticWebApps",
                     "group": "navigation@2"
+                },
+                {
+                    "command": "staticWebApps.createStaticWebApp",
+                    "when": "view == staticWebApps",
+                    "group": "navigation@1"
                 },
                 {
                     "command": "staticWebApps.refresh",
@@ -387,7 +387,7 @@
             ],
             "commandPalette": [
                 {
-                    "command": "staticWebApps.selectSubscriptions",
+                    "command": "staticWebApps.loadMore",
                     "when": "never"
                 },
                 {
@@ -395,7 +395,7 @@
                     "when": "never"
                 },
                 {
-                    "command": "staticWebApps.loadMore",
+                    "command": "staticWebApps.selectSubscriptions",
                     "when": "never"
                 },
                 {
@@ -408,6 +408,25 @@
             {
                 "fileMatch": "staticwebapp.config.json",
                 "url": "https://json.schemastore.org/staticwebapp.config.json"
+            }
+        ],
+        "problemMatchers": [
+            {
+                "name": "swa-watch",
+                "label": "%staticWebApps.problemMatchers.swaWatch%",
+                "owner": "Azure Static Web Apps",
+                "source": "swa",
+                "pattern": {
+                    "regexp": ".",
+                    "file": 1,
+                    "location": 2,
+                    "message": 3
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "Azure Static Web Apps emulator started"
+                }
             }
         ],
         "configuration": [
@@ -467,7 +486,8 @@
         "test": "node ./out/test/runTest.js",
         "webpack": "npm run build && gulp webpack-dev",
         "webpack-prod": "npm run build && gulp webpack-prod",
-        "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats"
+        "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats",
+        "prepare": "husky install"
     },
     "devDependencies": {
         "@microsoft/eslint-config-azuretools": "^0.1.0",
@@ -485,13 +505,14 @@
         "fs-extra": "^8.1.0",
         "glob": "^7.1.6",
         "gulp": "^4.0.2",
+        "husky": "^7.0.2",
         "mocha": "^8.3.2",
         "mocha-junit-reporter": "^2.0.0",
         "mocha-multi-reporters": "^1.1.7",
         "ts-node": "^7.0.1",
         "typescript": "^4.3.5",
         "vsce": "^1.87.1",
-        "vscode-azureextensiondev": "^0.10.0",
+        "vscode-azureextensiondev": "^0.10.2",
         "vscode-test": "^1.5.2",
         "webpack": "^5.28.0",
         "webpack-cli": "^4.6.0"
