@@ -18,7 +18,7 @@ export function registerSwaCliTaskEvents(): void {
 }
 
 export function isSwaCliTask(task: vscode.Task): boolean {
-    return !!(task.execution instanceof vscode.ShellExecution && task.execution?.commandLine?.match(/^swa start/))
+    return !!(task.execution instanceof vscode.ShellExecution && task.execution?.commandLine?.match(/^swa start/i))
 }
 
 async function isSwaCliTaskExecution(label: string): Promise<boolean> {
