@@ -56,7 +56,7 @@
         "onCommand:staticWebApps.staticWebApps.action.rerun",
         "onCommand:staticWebApps.uninstallStaticWebAppsCli",
         "onCommand:staticWebApps.viewProperties",
-        "onDebug",
+        "onDebugResolve:pwa-chrome",
         "onView:staticWebApps"
     ],
     "main": "./main.js",
