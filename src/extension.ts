@@ -10,11 +10,13 @@ import { registerAppServiceExtensionVariables } from 'vscode-azureappservice';
 import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { revealTreeItem } from './commands/api/revealTreeItem';
+import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';
 import { validateStaticWebAppsCliIsLatest } from './commands/cli/validateSwaCliIsLatest';
 import { contentScheme } from './commands/github/jobLogs/GitHubLogContentProvider';
 import GitHubLogFoldingProvider from './commands/github/jobLogs/GitHubLogFoldingProvider';
 import { registerCommands } from './commands/registerCommands';
 import { githubAuthProviderId, githubScopes } from './constants';
+import { StaticWebAppDebugProvider } from './debug/StaticWebAppDebugProvider';
 import { ext } from './extensionVariables';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItemWithProjects';
 
@@ -45,6 +47,9 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         ext.treeView = vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true });
         context.subscriptions.push(ext.treeView);
         context.subscriptions.push(vscode.languages.registerFoldingRangeProvider({ scheme: contentScheme }, new GitHubLogFoldingProvider()));
+        context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('pwa-chrome', new StaticWebAppDebugProvider(), vscode.DebugConfigurationProviderTriggerKind.Dynamic));
+
+        registerSwaCliTaskEvents();
 
         registerCommands();
 

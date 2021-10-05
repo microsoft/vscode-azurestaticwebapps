@@ -11,10 +11,11 @@ export interface AzureFunctionsExtensionApi {
     createFunction(options: ICreateFunctionOptions): Promise<void>;
     downloadAppSettings(client: IAppSettingsClient): Promise<void>;
     uploadAppSettings(client: IAppSettingsClient): Promise<void>;
+    validateFuncCoreToolsInstalled(message: string, workspacePath: string): Promise<boolean | undefined>;
 }
 
 export type ProjectLanguage = 'JavaScript' | 'TypeScript' | 'C#' | 'Python' | 'PowerShell' | 'Java';
-export type ProjectVersion = '~1' | '~2' | '~3';
+export type ProjectVersion = '~1' | '~2' | '~3' | '~4';
 
 export interface IAppSettingsClient {
     fullName: string;
