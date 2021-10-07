@@ -8,5 +8,3 @@ steps:
 - task: ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection'
   condition: ne(variables['System.PullRequest.IsFork'], 'True')
-  inputs:
-    ignoreDirectories: '..\test\testProject'
