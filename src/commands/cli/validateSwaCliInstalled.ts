@@ -16,7 +16,9 @@ import { hasNpm } from './validateSwaCliIsLatest';
 export async function validateSwaCliInstalled(context: IActionContext, message: string, minVersion?: string): Promise<boolean> {
     let input: MessageItem | undefined;
     let installed: boolean = false;
+    let hasMinVersion: boolean = false;
     const install: MessageItem = { title: localize('install', 'Install') };
+    const update: MessageItem = { title: localize('update', 'Update') };
 
     await callWithTelemetryAndErrorHandling('staticWebApps.validateSwaCliInstalled', async (innerContext: IActionContext) => {
         innerContext.errorHandling.suppressDisplay = true;
@@ -26,13 +28,16 @@ export async function validateSwaCliInstalled(context: IActionContext, message: 
             installed = true;
             // Ensure minimum version if provided.
             if (minVersion) {
-                installed = semver.gte(installedVersion, minVersion);
+                hasMinVersion = semver.gte(installedVersion, minVersion);
+                installed = hasMinVersion;
             }
-        } else {
+        }
+
+        if (!installed) {
             const items: MessageItem[] = [];
             const isNpmInstalled = await hasNpm();
             if (isNpmInstalled) {
-                items.push(install);
+                items.push(!hasMinVersion ? update : install);
             } else {
                 items.push(DialogResponses.learnMore);
             }
@@ -42,7 +47,7 @@ export async function validateSwaCliInstalled(context: IActionContext, message: 
 
             innerContext.telemetry.properties.dialogResult = input.title;
 
-            if (input === install) {
+            if (input === install || input === update) {
                 await installOrUpdateSwaCli(context);
                 installed = true;
             } else if (input === DialogResponses.learnMore) {
@@ -52,7 +57,7 @@ export async function validateSwaCliInstalled(context: IActionContext, message: 
     });
 
     // validate that SWA CLI was installed only if user confirmed
-    if (input === install && !installed) {
+    if (input === install || input === update && !installed) {
         await context.ui.showWarningMessage(localize('failedInstallSwaCli', 'The Azure Static Web Apps CLI installation has failed and will have to be installed manually.'), {
             learnMoreLink: installSwaCliUrl
         });

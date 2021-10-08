@@ -21,8 +21,8 @@ export async function initProjectForVSCode(context: IActionContext): Promise<voi
         return;
     }
 
-    const message = localize('installSwaCli', 'You must have the Azure Static Web Apps CLI version {0} installed to initialize your static web app for debugging.', minSwaCliVersion);
-    if (!await validateSwaCliInstalled(context, message)) {
+    const message = localize('installSwaCli', 'You must have the Azure Static Web Apps CLI version {0} or newer installed to initialize your static web app for debugging.', minSwaCliVersion);
+    if (!await validateSwaCliInstalled(context, message, minSwaCliVersion)) {
         return;
     }
 
