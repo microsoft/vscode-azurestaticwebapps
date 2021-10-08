@@ -57,7 +57,9 @@
         "onCommand:staticWebApps.uninstallStaticWebAppsCli",
         "onCommand:staticWebApps.viewProperties",
         "onDebugResolve:pwa-chrome",
-        "onView:staticWebApps"
+        "onView:staticWebApps",
+        "workspaceContains:**/staticwebapp.config.json",
+        "workspaceContains:**/swa-cli.config.json"
     ],
     "main": "./main.js",
     "contributes": {
@@ -150,6 +152,12 @@
                 "command": "staticWebApps.deleteStaticWebApp",
                 "title": "%staticWebApps.deleteStaticWebApp%",
                 "category": "Azure Static Web Apps"
+            },
+            {
+                "command": "staticWebApps.initProjectForVSCode",
+                "title": "%staticWebApps.initProjectForVSCode%",
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.installOrUpdateStaticWebAppsCli",
@@ -408,6 +416,10 @@
             {
                 "fileMatch": "staticwebapp.config.json",
                 "url": "https://json.schemastore.org/staticwebapp.config.json"
+            },
+            {
+                "fileMatch": "swa-cli.config.json",
+                "url": "https://raw.githubusercontent.com/Azure/static-web-apps-cli/main/schema/swa-cli.config.schema.json"
             }
         ],
         "problemMatchers": [

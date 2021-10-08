@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as semver from 'semver';
 import { MessageItem } from 'vscode';
 import { callWithTelemetryAndErrorHandling, DialogResponses, IActionContext } from 'vscode-azureextensionui';
 import { installSwaCliUrl } from '../../constants';
@@ -12,7 +13,7 @@ import { getInstalledSwaCliVersion } from './getInstalledSwaCliVersion';
 import { installOrUpdateSwaCli } from './installOrUpdateSwaCli';
 import { hasNpm } from './validateSwaCliIsLatest';
 
-export async function validateSwaCliInstalled(context: IActionContext, message: string): Promise<boolean> {
+export async function validateSwaCliInstalled(context: IActionContext, message: string, minVersion?: string): Promise<boolean> {
     let input: MessageItem | undefined;
     let installed: boolean = false;
     const install: MessageItem = { title: localize('install', 'Install') };
@@ -21,10 +22,12 @@ export async function validateSwaCliInstalled(context: IActionContext, message: 
         innerContext.errorHandling.suppressDisplay = true;
 
         const installedVersion: string | null = await getInstalledSwaCliVersion();
-
-        // No minimum version for now.
         if (installedVersion) {
             installed = true;
+            // Ensure minimum version if provided.
+            if (minVersion) {
+                installed = semver.gte(installedVersion, minVersion);
+            }
         } else {
             const items: MessageItem[] = [];
             const isNpmInstalled = await hasNpm();

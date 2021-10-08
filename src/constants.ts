@@ -36,6 +36,8 @@ export const angularOutputLocation = 'dist/<project-name>';
 export const swaCliPackageName = '@azure/static-web-apps-cli';
 export const installSwaCliUrl: string = 'https://aka.ms/installSwaCli';
 
+export const minSwaCliVersion = '0.8.0';
+
 // Source: https://github.com/github/gitignore/blob/master/Node.gitignore
 export const defaultGitignoreContents: string = `# Logs
 logs
