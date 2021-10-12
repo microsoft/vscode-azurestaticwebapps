@@ -5,11 +5,11 @@
 
 import * as fse from 'fs-extra';
 import * as path from 'path';
-import { commands, DebugConfiguration, MessageItem, TaskDefinition, WorkspaceFolder } from "vscode";
+import { commands, DebugConfiguration, MessageItem, TaskDefinition, Uri, WorkspaceFolder } from "vscode";
 import { AzExtFsExtra, AzureWizardExecuteStep, IActionContext } from "vscode-azureextensionui";
 import { confirmEditJsonFile } from '../../utils/fs';
 import { localize } from "../../utils/localize";
-import { nonNullValue, nonNullValueAndProp } from "../../utils/nonNull";
+import { nonNullProp, nonNullValue, nonNullValueAndProp } from "../../utils/nonNull";
 import { isMultiRootWorkspace } from '../../utils/workspaceUtils';
 import { CompoundConfiguration, getCompoundConfigs, getDebugConfigs, getLaunchVersion, ILaunchJson, isCompoundConfigEqual, isDebugConfigEqual, updateCompoundConfigs, updateDebugConfigs, updateLaunchVersion } from "../../vsCodeConfig/launch";
 import { getTasks, getTasksVersion, ITask, ITasksJson, updateTasks, updateTasksVersion } from "../../vsCodeConfig/tasks";
@@ -80,6 +80,7 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
     private async getTasks(context: ILocalProjectWizardContext): Promise<ITask[]> {
         const appLocation = nonNullValueAndProp(context, 'appLocation');
         const swaCliConfig = nonNullValueAndProp(context, 'swaCliConfig');
+        const workspaceFolder = nonNullProp(context, 'workspaceFolder');
 
         const tasks: ITask[] = [];
         const command = `swa start ${swaCliConfig.name}`;
@@ -99,7 +100,7 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
         } as ITask;
 
         const npmInstallCwd = path.posix.join('${workspaceFolder}', appLocation);
-        if (await AzExtFsExtra.pathExists(path.join(npmInstallCwd, 'package.json'))) {
+        if (await AzExtFsExtra.pathExists(Uri.joinPath(workspaceFolder.uri, appLocation, 'package.json'))) {
             const npmInstallTaskLabel = 'npm install (swa)';
             tasks.push({
                 type: 'shell',
