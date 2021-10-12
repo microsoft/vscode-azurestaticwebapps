@@ -94,7 +94,7 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
         } as ITask;
 
         const npmInstallCwd = path.posix.join('${workspaceFolder}', appLocation);
-        if (await AzExtFsExtra.pathExists(path.join(npmInstallCwd, 'pacakge.json'))) {
+        if (await AzExtFsExtra.pathExists(path.join(npmInstallCwd, 'package.json'))) {
             const npmInstallTaskLabel = 'npm install (swa)';
             tasks.push({
                 type: 'shell',
