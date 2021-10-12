@@ -90,7 +90,12 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
             command: command,
             dependsOn: [],
             isBackground: true,
-            problemMatcher: '$swa-watch'
+            problemMatcher: '$swa-watch',
+            options: {
+                env: {
+                    BROWSER: "none"
+                }
+            }
         } as ITask;
 
         const npmInstallCwd = path.posix.join('${workspaceFolder}', appLocation);
