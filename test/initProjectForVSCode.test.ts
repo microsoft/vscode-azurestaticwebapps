@@ -60,9 +60,24 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
                             "type": "shell",
                             "label": "swa start app",
                             "command": "swa start app",
-                            "dependsOn": [],
+                            "dependsOn": [
+                                "npm install (swa)"
+                            ],
                             "isBackground": true,
-                            "problemMatcher": "$swa-watch"
+                            "problemMatcher": "$swa-watch",
+                            "options": {
+                                "env": {
+                                    "BROWSER": "none"
+                                }
+                            }
+                        },
+                        {
+                            "type": "shell",
+                            "label": "npm install (swa)",
+                            "command": "npm install",
+                            "options": {
+                                "cwd": "${workspaceFolder}/"
+                            }
                         }
                     ]
                 },
