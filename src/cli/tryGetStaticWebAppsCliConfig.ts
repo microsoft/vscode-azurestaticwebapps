@@ -7,6 +7,7 @@ import { Uri, workspace } from "vscode";
 import { AzExtFsExtra } from "vscode-azureextensionui";
 
 export type SWACLIOptions = {
+    context?: string;
     port?: number;
     host?: string;
     apiPort?: number;
@@ -35,7 +36,7 @@ export type SWACLIOptions = {
 
 export interface StaticWebAppsCliConfigFile {
     configurations?: {
-        [name: string]: SWACLIOptions & { context?: string };
+        [name: string]: SWACLIOptions;
     }
 }
 
