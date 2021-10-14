@@ -30,5 +30,5 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
 
     ext.outputChannel = new TestOutputChannel();
     longRunningTestsEnabled = !/^(false|0)?$/i.test(process.env.ENABLE_LONG_RUNNING_TESTS || '');
-    isCI = !/^(True)?$/i.test(process.env.TF_BUILD || '');
+    isCI = /^True$/i.test(process.env.TF_BUILD || '');
 });
