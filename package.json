@@ -42,6 +42,7 @@
         "onCommand:staticWebApps.createSwaConfigFile",
         "onCommand:staticWebApps.deleteEnvironment",
         "onCommand:staticWebApps.deleteStaticWebApp",
+        "onCommand:staticWebApps.initProjectForVSCode",
         "onCommand:staticWebApps.installOrUpdateStaticWebAppsCli",
         "onCommand:staticWebApps.loadMore",
         "onCommand:staticWebApps.openGitHubLog",
