@@ -10,9 +10,10 @@ import { StaticWebAppsCliConfig, StaticWebAppsCliConfigFile } from "../../cli/tr
 export interface ILocalProjectWizardContext extends IActionContext {
     appLocation?: string;
     apiLocation?: string;
+    // Function projects detected via host.json at SWA create time
     detectedApiLocations?: string[];
     fsPath?: string;
-    workspaceFolder?: WorkspaceFolder;
     swaCliConfigFile?: StaticWebAppsCliConfigFile;
     swaCliConfig?: StaticWebAppsCliConfig;
+    workspaceFolder?: WorkspaceFolder;
 }
