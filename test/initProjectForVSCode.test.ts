@@ -7,6 +7,7 @@ import assert = require('assert');
 import { Uri, workspace, WorkspaceFolder } from 'vscode';
 import { runWithTestActionContext } from 'vscode-azureextensiondev';
 import { initProjectForVSCode } from '../extension.bundle';
+import { isCI } from './global.test';
 import path = require('path');
 
 interface ITestCase {
@@ -22,6 +23,13 @@ interface ITestCase {
 
 suite('Init project for VS Code', function (this: Mocha.Suite) {
     this.timeout(5 * 1000);
+
+    suiteSetup(function (this: Mocha.Context): void {
+        if (isCI) {
+            this.skip();
+        }
+    });
+
     const testCases: ITestCase[] = [
         {
             workspaceFolder: 'react-basic-api',
