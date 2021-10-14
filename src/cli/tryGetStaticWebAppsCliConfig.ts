@@ -3,7 +3,7 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { Uri, workspace } from "vscode";
+import { Uri } from "vscode";
 import { AzExtFsExtra } from "vscode-azureextensionui";
 
 export type SWACLIOptions = {
@@ -51,7 +51,7 @@ export async function tryGetStaticWebAppsCliConfig(workspaceFolder: Uri): Promis
     const swaCliConfigUri = Uri.joinPath(workspaceFolder, swaCliConfigFilename);
 
     if (await AzExtFsExtra.pathExists(swaCliConfigUri)) {
-        return JSON.parse((await workspace.fs.readFile(Uri.joinPath(workspaceFolder, swaCliConfigFilename))).toString()) as StaticWebAppsCliConfigFile;
+        return JSON.parse(await AzExtFsExtra.readFile(Uri.joinPath(workspaceFolder, swaCliConfigFilename))) as StaticWebAppsCliConfigFile;
     }
 
     return undefined;

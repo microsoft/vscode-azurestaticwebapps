@@ -6,6 +6,7 @@
 import assert = require('assert');
 import { Uri, workspace, WorkspaceFolder } from 'vscode';
 import { runWithTestActionContext } from 'vscode-azureextensiondev';
+import { AzExtFsExtra } from 'vscode-azureextensionui';
 import { initProjectForVSCode } from '../extension.bundle';
 import { isCI } from './global.test';
 import path = require('path');
@@ -138,8 +139,8 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
                     await initProjectForVSCode(context);
                 });
 
-                const tasksContents = JSON.parse((await workspace.fs.readFile(Uri.joinPath(getWorkspaceUri(t.workspaceFolder), '.vscode', 'tasks.json'))).toString());
-                const launchContents = JSON.parse((await workspace.fs.readFile(Uri.joinPath(getWorkspaceUri(t.workspaceFolder), '.vscode', 'launch.json'))).toString());
+                const tasksContents = JSON.parse(await AzExtFsExtra.readFile(Uri.joinPath(getWorkspaceUri(t.workspaceFolder), '.vscode', 'tasks.json')));
+                const launchContents = JSON.parse(await AzExtFsExtra.readFile(Uri.joinPath(getWorkspaceUri(t.workspaceFolder), '.vscode', 'launch.json')));
 
                 assert.deepStrictEqual(tasksContents, t.expectedResult.tasks);
                 assert.deepStrictEqual(launchContents, t.expectedResult.launch);

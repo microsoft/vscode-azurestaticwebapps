@@ -3,7 +3,6 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import * as fse from 'fs-extra';
 import * as path from 'path';
 import { commands, DebugConfiguration, MessageItem, TaskDefinition, Uri, WorkspaceFolder } from "vscode";
 import { AzExtFsExtra, AzureWizardExecuteStep, IActionContext } from "vscode-azureextensionui";
@@ -60,16 +59,16 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
         const compounds = this.getCompoundConfigs(debugConfigs);
 
         const vscodePath: string = path.join(folder.uri.fsPath, '.vscode');
-        await fse.ensureDir(vscodePath);
+        await AzExtFsExtra.ensureDir(vscodePath);
         await this.writeTasksJson(wizardContext, vscodePath, tasks);
         await this.writeLaunchJson(wizardContext, folder, vscodePath, compounds, debugConfigs);
 
         // Remove '.vscode' from gitignore if applicable
         const gitignorePath: string = path.join(folder.uri.fsPath, gitignoreFileName);
-        if (await fse.pathExists(gitignorePath)) {
-            let gitignoreContents: string = (await fse.readFile(gitignorePath)).toString();
+        if (await AzExtFsExtra.pathExists(gitignorePath)) {
+            let gitignoreContents: string = await AzExtFsExtra.readFile(gitignorePath);
             gitignoreContents = gitignoreContents.replace(/^\.vscode(\/|\\)?\s*$/gm, '');
-            await fse.writeFile(gitignorePath, gitignoreContents);
+            await AzExtFsExtra.writeFile(gitignorePath, gitignoreContents);
         }
     }
 
