@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import assert = require('assert');
-import { Uri, workspace, WorkspaceFolder } from 'vscode';
+import { Uri, workspace } from 'vscode';
 import { runWithTestActionContext } from 'vscode-azureextensiondev';
 import { AzExtFsExtra } from 'vscode-azureextensionui';
 import { initProjectForVSCode } from '../extension.bundle';
 import { isCI } from './global.test';
-import path = require('path');
+import { getWorkspaceUri } from './testUtils';
 
 interface ITestCase {
     /**
@@ -150,21 +150,3 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
         });
     }
 });
-
-function getWorkspaceUri(testWorkspaceName: string): Uri {
-    let workspaceUri: Uri | undefined = undefined;
-    const workspaceFolders: readonly WorkspaceFolder[] | undefined = workspace.workspaceFolders;
-    if (!workspaceFolders || workspaceFolders.length === 0) {
-        throw new Error("No workspace is open");
-    } else {
-        for (const obj of workspaceFolders) {
-            if (obj.name === testWorkspaceName) {
-                workspaceUri = obj.uri;
-                assert.strictEqual(path.basename(workspaceUri.fsPath), testWorkspaceName, "Opened against an unexpected workspace.");
-                return workspaceUri;
-            }
-        }
-    }
-
-    throw new Error(`Unable to find workspace "${testWorkspaceName}""`)
-}
