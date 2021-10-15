@@ -6,6 +6,7 @@
 import { AzureWizard, IActionContext } from "vscode-azureextensionui";
 import { tryGetStaticWebAppsCliConfig } from "../../cli/tryGetStaticWebAppsCliConfig";
 import { minSwaCliVersion } from "../../constants";
+import { NoWorkspaceError } from "../../errors";
 import { localize } from "../../utils/localize";
 import { tryGetWorkspaceFolder } from "../../utils/workspaceUtils";
 import { validateSwaCliInstalled } from "../cli/validateSwaCliInstalled";
@@ -18,7 +19,7 @@ import { PickConfigurationStep } from "./PickConfigurationStep";
 export async function initProjectForVSCode(context: IActionContext): Promise<void> {
     const workspaceFolder = await tryGetWorkspaceFolder(context);
     if (!workspaceFolder) {
-        return;
+        throw new NoWorkspaceError();
     }
 
     const message = localize('installSwaCli', 'You must have the Azure Static Web Apps CLI version {0} or newer installed to initialize your static web app for debugging.', minSwaCliVersion);
