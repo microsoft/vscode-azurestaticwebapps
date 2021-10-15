@@ -11,6 +11,11 @@ import { openExistingProject } from '../constants';
 import { NoWorkspaceError } from '../errors';
 import { localize } from "./localize";
 
+export function isMultiRootWorkspace(): boolean {
+    return !!workspace.workspaceFolders && workspace.workspaceFolders.length > 0
+        && workspace.name !== workspace.workspaceFolders[0].name; // multi-root workspaces always have something like "(Workspace)" appended to their name
+}
+
 export function getSingleRootFsPath(): string | undefined {
     // if this is no workspace or a multi-root workspace, return undefined
     return workspace.workspaceFolders && workspace.workspaceFolders.length === 1 ? workspace.workspaceFolders[0].uri.fsPath : undefined;

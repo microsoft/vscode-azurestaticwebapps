@@ -27,6 +27,7 @@ import { cloneRepo } from './github/cloneRepo';
 import { openGitHubLog } from './github/jobLogs/openGitHubLog';
 import { openGitHubRepo } from './github/openGitHubRepo';
 import { showActions } from './github/showActions';
+import { initProjectForVSCode } from './initProjectForVSCode/initProjectForVSCode';
 import { openInPortal } from './openInPortal';
 import { openYAMLConfigFile } from './openYAMLConfigFile';
 import { viewProperties } from './viewProperties';
@@ -62,6 +63,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.openGitHubLog', openGitHubLog);
     registerCommand('staticWebApps.installOrUpdateStaticWebAppsCli', installOrUpdateSwaCli);
     registerCommand('staticWebApps.uninstallStaticWebAppsCli', uninstallSwaCli);
+    registerCommand('staticWebApps.initProjectForVSCode', initProjectForVSCode);
 
     // Suppress "Report an Issue" button for all errors in favor of the command
     registerErrorHandler(c => c.errorHandling.suppressReportIssue = true);
