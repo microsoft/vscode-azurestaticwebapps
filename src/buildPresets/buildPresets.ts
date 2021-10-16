@@ -13,35 +13,42 @@ export const buildPresets: IBuildPreset[] = [
         displayName: 'Angular',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: angularOutputLocation
+        outputLocation: angularOutputLocation,
+        port: 4200
     },
     {
         id: 'react',
         displayName: 'React',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: 'build'
+        outputLocation: 'build',
+        port: 3000,
+        startCommand: 'npm start'
     },
     {
         id: 'svelte',
         displayName: 'Svelte',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: 'public'
+        outputLocation: 'public',
+        port: 5000
     },
     {
         id: 'vuejs',
         displayName: 'Vue.js',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: 'dist'
+        outputLocation: 'dist',
+        port: 8080,
+        startCommand: 'npm serve'
     },
     {
         id: 'blazor',
         displayName: 'Blazor',
         appLocation: 'Client',
         apiLocation: 'Api',
-        outputLocation: 'wwwroot'
+        outputLocation: 'wwwroot',
+        port: 5000
     },
 
     {
@@ -49,20 +56,23 @@ export const buildPresets: IBuildPreset[] = [
         displayName: 'Gatsby',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: 'public'
+        outputLocation: 'public',
+        port: 8000
     },
     {
         id: 'hugo',
         displayName: 'Hugo',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: 'public'
+        outputLocation: 'public',
+        port: 1313
     },
     {
         id: 'vuepress',
         displayName: 'VuePress',
         appLocation: '/',
         apiLocation: 'api',
-        outputLocation: '.vuepress/dist'
+        outputLocation: '.vuepress/dist',
+        port: 8080
     }
 ];

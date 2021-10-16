@@ -13,4 +13,6 @@ export interface IBuildPreset {
     appLocation: string;
     apiLocation: string;
     outputLocation: string;
+    port: number;
+    startCommand?: string;
 }

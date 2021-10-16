@@ -22,6 +22,6 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
     }
 
     public shouldPrompt(context: IStaticWebAppWizardContext): boolean {
-        return !context.appLocation;
+        return !context.appLocation || !context.buildPreset;
     }
 }
