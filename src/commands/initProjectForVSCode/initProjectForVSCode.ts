@@ -36,7 +36,7 @@ export async function initProjectForVSCode(context: IActionContext): Promise<voi
     const promptSteps: AzureWizardPromptStep<ILocalProjectWizardContext>[] = [];
     const executeSteps: AzureWizardExecuteStep<ILocalProjectWizardContext>[] = [];
 
-    const swaCliConfigFile = await tryGetStaticWebAppsCliConfig(context, workspaceFolder.uri);
+    const swaCliConfigFile = await tryGetStaticWebAppsCliConfig(workspaceFolder.uri);
     if (!swaCliConfigFile || !Object.keys(swaCliConfigFile.configurations ?? []).length) {
         promptSteps.push(new AppLocationStep(), new BuildPresetListStep(), new RunCommandStep(), new DebugApiLocationStep());
         executeSteps.push(new CreateStaticWebAppsCliConfigStep());

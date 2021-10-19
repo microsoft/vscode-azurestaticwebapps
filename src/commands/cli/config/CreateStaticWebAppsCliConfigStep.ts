@@ -37,7 +37,7 @@ export class CreateStaticWebAppsCliConfigStep extends AzureWizardExecuteStep<ILo
         }
 
         const staticWebAppsCliConfigFileUri = Uri.joinPath(workspaceFolder.uri, swaCliConfigFileName);
-        const staticWebAppsCliConfigFile = await tryGetStaticWebAppsCliConfig(wizardContext, workspaceFolder.uri) ?? {};
+        const staticWebAppsCliConfigFile = await tryGetStaticWebAppsCliConfig(workspaceFolder.uri) ?? {};
 
         if (staticWebAppsCliConfigFile.configurations?.[configName]) {
             const result: MessageItem | undefined = await wizardContext.ui.showWarningMessage(localize('overwriteSwaCliConfig', 'Configuration with name "{0}" already exists. Overwrite?', configName), { modal: true, stepName: 'overwriteFile' }, DialogResponses.yes, DialogResponses.no);
