@@ -7,7 +7,7 @@ import { AzureWizardPromptStep } from "vscode-azureextensionui";
 import { IBuildPreset } from "../../../buildPresets/IBuildPreset";
 import { localize } from "../../../utils/localize";
 import { nonNullProp } from "../../../utils/nonNull";
-import { ILocalProjectWizardContext } from "../../initProjectForVSCode/ILocalProjectWizardContext";
+import { ILocalProjectWizardContext } from "../../setupRunningInVSCode/ILocalProjectWizardContext";
 
 export class RunCommandStep extends AzureWizardPromptStep<ILocalProjectWizardContext> {
     public async prompt(wizardContext: ILocalProjectWizardContext): Promise<void> {
