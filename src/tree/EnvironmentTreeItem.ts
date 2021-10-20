@@ -23,11 +23,11 @@ import { ActionsTreeItem } from "./ActionsTreeItem";
 import { ActionTreeItem } from "./ActionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
-import { GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { JobTreeItem } from "./JobTreeItem";
 import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 import { StepTreeItem } from "./StepTreeItem";
+import { WorkflowGroupTreeItem } from "./WorkflowGroupTreeItem";
 
 export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticEnvironment';
@@ -37,7 +37,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public data: WebSiteManagementModels.StaticSiteBuildARMResource;
 
     public actionsTreeItem: ActionsTreeItem;
-    public gitHubConfigGroupTreeItems: GitHubConfigGroupTreeItem[];
+    public gitHubConfigGroupTreeItems: WorkflowGroupTreeItem[];
     public appSettingsTreeItem?: AppSettingsTreeItem;
     public functionsTreeItem?: FunctionsTreeItem;
 
@@ -206,7 +206,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
 
-        this.gitHubConfigGroupTreeItems = await GitHubConfigGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
+        this.gitHubConfigGroupTreeItems = await WorkflowGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
 
     }
 }

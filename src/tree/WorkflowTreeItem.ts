@@ -5,18 +5,18 @@
 
 import { ThemeIcon } from "vscode";
 import { AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
-import { BuildConfig, GitHubConfigGroupTreeItem } from "./GitHubConfigGroupTreeItem";
+import { BuildConfig, WorkflowGroupTreeItem } from "./WorkflowGroupTreeItem";
 
-export class GitHubConfigTreeItem extends AzExtTreeItem {
-    public static contextValue: string = 'azureStaticGitHubConfig';
-    public contextValue: string = GitHubConfigTreeItem.contextValue;
+export class WorkflowTreeItem extends AzExtTreeItem {
+    public static contextValue: string = 'azureStaticWorkflow';
+    public contextValue: string = WorkflowTreeItem.contextValue;
 
     public commandArgs: unknown[];
     public readonly buildConfig: string;
     public buildConfigValue: string;
-    public parent: GitHubConfigGroupTreeItem;
+    public parent: WorkflowGroupTreeItem;
 
-    public constructor(parent: GitHubConfigGroupTreeItem, buildConfig: BuildConfig, buildConfigValue: string) {
+    public constructor(parent: WorkflowGroupTreeItem, buildConfig: BuildConfig, buildConfigValue: string) {
         super(parent);
         this.buildConfig = buildConfig;
         this.buildConfigValue = buildConfigValue;
