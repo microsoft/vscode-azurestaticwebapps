@@ -3,7 +3,10 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { URL } from "url";
+import { MessageItem } from "vscode";
 import { AzureWizardPromptStep, IWizardOptions } from "vscode-azureextensionui";
+import { SWACLIOptions } from "../../cli/tryGetStaticWebAppsCliConfig";
 import { localize } from "../../utils/localize";
 import { nonNullValueAndProp } from "../../utils/nonNull";
 import { CreateStaticWebAppsCliConfigStep } from "../cli/config/CreateStaticWebAppsCliConfigStep";
@@ -19,10 +22,31 @@ export class PickConfigurationStep extends AzureWizardPromptStep<ILocalProjectWi
         const createConfig: string = localize('newSwaCliConfig', '$(plus) Create new configuration');
         const configurationNames: string[] = [...Object.keys(configurations), createConfig];
 
-        const configurationName = configurationNames.length === 1 ? configurationNames[0] : (await wizardContext.ui.showQuickPick(configurationNames.map((name) => ({ label: name })), {
-            placeHolder: localize('pickSwaCliConfig', 'Select the Static Web Apps CLI configuration to setup for debugging.'),
-            suppressPersistence: true
-        })).label;
+        let configurationName: string | undefined;
+        let configError: string | undefined;
+        while (!configurationName || configError) {
+            configError = undefined;
+            configurationName = (await wizardContext.ui.showQuickPick(configurationNames.map((name) => ({ label: name })), {
+                placeHolder: localize('pickSwaCliConfig', 'Select the Static Web Apps CLI configuration to setup for running in VS Code.'),
+                suppressPersistence: true
+            })).label;
+
+            if (configurationName !== createConfig) {
+                configError = this.isConfigValidForDebugging(configurations[configurationName]);
+
+                if (configError) {
+                    const msg = localize('configMayNotWork', 'This configuration may not work with VS Code without recommended changes.\n\n') + configError;
+                    const backAction: MessageItem = { title: 'Back' };
+                    const continueAction: MessageItem = { title: localize('continueWith', "Continue with '{0}'...", configurationName) };
+                    const action = await wizardContext.ui.showWarningMessage(msg, { learnMoreLink: 'https://aka.ms/setupSwaCliCode', modal: true }, continueAction, backAction);
+                    if (action === backAction) {
+                        configurationName = undefined;
+                    } else if (action === continueAction) {
+                        configError = undefined;
+                    }
+                }
+            }
+        }
 
         if (configurationName !== createConfig) {
             const options = configurations[configurationName];
@@ -48,5 +72,30 @@ export class PickConfigurationStep extends AzureWizardPromptStep<ILocalProjectWi
             }
         }
         return undefined;
+    }
+
+    private isConfigValidForDebugging(options: SWACLIOptions): string | undefined {
+        if (options.context) {
+            if (!isValidUrl(options.context)) {
+                return localize('contextIsNotUrl', "Configuration property 'context' should be the URL of your static web app development server. \nCurrent value: '{0}'\n Example value: 'http://localhost:3000'", options.context)
+            }
+        } else {
+            return localize('missingContext', "Missing property 'context'. Value should be the URL of your static web app development server.\n Example value: 'http://localhost:3000'");
+        }
+
+        if (options.apiLocation && !isValidUrl(options.apiLocation)) {
+            return localize('apiLocationIsNotUrl', "Configuration property 'apiLocation' should be the URL of your Functions API.\nCurrent value: '{0}'\nRecommended value: 'http://localhost:7071'", options.apiLocation);
+        }
+
+        return undefined;
+    }
+}
+
+function isValidUrl(value: string): boolean {
+    try {
+        const url = new URL(value);
+        return url.protocol.toLowerCase().startsWith('http');
+    } catch (e) {
+        return false;
     }
 }
