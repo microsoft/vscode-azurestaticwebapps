@@ -7,7 +7,7 @@ import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-app
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
 import { Repository } from '../../git';
 import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
-import { ILocalProjectWizardContext } from '../initProjectForVSCode/ILocalProjectWizardContext';
+import { ILocalProjectWizardContext } from '../setupRunningInVSCode/ILocalProjectWizardContext';
 
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, ICreateChildImplContext, ILocalProjectWizardContext {
     accessToken: string;

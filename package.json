@@ -42,7 +42,6 @@
         "onCommand:staticWebApps.createSwaConfigFile",
         "onCommand:staticWebApps.deleteEnvironment",
         "onCommand:staticWebApps.deleteStaticWebApp",
-        "onCommand:staticWebApps.initProjectForVSCode",
         "onCommand:staticWebApps.installOrUpdateStaticWebAppsCli",
         "onCommand:staticWebApps.loadMore",
         "onCommand:staticWebApps.openGitHubLog",
@@ -52,6 +51,7 @@
         "onCommand:staticWebApps.refresh",
         "onCommand:staticWebApps.reportIssue",
         "onCommand:staticWebApps.selectSubscriptions",
+        "onCommand:staticWebApps.setupRunningInVSCode",
         "onCommand:staticWebApps.showActions",
         "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onCommand:staticWebApps.staticWebApps.action.rerun",
@@ -155,12 +155,6 @@
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.initProjectForVSCode",
-                "title": "%staticWebApps.initProjectForVSCode%",
-                "category": "Azure Static Web Apps",
-                "enablement": "!virtualWorkspace"
-            },
-            {
                 "command": "staticWebApps.installOrUpdateStaticWebAppsCli",
                 "title": "%staticWebApps.installOrUpdateStaticWebAppsCli%",
                 "category": "Azure Static Web Apps",
@@ -206,6 +200,12 @@
                 "command": "staticWebApps.selectSubscriptions",
                 "title": "Select Subscriptions...",
                 "icon": "$(filter)"
+            },
+            {
+                "command": "staticWebApps.setupRunningInVSCode",
+                "title": "%staticWebApps.setupRunningInVSCode%",
+                "category": "Azure Static Web Apps",
+                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.showActions",

@@ -19,6 +19,7 @@ export { createFoldingRanges } from './src/commands/github/jobLogs/createFolding
 export { LogState, parseGitHubLog } from './src/commands/github/jobLogs/parseGitHubLog';
 export { initProjectForVSCode } from './src/commands/initProjectForVSCode/initProjectForVSCode';
 export { tryGetSelection } from './src/commands/openYAMLConfigFile';
+export { setupRunningInVSCode } from './src/commands/setupRunningInVSCode/setupRunningInVSCode';
 export { NodeConstants } from './src/detectors/node/nodeConstants';
 export { DetectorResults, NodeDetector } from './src/detectors/node/NodeDetector';
 // Export activate/deactivate for main.js

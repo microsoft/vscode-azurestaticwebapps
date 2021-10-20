@@ -20,7 +20,7 @@ export class PickConfigurationStep extends AzureWizardPromptStep<ILocalProjectWi
         const configurationNames: string[] = [...Object.keys(configurations), createConfig];
 
         const configurationName = configurationNames.length === 1 ? configurationNames[0] : (await wizardContext.ui.showQuickPick(configurationNames.map((name) => ({ label: name })), {
-            placeHolder: localize('pickSwaCliConfig', 'Select the Static Web Apps CLI configuration to setup for debugging.'),
+            placeHolder: localize('pickSwaCliConfig', 'Select the Static Web Apps CLI configuration to setup.'),
             suppressPersistence: true
         })).label;
 
