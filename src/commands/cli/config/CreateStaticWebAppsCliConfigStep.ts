@@ -12,7 +12,7 @@ import { swaCliConfigFileName } from '../../../constants';
 import { writeFormattedJson } from "../../../utils/fs";
 import { localize } from '../../../utils/localize';
 import { nonNullProp } from "../../../utils/nonNull";
-import { ILocalProjectWizardContext } from "../../initProjectForVSCode/ILocalProjectWizardContext";
+import { ILocalProjectWizardContext } from "../../setupRunningInVSCode/ILocalProjectWizardContext";
 
 const swaCliDefaultAppLocation = './';
 
