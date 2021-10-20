@@ -4,11 +4,12 @@
 *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { commands, DebugConfiguration, MessageItem, TaskDefinition, Uri, WorkspaceFolder } from "vscode";
+import { commands, debug, DebugConfiguration, MessageItem, TaskDefinition, Uri, window, WorkspaceFolder } from "vscode";
 import { AzExtFsExtra, AzureWizardExecuteStep, IActionContext } from "vscode-azureextensionui";
+import { gitignoreFileName } from '../../constants';
 import { confirmEditJsonFile } from '../../utils/fs';
 import { localize } from "../../utils/localize";
-import { nonNullProp, nonNullValue, nonNullValueAndProp } from "../../utils/nonNull";
+import { nonNullProp, nonNullValueAndProp } from "../../utils/nonNull";
 import { isMultiRootWorkspace } from '../../utils/workspaceUtils';
 import { CompoundConfiguration, getCompoundConfigs, getDebugConfigs, getLaunchVersion, ILaunchJson, isCompoundConfigEqual, isDebugConfigEqual, updateCompoundConfigs, updateDebugConfigs, updateLaunchVersion } from "../../vsCodeConfig/launch";
 import { getTasks, getTasksVersion, ITask, ITasksJson, updateTasks, updateTasksVersion } from "../../vsCodeConfig/tasks";
@@ -19,7 +20,6 @@ const launchFileName = 'launch.json';
 const tasksVersion = '2.0.0';
 const tasksFileName = 'tasks.json';
 
-const gitignoreFileName = '.gitignore';
 const emulatorAddress = 'http://localhost:4280';
 
 export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProjectWizardContext> {
@@ -29,15 +29,16 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
     public async execute(wizardContext: ILocalProjectWizardContext): Promise<void> {
 
         const folder = nonNullValueAndProp(wizardContext, 'workspaceFolder');
+        const configName: string = nonNullProp(wizardContext, 'swaCliConfig').name;
 
         const debugConfigs: DebugConfiguration[] = [];
 
         const swaConfig = {
-            name: 'Run frontend',
+            name: `Run ${configName}`,
             request: "launch",
             type: 'pwa-chrome',
             url: emulatorAddress,
-            preLaunchTask: `swa start ${nonNullValue(wizardContext.swaCliConfig).name}`,
+            preLaunchTask: `swa start ${configName}`,
             presentation: {
                 hidden: true
             },
@@ -56,12 +57,12 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
 
         const tasks: ITask[] = await this.getTasks(wizardContext);
 
-        const compounds = this.getCompoundConfigs(debugConfigs);
+        const compounds = this.getCompoundConfig(configName, debugConfigs);
 
         const vscodePath: string = path.join(folder.uri.fsPath, '.vscode');
         await AzExtFsExtra.ensureDir(vscodePath);
         await this.writeTasksJson(wizardContext, vscodePath, tasks);
-        await this.writeLaunchJson(wizardContext, folder, vscodePath, compounds, debugConfigs);
+        await this.writeLaunchJson(wizardContext, folder, vscodePath, [compounds], debugConfigs);
 
         // Remove '.vscode' from gitignore if applicable
         const gitignorePath: string = path.join(folder.uri.fsPath, gitignoreFileName);
@@ -70,6 +71,13 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
             gitignoreContents = gitignoreContents.replace(/^\.vscode(\/|\\)?\s*$/gm, '');
             await AzExtFsExtra.writeFile(gitignorePath, gitignoreContents);
         }
+
+        const startDebugging = localize('startDebugging', 'Start Debugging {0}', configName);
+        void window.showInformationMessage('Finished setting up debugging', startDebugging).then(async (action) => {
+            if (action === startDebugging) {
+                await debug.startDebugging(folder, compounds.name);
+            }
+        });
     }
 
     public shouldExecute(): boolean {
@@ -100,7 +108,7 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
 
         const npmInstallCwd = path.posix.join('${workspaceFolder}', appLocation);
         if (await AzExtFsExtra.pathExists(Uri.joinPath(workspaceFolder.uri, appLocation, 'package.json'))) {
-            const npmInstallTaskLabel = 'npm install (swa)';
+            const npmInstallTaskLabel = `${swaCliConfig.name}: npm install (swa)`;
             tasks.push({
                 type: 'shell',
                 label: npmInstallTaskLabel,
@@ -117,18 +125,16 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
         return [swaStartTask, ...tasks];
     }
 
-    private getCompoundConfigs(debugConfigs: DebugConfiguration[]): CompoundConfiguration[] {
-        return [
-            {
-                name: 'SWA: Run and Debug',
-                configurations: debugConfigs.map(config => config.name),
-                stopAll: true,
-                presentation: {
-                    hidden: false,
-                    order: 1
-                }
+    private getCompoundConfig(configName: string, debugConfigs: DebugConfiguration[]): CompoundConfiguration {
+        return {
+            name: `Launch ${configName}`,
+            configurations: debugConfigs.map(config => config.name),
+            stopAll: true,
+            presentation: {
+                hidden: false,
+                order: 1
             }
-        ];
+        };
     }
 
     private async writeTasksJson(context: ILocalProjectWizardContext, vscodePath: string, newTasks: TaskDefinition[]): Promise<void> {

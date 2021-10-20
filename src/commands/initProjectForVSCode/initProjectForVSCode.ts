@@ -3,13 +3,17 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizard, IActionContext } from "vscode-azureextensionui";
+import { AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext } from "vscode-azureextensionui";
 import { tryGetStaticWebAppsCliConfig } from "../../cli/tryGetStaticWebAppsCliConfig";
 import { minSwaCliVersion } from "../../constants";
 import { NoWorkspaceError } from "../../errors";
 import { localize } from "../../utils/localize";
 import { tryGetWorkspaceFolder } from "../../utils/workspaceUtils";
+import { CreateStaticWebAppsCliConfigStep } from "../cli/config/CreateStaticWebAppsCliConfigStep";
+import { RunCommandStep } from "../cli/config/RunCommandStep";
 import { validateSwaCliInstalled } from "../cli/validateSwaCliInstalled";
+import { AppLocationStep } from "../createStaticWebApp/AppLocationStep";
+import { BuildPresetListStep } from "../createStaticWebApp/BuildPresetListStep";
 import { tryGetApiLocations } from "../createStaticWebApp/tryGetApiLocations";
 import { DebugApiLocationStep } from "./DebugApiLocationStep";
 import { ILocalProjectWizardContext } from "./ILocalProjectWizardContext";
@@ -26,18 +30,25 @@ export async function initProjectForVSCode(context: IActionContext): Promise<voi
     if (!await validateSwaCliInstalled(context, message, minSwaCliVersion)) {
         return;
     }
+    const wizardContext: ILocalProjectWizardContext = { ...context, fsPath: workspaceFolder.uri.fsPath, workspaceFolder };
+    wizardContext.detectedApiLocations = await tryGetApiLocations(context, workspaceFolder);
+
+    const promptSteps: AzureWizardPromptStep<ILocalProjectWizardContext>[] = [];
+    const executeSteps: AzureWizardExecuteStep<ILocalProjectWizardContext>[] = [];
 
     const swaCliConfigFile = await tryGetStaticWebAppsCliConfig(workspaceFolder.uri);
     if (!swaCliConfigFile || !Object.keys(swaCliConfigFile.configurations ?? []).length) {
-        // For now do nothing, will implement creating a swa-cli.config.json interactively in the future.
-        return;
+        promptSteps.push(new AppLocationStep(), new BuildPresetListStep(), new RunCommandStep(), new DebugApiLocationStep());
+        executeSteps.push(new CreateStaticWebAppsCliConfigStep());
+    } else {
+        promptSteps.push(new PickConfigurationStep(), new DebugApiLocationStep());
     }
 
-    const wizardContext: ILocalProjectWizardContext = { ...context, fsPath: workspaceFolder.uri.fsPath, workspaceFolder, swaCliConfigFile };
-    wizardContext.detectedApiLocations = await tryGetApiLocations(context, workspaceFolder);
-    const wizard = new AzureWizard<ILocalProjectWizardContext>(wizardContext, {
-        promptSteps: [new PickConfigurationStep(), new DebugApiLocationStep()],
-        executeSteps: [new InitProjectForVSCodeStep()]
+    const wizard = new AzureWizard<ILocalProjectWizardContext>({ ...wizardContext, swaCliConfigFile }, {
+        title: localize('setupSwaDebugging', 'Setup Static Web App debugging'),
+        promptSteps,
+        executeSteps: [...executeSteps, new InitProjectForVSCodeStep()],
+        showLoadingPrompt: true
     });
     await wizard.prompt();
     await wizard.execute();

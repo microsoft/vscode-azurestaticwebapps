@@ -70,7 +70,7 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
                             "label": "swa start app",
                             "command": "swa start app",
                             "dependsOn": [
-                                "npm install (swa)"
+                                "app: npm install (swa)"
                             ],
                             "isBackground": true,
                             "problemMatcher": "$swa-watch",
@@ -82,7 +82,7 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
                         },
                         {
                             "type": "shell",
-                            "label": "npm install (swa)",
+                            "label": "app: npm install (swa)",
                             "command": "npm install",
                             "options": {
                                 "cwd": "${workspaceFolder}/"
@@ -94,7 +94,7 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
                     "version": "0.2.0",
                     "configurations": [
                         {
-                            "name": "Run frontend",
+                            "name": "Run app",
                             "request": "launch",
                             "type": "pwa-chrome",
                             "url": "http://localhost:4280",
@@ -114,9 +114,9 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
                     ],
                     "compounds": [
                         {
-                            "name": "SWA: Run and Debug",
+                            "name": "Launch app",
                             "configurations": [
-                                "Run frontend",
+                                "Run app",
                                 "Attach to Node Functions"
                             ],
                             "stopAll": true,
@@ -135,7 +135,7 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
         test(t.workspaceFolder, async function (this: Mocha.Context) {
             this.timeout(10 * 1000);
             await runWithTestActionContext('staticWebApp.initProjectForVSCode', async (context) => {
-                await context.ui.runWithInputs(['react-basic-api'], async () => {
+                await context.ui.runWithInputs(['react-basic-api', 'app'], async () => {
                     await initProjectForVSCode(context);
                 });
 

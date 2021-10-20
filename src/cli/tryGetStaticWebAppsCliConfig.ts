@@ -4,7 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { Uri } from "vscode";
-import { AzExtFsExtra } from "vscode-azureextensionui";
+import { AzExtFsExtra, parseError } from "vscode-azureextensionui";
+import { swaCliConfigFileName } from "../constants";
+import { localize } from "../utils/localize";
 
 export type SWACLIOptions = {
     context?: string;
@@ -46,12 +48,14 @@ export interface StaticWebAppsCliConfig {
 }
 
 export async function tryGetStaticWebAppsCliConfig(workspaceFolder: Uri): Promise<StaticWebAppsCliConfigFile | undefined> {
-
-    const swaCliConfigFilename = 'swa-cli.config.json';
-    const swaCliConfigUri = Uri.joinPath(workspaceFolder, swaCliConfigFilename);
+    const swaCliConfigUri = Uri.joinPath(workspaceFolder, swaCliConfigFileName);
 
     if (await AzExtFsExtra.pathExists(swaCliConfigUri)) {
-        return JSON.parse(await AzExtFsExtra.readFile(Uri.joinPath(workspaceFolder, swaCliConfigFilename))) as StaticWebAppsCliConfigFile;
+        try {
+            return JSON.parse(await AzExtFsExtra.readFile(Uri.joinPath(workspaceFolder, swaCliConfigFileName))) as StaticWebAppsCliConfigFile;
+        } catch (e) {
+            throw new Error(localize('failedReadSwaCliConfig', 'Error reading swa-cli.config.json file: {0}', parseError(e).message));
+        }
     }
 
     return undefined;

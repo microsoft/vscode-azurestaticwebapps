@@ -5,6 +5,7 @@
 
 import { WorkspaceFolder } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
+import { IBuildPreset } from "../../buildPresets/IBuildPreset";
 import { StaticWebAppsCliConfig, StaticWebAppsCliConfigFile } from "../../cli/tryGetStaticWebAppsCliConfig";
 
 export interface ILocalProjectWizardContext extends IActionContext {
@@ -15,5 +16,11 @@ export interface ILocalProjectWizardContext extends IActionContext {
     fsPath?: string;
     swaCliConfigFile?: StaticWebAppsCliConfigFile;
     swaCliConfig?: StaticWebAppsCliConfig;
+
+    // prefill the input boxes with preset build values;
+    // projects are too flexible for us to force users to use these values
+    buildPreset?: IBuildPreset;
+
+    runCommand?: string;
     workspaceFolder?: WorkspaceFolder;
 }

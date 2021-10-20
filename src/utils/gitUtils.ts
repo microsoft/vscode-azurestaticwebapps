@@ -9,7 +9,7 @@ import { MessageItem, ProgressLocation, ProgressOptions, Uri, window, workspace 
 import { AzExtFsExtra, IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { defaultGitignoreContents } from '../constants';
+import { defaultGitignoreContents, gitignoreFileName } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
@@ -74,7 +74,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         }
 
         // create a generic .gitignore for user if we do not detect one
-        const gitignorePath: string = join(uri.fsPath, '.gitignore');
+        const gitignorePath: string = join(uri.fsPath, gitignoreFileName);
         if (!await AzExtFsExtra.pathExists(gitignorePath)) {
             await AzExtFsExtra.writeFile(gitignorePath, defaultGitignoreContents);
         }
