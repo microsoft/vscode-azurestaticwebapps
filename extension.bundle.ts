@@ -17,7 +17,6 @@
 export * from 'vscode-azureextensionui';
 export { createFoldingRanges } from './src/commands/github/jobLogs/createFoldingRanges';
 export { LogState, parseGitHubLog } from './src/commands/github/jobLogs/parseGitHubLog';
-export { initProjectForVSCode } from './src/commands/initProjectForVSCode/initProjectForVSCode';
 export { tryGetSelection } from './src/commands/openYAMLConfigFile';
 export { setupRunningInVSCode } from './src/commands/setupRunningInVSCode/setupRunningInVSCode';
 export { NodeConstants } from './src/detectors/node/nodeConstants';
