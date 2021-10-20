@@ -22,7 +22,7 @@ const tasksFileName = 'tasks.json';
 
 const emulatorAddress = 'http://localhost:4280';
 
-export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProjectWizardContext> {
+export class SetupRunningInVSCodeStep extends AzureWizardExecuteStep<ILocalProjectWizardContext> {
 
     public priority: number = 100;
 
@@ -72,8 +72,8 @@ export class InitProjectForVSCodeStep extends AzureWizardExecuteStep<ILocalProje
             await AzExtFsExtra.writeFile(gitignorePath, gitignoreContents);
         }
 
-        const startDebugging = localize('startDebugging', 'Start Debugging {0}', configName);
-        void window.showInformationMessage('Finished setting up debugging', startDebugging).then(async (action) => {
+        const startDebugging = localize('runApp', 'Run {0}', configName);
+        void window.showInformationMessage(localize('finishedSetup', "Finished setup for running '{0}'.", configName), startDebugging).then(async (action) => {
             if (action === startDebugging) {
                 await debug.startDebugging(folder, compounds.name);
             }

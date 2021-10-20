@@ -17,16 +17,16 @@ import { BuildPresetListStep } from "../createStaticWebApp/BuildPresetListStep";
 import { tryGetApiLocations } from "../createStaticWebApp/tryGetApiLocations";
 import { DebugApiLocationStep } from "./DebugApiLocationStep";
 import { ILocalProjectWizardContext } from "./ILocalProjectWizardContext";
-import { InitProjectForVSCodeStep } from "./InitProjectForVSCodeStep";
 import { PickConfigurationStep } from "./PickConfigurationStep";
+import { SetupRunningInVSCodeStep } from "./SetupRunningInVSCodeStep";
 
-export async function initProjectForVSCode(context: IActionContext): Promise<void> {
+export async function setupRunningInVSCode(context: IActionContext): Promise<void> {
     const workspaceFolder = await tryGetWorkspaceFolder(context);
     if (!workspaceFolder) {
         throw new NoWorkspaceError();
     }
 
-    const message = localize('installSwaCli', 'You must have the Azure Static Web Apps CLI version {0} or newer installed to initialize your static web app for debugging.', minSwaCliVersion);
+    const message = localize('installSwaCli', 'You must have the Azure Static Web Apps CLI version {0} or newer installed to run your static web app in VS Code.', minSwaCliVersion);
     if (!await validateSwaCliInstalled(context, message, minSwaCliVersion)) {
         return;
     }
@@ -45,9 +45,9 @@ export async function initProjectForVSCode(context: IActionContext): Promise<voi
     }
 
     const wizard = new AzureWizard<ILocalProjectWizardContext>({ ...wizardContext, swaCliConfigFile }, {
-        title: localize('setupSwaDebugging', 'Setup Static Web App debugging'),
+        title: localize('setupRunningInVSCode', 'Setup running in VS Code'),
         promptSteps,
-        executeSteps: [...executeSteps, new InitProjectForVSCodeStep()],
+        executeSteps: [...executeSteps, new SetupRunningInVSCodeStep()],
         showLoadingPrompt: true
     });
     await wizard.prompt();

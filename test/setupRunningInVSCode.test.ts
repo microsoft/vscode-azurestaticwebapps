@@ -7,7 +7,7 @@ import assert = require('assert');
 import { Uri, workspace } from 'vscode';
 import { runWithTestActionContext } from 'vscode-azureextensiondev';
 import { AzExtFsExtra } from 'vscode-azureextensionui';
-import { initProjectForVSCode } from '../extension.bundle';
+import { setupRunningInVSCode } from '../extension.bundle';
 import { isCI } from './global.test';
 import { getWorkspaceUri } from './testUtils';
 
@@ -22,7 +22,7 @@ interface ITestCase {
     };
 }
 
-suite('Init project for VS Code', function (this: Mocha.Suite) {
+suite('Setup running in VS Code', function (this: Mocha.Suite) {
     this.timeout(5 * 1000);
 
     suiteSetup(function (this: Mocha.Context): void {
@@ -134,9 +134,9 @@ suite('Init project for VS Code', function (this: Mocha.Suite) {
     for (const t of testCases) {
         test(t.workspaceFolder, async function (this: Mocha.Context) {
             this.timeout(10 * 1000);
-            await runWithTestActionContext('staticWebApp.initProjectForVSCode', async (context) => {
+            await runWithTestActionContext('staticWebApp.setupRunningInVSCode', async (context) => {
                 await context.ui.runWithInputs(['react-basic-api', 'app'], async () => {
-                    await initProjectForVSCode(context);
+                    await setupRunningInVSCode(context);
                 });
 
                 const tasksContents = JSON.parse(await AzExtFsExtra.readFile(Uri.joinPath(getWorkspaceUri(t.workspaceFolder), '.vscode', 'tasks.json')));
