@@ -54,7 +54,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public get label(): string {
-        return this.parseYamlError ? localize('invalidGitHubConfig', 'Invalid GitHub Configuration') : localize('gitHubConfig', 'GitHub Configuration');
+        return this.parseYamlError ? localize('invalidWorkflow', 'Invalid Workflow') : localize('workflow', 'Workflow');
     }
 
     public get commandId(): string | undefined {
