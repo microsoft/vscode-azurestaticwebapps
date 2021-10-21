@@ -7,10 +7,9 @@ import { CancellationToken, DebugConfiguration, DebugConfigurationProvider, Task
 import { callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
 import { isSwaCliTask } from "../commands/cli/swaCliTask";
 import { validateSwaCliInstalled } from '../commands/cli/validateSwaCliInstalled';
-import { tryGetApiLocations } from '../commands/createStaticWebApp/tryGetApiLocations';
-import { getFunctionsApi } from '../getExtensionApi';
+import { tryGetApiLocations } from "../commands/createStaticWebApp/tryGetApiLocations";
+import { getFunctionsApi } from "../getExtensionApi";
 import { localize } from '../utils/localize';
-import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
 
 export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
     public async provideDebugConfigurations(_folder?: WorkspaceFolder, _token?: CancellationToken): Promise<DebugConfiguration[]> {
@@ -34,13 +33,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
 
                 const apiLocations = await tryGetApiLocations(context, folder);
                 if (apiLocations?.length) {
-                    // make sure functions core tools is installed
-                    const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
-                    const message: string = localize('installFuncTools', 'You must have the Azure Functions Core Tools installed to debug your local functions.');
-                    const hasCoreTools: boolean | undefined = await funcApi.validateFuncCoreToolsInstalled(message, folder.uri.fsPath);
-                    if (!hasCoreTools) {
-                        return undefined;
-                    }
+                    await getFunctionsApi(context);
                 }
             }
             return debugConfiguration;
