@@ -37,7 +37,7 @@ export async function validateSwaCliInstalled(context: IActionContext, message: 
             const items: MessageItem[] = [];
             const isNpmInstalled = await hasNpm();
             if (isNpmInstalled) {
-                items.push(!hasMinVersion ? update : install);
+                items.push(installed ? update : install);
             } else {
                 items.push(DialogResponses.learnMore);
             }
