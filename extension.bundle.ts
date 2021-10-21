@@ -24,5 +24,5 @@ export { DetectorResults, NodeDetector } from './src/detectors/node/NodeDetector
 // Export activate/deactivate for main.js
 export { activateInternal, deactivateInternal } from './src/extension';
 export * from './src/extensionVariables';
-export { BuildConfig } from './src/tree/GitHubConfigGroupTreeItem';
+export { BuildConfig } from './src/tree/WorkflowGroupTreeItem';
 // NOTE: The auto-fix action "source.organizeImports" does weird things with this file, but there doesn't seem to be a way to disable it on a per-file basis so we'll just let it happen

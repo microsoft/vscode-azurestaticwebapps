@@ -6,7 +6,7 @@
 import { basename } from "path";
 import { AzExtFsExtra, IActionContext } from "vscode-azureextensionui";
 import { parse } from "yaml";
-import { BuildConfig, BuildConfigs } from "../tree/GitHubConfigGroupTreeItem";
+import { BuildConfig, BuildConfigs } from "../tree/WorkflowGroupTreeItem";
 import { localize } from "./localize";
 
 type BuildDeployStep = {

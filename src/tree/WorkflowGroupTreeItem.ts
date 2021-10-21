@@ -11,7 +11,7 @@ import { YAMLSyntaxError } from "yaml/util";
 import { localize } from "../utils/localize";
 import { parseYamlFile } from "../utils/yamlUtils";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
-import { GitHubConfigTreeItem } from "./GitHubConfigTreeItem";
+import { WorkflowTreeItem } from "./WorkflowTreeItem";
 
 export type BuildConfig = 'app_location' | 'api_location' | 'output_location' | 'app_artifact_location';
 
@@ -39,9 +39,9 @@ function getYamlErrorMessage(error: unknown): string {
     }
 }
 
-export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
-    public static contextValue: string = 'azureStaticGitHubConfigGroup';
-    public contextValue: string = GitHubConfigGroupTreeItem.contextValue;
+export class WorkflowGroupTreeItem extends AzExtParentTreeItem {
+    public static contextValue: string = 'azureStaticWorkflowGroup';
+    public contextValue: string = WorkflowGroupTreeItem.contextValue;
     public parent: EnvironmentTreeItem;
     public yamlFilePath: string;
     public buildConfigs: BuildConfigs | undefined;
@@ -54,15 +54,15 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public get label(): string {
-        return this.parseYamlError ? localize('invalidGitHubConfig', 'Invalid GitHub Configuration') : localize('gitHubConfig', 'GitHub Configuration');
+        return this.parseYamlError ? localize('invalidWorkflow', 'Invalid Workflow') : localize('workflow', 'Workflow');
     }
 
     public get commandId(): string | undefined {
         return this.parseYamlError ? 'staticWebApps.openYAMLConfigFile' : undefined;
     }
 
-    public static async createGitHubConfigGroupTreeItems(context: IActionContext, parent: EnvironmentTreeItem): Promise<GitHubConfigGroupTreeItem[]> {
-        const treeItems: GitHubConfigGroupTreeItem[] = [];
+    public static async createGitHubConfigGroupTreeItems(context: IActionContext, parent: EnvironmentTreeItem): Promise<WorkflowGroupTreeItem[]> {
+        const treeItems: WorkflowGroupTreeItem[] = [];
 
         if (parent.localProjectPath && parent.inWorkspace) {
             const workflowsDir: string = join(parent.localProjectPath, '.github/workflows');
@@ -73,7 +73,7 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
             context.telemetry.properties.numWorkflows = yamlFiles.length.toString();
 
             for (const yamlFile of yamlFiles) {
-                const ti = new GitHubConfigGroupTreeItem(parent, join(workflowsDir, yamlFile));
+                const ti = new WorkflowGroupTreeItem(parent, join(workflowsDir, yamlFile));
                 await ti.refreshImpl(context);
                 treeItems.push(ti);
             }
@@ -109,11 +109,11 @@ export class GitHubConfigGroupTreeItem extends AzExtParentTreeItem {
             return [errorTreeItem];
         }
 
-        const treeItems: GitHubConfigTreeItem[] = [];
+        const treeItems: WorkflowTreeItem[] = [];
 
         for (const buildConfig in this.buildConfigs) {
             const value: string | undefined = <string | undefined>this.buildConfigs[buildConfig];
-            value !== undefined && treeItems.push(new GitHubConfigTreeItem(this, <BuildConfig>buildConfig, value));
+            value !== undefined && treeItems.push(new WorkflowTreeItem(this, <BuildConfig>buildConfig, value));
         }
 
         return treeItems;

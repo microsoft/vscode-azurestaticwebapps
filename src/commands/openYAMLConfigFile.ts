@@ -10,19 +10,19 @@ import { CST, Document, parseDocument } from 'yaml';
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
 import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
-import { BuildConfig, GitHubConfigGroupTreeItem } from '../tree/GitHubConfigGroupTreeItem';
 import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
+import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeItem';
 import { localize } from '../utils/localize';
 import { openUrl } from "../utils/openUrl";
 
-export async function openYAMLConfigFile(context: IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem | GitHubConfigGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
+export async function openYAMLConfigFile(context: IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
     let yamlFileUri: Uri | undefined;
 
-    if (node instanceof GitHubConfigGroupTreeItem) {
+    if (node instanceof WorkflowGroupTreeItem) {
         yamlFileUri = Uri.file(node.yamlFilePath);
     } else if (node instanceof EnvironmentTreeItem && node.gitHubConfigGroupTreeItems.length) {
         const picks: IAzureQuickPickItem<string>[] = node.gitHubConfigGroupTreeItems.map(configNode => {
@@ -48,11 +48,11 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
     }
 
     const configDocument: TextDocument = await workspace.openTextDocument(yamlFileUri);
-    const selection: Range | undefined = await tryGetSelection(context, configDocument, buildConfigToSelect, node instanceof GitHubConfigGroupTreeItem ? node : undefined);
+    const selection: Range | undefined = await tryGetSelection(context, configDocument, buildConfigToSelect, node instanceof WorkflowGroupTreeItem ? node : undefined);
     await window.showTextDocument(configDocument, { selection });
 }
 
-export async function tryGetSelection(context: IActionContext, configDocument: TextDocument, buildConfigToSelect?: BuildConfig, node?: GitHubConfigGroupTreeItem): Promise<Range | undefined> {
+export async function tryGetSelection(context: IActionContext, configDocument: TextDocument, buildConfigToSelect?: BuildConfig, node?: WorkflowGroupTreeItem): Promise<Range | undefined> {
     if (node?.errorRange) {
         return node.errorRange;
     }
