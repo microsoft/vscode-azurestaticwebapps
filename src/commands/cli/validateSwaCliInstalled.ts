@@ -37,7 +37,7 @@ export async function validateSwaCliInstalled(context: IActionContext, message: 
             const items: MessageItem[] = [];
             const isNpmInstalled = await hasNpm();
             if (isNpmInstalled) {
-                items.push(!hasMinVersion ? update : install);
+                items.push(installed ? update : install);
             } else {
                 items.push(DialogResponses.learnMore);
             }
@@ -57,7 +57,7 @@ export async function validateSwaCliInstalled(context: IActionContext, message: 
     });
 
     // validate that SWA CLI was installed only if user confirmed
-    if (input === install || input === update && !installed) {
+    if ((input === install || input === update) && !installed) {
         await context.ui.showWarningMessage(localize('failedInstallSwaCli', 'The Azure Static Web Apps CLI installation has failed and will have to be installed manually.'), {
             learnMoreLink: installSwaCliUrl
         });
