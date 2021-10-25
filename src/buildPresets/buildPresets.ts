@@ -40,7 +40,7 @@ export const buildPresets: IBuildPreset[] = [
         apiLocation: 'api',
         outputLocation: 'dist',
         port: 8080,
-        startCommand: 'npm serve'
+        startCommand: 'npm run serve'
     },
     {
         id: 'blazor',

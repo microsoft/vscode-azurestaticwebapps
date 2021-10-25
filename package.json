@@ -51,12 +51,13 @@
         "onCommand:staticWebApps.refresh",
         "onCommand:staticWebApps.reportIssue",
         "onCommand:staticWebApps.selectSubscriptions",
-        "onCommand:staticWebApps.setupRunningInVSCode",
         "onCommand:staticWebApps.showActions",
         "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onCommand:staticWebApps.staticWebApps.action.rerun",
         "onCommand:staticWebApps.uninstallStaticWebAppsCli",
         "onCommand:staticWebApps.viewProperties",
+        "onDebugDynamicConfigurations:swa",
+        "onDebugInitialConfigurations",
         "onDebugResolve:pwa-chrome",
         "onView:staticWebApps",
         "workspaceContains:**/staticwebapp.config.json",
@@ -64,6 +65,12 @@
     ],
     "main": "./main.js",
     "contributes": {
+        "debuggers": [
+            {
+                "type": "swa",
+                "label": "Azure Static Web Apps"
+            }
+        ],
         "commands": [
             {
                 "command": "staticWebApps.action.cancel",
@@ -200,12 +207,6 @@
                 "command": "staticWebApps.selectSubscriptions",
                 "title": "Select Subscriptions...",
                 "icon": "$(filter)"
-            },
-            {
-                "command": "staticWebApps.setupRunningInVSCode",
-                "title": "%staticWebApps.setupRunningInVSCode%",
-                "category": "Azure Static Web Apps",
-                "enablement": "!virtualWorkspace"
             },
             {
                 "command": "staticWebApps.showActions",

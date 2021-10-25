@@ -23,12 +23,6 @@
         },
         {
             "path": "./testProject/vue-basic"
-        },
-        {
-            "path": "./testProject/react-basic-api"
         }
-    ],
-    "settings": {
-        "debug.internalConsoleOptions": "neverOpen"
-    }
+    ]
 }
