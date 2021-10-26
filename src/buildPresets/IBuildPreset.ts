@@ -15,4 +15,5 @@ export interface IBuildPreset {
     outputLocation: string;
     port: number;
     startCommand?: string;
+    group: 'framework' | 'ssg'
 }
