@@ -14,7 +14,8 @@ export const buildPresets: IBuildPreset[] = [
         appLocation: '/',
         apiLocation: 'api',
         outputLocation: angularOutputLocation,
-        port: 4200
+        port: 4200,
+        group: 'framework'
     },
     {
         id: 'react',
@@ -23,7 +24,9 @@ export const buildPresets: IBuildPreset[] = [
         apiLocation: 'api',
         outputLocation: 'build',
         port: 3000,
-        startCommand: 'npm start'
+        startCommand: 'npm start',
+        group: 'framework'
+
     },
     {
         id: 'svelte',
@@ -31,7 +34,9 @@ export const buildPresets: IBuildPreset[] = [
         appLocation: '/',
         apiLocation: 'api',
         outputLocation: 'public',
-        port: 5000
+        port: 5000,
+        group: 'framework'
+
     },
     {
         id: 'vuejs',
@@ -40,7 +45,9 @@ export const buildPresets: IBuildPreset[] = [
         apiLocation: 'api',
         outputLocation: 'dist',
         port: 8080,
-        startCommand: 'npm serve'
+        startCommand: 'npm serve',
+        group: 'framework'
+
     },
     {
         id: 'blazor',
@@ -48,7 +55,9 @@ export const buildPresets: IBuildPreset[] = [
         appLocation: 'Client',
         apiLocation: 'Api',
         outputLocation: 'wwwroot',
-        port: 5000
+        port: 5000,
+        group: 'framework'
+
     },
 
     {
@@ -57,7 +66,8 @@ export const buildPresets: IBuildPreset[] = [
         appLocation: '/',
         apiLocation: 'api',
         outputLocation: 'public',
-        port: 8000
+        port: 8000,
+        group: 'ssg'
     },
     {
         id: 'hugo',
@@ -65,7 +75,8 @@ export const buildPresets: IBuildPreset[] = [
         appLocation: '/',
         apiLocation: 'api',
         outputLocation: 'public',
-        port: 1313
+        port: 1313,
+        group: 'ssg'
     },
     {
         id: 'vuepress',
@@ -73,6 +84,7 @@ export const buildPresets: IBuildPreset[] = [
         appLocation: '/',
         apiLocation: 'api',
         outputLocation: '.vuepress/dist',
-        port: 8080
+        port: 8080,
+        group: 'ssg'
     }
 ];
