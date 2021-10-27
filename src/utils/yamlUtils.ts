@@ -39,17 +39,11 @@ async function getBuildDeployStep(context: IActionContext, yamlFileContents: str
             for (const step of Object.values(job.steps || {})) {
                 if (step.id === 'builddeploy' && step.with) {
                     const stepIncludesAppLocation: boolean = stepIncludesBuildConfig(step, 'app_location');
-                    const stepIncludesApiLocation: boolean = stepIncludesBuildConfig(step, 'api_location');
-                    const stepIncludesOutputLocation: boolean = stepIncludesBuildConfig(step, 'output_location') || stepIncludesBuildConfig(step, 'app_artifact_location');
 
-                    if (stepIncludesAppLocation && stepIncludesApiLocation && stepIncludesOutputLocation) {
+                    if (stepIncludesAppLocation) {
                         return <BuildDeployStep>step;
                     } else if (!stepIncludesAppLocation) {
                         showYamlWarningMessage(context, yamlFileName, 'app_location');
-                    } else if (!stepIncludesApiLocation) {
-                        showYamlWarningMessage(context, yamlFileName, 'api_location');
-                    } else {
-                        showYamlWarningMessage(context, yamlFileName, 'output_location');
                     }
 
                     // Ignore any other builddeploy steps
