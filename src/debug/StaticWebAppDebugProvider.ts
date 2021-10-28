@@ -5,12 +5,12 @@
 
 import * as path from 'path';
 import { CancellationToken, commands, debug, DebugConfiguration, DebugConfigurationProvider, MessageItem, Uri, WorkspaceFolder } from "vscode";
-import { callWithTelemetryAndErrorHandling, DialogResponses, IActionContext } from "vscode-azureextensionui";
+import { callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
 import { buildPresets } from "../buildPresets/buildPresets";
 import { tryGetStaticWebAppsCliConfig } from "../cli/tryGetStaticWebAppsCliConfig";
 import { validateSwaCliInstalled } from '../commands/cli/validateSwaCliInstalled';
 import { tryGetApiLocations } from '../commands/createStaticWebApp/tryGetApiLocations';
-import { emulatorAddress, funcAddress, pwaChrome, swaCliConfigFileName } from "../constants";
+import { emulatorAddress, funcAddress, swa, swaCliConfigFileName } from "../constants";
 import { detectAppFoldersInWorkspace } from "../utils/detectorUtils";
 import { writeFormattedJson } from "../utils/fs";
 import { localize } from '../utils/localize';
@@ -68,21 +68,24 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
 
                     const config = swaCliConfigFile?.configurations?.[configName];
                     if (config && config.apiLocation !== funcAddress) {
-                        const messageItems: MessageItem[] = [DialogResponses.yes, { ...DialogResponses.no, isCloseAffordance: true }];
-                        const action = await context.ui.showWarningMessage(localize('funcApiDetected', 'Start debugging static web app with Functions API?'), { modal: true }, ...messageItems);
-                        if (action === DialogResponses.yes) {
-                            config.apiLocation = funcAddress;
-                            await writeFormattedJson(Uri.joinPath(folder.uri, swaCliConfigFileName).fsPath, swaCliConfigFile);
-                        }
+                        const fixMi: MessageItem = { title: localize('fix', 'Fix') };
+                        void context.ui.showWarningMessage(localize('funcApiDetected', "Did not start debugging Functions API because 'apiLocation' property is missing or invalid."), {
+                            learnMoreLink: 'https://aka.ms/setupSwaCliCode'
+                        }, { title: 'Fix' }).then(async (action) => {
+                            if (action === fixMi) {
+                                config.apiLocation = funcAddress;
+                                await writeFormattedJson(Uri.joinPath(folder.uri, swaCliConfigFileName).fsPath, swaCliConfigFile);
+                            }
+                        });
                     }
 
                     if (!cancellationToken.isCancellationRequested) {
-                        await this.startDebuggingFunctions(context, folder);
+                        await this.startDebuggingFunctions(folder);
                     }
                 }
             }
 
-            return debugConfiguration;
+            return { ...debugConfiguration, type: 'pwa-chrome' };
         });
     }
 
@@ -90,7 +93,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
         return {
             name: `${StaticWebAppDebugProvider.configPrefix}${name}`,
             request: 'launch',
-            type: pwaChrome,
+            type: swa,
             url: emulatorAddress,
             preLaunchTask: `swa: start ${name}`,
             webRoot: `\${workspaceFolder}/${appLocation}`,
@@ -100,15 +103,11 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
         };
     }
 
-    private async startDebuggingFunctions(context: IActionContext, folder: WorkspaceFolder): Promise<void> {
+    private async startDebuggingFunctions(folder: WorkspaceFolder): Promise<void> {
         let funcConfig = this.getFuncDebugConfig(folder);
         if (!funcConfig) {
-            const messageItems: MessageItem[] = [DialogResponses.yes, { ...DialogResponses.no, isCloseAffordance: true }];
-            const action = await context.ui.showWarningMessage(localize('initFirst', 'Workspace must be initialized to debug Functions project'), { modal: true }, ...messageItems);
-            if (action === DialogResponses.yes) {
-                await commands.executeCommand('azureFunctions.initProjectForVSCode', folder.uri.fsPath);
-                funcConfig = this.getFuncDebugConfig(folder);
-            }
+            await commands.executeCommand('azureFunctions.initProjectForVSCode', folder.uri.fsPath);
+            funcConfig = this.getFuncDebugConfig(folder);
         }
 
         if (funcConfig) {
