@@ -47,7 +47,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
     }
 
     public async resolveDebugConfiguration(folder: WorkspaceFolder | undefined, debugConfiguration: DebugConfiguration, cancellationToken: CancellationToken): Promise<DebugConfiguration | undefined> {
-        return await callWithTelemetryAndErrorHandling('staticWebApps.resovlveDebugConfiguration', async (context: IActionContext) => {
+        return await callWithTelemetryAndErrorHandling('staticWebApps.resolveDebugConfiguration', async (context: IActionContext) => {
             context.telemetry.properties.isActivationEvent = 'true';
             context.errorHandling.suppressDisplay = true;
             context.telemetry.suppressIfSuccessful = true;
