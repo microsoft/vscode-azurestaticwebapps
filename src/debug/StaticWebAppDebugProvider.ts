@@ -40,7 +40,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
                 if (buildPreset) {
                     result.push(this.createDebugConfiguration(path.basename(appFolder.uri.fsPath), path.relative(folder.uri.fsPath, appFolder.uri.fsPath)));
                 }
-            })
+            });
 
             return result;
         }) ?? [];

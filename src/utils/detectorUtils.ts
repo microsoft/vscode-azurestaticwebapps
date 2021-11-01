@@ -26,5 +26,5 @@ export async function detectAppFoldersInWorkspace(context: IActionContext, works
         }
     }
 
-    return results
+    return results;
 }
