@@ -36,6 +36,12 @@ export const angularOutputLocation = 'dist/<project-name>';
 export const swaCliPackageName = '@azure/static-web-apps-cli';
 export const installSwaCliUrl: string = 'https://aka.ms/installSwaCli';
 
+export const emulatorAddress = 'http://localhost:4280';
+export const swaWatchProblemMatcher = '$swa-watch';
+export const swa: string = 'swa';
+export const funcAddress: string = 'http://localhost:7071';
+export const pwaChrome: string = 'pwa-chrome';
+export const shell: string = 'shell';
 export const minSwaCliVersion = '0.8.0';
 export const swaCliConfigFileName = 'swa-cli.config.json';
 

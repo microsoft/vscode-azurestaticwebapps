@@ -5,11 +5,11 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
+import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { Repository } from '../../git';
 import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
-import { ILocalProjectWizardContext } from '../setupRunningInVSCode/ILocalProjectWizardContext';
 
-export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, ICreateChildImplContext, ILocalProjectWizardContext {
+export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, ICreateChildImplContext {
     accessToken: string;
     client: WebSiteManagementClient;
 
@@ -18,6 +18,10 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     repoHtmlUrl?: string;
 
     repo?: Repository;
+    fsPath?: string;
+
+    // Function projects detected via host.json at SWA create time
+    detectedApiLocations?: string[];
 
     newStaticWebAppName?: string;
 
@@ -27,6 +31,12 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     originExists?: boolean;
 
+    // prefill the input boxes with preset build values;
+    // projects are too flexible for us to force users to use these values
+    buildPreset?: IBuildPreset;
+
+    appLocation?: string;
+    apiLocation?: string;
     outputLocation?: string;
 
     sku?: WebSiteManagementModels.SkuDescription;

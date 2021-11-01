@@ -5,23 +5,41 @@
 
 import * as vscode from 'vscode';
 import { IActionContext, registerEvent } from 'vscode-azureextensionui';
+import { swa } from '../../constants';
+
+interface IRunningSwaTask {
+    processId: number;
+}
+
+const runningSwaTaskMap: Map<vscode.WorkspaceFolder | vscode.TaskScope, IRunningSwaTask> = new Map<vscode.WorkspaceFolder | vscode.TaskScope, IRunningSwaTask>();
 
 export function registerSwaCliTaskEvents(): void {
-    registerEvent('azureStaticWebApps.onDidTerminateDebugSession', vscode.debug.onDidTerminateDebugSession, async (context: IActionContext, debugSession: vscode.DebugSession) => {
+    registerEvent('staticWebApps.onDidTerminateDebugSession', vscode.debug.onDidTerminateDebugSession, async (context: IActionContext, debugSession: vscode.DebugSession) => {
         context.errorHandling.suppressDisplay = true;
         context.telemetry.suppressIfSuccessful = true;
-        if (await isSwaCliTaskExecution(debugSession.configuration.preLaunchTask)) {
-            const taskExecution = vscode.tasks.taskExecutions.find((te) => te.task.name === debugSession.configuration.preLaunchTask);
-            taskExecution?.terminate();
+        if (!debugSession.parentSession && debugSession.workspaceFolder) {
+            stopSwaTaskIfRunning(debugSession.workspaceFolder);
+        }
+    });
+
+    registerEvent('staticWebApps.onDidStartTask', vscode.tasks.onDidStartTaskProcess, async (context: IActionContext, e: vscode.TaskProcessStartEvent) => {
+        context.errorHandling.suppressDisplay = true;
+        context.telemetry.suppressIfSuccessful = true;
+        if (e.execution.task.scope !== undefined && isSwaCliTask(e.execution.task)) {
+            runningSwaTaskMap.set(e.execution.task.scope, { processId: e.processId });
         }
     });
 }
 
-export function isSwaCliTask(task: vscode.Task): boolean {
-    return !!(task.execution instanceof vscode.ShellExecution && task.execution?.commandLine?.match(/^swa start/i))
+function isSwaCliTask(task: vscode.Task): boolean {
+    return !!(task.source === swa && task.execution instanceof vscode.ShellExecution && task.execution?.commandLine?.match(/^swa start/i))
 }
 
-async function isSwaCliTaskExecution(label: string): Promise<boolean> {
-    const taskExecutions: readonly vscode.TaskExecution[] = vscode.tasks.taskExecutions;
-    return !!taskExecutions.some((te) => (te.task.name === label && isSwaCliTask(te.task)));
+function stopSwaTaskIfRunning(workspaceFolder: vscode.WorkspaceFolder): void {
+    const runningFuncTask: IRunningSwaTask | undefined = runningSwaTaskMap.get(workspaceFolder);
+    if (runningFuncTask !== undefined) {
+        // Use `process.kill` because `TaskExecution.terminate` closes the terminal pane and erases all output
+        process.kill(runningFuncTask.processId);
+        runningSwaTaskMap.delete(workspaceFolder);
+    }
 }

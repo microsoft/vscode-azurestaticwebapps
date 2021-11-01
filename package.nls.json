@@ -35,7 +35,6 @@
     "staticWebApps.refresh": "Refresh",
     "staticWebApps.reportIssue": "Report Issue...",
     "staticWebApps.revealResource": "Reveal Resource",
-    "staticWebApps.setupRunningInVSCode": "Setup for Running in VS Code...",
     "staticWebApps.showActions": "Open in GitHub",
     "staticWebApps.showDocumentation": "Documentation",
     "staticWebApps.showStaticWebAppsCliWarning": "Show a warning if the installed version of the Azure Static Web Apps CLI is out-of-date.",

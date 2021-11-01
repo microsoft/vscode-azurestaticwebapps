@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as child_process from 'child_process';
 import * as fse from 'fs-extra';
 import * as gulp from 'gulp';
 import * as path from 'path';
@@ -24,10 +23,6 @@ async function gulp_installFunctionsExtension(): Promise<void> {
     return gulp_installVSCodeExtension('ms-azuretools', 'vscode-azurefunctions');
 }
 
-async function gulp_installStaticWebAppsCli(): Promise<void> {
-    child_process.exec('npm install -g https://github.com/Azure/static-web-apps-cli.git#main')
-}
-
 async function cleanReadme(): Promise<void> {
     const readmePath: string = path.join(__dirname, 'README.md');
     let data: string = (await fse.readFile(readmePath)).toString();
@@ -37,5 +32,5 @@ async function cleanReadme(): Promise<void> {
 
 exports['webpack-dev'] = gulp.series(prepareForWebpack, () => gulp_webpack('development'));
 exports['webpack-prod'] = gulp.series(prepareForWebpack, () => gulp_webpack('production'));
-exports.preTest = gulp.series(gulp_installAzureAccount, gulp_installResourceGroups, gulp_installFunctionsExtension, gulp_installStaticWebAppsCli);
+exports.preTest = gulp.series(gulp_installAzureAccount, gulp_installResourceGroups, gulp_installFunctionsExtension);
 exports.cleanReadme = cleanReadme;
