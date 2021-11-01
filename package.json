@@ -540,7 +540,7 @@
         "open": "^8.0.4",
         "semver": "^7.3.5",
         "vscode-azureappservice": "^0.86.1",
-        "vscode-azureextensionui": "0.48.3",
+        "vscode-azureextensionui": "^0.48.6",
         "vscode-nls": "^4.1.1",
         "vscode-uri": "^3.0.2",
         "yaml": "^1.10.2"
