@@ -89,14 +89,25 @@ export class SwaTaskProvider implements TaskProvider {
 
         const args: string[] = [addArg(options, 'appLocation', 'app-location'), addArg(options, 'apiLocation', 'api-location'), addArg(options, 'run', 'run', true)];
         const command = `swa start ${options.context} ${args.join(' ')}`;
-        const task = new Task({
-            type: shell,
-            command,
-        }, workspaceFolder, label, swa, new ShellExecution(command, {
-            env: {
-                BROWSER: 'none'
-            }
-        }), swaWatchProblemMatcher);
+        const task = new Task(
+            {
+                type: shell,
+                command,
+            },
+            workspaceFolder,
+            label,
+            swa,
+            new ShellExecution(command,
+                {
+                    // Prevent react-scrips auto opening browser
+                    env: {
+                        BROWSER: 'none'
+                    }
+                }
+            ),
+            swaWatchProblemMatcher
+        );
+
         task.isBackground = true;
         task.detail = command;
 
