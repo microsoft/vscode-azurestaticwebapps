@@ -65,7 +65,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
 
                 if ((await tryGetApiLocations(context, folder))?.length) {
                     // make sure Functions extension is installed
-                    await getFunctionsApi(context);
+                    await getFunctionsApi(context, localize('funcInstallForDebugging', 'You must have the "Azure Functions" extension installed to debug a Functions API.'));
 
                     const configName = this.parseDebugConfigurationName(debugConfiguration);
                     const swaCliConfigFile = await tryGetStaticWebAppsCliConfig(folder.uri);
