@@ -11,6 +11,7 @@ import { tryGetStaticWebAppsCliConfig } from "../cli/tryGetStaticWebAppsCliConfi
 import { validateSwaCliInstalled } from '../commands/cli/validateSwaCliInstalled';
 import { tryGetApiLocations } from '../commands/createStaticWebApp/tryGetApiLocations';
 import { emulatorAddress, funcAddress, pwaChrome, swaCliConfigFileName } from "../constants";
+import { getFunctionsApi } from '../getExtensionApi';
 import { detectAppFoldersInWorkspace } from "../utils/detectorUtils";
 import { writeFormattedJson } from "../utils/fs";
 import { localize } from '../utils/localize';
@@ -63,6 +64,9 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
                 }
 
                 if ((await tryGetApiLocations(context, folder))?.length) {
+                    // make sure Functions extension is installed
+                    await getFunctionsApi(context, localize('funcInstallForDebugging', 'You must have the "Azure Functions" extension installed to debug a Functions API.'));
+
                     const configName = this.parseDebugConfigurationName(debugConfiguration);
                     const swaCliConfigFile = await tryGetStaticWebAppsCliConfig(folder.uri);
 
@@ -85,7 +89,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
                 }
             }
 
-            return { ...debugConfiguration, type: 'pwa-chrome' };
+            return debugConfiguration;
         });
     }
 

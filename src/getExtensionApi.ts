@@ -11,7 +11,10 @@ import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";
 import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
 
-export async function getFunctionsApi(context: IActionContext): Promise<AzureFunctionsExtensionApi> {
+/**
+ * @param installMessage Override default message shown if extension is not installed.
+ */
+export async function getFunctionsApi(context: IActionContext, installMessage?: string): Promise<AzureFunctionsExtensionApi> {
     const funcExtensionId: string = 'ms-azuretools.vscode-azurefunctions';
     const funcExtension: AzureExtensionApiProvider | undefined = await getApiExport(funcExtensionId);
 
@@ -19,7 +22,7 @@ export async function getFunctionsApi(context: IActionContext): Promise<AzureFun
         return funcExtension.getApi<AzureFunctionsExtensionApi>('^1.3.0');
     }
 
-    await context.ui.showWarningMessage(localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install', stepName: 'installFunctions' });
+    await context.ui.showWarningMessage(installMessage ?? localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install', stepName: 'installFunctions' });
     const commandToRun: string = 'extension.open';
     void commands.executeCommand(commandToRun, funcExtensionId);
 
