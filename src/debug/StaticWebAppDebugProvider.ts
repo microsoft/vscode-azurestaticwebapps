@@ -10,7 +10,7 @@ import { buildPresets } from "../buildPresets/buildPresets";
 import { tryGetStaticWebAppsCliConfig } from "../cli/tryGetStaticWebAppsCliConfig";
 import { validateSwaCliInstalled } from '../commands/cli/validateSwaCliInstalled';
 import { tryGetApiLocations } from '../commands/createStaticWebApp/tryGetApiLocations';
-import { emulatorAddress, funcAddress, swa, swaCliConfigFileName } from "../constants";
+import { emulatorAddress, funcAddress, pwaChrome, swaCliConfigFileName } from "../constants";
 import { detectAppFoldersInWorkspace } from "../utils/detectorUtils";
 import { writeFormattedJson } from "../utils/fs";
 import { localize } from '../utils/localize';
@@ -93,13 +93,10 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
         return {
             name: `${StaticWebAppDebugProvider.configPrefix}${name}`,
             request: 'launch',
-            type: swa,
+            type: pwaChrome,
             url: emulatorAddress,
             preLaunchTask: `swa: start ${name}`,
-            webRoot: `\${workspaceFolder}/${appLocation}`,
-            presentation: {
-                order: 0
-            }
+            webRoot: `\${workspaceFolder}/${appLocation}`
         };
     }
 

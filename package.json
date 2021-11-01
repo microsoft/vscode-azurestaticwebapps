@@ -56,7 +56,6 @@
         "onCommand:staticWebApps.staticWebApps.action.rerun",
         "onCommand:staticWebApps.uninstallStaticWebAppsCli",
         "onCommand:staticWebApps.viewProperties",
-        "onDebug",
         "onDebugDynamicConfigurations",
         "onDebugInitialConfigurations",
         "onDebugResolve:pwa-chrome",
