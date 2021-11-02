@@ -75,7 +75,7 @@ export class SwaTaskProvider implements TaskProvider {
         const task = new Task({
             type: shell,
             command,
-        }, workspaceFolder, command, swa, new ShellExecution(command), swaWatchProblemMatcher);
+        }, workspaceFolder, command, swa, new ShellExecution(`swa ${command}`), swaWatchProblemMatcher);
         task.isBackground = true;
 
         return task;
