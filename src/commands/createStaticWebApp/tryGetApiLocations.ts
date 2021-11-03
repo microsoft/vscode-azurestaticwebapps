@@ -19,7 +19,8 @@ const hostFileName: string = 'host.json';
  * @param shallow Search at the root, and on level down only.
  */
 export async function tryGetApiLocations(context: IActionContext, workspaceFolder: WorkspaceFolder | string, shallow?: boolean): Promise<string[] | undefined> {
-    return await telemetryUtils.runWithDurationTelemetry(context, `tryGetProject${shallow ? 'Shallow' : ''}`, async () => {
+    return await telemetryUtils.runWithDurationTelemetry(context, 'tryGetProject', async () => {
+        context.telemetry.properties.shallow = shallow ? 'true' : 'false';
         const folderPath = typeof workspaceFolder === 'string' ? workspaceFolder : workspaceFolder.uri.fsPath;
         if (await AzExtFsExtra.pathExists(folderPath)) {
             if (await isFunctionProject(folderPath)) {
