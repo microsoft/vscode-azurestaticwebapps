@@ -33,7 +33,7 @@ export class SwaTaskProvider implements TaskProvider {
     private async getTasksFromDetector(context: IActionContext, workspaceFolder: WorkspaceFolder): Promise<Task[]> {
         const tasks: Task[] = [];
 
-        const apiLocations = await tryGetApiLocations(context, workspaceFolder);
+        const apiLocations = await tryGetApiLocations(context, workspaceFolder, true);
 
         const appFolders = await detectAppFoldersInWorkspace(context, workspaceFolder);
         appFolders.forEach((appFolder) => {
