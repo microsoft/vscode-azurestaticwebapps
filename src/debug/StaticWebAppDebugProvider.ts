@@ -31,7 +31,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
 
             const swaCliConfigFile = await tryGetStaticWebAppsCliConfig(folder.uri);
             if (swaCliConfigFile) {
-                result.push(...Object.entries(swaCliConfigFile?.configurations ?? []).map(([name, options]) => this.createDebugConfiguration(name, options.appLocation)));
+                result.push(...Object.entries(swaCliConfigFile?.configurations ?? []).map(([name, options]) => this.createDebugConfiguration(name, options.appLocation, swaCliConfigFileName)));
             }
 
             const appFolders = await detectAppFoldersInWorkspace(context, folder);
@@ -102,9 +102,9 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
         });
     }
 
-    private createDebugConfiguration(name: string, appLocation: string = ''): DebugConfiguration {
+    private createDebugConfiguration(name: string, appLocation: string = '', postfix?: string): DebugConfiguration {
         return {
-            name: `${StaticWebAppDebugProvider.configPrefix}${name}`,
+            name: `${StaticWebAppDebugProvider.configPrefix}${name}${postfix ? ` (${postfix})` : ''}`,
             request: 'launch',
             type: pwaChrome,
             url: emulatorAddress,
