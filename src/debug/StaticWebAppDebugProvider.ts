@@ -54,6 +54,9 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
             context.telemetry.suppressIfSuccessful = true;
 
             if (this.isSwaDebugConfig(debugConfiguration)) {
+                context.telemetry.properties.isActivationEvent = 'false';
+                context.telemetry.suppressIfSuccessful = false;
+
                 if (!folder) {
                     return undefined;
                 }
@@ -64,18 +67,23 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
                 }
 
                 if ((await tryGetApiLocations(context, folder))?.length) {
+                    context.telemetry.properties.hasApi = 'true';
+
                     // make sure Functions extension is installed
                     await getFunctionsApi(context, localize('funcInstallForDebugging', 'You must have the "Azure Functions" extension installed to debug a Functions API.'));
 
                     const configName = this.parseDebugConfigurationName(debugConfiguration);
                     const swaCliConfigFile = await tryGetStaticWebAppsCliConfig(folder.uri);
+                    if (swaCliConfigFile) {
+                        context.telemetry.properties.hasSwaCliConfigFile = 'true';
+                    }
 
                     const config = swaCliConfigFile?.configurations?.[configName];
                     if (config && config.apiLocation !== funcAddress) {
                         const fixMi: MessageItem = { title: localize('fix', 'Fix') };
                         void context.ui.showWarningMessage(localize('funcApiDetected', "Did not start debugging Functions API because 'apiLocation' property is missing or invalid."), {
                             learnMoreLink: 'https://aka.ms/setupSwaCliCode'
-                        }, { title: 'Fix' }).then(async (action) => {
+                        }, fixMi).then(async (action) => {
                             if (action === fixMi) {
                                 config.apiLocation = funcAddress;
                                 await writeFormattedJson(Uri.joinPath(folder.uri, swaCliConfigFileName).fsPath, swaCliConfigFile);
@@ -84,6 +92,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
                     }
 
                     if (!cancellationToken.isCancellationRequested) {
+                        context.telemetry.properties.debugApi = 'true';
                         await this.startDebuggingFunctions(folder);
                     }
                 }
