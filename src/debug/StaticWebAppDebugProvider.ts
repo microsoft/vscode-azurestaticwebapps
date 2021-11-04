@@ -66,7 +66,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
                     return undefined;
                 }
 
-                if ((await tryGetApiLocations(context, folder))?.length) {
+                if ((await tryGetApiLocations(context, folder, true))?.length) {
                     context.telemetry.properties.hasApi = 'true';
 
                     // make sure Functions extension is installed

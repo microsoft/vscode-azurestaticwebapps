@@ -16,16 +16,18 @@ const hostFileName: string = 'host.json';
  * If a single function project is found, returns that path.
  * If multiple projects are found, will prompt
  * @param workspaceFolder Per the VS Code docs for `findFiles`: It is recommended to pass in a workspace folder if the pattern should match inside the workspace.
+ * @param shallow Search at the root, and on level down only.
  */
-export async function tryGetApiLocations(context: IActionContext, workspaceFolder: WorkspaceFolder | string): Promise<string[] | undefined> {
+export async function tryGetApiLocations(context: IActionContext, workspaceFolder: WorkspaceFolder | string, shallow?: boolean): Promise<string[] | undefined> {
     return await telemetryUtils.runWithDurationTelemetry(context, 'tryGetProject', async () => {
+        context.telemetry.properties.shallow = shallow ? 'true' : 'false';
         const folderPath = typeof workspaceFolder === 'string' ? workspaceFolder : workspaceFolder.uri.fsPath;
         if (await AzExtFsExtra.pathExists(folderPath)) {
             if (await isFunctionProject(folderPath)) {
                 return [folderPath];
             } else {
                 const hostJsonUris = await workspace.findFiles(new RelativePattern(workspaceFolder, `*/${hostFileName}`));
-                if (hostJsonUris.length !== 1) {
+                if (hostJsonUris.length !== 1 && !shallow) {
                     // NOTE: If we found a single project at the root or one level down, we will use that without searching any further.
                     // This will reduce false positives in the case of compiled languages like C# where a 'host.json' file is often copied to a build/publish directory a few levels down
                     // It also maintains consistent historical behavior by giving that project priority because we used to _only_ look at the root and one level down
