@@ -7,6 +7,7 @@ import * as path from 'path';
 import { CancellationToken, commands, debug, DebugConfiguration, DebugConfigurationProvider, MessageItem, Uri, WorkspaceFolder } from "vscode";
 import { callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
 import { buildPresets } from "../buildPresets/buildPresets";
+import { IBuildPreset } from '../buildPresets/IBuildPreset';
 import { tryGetStaticWebAppsCliConfig } from "../cli/tryGetStaticWebAppsCliConfig";
 import { validateSwaCliInstalled } from '../commands/cli/validateSwaCliInstalled';
 import { tryGetApiLocations } from '../commands/createStaticWebApp/tryGetApiLocations';
@@ -23,26 +24,27 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
 
     public async provideDebugConfigurations(folder: WorkspaceFolder): Promise<DebugConfiguration[]> {
         return await callWithTelemetryAndErrorHandling('staticWebApps.provideDebugConfigurations', async (context: IActionContext) => {
-            context.telemetry.properties.isActivationEvent = 'true';
-            context.errorHandling.suppressDisplay = true;
-            context.telemetry.suppressIfSuccessful = true;
-
             const result: DebugConfiguration[] = [];
 
             const swaCliConfigFile = await tryGetStaticWebAppsCliConfig(folder.uri);
             if (swaCliConfigFile) {
+                context.telemetry.measurements.configsCount = Object.entries(swaCliConfigFile?.configurations ?? []).length;
                 result.push(...Object.entries(swaCliConfigFile?.configurations ?? []).map(([name, options]) => this.createDebugConfiguration(name, options.appLocation, swaCliConfigFileName)));
             }
 
             const appFolders = await detectAppFoldersInWorkspace(context, folder);
+            context.telemetry.measurements.appCount = appFolders.length;
+            const foundPresets: IBuildPreset[] = []
             appFolders.forEach((appFolder) => {
                 const buildPreset = buildPresets.find((preset) => appFolder.frameworks.find((info) => info.framework === preset.displayName));
 
                 if (buildPreset) {
+                    foundPresets.push(buildPreset);
                     result.push(this.createDebugConfiguration(path.basename(appFolder.uri.fsPath), path.relative(folder.uri.fsPath, appFolder.uri.fsPath)));
                 }
             });
 
+            context.telemetry.properties.buildPresets = foundPresets.map((preset) => preset.id).join(', ');
             return result;
         }) ?? [];
     }

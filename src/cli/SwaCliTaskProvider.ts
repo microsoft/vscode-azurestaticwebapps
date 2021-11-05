@@ -26,6 +26,8 @@ export class SwaTaskProvider implements TaskProvider {
                     const configTasks = await this.getTasksFromSwaConfig(workspaceFolder);
                     const detectorTasks = await this.getTasksFromDetector(context, workspaceFolder);
                     tasks.push(...configTasks, ...detectorTasks);
+                    context.telemetry.measurements.configCount = configTasks.length;
+                    context.telemetry.measurements.detectedCount = detectorTasks.length;
                 }
             }
             return tasks;
