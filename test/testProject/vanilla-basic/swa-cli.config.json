@@ -1,0 +1,7 @@
+{
+    "configurations": {
+        "app": {
+            "context": "./src"
+        }
+    }
+}
