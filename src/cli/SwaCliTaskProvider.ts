@@ -5,12 +5,11 @@
 
 import * as path from 'path';
 import { ShellExecution, Task, TaskProvider, workspace, WorkspaceFolder } from "vscode";
-import { callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
+import { AzExtFsExtra, callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
 import { buildPresets } from "../buildPresets/buildPresets";
 import { tryGetApiLocations } from "../commands/createStaticWebApp/tryGetApiLocations";
 import { funcAddress, shell, swa, swaWatchProblemMatcher } from "../constants";
 import { detectAppFoldersInWorkspace } from '../utils/detectorUtils';
-import { isMultiRootWorkspace } from "../utils/workspaceUtils";
 import { SWACLIOptions, tryGetStaticWebAppsCliConfig } from "./tryGetStaticWebAppsCliConfig";
 
 export class SwaTaskProvider implements TaskProvider {
@@ -20,13 +19,16 @@ export class SwaTaskProvider implements TaskProvider {
     }
 
     public async provideTasks(): Promise<Task[]> {
-        return await callWithTelemetryAndErrorHandling('staticWebApps.provideTasks', async (context: IActionContext) => {
-            const workspaceFolder: WorkspaceFolder | undefined = workspace.workspaceFolders?.[0];
-            if (isMultiRootWorkspace() || !workspaceFolder) {
-                return [];
+        return await callWithTelemetryAndErrorHandling<Task[]>('staticWebApps.provideTasks', async (context: IActionContext): Promise<Task[]> => {
+            const tasks: Task[] = [];
+            for await (const workspaceFolder of workspace.workspaceFolders ?? []) {
+                if (await AzExtFsExtra.pathExists(workspaceFolder.uri)) {
+                    const configTasks = await this.getTasksFromSwaConfig(workspaceFolder);
+                    const detectorTasks = await this.getTasksFromDetector(context, workspaceFolder);
+                    tasks.push(...configTasks, ...detectorTasks);
+                }
             }
-
-            return [...await this.getTasksFromSwaConfig(workspaceFolder), ...await this.getTasksFromDetector(context, workspaceFolder)];
+            return tasks;
         }) ?? [];
     }
 
