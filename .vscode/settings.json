@@ -12,7 +12,8 @@
     "search.exclude": {
         "out": true,
         "**/node_modules": true,
-        ".vscode-test": true
+        ".vscode-test": true,
+        "test/testProject": true
     },
     "typescript.preferences.importModuleSpecifier": "relative",
     "typescript.tsdk": "node_modules/typescript/lib"
