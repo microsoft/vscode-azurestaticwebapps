@@ -3,9 +3,9 @@
 ## 0.9.0 - 2021-11-11
 
 ### Added
-- Dynamic debug configurations for debugging a static web app using the Azure Static Web Apps CLI [#557](https://github.com/microsoft/vscode-azurestaticwebapps/pull/557)
+- Dynamic debugging to easily debug your static web app using the [Azure Static Web Apps CLI](https://github.com/Azure/static-web-apps-cli) [#557](https://github.com/microsoft/vscode-azurestaticwebapps/pull/557)
 
-    ![Authorize Access to through GitHub](resources/changelog/dynamic_debug_configs.png)
+    ![Debug static web app with a dynamic configuration](resources/changelog/debugging.gif)
 
 - Autocomplete and validation for [swa-cli.config.json](https://github.com/Azure/static-web-apps-cli#swa-cliconfigjson-file) files
 
