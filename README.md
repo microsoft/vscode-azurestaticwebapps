@@ -14,7 +14,7 @@ Use this extension to quickly create and manage Azure Static Web Apps directly f
 
 ## Run and debug your static web app
 
-![Debug static web app with a dynamic configuration](resources/changelog/debugging.gif)
+![Debug static web app with a dynamic configuration](resources/readme/debugging.gif)
 
 ✨ Check out [Guide: Debugging a Static Web App with VS Code](https://aka.ms/setupSwaCliCode) for instructions and more information about debugging a static web app.
 
