@@ -20,6 +20,7 @@ const testCases: ITestCase[] = [
             {
                 "name": "SWA: Run react-basic",
                 "request": "launch",
+                "timeout": 30000,
                 "type": "pwa-chrome",
                 "url": "http://localhost:4280",
                 "preLaunchTask": "swa: start react-basic",
@@ -33,6 +34,7 @@ const testCases: ITestCase[] = [
             {
                 "name": "SWA: Run angular-basic",
                 "request": "launch",
+                "timeout": 30000,
                 "type": "pwa-chrome",
                 "url": "http://localhost:4280",
                 "preLaunchTask": "swa: start angular-basic",
@@ -46,6 +48,7 @@ const testCases: ITestCase[] = [
             {
                 "name": "SWA: Run app (swa-cli.config.json)",
                 "request": "launch",
+                "timeout": 30000,
                 "type": "pwa-chrome",
                 "url": "http://localhost:4280",
                 "preLaunchTask": "swa: start app",

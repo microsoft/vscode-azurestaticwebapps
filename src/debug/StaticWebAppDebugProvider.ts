@@ -111,7 +111,10 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
             type: pwaChrome,
             url: emulatorAddress,
             preLaunchTask: `swa: start ${name}`,
-            webRoot: `\${workspaceFolder}/${appLocation}`
+            webRoot: `\${workspaceFolder}/${appLocation}`,
+            // Ensure the debugger waits long enough for the emulator to start
+            // See https://github.com/microsoft/vscode-azurestaticwebapps/issues/570
+            timeout: 30000
         };
     }
 
