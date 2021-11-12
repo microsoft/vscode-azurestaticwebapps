@@ -12,6 +12,12 @@ Use this extension to quickly create and manage Azure Static Web Apps directly f
 
 > Sign up today for your free Azure account and receive 12 months of free popular services, $200 free credit and 25+ always free services 👉 [Start Free](https://azure.microsoft.com/free/open-source).
 
+## Run and debug your static web app
+
+![Debug static web app with a dynamic configuration](resources/readme/debugging.gif)
+
+✨ Check out [Guide: Debugging a Static Web App with VS Code](https://aka.ms/setupSwaCliCode) for instructions and more information about debugging a static web app.
+
 ## Create your first static web app
 
 1. Click the '+' button in the explorer to setup a new static web app

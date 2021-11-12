@@ -1,5 +1,24 @@
 # Change Log
 
+## 0.9.0 - 2021-11-11
+
+### Added
+- Dynamic debugging to easily debug your static web app using the [Azure Static Web Apps CLI](https://github.com/Azure/static-web-apps-cli) [#557](https://github.com/microsoft/vscode-azurestaticwebapps/pull/557)
+
+    ![Debug static web app with a dynamic configuration](resources/readme/debugging.gif)
+
+- Autocomplete and validation for [swa-cli.config.json](https://github.com/Azure/static-web-apps-cli#swa-cliconfigjson-file) files
+
+- `$swa-watch` problem matcher for Azure Static Web Apps CLI tasks [#531](https://github.com/microsoft/vscode-azurestaticwebapps/pull/531)
+
+### Changed
+- Renamed "Edit Configuration" command to "Edit Workflow" [#546](https://github.com/microsoft/vscode-azurestaticwebapps/pull/546)
+- Build presets are now grouped in the quick pick to match the portal [#556](https://github.com/microsoft/vscode-azurestaticwebapps/pull/556)
+- Placeholder text on the location step has been changed to clarify region/location selection [#554](https://github.com/microsoft/vscode-azurestaticwebapps/pull/554)
+
+### Fixed
+-  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/15?closed=1)
+
 ## 0.8.1 - 2021-09-27
 ### Added
 - Colored icons to the GitHub action job and step tree nodes
