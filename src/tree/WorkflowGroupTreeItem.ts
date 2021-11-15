@@ -42,7 +42,7 @@ function getYamlErrorMessage(error: unknown): string {
 export class WorkflowGroupTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = 'azureStaticWorkflowGroup';
     public contextValue: string = WorkflowGroupTreeItem.contextValue;
-    public parent: EnvironmentTreeItem;
+    public parent!: EnvironmentTreeItem;
     public yamlFilePath: string;
     public buildConfigs: BuildConfigs | undefined;
     public parseYamlError: unknown;
@@ -112,7 +112,7 @@ export class WorkflowGroupTreeItem extends AzExtParentTreeItem {
         const treeItems: WorkflowTreeItem[] = [];
 
         for (const buildConfig in this.buildConfigs) {
-            const value: string | undefined = <string | undefined>this.buildConfigs[buildConfig];
+            const value: string | undefined = <string | undefined>this.buildConfigs[buildConfig as keyof BuildConfigs];
             value !== undefined && treeItems.push(new WorkflowTreeItem(this, <BuildConfig>buildConfig, value));
         }
 

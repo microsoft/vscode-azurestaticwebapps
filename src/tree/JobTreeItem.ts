@@ -17,7 +17,7 @@ import { StepTreeItem } from './StepTreeItem';
 export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticJob';
     public readonly contextValue: string = JobTreeItem.contextValue;
-    public parent: ActionTreeItem;
+    public parent!: ActionTreeItem;
     public childTypeLabel: string = localize('step', 'step');
     public data: ActionsGetJobForWorkflowRunResponseData;
 

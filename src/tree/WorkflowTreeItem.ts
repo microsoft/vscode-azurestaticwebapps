@@ -14,7 +14,7 @@ export class WorkflowTreeItem extends AzExtTreeItem {
     public commandArgs: unknown[];
     public readonly buildConfig: string;
     public buildConfigValue: string;
-    public parent: WorkflowGroupTreeItem;
+    public parent!: WorkflowGroupTreeItem;
 
     public constructor(parent: WorkflowGroupTreeItem, buildConfig: BuildConfig, buildConfigValue: string) {
         super(parent);

@@ -12,7 +12,7 @@ import { JobTreeItem } from './JobTreeItem';
 export class StepTreeItem extends AzExtTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticStep';
     public readonly contextValue: string = StepTreeItem.contextValue;
-    public parent: JobTreeItem;
+    public parent!: JobTreeItem;
     public data: ActionWorkflowStepData;
 
     constructor(parent: JobTreeItem, data: ActionWorkflowStepData) {
