@@ -33,11 +33,11 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
-    public parent: StaticWebAppTreeItem;
+    public parent!: StaticWebAppTreeItem;
     public data: WebSiteManagementModels.StaticSiteBuildARMResource;
 
-    public actionsTreeItem: ActionsTreeItem;
-    public gitHubConfigGroupTreeItems: WorkflowGroupTreeItem[];
+    public actionsTreeItem!: ActionsTreeItem;
+    public gitHubConfigGroupTreeItems!: WorkflowGroupTreeItem[];
     public appSettingsTreeItem?: AppSettingsTreeItem;
     public functionsTreeItem?: FunctionsTreeItem;
 
@@ -49,7 +49,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public localProjectPath: string | undefined;
 
     public isProduction: boolean;
-    public inWorkspace: boolean;
+    public inWorkspace!: boolean;
 
     constructor(parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource) {
         super(parent);

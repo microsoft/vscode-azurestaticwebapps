@@ -18,7 +18,7 @@ import { JobTreeItem } from './JobTreeItem';
 export class ActionTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValueCompleted: string = 'azureStaticActionCompleted';
     public static contextValueInProgress: string = 'azureStaticActionInProgress';
-    public parent: ActionsTreeItem;
+    public parent!: ActionsTreeItem;
     public childTypeLabel: string = localize('job', 'job');
     public data: ActionsGetWorkflowRunResponseData;
 

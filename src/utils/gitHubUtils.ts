@@ -19,7 +19,7 @@ import { nonNullProp } from './nonNull';
  * @param description Optional property of JSON that will be used as QuickPicks description
  * @param data Optional property of JSON that will be used as QuickPicks data saved as a NameValue pair
  */
-export function createQuickPickFromJsons<T>(data: T[], label: string): IAzureQuickPickItem<T>[] {
+export function createQuickPickFromJsons<T>(data: T[], label: keyof T): IAzureQuickPickItem<T>[] {
     const quickPicks: IAzureQuickPickItem<T>[] = [];
 
     for (const d of data) {
@@ -29,7 +29,7 @@ export function createQuickPickFromJsons<T>(data: T[], label: string): IAzureQui
         }
 
         quickPicks.push({
-            label: <string>d[label],
+            label: d[label] as unknown as string,
             data: d
         });
     }
