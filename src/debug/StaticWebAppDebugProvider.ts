@@ -140,6 +140,6 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
     }
 
     private isSwaDebugConfig(debugConfiguration: DebugConfiguration): boolean {
-        return debugConfiguration?.name?.startsWith(StaticWebAppDebugProvider.configPrefix);
+        return !!(debugConfiguration?.name?.startsWith(StaticWebAppDebugProvider.configPrefix));
     }
 }
