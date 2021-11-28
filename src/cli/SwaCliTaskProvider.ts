@@ -88,7 +88,7 @@ export class SwaTaskProvider implements TaskProvider {
     private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'context' | 'apiLocation' | 'run' | 'appLocation'>): Task {
 
         const addArg = <T>(object: T, property: keyof T, name?: string, quote?: boolean): string => {
-            return object[property] ? quote ? `--${name ?? property.toString()}='${object[property]}'` : `--${name ?? property.toString()}=${object[property]}` : '';
+            return object[property] ? quote ? `--${name ?? property.toString()}=\"${object[property]}\"` : `--${name ?? property.toString()}=${object[property]}` : '';
         };
 
         const args: string[] = [addArg(options, 'appLocation', 'app-location'), addArg(options, 'apiLocation', 'api-location'), addArg(options, 'run', 'run', true)];
