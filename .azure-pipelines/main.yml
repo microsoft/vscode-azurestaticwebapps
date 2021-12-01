@@ -11,6 +11,7 @@ jobs:
   - template: common/build.yml
   - template: common/package.yml
   - template: common/lint.yml
+  - template: common/sbom.yml
   - template: compliance/compliance.yml # Only works on Windows
   - template: common/test.yml
 
@@ -20,6 +21,7 @@ jobs:
   steps:
   - template: common/build.yml
   - template: common/package.yml
+  - template: common/sbom.yml
   - template: common/lint.yml
   - template: common/test.yml
 
@@ -29,6 +31,7 @@ jobs:
   steps:
   - template: common/build.yml
   - template: common/package.yml
+  - template: common/sbom.yml
   - template: common/lint.yml
   - template: common/test.yml
 
