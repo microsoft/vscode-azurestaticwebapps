@@ -17,6 +17,11 @@ steps:
     Contents: '**/*.vsix'
     TargetFolder: '$(build.artifactstagingdirectory)'
 
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: "SBoM Generation Task"
+  inputs:
+    BuildDropPath: "$(Build.ArtifactStagingDirectory)"
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish artifacts: vsix'
   inputs:

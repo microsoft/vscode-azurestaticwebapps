@@ -8,8 +8,3 @@ steps:
   - task: ComponentGovernanceComponentDetection@0
     displayName: "Component Detection"
     condition: ne(variables['System.PullRequest.IsFork'], 'True')
-
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: "SBoM Generation Task"
-    inputs:
-      BuildDropPath: "$(Build.ArtifactStagingDirectory)"
