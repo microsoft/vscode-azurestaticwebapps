@@ -7,7 +7,7 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish artifacts: sbom'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/_manifest'
     ArtifactName: sbom
   # Only publish sbom from linux build since we use this to release and want to stay consistent
   condition: and(eq(variables['Agent.OS'], 'Linux'), ne(variables['System.PullRequest.IsFork'], 'True'))
