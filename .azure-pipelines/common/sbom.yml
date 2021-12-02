@@ -9,5 +9,5 @@ steps:
   displayName: 'Publish artifacts: sbom'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/_manifest'
-    ArtifactName: _manifest'
+    ArtifactName: _manifest
   condition: ne(variables['System.PullRequest.IsFork'], 'True')
