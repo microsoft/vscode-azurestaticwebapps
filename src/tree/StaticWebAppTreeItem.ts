@@ -100,6 +100,8 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
             const resourceClient = await createResourceClient([context, this]);
             const resources: ResourceManagementModels.ResourceListResult = await resourceClient.resources.listByResourceGroup(this.resourceGroup);
 
+            // Recently deleted SWA is returned in the list of resources in the RG, even though it's been deleted.
+            // Only delete if 0 resources, or exactly 1 resource and if the resource is the SWA that has just been deleted.
             if ((resources.length === 0 || (resources.length === 1 && resources[0].id === this.data.id)) && !resources.nextLink) {
                 // It's unlikely "nextLink" will be defined if the first batch returned no resources, but technically possible. We'll just skip deleting in that case
                 await resourceClient.resourceGroups.deleteMethod(this.resourceGroup);
