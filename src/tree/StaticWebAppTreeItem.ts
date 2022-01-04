@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import { ResourceManagementModels } from '@azure/arm-resources';
 import { ProgressLocation, window } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
-import { createWebSiteClient } from "../utils/azureClients";
+import { createResourceClient, createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId, pollAzureAsyncOperation } from "../utils/azureUtils";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
@@ -95,6 +96,14 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
             // the client API call only awaits the call, but doesn't poll for the result so we handle that ourself
             const deleteResponse = await client.staticSites.deleteStaticSite(this.resourceGroup, this.name);
             await pollAzureAsyncOperation(context, deleteResponse, this.subscription);
+
+            const resourceClient = await createResourceClient([context, this]);
+            const resources: ResourceManagementModels.ResourceListResult = await resourceClient.resources.listByResourceGroup(this.resourceGroup);
+
+            if ((resources.length === 0 || (resources.length === 1 && resources[0].id === this.data.id)) && !resources.nextLink) {
+                // It's unlikely "nextLink" will be defined if the first batch returned no resources, but technically possible. We'll just skip deleting in that case
+                await resourceClient.resourceGroups.deleteMethod(this.resourceGroup);
+            }
 
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
             void window.showInformationMessage(deleteSucceeded);
