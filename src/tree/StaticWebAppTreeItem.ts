@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
-import { ResourceManagementModels } from '@azure/arm-resources';
+import type { ResourceManagementModels } from '@azure/arm-resources';
 import { ProgressLocation, window } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';

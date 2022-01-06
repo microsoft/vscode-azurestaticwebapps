@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient } from '@azure/arm-appservice';
-import { ResourceManagementClient } from '@azure/arm-resources';
+import type { ResourceManagementClient } from '@azure/arm-resources';
 import { AzExtClientContext, createAzureClient, parseClientContext } from 'vscode-azureextensionui';
 
 // Lazy-load @azure packages to improve startup performance.
