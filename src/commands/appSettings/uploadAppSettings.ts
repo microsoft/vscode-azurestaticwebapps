@@ -5,6 +5,7 @@
 
 import { AppSettingsTreeItem, IAppSettingsClient } from 'vscode-azureappservice';
 import { IActionContext } from "vscode-azureextensionui";
+import { reservedSettingsPrefixes } from '../../constants';
 import { ext } from "../../extensionVariables";
 import { getFunctionsApi } from '../../getExtensionApi';
 import { localize } from "../../utils/localize";
@@ -19,6 +20,6 @@ export async function uploadAppSettings(context: IActionContext, node?: AppSetti
 
     const client: IAppSettingsClient = await node.clientProvider.createClient(context);
     await node.runWithTemporaryDescription(context, localize('uploading', 'Uploading...'), async () => {
-        await funcApi.uploadAppSettings(client);
+        await funcApi.uploadAppSettings(client, reservedSettingsPrefixes);
     });
 }
