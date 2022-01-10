@@ -45,6 +45,9 @@ export const shell: string = 'shell';
 export const minSwaCliVersion = '0.8.0';
 export const swaCliConfigFileName = 'swa-cli.config.json';
 
+// https://docs.microsoft.com/en-us/azure/static-web-apps/apis#constraints
+export const reservedSettingsPrefixes: (RegExp | string)[] = [/^APPSETTING_/, /^AZUREBLOBSTORAGE_/, /^AZUREFILESSTORAGE_/, /^AZURE_FUNCTION_/, /^CONTAINER_/, /^DIAGNOSTICS_/, /^DOCKER_/, /^FUNCTIONS_/, /^IDENTITY_/, /^MACHINEKEY_/, /^MAINSITE_/, /^MSDEPLOY_/, /^SCMSITE_/, /^SCM_/, /^WEBSITES_/, /^WEBSITE_/, /^WEBSOCKET_/, /^AzureWeb/];
+
 export const gitignoreFileName = '.gitignore';
 
 // Source: https://github.com/github/gitignore/blob/master/Node.gitignore
