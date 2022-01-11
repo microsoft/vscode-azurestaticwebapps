@@ -88,7 +88,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         LocationListStep.setLocationSubset(wizardContext, Promise.resolve(locations), webProvider);
         LocationListStep.addStep(wizardContext, promptSteps, {
-            placeHolder: localize('selectLocation', 'Select a region for Azure Functions API and staging environments')
+            placeHolder: localize('selectLocation', 'Select a region for Azure Functions API and staging environments'),
+            noPicksMessage: localize('noRegions', 'No available regions.')
         });
 
         promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
