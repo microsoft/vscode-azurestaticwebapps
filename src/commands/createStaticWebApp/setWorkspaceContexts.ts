@@ -6,6 +6,7 @@
 import { WorkspaceFolder } from 'vscode';
 import { IActionContext } from "vscode-azureextensionui";
 import { getGitWorkspaceState, GitWorkspaceState, remoteShortnameExists, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation, warnIfNotOnDefaultBranch } from "../../utils/gitUtils";
+import { localize } from '../../utils/localize';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
@@ -19,7 +20,14 @@ export async function setWorkspaceContexts(context: IActionContext & Partial<ISt
 
     if (gitWorkspaceState.remoteRepo) {
         context.repoHtmlUrl = gitWorkspaceState.remoteRepo.html_url;
-        context.branchData = { name: gitWorkspaceState.remoteRepo.default_branch };
+        if (!gitWorkspaceState.repo?.state.HEAD?.upstream) {
+            // current branch does not exist on remote, ask to push
+            await context.ui.showWarningMessage(localize('pushBranch', 'Branch needs to exist on the remote. Push branch and set upstream?'), {
+                modal: true
+            }, { title: localize('pushAndSetUpstream', 'Push and set upstream') });
+            await verifiedWorkspace.repo.push('origin', verifiedWorkspace.repo.state.HEAD?.name, true);
+        }
+        context.branchData = { name: verifiedWorkspace.repo.state.HEAD?.name };
     } else {
         if (!context.advancedCreation) {
             // default repo to private for basic create
