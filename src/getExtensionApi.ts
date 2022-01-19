@@ -19,7 +19,7 @@ export async function getFunctionsApi(context: IActionContext, installMessage?: 
     const funcExtension: AzureExtensionApiProvider | undefined = await getApiExport(funcExtensionId);
 
     if (funcExtension) {
-        return funcExtension.getApi<AzureFunctionsExtensionApi>('^1.3.0');
+        return funcExtension.getApi<AzureFunctionsExtensionApi>('^1.7.0');
     }
 
     await context.ui.showWarningMessage(installMessage ?? localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install', stepName: 'installFunctions' });

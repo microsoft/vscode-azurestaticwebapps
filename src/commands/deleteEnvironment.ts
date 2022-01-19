@@ -18,7 +18,7 @@ export async function deleteEnvironment(context: IActionContext, node?: Environm
         throw new Error(localize('cantDeletePro', 'Cannot delete the production environment directly. Delete the static web app.'));
     }
 
-    const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete "{0}"?', node.label);
+    const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete environment "{0}"?', node.label);
     await context.ui.showWarningMessage(confirmMessage, { modal: true }, DialogResponses.deleteResponse);
     await node.deleteTreeItem(context);
 }

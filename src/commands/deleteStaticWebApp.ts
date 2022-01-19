@@ -13,7 +13,7 @@ export async function deleteStaticWebApp(context: IActionContext, node?: StaticW
         node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
-    const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete "{0}"?', node.name);
+    const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete static web app "{0}"?', node.name);
     await context.ui.showWarningMessage(confirmMessage, { modal: true }, DialogResponses.deleteResponse);
     await node.deleteTreeItem(context);
 }
