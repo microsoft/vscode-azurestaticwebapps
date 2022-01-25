@@ -533,6 +533,7 @@
     },
     "dependencies": {
         "@azure/arm-appservice": "^6.0.0",
+        "@azure/arm-resources": "^4.2.2",
         "@azure/ms-rest-js": "^2.2.1",
         "@octokit/rest": "^18.5.2",
         "git-url-parse": "^11.1.2",

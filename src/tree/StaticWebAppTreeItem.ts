@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import type { ResourceManagementModels } from '@azure/arm-resources';
 import { ProgressLocation, window } from "vscode";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
-import { createWebSiteClient } from "../utils/azureClients";
+import { createResourceClient, createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId, pollAzureAsyncOperation } from "../utils/azureUtils";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
@@ -91,6 +92,10 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
         const deleting: string = localize('deleting', 'Deleting static web app "{0}"...', this.name);
         await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
+
+            const resourceClient = await createResourceClient([context, this]);
+            const resources: ResourceManagementModels.ResourceListResult = await resourceClient.resources.listByResourceGroup(this.resourceGroup);
+
             const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
             // the client API call only awaits the call, but doesn't poll for the result so we handle that ourself
             const deleteResponse = await client.staticSites.deleteStaticSite(this.resourceGroup, this.name);
@@ -99,6 +104,10 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
             void window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);
+
+            if (resources.length === 1) {
+                await resourceClient.resourceGroups.deleteMethod(this.resourceGroup);
+            }
         });
     }
 
