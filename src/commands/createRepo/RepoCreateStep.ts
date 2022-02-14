@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzureWizardExecuteStep } from "@microsoft/vscode-azext-utils";
 import { Octokit } from '@octokit/rest';
 import { Progress } from 'vscode';
-import { AzureWizardExecuteStep } from "vscode-azureextensionui";
 import { handleGitError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { Branch, Repository } from '../../git';

@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import { commands, FileType, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
-import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { openExistingProject } from '../constants';
 import { NoWorkspaceError } from '../errors';

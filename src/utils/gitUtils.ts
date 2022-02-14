@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzExtFsExtra, IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as gitUrlParse from 'git-url-parse';
 import { join } from 'path';
 import { MessageItem, ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
-import { AzExtFsExtra, IActionContext, UserCancelledError } from "vscode-azureextensionui";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { defaultGitignoreContents, gitignoreFileName } from '../constants';

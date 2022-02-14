@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
 import { MessageItem, window } from "vscode";
-import { callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
 import { showActionsMsg } from "../constants";
 import { ext } from "../extensionVariables";
 import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";

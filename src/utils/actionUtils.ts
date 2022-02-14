@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { TreeItemIconPath } from '@microsoft/vscode-azext-utils';
 import * as moment from 'moment';
 import { ThemeColor, ThemeIcon } from 'vscode';
-import { TreeItemIconPath } from 'vscode-azureextensionui';
 import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData, ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
 import { localize } from "./localize";
 

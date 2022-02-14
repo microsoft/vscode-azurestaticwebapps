@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzExtFsExtra, IActionContext } from '@microsoft/vscode-azext-utils';
 import { join } from 'path';
 import { MessageItem, Uri, window } from 'vscode';
-import { AzExtFsExtra, IActionContext } from 'vscode-azureextensionui';
 import { configFileName } from '../constants';
 import { localize } from '../utils/localize';
 import { selectWorkspaceFolder } from '../utils/workspaceUtils';

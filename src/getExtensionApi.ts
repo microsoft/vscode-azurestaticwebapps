@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
+import { AzureExtensionApiProvider } from "@microsoft/vscode-azext-utils/api";
 import { commands, Extension, extensions } from "vscode";
-import { IActionContext, UserCancelledError } from "vscode-azureextensionui";
-import { AzureExtensionApiProvider } from "vscode-azureextensionui/api";
 import { API, GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";

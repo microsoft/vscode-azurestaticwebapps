@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { Octokit } from "@octokit/rest";
 import { OctokitResponse } from "@octokit/types";
 import { ThemeIcon } from "vscode";
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createOctokitClient } from "../commands/github/createOctokitClient";
 import { ActionsListWorkflowRunsForRepoResponseData } from "../gitHubTypings";
 import { getRepoFullname } from '../utils/gitUtils';

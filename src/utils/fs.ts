@@ -3,9 +3,9 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { DialogResponses, IActionContext, parseError } from '@microsoft/vscode-azext-utils';
 import * as fse from 'fs-extra';
 import { MessageItem } from 'vscode';
-import { DialogResponses, IActionContext, parseError } from 'vscode-azureextensionui';
 import { localize } from './localize';
 
 export async function writeFormattedJson(fsPath: string, data: object): Promise<void> {

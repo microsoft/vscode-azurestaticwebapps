@@ -6,8 +6,8 @@
 // adapted from Oryx's C# implementation
 // https://github.com/microsoft/Oryx/blob/main/src/Detector/Node/NodeDetector.cs
 
+import { AzExtFsExtra, parseError } from "@microsoft/vscode-azext-utils";
 import { Uri } from 'vscode';
-import { AzExtFsExtra, parseError } from "vscode-azureextensionui";
 import { parse } from 'yaml';
 import { NodeConstants } from "./nodeConstants";
 

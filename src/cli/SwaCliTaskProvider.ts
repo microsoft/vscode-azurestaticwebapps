@@ -3,9 +3,9 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { AzExtFsExtra, callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import { ShellExecution, Task, TaskProvider, workspace, WorkspaceFolder } from "vscode";
-import { AzExtFsExtra, callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
 import { buildPresets } from "../buildPresets/buildPresets";
 import { tryGetApiLocations } from "../commands/createStaticWebApp/tryGetApiLocations";
 import { funcAddress, shell, swa, swaWatchProblemMatcher } from "../constants";

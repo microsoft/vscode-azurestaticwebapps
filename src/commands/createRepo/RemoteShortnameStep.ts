@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzureWizardPromptStep, parseError } from '@microsoft/vscode-azext-utils';
 import { basename } from 'path';
-import { AzureWizardPromptStep, parseError } from 'vscode-azureextensionui';
 import { cpUtils } from '../../utils/cpUtils';
 import { remoteShortnameExists } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';

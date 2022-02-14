@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as msRest from "@azure/ms-rest-js";
+import { createGenericClient } from "@microsoft/vscode-azext-azureutils";
+import { IActionContext, ISubscriptionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { CancellationToken, CancellationTokenSource } from "vscode";
-import { createGenericClient, IActionContext, ISubscriptionContext, UserCancelledError } from "vscode-azureextensionui";
 import { delay } from "./delay";
 import { localize } from './localize';
 

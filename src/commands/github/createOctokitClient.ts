@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { appendExtensionUserAgent, IActionContext } from "@microsoft/vscode-azext-utils";
 import { Octokit } from "@octokit/rest";
-import { appendExtensionUserAgent, IActionContext } from "vscode-azureextensionui";
 import { getGitHubAccessToken } from "../../utils/gitHubUtils";
 import { IStaticWebAppWizardContext } from "../createStaticWebApp/IStaticWebAppWizardContext";
 

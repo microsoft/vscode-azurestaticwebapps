@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem } from "vscode-azureextensionui";
+import { AzExtTreeItem } from "@microsoft/vscode-azext-utils";
 
 export interface IAzureResourceTreeItem extends AzExtTreeItem {
     data: {} | undefined;

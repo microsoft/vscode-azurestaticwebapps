@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzExtFsExtra, IActionContext, ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
 import { ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
-import { AzExtFsExtra, IActionContext, ICreateChildImplContext } from 'vscode-azureextensionui';
 import { Utils } from 'vscode-uri';
 import { productionEnvironmentName } from '../../constants';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
