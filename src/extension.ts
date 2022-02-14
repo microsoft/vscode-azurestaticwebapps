@@ -28,9 +28,9 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
     ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps', ext.prefix);
     context.subscriptions.push(ext.outputChannel);
 
-    registerAppServiceExtensionVariables(ext);
-    registerAzureUtilsExtensionVariables(ext);
     registerUIExtensionVariables(ext);
+    registerAzureUtilsExtensionVariables(ext);
+    registerAppServiceExtensionVariables(ext);
 
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
