@@ -5,10 +5,11 @@
 
 'use strict';
 
+import { registerAppServiceExtensionVariables } from '@microsoft/vscode-azext-azureappservice';
+import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
+import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
+import { AzureExtensionApi, AzureExtensionApiProvider } from '@microsoft/vscode-azext-utils/api';
 import * as vscode from 'vscode';
-import { registerAppServiceExtensionVariables } from 'vscode-azureappservice';
-import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from 'vscode-azureextensionui';
-import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';
@@ -28,6 +29,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
     context.subscriptions.push(ext.outputChannel);
 
     registerAppServiceExtensionVariables(ext);
+    registerAzureUtilsExtensionVariables(ext);
     registerUIExtensionVariables(ext);
 
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {

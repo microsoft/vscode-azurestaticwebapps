@@ -3,9 +3,9 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import { CancellationToken, commands, debug, DebugConfiguration, DebugConfigurationProvider, MessageItem, Uri, WorkspaceFolder } from "vscode";
-import { callWithTelemetryAndErrorHandling, IActionContext } from "vscode-azureextensionui";
 import { buildPresets } from "../buildPresets/buildPresets";
 import { IBuildPreset } from '../buildPresets/IBuildPreset';
 import { tryGetStaticWebAppsCliConfig } from "../cli/tryGetStaticWebAppsCliConfig";

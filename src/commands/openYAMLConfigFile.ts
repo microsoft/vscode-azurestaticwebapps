@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-utils";
 import { basename } from 'path';
 import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
-import { IActionContext, IAzureQuickPickItem } from "vscode-azureextensionui";
 import { CST, Document, parseDocument } from 'yaml';
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
 import { ext } from "../extensionVariables";

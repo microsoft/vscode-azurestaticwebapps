@@ -4,7 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { HttpOperationResponse } from "@azure/ms-rest-js";
-import { IActionContext, sendRequestWithTimeout } from "vscode-azureextensionui";
+import { sendRequestWithTimeout } from "@microsoft/vscode-azext-azureutils";
+import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { swaCliPackageName } from "../../constants";
 import { localize } from "../../utils/localize";
 

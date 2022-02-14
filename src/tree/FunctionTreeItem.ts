@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementModels } from "@azure/arm-appservice";
-import { AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { nonNullProp } from "../utils/nonNull";
 import { treeUtils } from "../utils/treeUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";

@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzExtFsExtra, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import { RelativePattern, workspace, WorkspaceFolder } from "vscode";
-import { AzExtFsExtra, IActionContext } from "vscode-azureextensionui";
 import { localize } from '../../utils/localize';
 import { telemetryUtils } from '../../utils/telemetryUtils';
 

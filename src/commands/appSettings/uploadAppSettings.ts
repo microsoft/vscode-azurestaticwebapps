@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppSettingsTreeItem, IAppSettingsClient } from 'vscode-azureappservice';
-import { IActionContext } from "vscode-azureextensionui";
+import { AppSettingsTreeItem, IAppSettingsClient } from '@microsoft/vscode-azext-azureappservice';
+import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { reservedSettingsPrefixes } from '../../constants';
 import { ext } from "../../extensionVariables";
 import { getFunctionsApi } from '../../getExtensionApi';

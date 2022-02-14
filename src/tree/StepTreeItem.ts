@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, TreeItemIconPath } from "vscode-azureextensionui";
+import { AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ActionWorkflowStepData } from '../gitHubTypings';
 import { getActionDescription, getActionIconPath } from '../utils/actionUtils';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';

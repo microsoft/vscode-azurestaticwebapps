@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import { AppSettingsTreeItem, AppSettingTreeItem } from "@microsoft/vscode-azext-azureappservice";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
-import { AppSettingsTreeItem, AppSettingTreeItem } from "vscode-azureappservice";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";

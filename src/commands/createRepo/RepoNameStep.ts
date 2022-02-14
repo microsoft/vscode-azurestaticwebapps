@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzureWizardPromptStep, IParsedError, parseError } from '@microsoft/vscode-azext-utils';
 import { Octokit } from '@octokit/rest';
-import { AzureWizardPromptStep, IParsedError, parseError } from 'vscode-azureextensionui';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';

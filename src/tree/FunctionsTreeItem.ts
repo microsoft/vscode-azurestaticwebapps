@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ThemeIcon } from "vscode";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { createWebSiteClient } from "../utils/azureClients";
 import { localize } from '../utils/localize';
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";

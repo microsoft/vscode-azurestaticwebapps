@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
-import type { ResourceManagementModels } from '@azure/arm-resources';
+import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-resources";
+import { uiUtils } from "@microsoft/vscode-azext-azureutils";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ProgressLocation, window } from "vscode";
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "vscode-azureextensionui";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { createResourceClient, createWebSiteClient } from "../utils/azureClients";
@@ -93,8 +94,8 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
         await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
 
-            const resourceClient = await createResourceClient([context, this]);
-            const resources: ResourceManagementModels.ResourceListResult = await resourceClient.resources.listByResourceGroup(this.resourceGroup);
+            const resourceClient: ResourceManagementClient = await createResourceClient([context, this]);
+            const resources: GenericResourceExpanded[] = await uiUtils.listAllIterator(resourceClient.resources.listByResourceGroup(this.resourceGroup));
 
             const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
             // the client API call only awaits the call, but doesn't poll for the result so we handle that ourself
@@ -106,7 +107,7 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
             ext.outputChannel.appendLog(deleteSucceeded);
 
             if (resources.length === 1) {
-                await resourceClient.resourceGroups.deleteMethod(this.resourceGroup);
+                await resourceClient.resourceGroups.beginDeleteAndWait(this.resourceGroup);
             }
         });
     }

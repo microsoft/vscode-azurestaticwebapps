@@ -3,8 +3,8 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { IActionContext, registerEvent } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
-import { IActionContext, registerEvent } from 'vscode-azureextensionui';
 import { swa } from '../../constants';
 
 interface IRunningSwaTask {

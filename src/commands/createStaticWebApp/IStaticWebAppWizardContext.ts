@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { ICreateChildImplContext, IResourceGroupWizardContext } from 'vscode-azureextensionui';
+import { IResourceGroupWizardContext } from '@microsoft/vscode-azext-azureutils';
+import { ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
 import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { Repository } from '../../git';
 import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';

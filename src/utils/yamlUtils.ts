@@ -3,8 +3,8 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { AzExtFsExtra, IActionContext } from "@microsoft/vscode-azext-utils";
 import { basename } from "path";
-import { AzExtFsExtra, IActionContext } from "vscode-azureextensionui";
 import { parse } from "yaml";
 import { BuildConfig, BuildConfigs } from "../tree/WorkflowGroupTreeItem";
 import { localize } from "./localize";

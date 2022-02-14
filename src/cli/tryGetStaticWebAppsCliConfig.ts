@@ -3,8 +3,8 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { AzExtFsExtra, parseError } from "@microsoft/vscode-azext-utils";
 import { Uri } from "vscode";
-import { AzExtFsExtra, parseError } from "vscode-azureextensionui";
 import { swaCliConfigFileName } from "../constants";
 import { localize } from "../utils/localize";
 

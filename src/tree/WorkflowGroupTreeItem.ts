@@ -3,9 +3,9 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, parseError, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { basename, join } from "path";
 import { FileType, Range, ThemeIcon, Uri, workspace } from "vscode";
-import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, parseError, TreeItemIconPath } from "vscode-azureextensionui";
 // eslint-disable-next-line import/no-internal-modules
 import { YAMLSyntaxError } from "yaml/util";
 import { localize } from "../utils/localize";

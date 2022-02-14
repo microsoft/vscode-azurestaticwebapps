@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from '@microsoft/vscode-azext-utils';
 import { Octokit } from '@octokit/rest';
 import { authentication, ProgressLocation, window } from 'vscode';
-import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from 'vscode-azureextensionui';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { githubAuthProviderId, githubScopes } from '../constants';
 import { ext } from '../extensionVariables';

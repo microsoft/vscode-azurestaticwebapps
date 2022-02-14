@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { AppSettingsClientProvider, IAppSettingsClient } from 'vscode-azureappservice';
-import { IActionContext } from 'vscode-azureextensionui';
+import { AppSettingsClientProvider, IAppSettingsClient } from '@microsoft/vscode-azext-azureappservice';
+import { IActionContext } from '@microsoft/vscode-azext-utils';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { createWebSiteClient } from '../../utils/azureClients';
 

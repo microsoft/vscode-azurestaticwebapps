@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementModels } from "@azure/arm-appservice";
+import { LocationListStep } from "@microsoft/vscode-azext-azureutils";
+import { AzureWizardExecuteStep } from "@microsoft/vscode-azext-utils";
 import { Progress } from "vscode";
-import { AzureWizardExecuteStep, LocationListStep } from "vscode-azureextensionui";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
 import { nonNullProp, nonNullValueAndProp } from "../../utils/nonNull";
