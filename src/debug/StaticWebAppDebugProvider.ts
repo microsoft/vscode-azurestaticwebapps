@@ -132,7 +132,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
 
     private getFuncDebugConfig(folder: WorkspaceFolder): DebugConfiguration | undefined {
         const debugConfigurations = getDebugConfigs(folder);
-        return debugConfigurations.find((debugConfig) => debugConfig.name === 'Attach to Node Functions');
+        return debugConfigurations.find((debugConfig) => debugConfig.name.match(new RegExp(/^Attach to (.+) Functions$/, 'i')));
     }
 
     private parseDebugConfigurationName(debugConfiguration: DebugConfiguration): string {
