@@ -5,7 +5,7 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
 import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-resources";
-import { uiUtils } from "@microsoft/vscode-azext-azureutils";
+import { AzExtClientContext, uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ProgressLocation, window } from "vscode";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
@@ -61,7 +61,17 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
+        let client: WebSiteManagementClient;
+        try {
+            const clientContext: AzExtClientContext = [context, this.subscription];
+            const subscription = clientContext[1] instanceof AzExtTreeItem ? clientContext[1].subscription : clientContext[1];
+            console.log(subscription);
+            client = await createWebSiteClient(clientContext);
+
+        } catch (e) {
+            console.log('error creating client in load more children', [context, this]);
+            throw e;
+        }
         const envs: WebSiteManagementModels.StaticSiteBuildCollection = await client.staticSites.getStaticSiteBuilds(this.resourceGroup, this.name);
 
         return await this.createTreeItemsWithErrorHandling(

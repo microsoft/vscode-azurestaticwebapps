@@ -59,6 +59,7 @@
         "onDebugDynamicConfigurations",
         "onDebugInitialConfigurations",
         "onDebugResolve:pwa-chrome",
+        "onView:azureResourceGroups",
         "onView:staticWebApps",
         "workspaceContains:**/staticwebapp.config.json",
         "workspaceContains:**/swa-cli.config.json"
@@ -296,7 +297,7 @@
                 },
                 {
                     "command": "staticWebApps.browse",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Environment)$/",
                     "group": "1@1"
                 },
                 {

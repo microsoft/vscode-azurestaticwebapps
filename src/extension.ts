@@ -10,6 +10,7 @@ import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-az
 import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
 import { AzureExtensionApi, AzureExtensionApiProvider } from '@microsoft/vscode-azext-utils/api';
 import * as vscode from 'vscode';
+import { HostApi } from './api';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';
@@ -20,6 +21,8 @@ import { registerCommands } from './commands/registerCommands';
 import { githubAuthProviderId, githubScopes, pwaChrome, shell, swa } from './constants';
 import { StaticWebAppDebugProvider } from './debug/StaticWebAppDebugProvider';
 import { ext } from './extensionVariables';
+import { getApiExport } from './getExtensionApi';
+import { StaticWebAppResolver } from './StaticWebAppResolver';
 import { AzureAccountTreeItem } from './tree/AzureAccountTreeItemWithProjects';
 
 export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<AzureExtensionApiProvider> {
@@ -54,6 +57,12 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(swa, new StaticWebAppDebugProvider(), vscode.DebugConfigurationProviderTriggerKind.Dynamic));
         context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(swa, new StaticWebAppDebugProvider(), vscode.DebugConfigurationProviderTriggerKind.Initial));
         context.subscriptions.push(vscode.tasks.registerTaskProvider(shell, new SwaTaskProvider()));
+
+        const rgApi = await getApiExport<AzureExtensionApiProvider>('ms-azuretools.vscode-azureresourcegroups');
+
+        if (rgApi) {
+            rgApi.getApi<HostApi>('0.0.1').registerApplicationResourceResolver(new StaticWebAppResolver(), 'Microsoft.Web/staticSites');
+        }
 
         registerSwaCliTaskEvents();
 
