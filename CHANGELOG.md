@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.9.1 - 2022-02-22
+
+### Fixed
+- Unable to debug non-Node.JS Functions [#618](https://github.com/microsoft/vscode-azurestaticwebapps/pull/618)
+
 ## 0.9.0 - 2021-11-11
 
 ### Added
