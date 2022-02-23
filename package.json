@@ -66,6 +66,15 @@
     ],
     "main": "./main.js",
     "contributes": {
+        "azExt": {
+            "commands": [
+                {
+                    "command": "staticWebApps.createStaticWebApp",
+                    "title": "%staticWebApps.createStaticWebApp%",
+                    "type": "microsoft.web/staticsites"
+                }
+            ]
+        },
         "debuggers": [
             {
                 "type": "swa",
@@ -277,22 +286,22 @@
                 },
                 {
                     "command": "staticWebApps.createStaticWebApp",
-                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /(azureextensionui.azureSubscription|azureResourceTypeGroup/microsoft.web/staticsites)/",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.createStaticWebAppAdvanced",
-                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureextensionui.azureSubscription",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.openInPortal",
-                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureextensionui.azureSubscription",
                     "group": "9@1"
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem == azureextensionui.azureSubscription",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureextensionui.azureSubscription",
                     "group": "9@2"
                 },
                 {
@@ -302,97 +311,97 @@
                 },
                 {
                     "command": "staticWebApps.openGitHubRepo",
-                    "when": "view == staticWebApps && viewItem == azureStaticEnvironment",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticEnvironment",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.showActions",
-                    "when": "view == staticWebApps && viewItem == azureStaticActions",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticActions",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.cloneRepo",
-                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticWebApp",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.openYAMLConfigFile",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment)$/",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Environment)$/",
                     "group": "3@1"
                 },
                 {
                     "command": "staticWebApps.deleteStaticWebApp",
-                    "when": "view == staticWebApps && viewItem == azureStaticWebApp",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticWebApp",
                     "group": "3@2"
                 },
                 {
                     "command": "staticWebApps.deleteEnvironment",
-                    "when": "view == staticWebApps && viewItem == azureStaticEnvironment",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticEnvironment",
                     "group": "3@2"
                 },
                 {
                     "command": "staticWebApps.openGitHubLog",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(Job|Step$)/",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(Job|Step$)/",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Action[^s]|Job|Step$)/",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Environment|Action[^s]|Job|Step$)/",
                     "group": "9@1"
                 },
                 {
                     "command": "staticWebApps.openInPortal",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Functions)|applicationSettings/",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Functions)|applicationSettings/",
                     "group": "9@2"
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?|Job|Step|WorkflowGroup|LocalProject)|applicationSettings/",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?|Job|Step|WorkflowGroup|LocalProject)|applicationSettings/",
                     "group": "9@3"
                 },
                 {
                     "command": "staticWebApps.appSettings.add",
-                    "when": "view == staticWebApps && viewItem == applicationSettings",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == applicationSettings",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.appSettings.download",
-                    "when": "view == staticWebApps && viewItem == applicationSettings",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == applicationSettings",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.appSettings.upload",
-                    "when": "view == staticWebApps && viewItem == applicationSettings",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == applicationSettings",
                     "group": "1@3"
                 },
                 {
                     "command": "staticWebApps.appSettings.edit",
-                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == applicationSettingItem",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.appSettings.rename",
-                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == applicationSettingItem",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.appSettings.delete",
-                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == applicationSettingItem",
                     "group": "1@3"
                 },
                 {
                     "command": "staticWebApps.toggleAppSettingVisibility",
-                    "when": "view == staticWebApps && viewItem == applicationSettingItem",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == applicationSettingItem",
                     "group": "inline"
                 },
                 {
                     "command": "staticWebApps.action.rerun",
-                    "when": "view == staticWebApps && viewItem == azureStaticActionCompleted",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticActionCompleted",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.action.cancel",
-                    "when": "view == staticWebApps && viewItem == azureStaticActionInProgress",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticActionInProgress",
                     "group": "1@2"
                 }
             ],
