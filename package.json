@@ -62,7 +62,8 @@
         "onView:azureResourceGroups",
         "onView:staticWebApps",
         "workspaceContains:**/staticwebapp.config.json",
-        "workspaceContains:**/swa-cli.config.json"
+        "workspaceContains:**/swa-cli.config.json",
+        "x-onAzNodeTypeFetch:microsoft.web/staticsites"
     ],
     "main": "./main.js",
     "contributes": {
