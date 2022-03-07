@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementModels } from '@azure/arm-appservice';
+import { SkuDescription } from '@azure/arm-appservice';
 import { AzureWizardPromptStep, IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
 import { localize } from '../../utils/localize';
 import { nonNullProp } from '../../utils/nonNull';
@@ -11,7 +11,7 @@ import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const skus: IAzureQuickPickItem<WebSiteManagementModels.SkuDescription>[] = SkuListStep.getSkus().map(s => {
+        const skus: IAzureQuickPickItem<SkuDescription>[] = SkuListStep.getSkus().map(s => {
             return {
                 label: nonNullProp(s, 'name'),
                 detail: s.detail,
@@ -28,7 +28,7 @@ export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContex
         return !context.sku;
     }
 
-    public static getSkus(): (WebSiteManagementModels.SkuDescription & { description: string, detail: string })[] {
+    public static getSkus(): (SkuDescription & { description: string, detail: string })[] {
         // seems incomplete, but only name/tier are necessary for the SiteEnvelope to pick the right sku
         return [
             {

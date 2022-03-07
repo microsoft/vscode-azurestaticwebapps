@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-resources";
 import { uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
@@ -11,7 +11,7 @@ import { ProgressLocation, window } from "vscode";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ext } from "../extensionVariables";
 import { createResourceClient, createWebSiteClient } from "../utils/azureClients";
-import { getResourceGroupFromId, pollAzureAsyncOperation } from "../utils/azureUtils";
+import { getResourceGroupFromId } from "../utils/azureUtils";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
@@ -23,7 +23,7 @@ import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticWebApp';
     public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
-    public readonly data: WebSiteManagementModels.StaticSiteARMResource;
+    public readonly data: StaticSiteARMResource;
     public readonly childTypeLabel: string = localize('environment', 'Environment');
 
     public name: string;
@@ -33,7 +33,7 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
     public branch: string;
     public defaultHostname: string;
 
-    constructor(parent: AzExtParentTreeItem, ss: WebSiteManagementModels.StaticSiteARMResource) {
+    constructor(parent: AzExtParentTreeItem, ss: StaticSiteARMResource) {
         super(parent);
         this.data = ss;
         this.name = nonNullProp(this.data, 'name');
@@ -62,12 +62,12 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-        const envs: WebSiteManagementModels.StaticSiteBuildCollection = await client.staticSites.getStaticSiteBuilds(this.resourceGroup, this.name);
+        const envs = await uiUtils.listAllIterator(client.staticSites.listStaticSiteBuilds(this.resourceGroup, this.name));
 
         return await this.createTreeItemsWithErrorHandling(
             envs,
             'invalidStaticEnvironment',
-            async (env: WebSiteManagementModels.StaticSiteBuildARMResource) => {
+            async (env: StaticSiteBuildARMResource) => {
                 return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this, env);
             },
             env => env.buildId
@@ -98,10 +98,7 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
             const resources: GenericResourceExpanded[] = await uiUtils.listAllIterator(resourceClient.resources.listByResourceGroup(this.resourceGroup));
 
             const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-            // the client API call only awaits the call, but doesn't poll for the result so we handle that ourself
-            const deleteResponse = await client.staticSites.deleteStaticSite(this.resourceGroup, this.name);
-            await pollAzureAsyncOperation(context, deleteResponse, this.subscription);
-
+            await client.staticSites.beginDeleteStaticSiteAndWait(this.resourceGroup, this.name);
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
             void window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);

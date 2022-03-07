@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
+import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
+import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, uiUtils, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
 import { workspace } from 'vscode';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
@@ -40,7 +40,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-        const staticWebApps: WebSiteManagementModels.StaticSitesListResponse = await client.staticSites.list();
+        const staticWebApps: StaticSiteARMResource[] = await uiUtils.listAllIterator(client.staticSites.list());
 
         return await this.createTreeItemsWithErrorHandling(
             staticWebApps,
@@ -48,7 +48,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             ss => new StaticWebAppTreeItem(this, ss),
             ss => ss.name
         );
-
     }
 
     public async createChildImpl(context: ICreateChildImplContext): Promise<AzExtTreeItem> {
