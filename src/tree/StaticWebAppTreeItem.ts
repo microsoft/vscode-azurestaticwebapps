@@ -98,7 +98,6 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
             const resources: GenericResourceExpanded[] = await uiUtils.listAllIterator(resourceClient.resources.listByResourceGroup(this.resourceGroup));
 
             const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-            // the client API call only awaits the call, but doesn't poll for the result so we handle that ourself
             await client.staticSites.beginDeleteStaticSiteAndWait(this.resourceGroup, this.name);
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
             void window.showInformationMessage(deleteSucceeded);
