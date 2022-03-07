@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
+import { StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse, WebSiteManagementClient } from '@azure/arm-appservice';
 import { AppSettingsClientProvider, IAppSettingsClient } from '@microsoft/vscode-azext-azureappservice';
 import { IActionContext } from '@microsoft/vscode-azext-utils';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
@@ -45,12 +45,12 @@ export class SwaAppSettingsClient implements IAppSettingsClient {
         this.isLinux = true;
     }
 
-    public async listApplicationSettings(): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
+    public async listApplicationSettings(): Promise<StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
         return this._isBuild ? await this._client.staticSites.listStaticSiteBuildFunctionAppSettings(this._resourceGroup, this._parentName, this._prId) :
             await this._client.staticSites.listStaticSiteFunctionAppSettings(this._resourceGroup, this._parentName);
     }
 
-    public async updateApplicationSettings(appSettings: WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse): Promise<WebSiteManagementModels.StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
+    public async updateApplicationSettings(appSettings: StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse): Promise<StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse> {
         return this._isBuild ? await this._client.staticSites.createOrUpdateStaticSiteBuildFunctionAppSettings(this._resourceGroup, this._parentName, this._prId, appSettings) :
             await this._client.staticSites.createOrUpdateStaticSiteFunctionAppSettings(this._resourceGroup, this._parentName, appSettings);
     }

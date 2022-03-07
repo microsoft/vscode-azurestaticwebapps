@@ -532,7 +532,7 @@
         "webpack-cli": "^4.6.0"
     },
     "dependencies": {
-        "@azure/arm-appservice": "^6.0.0",
+        "@azure/arm-appservice": "^11.0.0",
         "@azure/arm-resources": "^5.0.0",
         "@azure/ms-rest-js": "^2.2.1",
         "@microsoft/vscode-azext-azureappservice": "^0.1.1",

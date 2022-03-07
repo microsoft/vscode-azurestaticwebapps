@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import { WebSiteManagementClient } from "@azure/arm-appservice";
+import { uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ThemeIcon } from "vscode";
 import { createWebSiteClient } from "../utils/azureClients";
@@ -36,8 +37,8 @@ export class FunctionsTreeItem extends AzExtParentTreeItem {
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-        const functions: WebSiteManagementModels.StaticSiteFunctionOverviewCollection = this.parent.isProduction ? await client.staticSites.listStaticSiteFunctions(this.parent.parent.resourceGroup, this.parent.parent.name) :
-            await client.staticSites.listStaticSiteBuildFunctions(this.parent.parent.resourceGroup, this.parent.parent.name, this.parent.buildId);
+        const functions = this.parent.isProduction ? await uiUtils.listAllIterator(client.staticSites.listStaticSiteFunctions(this.parent.parent.resourceGroup, this.parent.parent.name)) :
+            await uiUtils.listAllIterator(client.staticSites.listStaticSiteBuildFunctions(this.parent.parent.resourceGroup, this.parent.parent.name, this.parent.buildId));
 
         const treeItems: AzExtTreeItem[] = await this.createTreeItemsWithErrorHandling(
             functions,
