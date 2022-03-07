@@ -21,6 +21,7 @@ import { SkuListStep } from '../commands/createStaticWebApp/SkuListStep';
 import { StaticWebAppCreateStep } from '../commands/createStaticWebApp/StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from '../commands/createStaticWebApp/StaticWebAppNameStep';
 import { createWebSiteClient } from '../utils/azureClients';
+import { isRestError } from '../utils/azureUtils';
 import { getGitHubAccessToken } from '../utils/gitHubUtils';
 import { gitPull } from '../utils/gitUtils';
 import { localize } from '../utils/localize';
@@ -40,7 +41,15 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-        const staticWebApps: StaticSiteARMResource[] = await uiUtils.listAllIterator(client.staticSites.list());
+        let staticWebApps: StaticSiteARMResource[] = []
+
+        try {
+            staticWebApps = await uiUtils.listAllIterator(client.staticSites.list());
+        } catch (e) {
+            if (isRestError(e) && e.code === 'InvalidResourceType') {
+                throw new Error(localize('staticWebAppsNotSupported', 'Static Web Apps are not supported in {0}.', this.subscription.environment.name));
+            }
+        }
 
         return await this.createTreeItemsWithErrorHandling(
             staticWebApps,
