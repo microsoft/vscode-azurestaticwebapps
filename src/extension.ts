@@ -10,7 +10,7 @@ import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-az
 import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
 import { AzureExtensionApi, AzureExtensionApiProvider } from '@microsoft/vscode-azext-utils/api';
 import * as vscode from 'vscode';
-import { HostApi } from './api';
+import { AzExtApi } from './api';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';
@@ -61,7 +61,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         const rgApi = await getApiExport<AzureExtensionApiProvider>('ms-azuretools.vscode-azureresourcegroups');
 
         if (rgApi) {
-            rgApi.getApi<HostApi>('0.0.1').registerApplicationResourceResolver(new StaticWebAppResolver(), 'Microsoft.Web/staticSites');
+            rgApi.getApi<AzExtApi>('0.0.1').registerApplicationResourceResolver(new StaticWebAppResolver(), 'Microsoft.Web/staticSites');
         }
 
         registerSwaCliTaskEvents();
