@@ -5,12 +5,14 @@
 
 import { IActionContext } from '@microsoft/vscode-azext-utils';
 import { commands } from 'vscode';
-import { ext } from '../../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../../api';
+import { getResourcesApi } from '../../getExtensionApi';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 
 export async function cloneRepo(context: IActionContext, resource?: StaticWebAppTreeItem | string): Promise<void> {
     if (resource === undefined) {
-        resource = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        resource = await rgApi.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
     let repoUrl: string;

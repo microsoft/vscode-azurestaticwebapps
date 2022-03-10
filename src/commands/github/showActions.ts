@@ -4,14 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext } from '@microsoft/vscode-azext-utils';
-import { ext } from '../../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../../api';
+import { getResourcesApi } from '../../getExtensionApi';
 import { ActionsTreeItem } from '../../tree/ActionsTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { openUrl } from '../../utils/openUrl';
 
 export async function showActions(context: IActionContext, node?: StaticWebAppTreeItem | ActionsTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
     await openUrl(`${node.repositoryUrl}/actions`);

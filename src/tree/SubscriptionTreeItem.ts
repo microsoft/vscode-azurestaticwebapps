@@ -28,6 +28,8 @@ import { nonNullProp } from '../utils/nonNull';
 import { getSingleRootFsPath } from '../utils/workspaceUtils';
 import { StaticWebAppTreeItem } from './StaticWebAppTreeItem';
 
+
+// TODO: Refactor from treeItem since it's not displayed in UI (it's handled by the Resource Group extension)
 export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
     public readonly childTypeLabel: string = localize('staticWebApp', 'Static Web App');
     public supportsAdvancedCreation: boolean = true;

@@ -6,6 +6,7 @@
 import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { AzureExtensionApiProvider } from "@microsoft/vscode-azext-utils/api";
 import { commands, Extension, extensions } from "vscode";
+import { AzureResourceGroupsExtensionApi } from "./api";
 import { API, GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";
@@ -46,6 +47,22 @@ export async function getGitApi(): Promise<API> {
             throw err;
         }
     }
+}
+
+export async function getResourcesApi(context: IActionContext, installMessage?: string): Promise<AzureResourceGroupsExtensionApi> {
+    const rgExtensionId: string = 'ms-azuretools.vscode-azureresourcegroups';
+    const rgExtension: AzureExtensionApiProvider | undefined = await getApiExport(rgExtensionId);
+
+    if (rgExtension) {
+        return rgExtension.getApi<AzureResourceGroupsExtensionApi>('^0.0.1');
+    }
+
+    await context.ui.showWarningMessage(installMessage ?? localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install', stepName: 'installFunctions' });
+    const commandToRun: string = 'extension.open';
+    void commands.executeCommand(commandToRun, rgExtensionId);
+
+    // we still need to throw an error even if the user installs
+    throw new UserCancelledError('postInstallFunctions');
 }
 
 export async function getApiExport<T>(extensionId: string): Promise<T | undefined> {

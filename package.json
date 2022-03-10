@@ -59,7 +59,6 @@
         "onDebugDynamicConfigurations",
         "onDebugInitialConfigurations",
         "onDebugResolve:pwa-chrome",
-        "onView:staticWebApps",
         "workspaceContains:**/staticwebapp.config.json",
         "workspaceContains:**/swa-cli.config.json"
     ],
@@ -237,37 +236,7 @@
                 "category": "Azure Static Web Apps"
             }
         ],
-        "views": {
-            "azure": [
-                {
-                    "id": "staticWebApps",
-                    "name": "Static Web Apps"
-                }
-            ]
-        },
         "menus": {
-            "view/title": [
-                {
-                    "command": "staticWebApps.createHttpFunction",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@2"
-                },
-                {
-                    "command": "staticWebApps.createStaticWebApp",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@1"
-                },
-                {
-                    "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@3"
-                },
-                {
-                    "command": "staticWebApps.showDocumentation",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@4"
-                }
-            ],
             "view/item/context": [
                 {
                     "command": "staticWebApps.selectSubscriptions",

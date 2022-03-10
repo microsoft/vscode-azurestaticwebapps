@@ -7,6 +7,7 @@ import { AzureAccountTreeItemBase } from '@microsoft/vscode-azext-azureutils';
 import { ISubscriptionContext } from '@microsoft/vscode-azext-utils';
 import { SubscriptionTreeItem } from './SubscriptionTreeItem';
 
+// TODO: Refactor from treeItem since it's not displayed in UI
 export class AzureAccountTreeItem extends AzureAccountTreeItemBase {
     public constructor(testAccount?: {}) {
         super(undefined, testAccount);

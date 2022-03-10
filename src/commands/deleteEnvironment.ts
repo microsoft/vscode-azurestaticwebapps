@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DialogResponses, IActionContext } from '@microsoft/vscode-azext-utils';
-import { ext } from '../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../api';
+import { getResourcesApi } from '../getExtensionApi';
 import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
 import { localize } from '../utils/localize';
 
 export async function deleteEnvironment(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
     if (node.isProduction) {

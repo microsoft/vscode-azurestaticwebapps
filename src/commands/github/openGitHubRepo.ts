@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext } from '@microsoft/vscode-azext-utils';
-import { ext } from '../../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../../api';
+import { getResourcesApi } from '../../getExtensionApi';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { openUrl } from '../../utils/openUrl';
 
 export async function openGitHubRepo(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
     await openUrl(`${node.parent.repositoryUrl}/tree/${node.branch}`);

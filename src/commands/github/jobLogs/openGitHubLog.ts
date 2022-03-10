@@ -6,7 +6,8 @@
 import { IActionContext, parseError } from '@microsoft/vscode-azext-utils';
 import { EOL } from 'os';
 import { FoldingRange } from 'vscode';
-import { ext } from '../../../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../../../api';
+import { getResourcesApi } from '../../../getExtensionApi';
 import { JobTreeItem } from '../../../tree/JobTreeItem';
 import { StepTreeItem } from '../../../tree/StepTreeItem';
 import { localize } from '../../../utils/localize';
@@ -16,7 +17,8 @@ import { LogState, parseGitHubLog } from './parseGitHubLog';
 
 export async function openGitHubLog(context: IActionContext, node?: StepTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StepTreeItem>(StepTreeItem.contextValue, context);
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<StepTreeItem>(StepTreeItem.contextValue, context);
     }
 
     let content: string;

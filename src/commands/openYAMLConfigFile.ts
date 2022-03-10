@@ -8,7 +8,8 @@ import { basename } from 'path';
 import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
 import { CST, Document, parseDocument } from 'yaml';
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
-import { ext } from "../extensionVariables";
+import { AzureResourceGroupsExtensionApi } from "../api";
+import { getResourcesApi } from "../getExtensionApi";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
 import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeItem';
@@ -17,7 +18,8 @@ import { openUrl } from "../utils/openUrl";
 
 export async function openYAMLConfigFile(context: IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
     let yamlFileUri: Uri | undefined;

@@ -5,11 +5,13 @@
 
 import { AppSettingTreeItem } from '@microsoft/vscode-azext-azureappservice';
 import { IActionContext } from '@microsoft/vscode-azext-utils';
-import { ext } from '../../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../../api';
+import { getResourcesApi } from '../../getExtensionApi';
 
 export async function editAppSetting(context: IActionContext, node?: AppSettingTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<AppSettingTreeItem>(AppSettingTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<AppSettingTreeItem>(AppSettingTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
     await node.edit(context);

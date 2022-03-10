@@ -6,13 +6,15 @@
 import { AppSettingsTreeItem } from '@microsoft/vscode-azext-azureappservice';
 import { openInPortal as openInPortalUtil } from '@microsoft/vscode-azext-azureutils';
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
-import { ext } from '../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../api';
+import { getResourcesApi } from '../getExtensionApi';
 import { FunctionsTreeItem } from '../tree/FunctionsTreeItem';
 import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
 export async function openInPortal(context: IActionContext, node?: AzExtTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
     switch (node.contextValue) {

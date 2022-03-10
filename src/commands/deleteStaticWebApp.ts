@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DialogResponses, IActionContext } from '@microsoft/vscode-azext-utils';
-import { ext } from '../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../api';
+import { getResourcesApi } from '../getExtensionApi';
 import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 import { localize } from '../utils/localize';
 
 export async function deleteStaticWebApp(context: IActionContext, node?: StaticWebAppTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
     const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete static web app "{0}"?', node.name);

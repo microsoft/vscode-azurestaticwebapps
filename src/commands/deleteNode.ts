@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
-import { ext } from '../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../api';
+import { getResourcesApi } from '../getExtensionApi';
 
 export async function deleteNode(context: IActionContext, expectedContextValue: string | RegExp, node?: AzExtTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker(expectedContextValue, { ...context, suppressCreatePick: true });
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker(expectedContextValue, { ...context, suppressCreatePick: true });
     }
 
     await node.deleteTreeItem(context);

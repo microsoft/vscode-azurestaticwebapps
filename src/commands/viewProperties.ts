@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext, openReadOnlyJson } from '@microsoft/vscode-azext-utils';
-import { ext } from '../extensionVariables';
+import { AzureResourceGroupsExtensionApi } from '../api';
+import { getResourcesApi } from '../getExtensionApi';
 import { IAzureResourceTreeItem } from '../tree/IAzureResourceTreeItem';
 import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 import { localize } from '../utils/localize';
@@ -12,7 +13,8 @@ import { nonNullProp } from '../utils/nonNull';
 
 export async function viewProperties(context: IActionContext, node?: IAzureResourceTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        node = await rgApi.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
     if (!node.data) {

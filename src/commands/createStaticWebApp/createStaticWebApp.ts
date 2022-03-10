@@ -6,11 +6,12 @@
 import { AzExtFsExtra, IActionContext, ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
 import { ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
 import { Utils } from 'vscode-uri';
+import { AzureResourceGroupsExtensionApi } from '../../api';
 import { productionEnvironmentName } from '../../constants';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
-import { ext } from '../../extensionVariables';
+import { getResourcesApi } from '../../getExtensionApi';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
@@ -37,7 +38,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     isVerifyingWorkspace = true;
     try {
         if (!node) {
-            node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
+            const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+            node = await rgApi.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
         }
 
         await window.withProgress(progressOptions, async () => {
@@ -85,11 +87,12 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     void showSwaCreated(swaNode);
 
     // only reveal SWA node when tree is visible to avoid changing their tree view just to reveal the node
-    if (ext.treeView.visible) {
+    const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+    if (rgApi.treeView.visible) {
         const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
             return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
         });
-        environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
+        environmentNode && await rgApi.treeView.reveal(environmentNode, { expand: true });
     }
 
     void postCreateStaticWebApp(swaNode);

@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtTreeItem, callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
-import { ext } from "../../extensionVariables";
+import { AzureResourceGroupsExtensionApi } from "../../api";
+import { getResourcesApi } from "../../getExtensionApi";
 
 export async function revealTreeItem(resourceId: string): Promise<void> {
     return await callWithTelemetryAndErrorHandling('api.revealTreeItem', async (context: IActionContext) => {
-        const node: AzExtTreeItem | undefined = await ext.tree.findTreeItem(resourceId, { ...context, loadAll: true });
+        const rgApi: AzureResourceGroupsExtensionApi = await getResourcesApi(context);
+        const node: AzExtTreeItem | undefined = await rgApi.tree.findTreeItem(resourceId, { ...context, loadAll: true });
         if (node) {
-            await ext.treeView.reveal(node, { select: true, focus: true, expand: true });
+            await rgApi.treeView.reveal(node, { select: true, focus: true, expand: true });
         }
     });
 }

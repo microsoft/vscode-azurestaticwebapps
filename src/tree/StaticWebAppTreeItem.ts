@@ -20,6 +20,7 @@ import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from './EnvironmentTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
+// TODO: _POTENTIALLY_ Refactor from treeItem since it's not displayed in UI (it's handled by the Resource Group extension)
 export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
     public static contextValue: string = 'azureStaticWebApp';
     public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
