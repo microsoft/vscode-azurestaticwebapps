@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { RestError } from "@azure/ms-rest-js";
 import { UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { CancellationToken, CancellationTokenSource } from "vscode";
 import { delay } from "./delay";
@@ -55,8 +54,4 @@ export async function pollAsyncOperation(pollingOperation: () => Promise<boolean
 
         tokenSource.dispose();
     }
-}
-
-export function isRestError(e: unknown): e is RestError {
-    return (e as RestError).name === 'RestError';
 }
