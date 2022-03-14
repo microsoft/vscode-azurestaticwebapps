@@ -5,7 +5,7 @@
 
 import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, uiUtils, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext, parseError } from '@microsoft/vscode-azext-utils';
 import { workspace } from 'vscode';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
@@ -40,7 +40,15 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-        const staticWebApps: StaticSiteARMResource[] = await uiUtils.listAllIterator(client.staticSites.list());
+        let staticWebApps: StaticSiteARMResource[] = []
+
+        try {
+            staticWebApps = await uiUtils.listAllIterator(client.staticSites.list());
+        } catch (e) {
+            if (/InvalidResourceType/i.test(parseError(e).errorType)) {
+                throw new Error(localize('staticWebAppsNotSupported', 'Static Web Apps are not supported in {0}.', this.subscription.environment.name));
+            }
+        }
 
         return await this.createTreeItemsWithErrorHandling(
             staticWebApps,
