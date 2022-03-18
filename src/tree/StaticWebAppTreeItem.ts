@@ -104,7 +104,7 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
             ext.outputChannel.appendLog(deleteSucceeded);
 
             if (resources.length === 1) {
-                await resourceClient.resourceGroups.beginDeleteAndWait(this.resourceGroup);
+                await resourceClient.resourceGroups.beginDelete(this.resourceGroup);
             }
         });
     }
