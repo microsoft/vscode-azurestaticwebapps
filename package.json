@@ -62,8 +62,7 @@
         "onView:azureResourceGroups",
         "onView:staticWebApps",
         "workspaceContains:**/staticwebapp.config.json",
-        "workspaceContains:**/swa-cli.config.json",
-        "x-onAzNodeTypeFetch:microsoft.web/staticsites"
+        "workspaceContains:**/swa-cli.config.json"
     ],
     "main": "./main.js",
     "contributes": {
@@ -491,7 +490,14 @@
                     }
                 }
             }
-        ]
+        ],
+        "x-azResources": {
+            "activation": {
+                "onFetch": [
+                    "microsoft.web/staticsites"
+                ]
+            }
+        }
     },
     "capabilities": {
         "virtualWorkspaces": {
