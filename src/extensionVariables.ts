@@ -5,6 +5,7 @@
 
 import { AzExtTreeDataProvider, AzExtTreeItem, IAzExtOutputChannel, IExperimentationServiceAdapter } from "@microsoft/vscode-azext-utils";
 import { ExtensionContext, TreeView } from "vscode";
+import { AzureResourceGroupsExtensionApi } from "./api";
 
 /**
  * Namespace for common variables used throughout the extension. They must be initialized in the activate() method of extension.ts
@@ -17,4 +18,5 @@ export namespace ext {
     export let ignoreBundle: boolean | undefined;
     export const prefix: string = 'staticWebApps';
     export let experimentationService: IExperimentationServiceAdapter;
+    export let rgApi: AzureResourceGroupsExtensionApi;
 }

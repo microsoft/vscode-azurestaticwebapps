@@ -296,18 +296,8 @@
                     "group": "1@2"
                 },
                 {
-                    "command": "staticWebApps.openInPortal",
-                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureextensionui.azureSubscription",
-                    "group": "9@1"
-                },
-                {
-                    "command": "staticWebApps.refresh",
-                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureextensionui.azureSubscription",
-                    "group": "9@2"
-                },
-                {
                     "command": "staticWebApps.browse",
-                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Environment)$/",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Environment)/",
                     "group": "1@1"
                 },
                 {
@@ -322,17 +312,17 @@
                 },
                 {
                     "command": "staticWebApps.cloneRepo",
-                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticWebApp",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStaticWebApp/",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.openYAMLConfigFile",
-                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Environment)$/",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStatic(WebApp|Environment)/",
                     "group": "3@1"
                 },
                 {
                     "command": "staticWebApps.deleteStaticWebApp",
-                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem == azureStaticWebApp",
+                    "when": "view =~ /(staticWebApps|azureResourceGroups)/ && viewItem =~ /azureStaticWebApp/",
                     "group": "3@2"
                 },
                 {
@@ -422,6 +412,12 @@
                 {
                     "command": "staticWebApps.toggleAppSettingVisibility",
                     "when": "never"
+                }
+            ],
+            "azureResourceGroups.groupBy": [
+                {
+                    "command": "staticWebApps.openYAMLConfigFile",
+                    "group": "nav@3"
                 }
             ]
         },

@@ -10,7 +10,7 @@ import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-az
 import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
 import { AzureExtensionApi, AzureExtensionApiProvider } from '@microsoft/vscode-azext-utils/api';
 import * as vscode from 'vscode';
-import { AzExtApi } from './api';
+import { AzureResourceGroupsExtensionApi } from './api';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';
@@ -58,10 +58,13 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(swa, new StaticWebAppDebugProvider(), vscode.DebugConfigurationProviderTriggerKind.Initial));
         context.subscriptions.push(vscode.tasks.registerTaskProvider(shell, new SwaTaskProvider()));
 
-        const rgApi = await getApiExport<AzureExtensionApiProvider>('ms-azuretools.vscode-azureresourcegroups');
-
-        if (rgApi) {
-            rgApi.getApi<AzExtApi>('0.0.1').registerApplicationResourceResolver(new StaticWebAppResolver(), 'Microsoft.Web/staticSites');
+        const rgApiProvider = await getApiExport<AzureExtensionApiProvider>('ms-azuretools.vscode-azureresourcegroups');
+        if (rgApiProvider) {
+            const api = rgApiProvider.getApi<AzureResourceGroupsExtensionApi>('0.0.1');
+            ext.rgApi = api;
+            api.registerApplicationResourceResolver('Microsoft.Web/staticSites', new StaticWebAppResolver());
+        } else {
+            throw new Error('Could not find the Azure Resource Groups extension');
         }
 
         registerSwaCliTaskEvents();

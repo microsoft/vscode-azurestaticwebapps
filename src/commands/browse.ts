@@ -6,9 +6,9 @@
 import { IActionContext } from '@microsoft/vscode-azext-utils';
 import { ext } from '../extensionVariables';
 import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
-import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
+import { ResolvedStaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
-export async function browse(context: IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
+export async function browse(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }

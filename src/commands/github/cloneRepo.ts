@@ -3,18 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { commands } from 'vscode';
 import { ext } from '../../extensionVariables';
-import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
+import { isResolvedStaticWebAppTreeItem, ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 
-export async function cloneRepo(context: IActionContext, resource?: StaticWebAppTreeItem | string): Promise<void> {
+export async function cloneRepo(context: IActionContext, resource?: string | ResolvedStaticWebAppTreeItem): Promise<void> {
+
     if (resource === undefined) {
-        resource = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        // include type and kind in all context values, so we're able to pass in StaticWebAppTreeItem.kind here
+        resource = await ext.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
     let repoUrl: string;
-    if (resource instanceof StaticWebAppTreeItem) {
+    if (isResolvedStaticWebAppTreeItem(resource)) {
         repoUrl = resource.repositoryUrl;
     } else {
         repoUrl = resource;

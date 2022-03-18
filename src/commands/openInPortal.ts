@@ -8,11 +8,11 @@ import { openInPortal as openInPortalUtil } from '@microsoft/vscode-azext-azureu
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { ext } from '../extensionVariables';
 import { FunctionsTreeItem } from '../tree/FunctionsTreeItem';
-import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
+import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
 export async function openInPortal(context: IActionContext, node?: AzExtTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
     switch (node.contextValue) {

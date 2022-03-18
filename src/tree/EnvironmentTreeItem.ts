@@ -7,9 +7,11 @@ import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-app
 import { AppSettingsTreeItem, AppSettingTreeItem } from "@microsoft/vscode-azext-azureappservice";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
+import { ResolvedAppResourceTreeItem } from "../api";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
+import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createWebSiteClient } from "../utils/azureClients";
 import { pollAzureAsyncOperation } from "../utils/azureUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
@@ -25,7 +27,6 @@ import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { JobTreeItem } from "./JobTreeItem";
-import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 import { StepTreeItem } from "./StepTreeItem";
 import { WorkflowGroupTreeItem } from "./WorkflowGroupTreeItem";
 
@@ -33,7 +34,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
-    public parent!: StaticWebAppTreeItem;
+    public parent!: AzExtParentTreeItem & ResolvedAppResourceTreeItem<ResolvedStaticWebApp>;
     public data: WebSiteManagementModels.StaticSiteBuildARMResource;
 
     public actionsTreeItem!: ActionsTreeItem;
@@ -51,7 +52,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public isProduction: boolean;
     public inWorkspace!: boolean;
 
-    constructor(parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource) {
+    constructor(parent: AzExtParentTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource) {
         super(parent);
         this.data = env;
 
@@ -81,7 +82,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
-    public static async createEnvironmentTreeItem(context: IActionContext, parent: StaticWebAppTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
+    public static async createEnvironmentTreeItem(context: IActionContext, parent: AzExtParentTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
         const ti: EnvironmentTreeItem = new EnvironmentTreeItem(parent, env);
         // initialize inWorkspace property
         await ti.refreshImpl(context);

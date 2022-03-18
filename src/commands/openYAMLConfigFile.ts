@@ -10,12 +10,12 @@ import { CST, Document, parseDocument } from 'yaml';
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
 import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
-import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
+import { isResolvedStaticWebAppTreeItem, ResolvedStaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeItem';
 import { localize } from '../utils/localize';
 import { openUrl } from "../utils/openUrl";
 
-export async function openYAMLConfigFile(context: IActionContext, node?: StaticWebAppTreeItem | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
+export async function openYAMLConfigFile(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
     if (!node) {
         node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
@@ -36,7 +36,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: StaticW
             yamlFileUri = Uri.file((await context.ui.showQuickPick(picks, { placeHolder })).data);
         }
     } else {
-        const defaultHostname: string = node instanceof StaticWebAppTreeItem ? node.defaultHostname : node.parent.defaultHostname;
+        const defaultHostname: string = isResolvedStaticWebAppTreeItem(node) ? node.defaultHostname : node.parent.defaultHostname;
         const ymlFileName: string = `.github/workflows/azure-static-web-apps-${defaultHostname.split('.')[0]}.yml`;
         const localYamlFiles: Uri[] = await workspace.findFiles(ymlFileName);
 

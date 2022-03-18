@@ -6,25 +6,20 @@
 import { AzExtFsExtra, IActionContext, ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
 import { ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
 import { Utils } from 'vscode-uri';
-import { productionEnvironmentName } from '../../constants';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
-import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
-import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
 import { telemetryUtils } from '../../utils/telemetryUtils';
 import { getSubFolders, showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
-import { showSwaCreated } from '../showSwaCreated';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
-import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 import { setWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
 
 let isVerifyingWorkspace: boolean = false;
-export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
+export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItem): Promise<void> {
     if (isVerifyingWorkspace) {
         throw new VerifyingWorkspaceError(context);
     }
@@ -81,21 +76,24 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         isVerifyingWorkspace = false;
     }
 
-    const swaNode: StaticWebAppTreeItem = await node.createChild(context);
-    void showSwaCreated(swaNode);
+    await node.createChildImpl2(context);
+    // // ext.rgApi.revealTreeItem()
+    // // void showSwaCreated(swaNode);
 
-    // only reveal SWA node when tree is visible to avoid changing their tree view just to reveal the node
-    if (ext.treeView.visible) {
-        const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
-            return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
-        });
-        environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
-    }
+    // // only reveal SWA node when tree is visible to avoid changing their tree view just to reveal the node
+    // if (ext.rgApi.treeView.visible) {
+    //     const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
+    //         return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
+    //     });
+    //     environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
+    // }
 
-    void postCreateStaticWebApp(swaNode);
-    return swaNode;
+    // void postCreateStaticWebApp(swaNode);
+    // return swaNode;
+
+    void node.refresh(context);
 }
 
-export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItem): Promise<StaticWebAppTreeItem> {
+export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
 }

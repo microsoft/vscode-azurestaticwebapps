@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { ext } from '../../extensionVariables';
 import { ActionsTreeItem } from '../../tree/ActionsTreeItem';
-import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
+import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { openUrl } from '../../utils/openUrl';
 
-export async function showActions(context: IActionContext, node?: StaticWebAppTreeItem | ActionsTreeItem): Promise<void> {
+export async function showActions(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | ActionsTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        node = await ext.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
     await openUrl(`${node.repositoryUrl}/actions`);
