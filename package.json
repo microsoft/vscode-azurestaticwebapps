@@ -71,9 +71,7 @@
                 "onFetch": [
                     "microsoft.web/staticsites"
                 ]
-            }
-        },
-        "azExt": {
+            },
             "commands": [
                 {
                     "command": "staticWebApps.createStaticWebApp",
