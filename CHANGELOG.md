@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.10.0 - 2022-02-28
+## 0.10.0 - 2022-03-24
 
 ### Added
 - Support for creating .NET 6 HTTP Functions [#595](https://github.com/microsoft/vscode-azurestaticwebapps/pull/595)
