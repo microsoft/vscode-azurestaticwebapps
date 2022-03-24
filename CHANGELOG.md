@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.10.0 - 2022-02-28
+
+### Added
+- Support for creating .NET 6 HTTP Functions [#595](https://github.com/microsoft/vscode-azurestaticwebapps/pull/595)
+
+### Changed
+- Minimum version of VS Code is now 1.62.1
+
+### Fixed
+-  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/16?closed=1)
+
+## 0.9.1 - 2022-02-22
+
+### Fixed
+- Unable to debug non-Node.JS Functions [#618](https://github.com/microsoft/vscode-azurestaticwebapps/pull/618)
+
 ## 0.9.0 - 2021-11-11
 
 ### Added
