@@ -17,7 +17,7 @@ import { openUrl } from "../utils/openUrl";
 
 export async function openYAMLConfigFile(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
+        node = await ext.rgApi.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
     let yamlFileUri: Uri | undefined;

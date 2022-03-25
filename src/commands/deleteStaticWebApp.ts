@@ -10,7 +10,7 @@ import { localize } from '../utils/localize';
 
 export async function deleteStaticWebApp(context: IActionContext, node?: ResolvedStaticWebAppTreeItem & AzExtTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), { ...context, suppressCreatePick: true });
     }
 
     const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete static web app "{0}"?', node.name);

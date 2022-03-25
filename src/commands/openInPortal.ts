@@ -12,7 +12,7 @@ import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../tree/Stat
 
 export async function openInPortal(context: IActionContext, node?: AzExtTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        node = await ext.rgApi.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), context);
     }
 
     switch (node.contextValue) {

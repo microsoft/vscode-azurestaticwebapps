@@ -11,7 +11,7 @@ import { openUrl } from '../../utils/openUrl';
 
 export async function showActions(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | ActionsTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        node = await ext.rgApi.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), context);
     }
 
     await openUrl(`${node.repositoryUrl}/actions`);
