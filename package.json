@@ -251,14 +251,6 @@
                 "category": "Azure Static Web Apps"
             }
         ],
-        "views": {
-            "azure": [
-                {
-                    "id": "staticWebApps",
-                    "name": "Static Web Apps"
-                }
-            ]
-        },
         "menus": {
             "view/title": [
                 {
