@@ -417,12 +417,6 @@
                     "command": "staticWebApps.toggleAppSettingVisibility",
                     "when": "never"
                 }
-            ],
-            "azureResourceGroups.groupBy": [
-                {
-                    "command": "staticWebApps.openYAMLConfigFile",
-                    "group": "nav@3"
-                }
             ]
         },
         "jsonValidation": [
