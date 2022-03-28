@@ -12,7 +12,7 @@ import { nonNullProp } from '../utils/nonNull';
 
 export async function viewProperties(context: IActionContext, node?: IAzureResourceTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        node = await ext.rgApi.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, context);
     }
 
     if (!node.data) {

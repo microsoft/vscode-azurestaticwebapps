@@ -32,7 +32,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     isVerifyingWorkspace = true;
     try {
         if (!node) {
-            node = await ext.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
+            node = await ext.rgApi.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
         }
 
         await window.withProgress(progressOptions, async () => {

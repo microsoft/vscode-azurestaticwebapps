@@ -12,7 +12,7 @@ export async function cloneRepo(context: IActionContext, resource?: string | Res
 
     if (resource === undefined) {
         // include type and kind in all context values, so we're able to pass in StaticWebAppTreeItem.kind here
-        resource = await ext.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        resource = await ext.rgApi.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), context);
     }
 
     let repoUrl: string;

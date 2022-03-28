@@ -18,7 +18,7 @@ import { createOctokitClient } from "./createOctokitClient";
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     const noItemFoundErrorMessage: string = localize('noCompleted', 'No completed actions found.');
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValueCompleted, { ...context, suppressCreatePick: true, noItemFoundErrorMessage });
+        node = await ext.rgApi.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValueCompleted, { ...context, suppressCreatePick: true, noItemFoundErrorMessage });
     }
 
     const rerunRunning: string = localize('rerunRunning', 'Rerun for action "{0}" has started.', node.data.id);
@@ -34,7 +34,7 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
 export async function cancelAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     const noItemFoundErrorMessage: string = localize('noInProgress', 'No in-progress actions found.');
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValueInProgress, { ...context, suppressCreatePick: true, noItemFoundErrorMessage });
+        node = await ext.rgApi.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValueInProgress, { ...context, suppressCreatePick: true, noItemFoundErrorMessage });
     }
 
     const cancelRunning: string = localize('cancelRunning', 'Cancel for action "{0}" has started.', node.data.id);
