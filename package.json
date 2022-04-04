@@ -327,17 +327,17 @@
                 },
                 {
                     "command": "staticWebApps.viewProperties",
-                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(WebApp|Environment|Action[^s]|Job|Step$)/",
+                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Environment|Action[^s]|Job|Step$)/",
                     "group": "9@1"
                 },
                 {
                     "command": "staticWebApps.openInPortal",
-                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(WebApp|Functions)|applicationSettings/",
+                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Functions)|applicationSettings/",
                     "group": "9@2"
                 },
                 {
                     "command": "staticWebApps.refresh",
-                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(WebApp|Environment|Functions|Actions?|Job|Step|WorkflowGroup|LocalProject)|applicationSettings/",
+                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Environment|Functions|Actions?|Job|Step|WorkflowGroup|LocalProject)|applicationSettings/",
                     "group": "9@3"
                 },
                 {
