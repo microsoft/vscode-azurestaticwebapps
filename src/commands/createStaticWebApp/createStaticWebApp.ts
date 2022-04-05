@@ -3,18 +3,21 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtFsExtra, IActionContext, ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
+import { AzExtFsExtra, AzExtTreeItem, IActionContext, ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
 import { ProgressLocation, ProgressOptions, Uri, window } from 'vscode';
 import { Utils } from 'vscode-uri';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
+import { ResolvedStaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { SubscriptionTreeItem } from '../../tree/SubscriptionTreeItem';
 import { localize } from '../../utils/localize';
 import { telemetryUtils } from '../../utils/telemetryUtils';
 import { getSubFolders, showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
+import { showSwaCreated } from '../showSwaCreated';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { postCreateStaticWebApp } from './postCreateStaticWebApp';
 import { setWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
 
@@ -32,7 +35,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     isVerifyingWorkspace = true;
     try {
         if (!node) {
-            node = await ext.rgApi.tree.showTreeItemPicker<SubscriptionTreeItem>(SubscriptionTreeItem.contextValue, context);
+            node = await ext.rgApi.tree.showTreeItemPicker<SubscriptionTreeItem>(new RegExp(SubscriptionTreeItem.contextValue), context);
         }
 
         await window.withProgress(progressOptions, async () => {
@@ -76,22 +79,22 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         isVerifyingWorkspace = false;
     }
 
-    await node.createChildImpl2(context);
-    // // ext.rgApi.revealTreeItem()
-    // // void showSwaCreated(swaNode);
+    const swaAppResource = await SubscriptionTreeItem.createStaticWebApp(node.subscription, context);
 
-    // // only reveal SWA node when tree is visible to avoid changing their tree view just to reveal the node
-    // if (ext.rgApi.treeView.visible) {
-    //     const environmentNode: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await swaNode.loadAllChildren(context)).find(ti => {
-    //         return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName;
-    //     });
-    //     environmentNode && await ext.treeView.reveal(environmentNode, { expand: true });
-    // }
+    if (swaAppResource) {
 
-    // void postCreateStaticWebApp(swaNode);
-    // return swaNode;
+        await ext.rgApi.tree.refresh(context);
 
-    void node.refresh(context);
+        const swaNode = await ext.rgApi.tree.findTreeItem<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(swaAppResource.id, context);
+
+        if (swaNode) {
+            void showSwaCreated(swaNode);
+            void postCreateStaticWebApp(swaNode);
+        }
+
+        void node.refresh(context);
+    }
+
 }
 
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItem): Promise<void> {

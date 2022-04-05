@@ -3,7 +3,7 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, AzExtTreeDataProvider, AzExtTreeItem, IActionContext, ICreateChildImplContext, ISubscriptionContext, TreeItemIconPath } from '@microsoft/vscode-azext-utils';
+import { AzExtParentTreeItem, AzExtTreeDataProvider, AzExtTreeItem, IActionContext, ICreateChildImplContext, IParsedError, ISubscriptionContext, TreeItemIconPath } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
 
 export interface AzureResourceGroupsExtensionApi {
@@ -13,7 +13,8 @@ export interface AzureResourceGroupsExtensionApi {
     readonly apiVersion: string;
     revealTreeItem(resourceId: string): Promise<void>;
     registerApplicationResourceResolver(id: string, resolver: AppResourceResolver): vscode.Disposable;
-    registerLocalResourceProvider(id: string, provider: LocalResourceProvider): vscode.Disposable;
+    registerLocalResourceProvider(id: string, provider: LocalResourceProvider): vscode.Disposable | undefined;
+    registerActivity<R>(activity: ActivityBase<R>): Promise<R | undefined>;
 }
 
 /**
@@ -112,6 +113,8 @@ export interface AbstractAzExtTreeItem {
     commandId?: string;
     tooltip?: string;
 
+    collapsibleState?: vscode.TreeItemCollapsibleState;
+
     /**
      * The arguments to pass in when executing `commandId`. If not specified, this tree item will be used.
      */
@@ -124,7 +127,6 @@ export interface AbstractAzExtTreeItem {
       * @param context The action context
       */
     loadMoreChildrenImpl?(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]>;
-    loadMoreChildrenImpl2?(clearCache: boolean, context: IActionContext, resolved: ResolvedAppResourceBase): Promise<AzExtTreeItem[]>;
 
     /**
     * Implement this as a part of the "Load more..." action. Should not be called directly
@@ -187,11 +189,6 @@ export type ResolvedAppResourceTreeItem<T extends ResolvedAppResourceBase> = App
 
 export type LocalResource = AzExtTreeItem;
 
-export type ResolveResult<T> = {
-    createTreeItem: new (parent: AzExtParentTreeItem, data: T) => ResolvedAppResourceBase;
-    data: T;
-}
-
 export interface AppResourceResolver {
     resolveResource(subContext: ISubscriptionContext, resource: AppResource): vscode.ProviderResult<ResolvedAppResourceBase>;
     matchesResource(resource: AppResource): boolean;
@@ -227,3 +224,33 @@ export declare function registerApplicationResourceProvider(id: string, provider
 // resource extensions need to activate onView:localResourceView and call this
 export declare function registerLocalResourceProvider(id: string, provider: LocalResourceProvider): vscode.Disposable;
 
+export interface ActivityTreeItemOptions {
+    label: string;
+    contextValuePostfix?: string;
+    collapsibleState?: vscode.TreeItemCollapsibleState;
+    children?: (parent: AzExtParentTreeItem) => AzExtTreeItem[];
+}
+
+interface ActivityType {
+    inital(): ActivityTreeItemOptions;
+    onSuccess(): ActivityTreeItemOptions;
+    onError(error: IParsedError): ActivityTreeItemOptions;
+}
+
+export declare abstract class ActivityBase<R = void> implements ActivityType {
+
+    abstract inital(): ActivityTreeItemOptions;
+    abstract onSuccess(): ActivityTreeItemOptions;
+    abstract onError(error: IParsedError): ActivityTreeItemOptions;
+
+    public done: boolean;
+    public error?: IParsedError;
+    public readonly task: () => Promise<R | undefined>;
+    public startedAtMs: number;
+
+    public constructor(task: () => Promise<R | undefined>);
+
+    public run(): Promise<R | undefined>;
+
+    public get state(): ActivityTreeItemOptions;
+}

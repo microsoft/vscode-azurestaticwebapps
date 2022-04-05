@@ -11,7 +11,7 @@ import { ext } from "../../extensionVariables";
 import { ActionsGetWorkflowResponseData, Conclusion, Status } from "../../gitHubTypings";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
 import { EnvironmentTreeItem } from "../../tree/EnvironmentTreeItem";
-import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
+import { ResolvedStaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
 import { delay } from "../../utils/delay";
 import { getRepoFullname } from "../../utils/gitUtils";
 import { localize } from "../../utils/localize";
@@ -21,7 +21,7 @@ import { browse } from "../browse";
 import { checkActionStatus } from "../github/actionCommands";
 import { createOctokitClient } from "../github/createOctokitClient";
 
-export async function postCreateStaticWebApp(swaNode: StaticWebAppTreeItem): Promise<void> {
+export async function postCreateStaticWebApp(swaNode: ResolvedStaticWebAppTreeItem): Promise<void> {
     return await callWithTelemetryAndErrorHandling('staticWebApps.postCreateStaticWebApp', async (context: IActionContext): Promise<void> => {
         const realSwaNode: (ResolvedStaticWebAppTreeItem & AzExtParentTreeItem) | undefined = await ext.rgApi.tree.findTreeItem(swaNode.data.id ?? '', context);
         if (!realSwaNode) {

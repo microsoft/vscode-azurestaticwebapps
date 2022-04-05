@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtTreeItem, DialogResponses, IActionContext } from '@microsoft/vscode-azext-utils';
+import { DeleteResourceActivity } from '../activityLog/activities/DeleteResourceActivity';
 import { ext } from '../extensionVariables';
 import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 import { localize } from '../utils/localize';
@@ -15,5 +16,9 @@ export async function deleteStaticWebApp(context: IActionContext, node?: Resolve
 
     const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete static web app "{0}"?', node.name);
     await context.ui.showWarningMessage(confirmMessage, { modal: true }, DialogResponses.deleteResponse);
-    await node.deleteTreeItem(context);
+
+    await ext.rgApi.registerActivity(new DeleteResourceActivity({
+        resourceName: node.name,
+        resourceTypeDisplayName: 'static web app'
+    }, async () => await node?.deleteTreeItem(context)))
 }

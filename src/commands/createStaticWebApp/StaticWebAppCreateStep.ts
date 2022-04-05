@@ -35,7 +35,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
-        context.staticWebApp = await context.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope);
+        context.staticWebApp = (await context.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope));
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {

@@ -5,8 +5,10 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, InvalidTreeItem, nonNullProp } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, InvalidTreeItem, ISubscriptionContext, nonNullProp } from '@microsoft/vscode-azext-utils';
 import { workspace } from 'vscode';
+import { CreateResourceActivity } from '../activityLog/activities/CreateResourceActivity';
+import { AppResource } from '../api';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
 import { RepoNameStep } from '../commands/createRepo/RepoNameStep';
@@ -52,9 +54,9 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
         );
     }
 
-    public async createChildImpl2(context: IActionContext & Partial<IStaticWebAppWizardContext>): Promise<void> {
-        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...this.subscription };
+    public static async createStaticWebApp(subscription: ISubscriptionContext, context: IActionContext & Partial<IStaticWebAppWizardContext>): Promise<AppResource | undefined> {
+        const client: WebSiteManagementClient = await createWebSiteClient([context, subscription]);
+        const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...subscription };
 
         const title: string = localize('createStaticApp', 'Create Static Web App');
         const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
@@ -112,26 +114,31 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         await wizard.prompt();
 
-        // const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+        const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
         if (!context.advancedCreation) {
             wizardContext.newResourceGroupName = await wizardContext.relatedNameTask;
         }
 
-        await wizard.execute();
+        const appResource = await ext.rgApi.registerActivity<AppResource>(new CreateResourceActivity({
+            resourceName: newStaticWebAppName,
+            resourceTypeDisplayName: 'static web app'
+        }, async (): Promise<AppResource> => {
+            await wizard.execute();
+            const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
+            await gitPull(nonNullProp(wizardContext, 'repo'));
 
-        // context.showCreatingTreeItem(newStaticWebAppName);
+            await ext.rgApi.tree.refresh(context);
 
-        // const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(context, 'staticWebApp');
-        await gitPull(nonNullProp(wizardContext, 'repo'));
+            const appResource: AppResource = {
+                id: nonNullProp(swa, 'id'),
+                name: nonNullProp(swa, 'name'),
+                type: nonNullProp(swa, 'type'),
+                ...swa
+            }
+            return appResource;
+        }));
 
-        await ext.rgApi.tree.refresh(context);
-
-        // return new StaticWebAppTreeItem(this.subscription, {
-        //     id: nonNullProp(swa, 'id'),
-        //     name: nonNullProp(swa, 'name'),
-        //     type: nonNullProp(swa, 'type'),
-        //     ...swa
-        // });
+        return appResource;
     }
 }
