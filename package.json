@@ -528,7 +528,7 @@
         "@azure/ms-rest-js": "^2.2.1",
         "@microsoft/vscode-azext-azureappservice": "^0.1.1",
         "@microsoft/vscode-azext-azureutils": "^0.1.0",
-        "@microsoft/vscode-azext-utils": "^0.1.0",
+        "@microsoft/vscode-azext-utils": "file:../../../dev/vscode-azuretools/utils/microsoft-vscode-azext-utils-0.1.0.tgz",
         "@octokit/rest": "^18.5.2",
         "git-url-parse": "^11.1.2",
         "moment": "^2.27.0",

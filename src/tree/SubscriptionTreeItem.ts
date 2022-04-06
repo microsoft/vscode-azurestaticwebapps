@@ -105,7 +105,8 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             title,
             promptSteps,
             executeSteps,
-            showLoadingPrompt: true
+            showLoadingPrompt: true,
+            runWithActivity: ext.rgApi.registerActivity
         });
 
         wizardContext.telemetry.properties.gotRemote = String(hasRemote);
