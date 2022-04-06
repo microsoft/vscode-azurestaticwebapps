@@ -4,10 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TreeItemIconPath } from '@microsoft/vscode-azext-utils';
-import * as moment from 'moment';
+import * as dayjs from 'dayjs';
+// eslint-disable-next-line import/no-internal-modules
+import * as relativeTime from 'dayjs/plugin/relativeTime';
 import { ThemeColor, ThemeIcon } from 'vscode';
 import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData, ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
 import { localize } from "./localize";
+
+dayjs.extend(relativeTime);
 
 export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData | ActionsGetWorkflowRunResponseData): TreeItemIconPath {
     let id: string;
@@ -53,10 +57,10 @@ export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobFo
 
 export function getActionDescription(data: ActionWorkflowStepData | ActionsGetJobForWorkflowRunResponseData): string {
     if (data.conclusion !== null) {
-        return localize('conclusionDescription', '{0} {1}', convertConclusionToVerb(ensureConclusion(data)), moment(data.completed_at).fromNow());
+        return localize('conclusionDescription', '{0} {1}', convertConclusionToVerb(ensureConclusion(data)), dayjs(data.completed_at).fromNow());
     } else {
         const nowStr: string = localize('now', 'now');
-        return localize('statusDescription', '{0} {1}', convertStatusToVerb(ensureStatus(data)), new Date(data.started_at ?? '').getTime() === 0 ? nowStr : moment(data.started_at).fromNow());
+        return localize('statusDescription', '{0} {1}', convertStatusToVerb(ensureStatus(data)), !data.started_at ? nowStr : dayjs(data.started_at).fromNow());
     }
 }
 
