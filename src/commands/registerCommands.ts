@@ -20,7 +20,7 @@ import { createStaticWebApp, createStaticWebAppAdvanced } from './createStaticWe
 import { createSwaConfigFile } from './createSwaConfigFile';
 import { deleteEnvironment } from './deleteEnvironment';
 import { deleteNode } from './deleteNode';
-import { deleteStaticWebApp } from './deleteStaticWebApp';
+import { deleteStaticWebApp } from './deleteStaticWebApp/deleteStaticWebApp';
 import { cancelAction, rerunAction } from './github/actionCommands';
 import { cloneRepo } from './github/cloneRepo';
 import { openGitHubLog } from './github/jobLogs/openGitHubLog';

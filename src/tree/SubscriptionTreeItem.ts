@@ -5,9 +5,8 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, InvalidTreeItem, ISubscriptionContext, nonNullProp } from '@microsoft/vscode-azext-utils';
+import { ActivityBase, AzExtTreeItem, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, InvalidTreeItem, ISubscriptionContext, nonNullProp } from '@microsoft/vscode-azext-utils';
 import { workspace } from 'vscode';
-import { CreateResourceActivity } from '../activityLog/activities/CreateResourceActivity';
 import { AppResource } from '../api';
 import { RemoteShortnameStep } from '../commands/createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../commands/createRepo/RepoCreateStep';
@@ -106,7 +105,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             promptSteps,
             executeSteps,
             showLoadingPrompt: true,
-            runWithActivity: ext.rgApi.registerActivity
+            runWithActivity: async (activity: ActivityBase) => ext.rgApi.registerActivity(activity)
         });
 
         wizardContext.telemetry.properties.gotRemote = String(hasRemote);
@@ -115,31 +114,43 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         await wizard.prompt();
 
-        const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+        // const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
         if (!context.advancedCreation) {
             wizardContext.newResourceGroupName = await wizardContext.relatedNameTask;
         }
 
-        const appResource = await ext.rgApi.registerActivity<AppResource>(new CreateResourceActivity({
-            resourceName: newStaticWebAppName,
-            resourceTypeDisplayName: 'static web app'
-        }, async (): Promise<AppResource> => {
-            await wizard.execute();
-            const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
-            await gitPull(nonNullProp(wizardContext, 'repo'));
+        await wizard.execute();
+        const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
+        await gitPull(nonNullProp(wizardContext, 'repo'));
 
-            await ext.rgApi.tree.refresh(context);
+        await ext.rgApi.tree.refresh(context);
 
-            const appResource: AppResource = {
-                id: nonNullProp(swa, 'id'),
-                name: nonNullProp(swa, 'name'),
-                type: nonNullProp(swa, 'type'),
-                ...swa
-            }
-            return appResource;
-        }));
+        // const appResource = await ext.rgApi.registerActivity<AppResource>(new CreateResourceActivity({
+        //     resourceName: newStaticWebAppName,
+        //     resourceTypeDisplayName: 'static web app'
+        // }, async (): Promise<AppResource> => {
+        //     await wizard.execute();
+        //     const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
+        //     await gitPull(nonNullProp(wizardContext, 'repo'));
 
+        //     await ext.rgApi.tree.refresh(context);
+
+        //     const appResource: AppResource = {
+        //         id: nonNullProp(swa, 'id'),
+        //         name: nonNullProp(swa, 'name'),
+        //         type: nonNullProp(swa, 'type'),
+        //         ...swa
+        //     }
+        //     return appResource;
+        // }));
+
+        const appResource: AppResource = {
+            id: nonNullProp(swa, 'id'),
+            name: nonNullProp(swa, 'name'),
+            type: nonNullProp(swa, 'type'),
+            ...swa
+        }
         return appResource;
     }
 }

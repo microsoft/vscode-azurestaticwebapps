@@ -3,7 +3,7 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, AzExtTreeDataProvider, AzExtTreeItem, IActionContext, ICreateChildImplContext, IParsedError, ISubscriptionContext, TreeItemIconPath } from '@microsoft/vscode-azext-utils';
+import { ActivityBase, AzExtParentTreeItem, AzExtTreeDataProvider, AzExtTreeItem, IActionContext, ICreateChildImplContext, ISubscriptionContext, TreeItemIconPath } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
 
 export interface AzureResourceGroupsExtensionApi {
@@ -11,10 +11,10 @@ export interface AzureResourceGroupsExtensionApi {
     readonly treeView: vscode.TreeView<AzExtTreeItem>;
 
     readonly apiVersion: string;
-    readonly revealTreeItem(resourceId: string): Promise<void>;
-    readonly registerApplicationResourceResolver(id: string, resolver: AppResourceResolver): Disposable;
-    readonly registerLocalResourceProvider(id: string, provider: LocalResourceProvider): Disposable;
-    registerActivity<R>(activity: ActivityBase<R>): Promise<R | undefined>;
+    revealTreeItem(resourceId: string): Promise<void>;
+    registerApplicationResourceResolver(id: string, resolver: AppResourceResolver): Disposable;
+    registerLocalResourceProvider(id: string, provider: LocalResourceProvider): Disposable;
+    registerActivity(activity: ActivityBase): Promise<void>;
 }
 
 /**
@@ -223,34 +223,3 @@ export declare function registerApplicationResourceProvider(id: string, provider
 
 // resource extensions need to activate onView:localResourceView and call this
 export declare function registerLocalResourceProvider(id: string, provider: LocalResourceProvider): vscode.Disposable;
-
-export interface ActivityTreeItemOptions {
-    label: string;
-    contextValuePostfix?: string;
-    collapsibleState?: vscode.TreeItemCollapsibleState;
-    children?: (parent: AzExtParentTreeItem) => AzExtTreeItem[];
-}
-
-interface ActivityType {
-    inital(): ActivityTreeItemOptions;
-    onSuccess(): ActivityTreeItemOptions;
-    onError(error: IParsedError): ActivityTreeItemOptions;
-}
-
-export declare abstract class ActivityBase<R = void> implements ActivityType {
-
-    abstract inital(): ActivityTreeItemOptions;
-    abstract onSuccess(): ActivityTreeItemOptions;
-    abstract onError(error: IParsedError): ActivityTreeItemOptions;
-
-    public done: boolean;
-    public error?: IParsedError;
-    public readonly task: () => Promise<R | undefined>;
-    public startedAtMs: number;
-
-    public constructor(task: () => Promise<R | undefined>);
-
-    public run(): Promise<R | undefined>;
-
-    public get state(): ActivityTreeItemOptions;
-}
