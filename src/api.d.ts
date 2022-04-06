@@ -11,9 +11,9 @@ export interface AzureResourceGroupsExtensionApi {
     readonly treeView: vscode.TreeView<AzExtTreeItem>;
 
     readonly apiVersion: string;
-    revealTreeItem(resourceId: string): Promise<void>;
-    registerApplicationResourceResolver(id: string, resolver: AppResourceResolver): vscode.Disposable;
-    registerLocalResourceProvider(id: string, provider: LocalResourceProvider): vscode.Disposable | undefined;
+    readonly revealTreeItem(resourceId: string): Promise<void>;
+    readonly registerApplicationResourceResolver(id: string, resolver: AppResourceResolver): Disposable;
+    readonly registerLocalResourceProvider(id: string, provider: LocalResourceProvider): Disposable;
     registerActivity<R>(activity: ActivityBase<R>): Promise<R | undefined>;
 }
 
@@ -185,7 +185,7 @@ interface ContextValuesToAdd {
 
 export type ResolvedAppResourceBase = Partial<{ [P in keyof SealedAzExtTreeItem]: never }> & Partial<AbstractAzExtTreeItem> & ContextValuesToAdd;
 
-export type ResolvedAppResourceTreeItem<T extends ResolvedAppResourceBase> = AppResource & SealedAzExtTreeItem & Omit<T, keyof ResolvedAppResourceBase>;
+export type ResolvedAppResourceTreeItem<T extends ResolvedAppResourceBase> = SealedAzExtTreeItem & AbstractAzExtTreeItem & Omit<T, keyof ResolvedAppResourceBase>;
 
 export type LocalResource = AzExtTreeItem;
 
