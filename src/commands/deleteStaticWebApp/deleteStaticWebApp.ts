@@ -8,6 +8,7 @@ import { ext } from '../../extensionVariables';
 import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { localize } from '../../utils/localize';
 import { ConfirmDeleteStep } from './ConfirmDeleteStep';
+import { DeleteResourceGroupStep } from './DeleteResourceGroupStep';
 import { IDeleteWizardContext } from './IDeleteWizardContext';
 import { StaticWebAppDeleteStep } from './StaticWebAppDeleteStep';
 
@@ -16,13 +17,16 @@ export async function deleteStaticWebApp(context: IActionContext, node?: Resolve
         node = await ext.rgApi.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), { ...context, suppressCreatePick: true });
     }
 
-    const wizard = new AzureWizard<IDeleteWizardContext>({ ...context, node }, {
+    const wizard = new AzureWizard<IDeleteWizardContext>({ ...context, node, subscription: node.subscription }, {
         title: localize('deleteSwa', 'Delete Static Web App "{0}"', node.name),
         promptSteps: [new ConfirmDeleteStep()],
-        executeSteps: [new StaticWebAppDeleteStep()],
-        runWithActivity: async (activity: ActivityBase) => ext.rgApi.registerActivity(activity)
+        executeSteps: [new StaticWebAppDeleteStep(), new DeleteResourceGroupStep()],
     });
 
     await wizard.prompt();
-    await wizard.execute();
+    await wizard.execute({
+        activity: {
+            registerActivity: async (activity: ActivityBase) => ext.rgApi.registerActivity(activity)
+        }
+    });
 }

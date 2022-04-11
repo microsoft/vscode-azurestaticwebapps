@@ -32,10 +32,15 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
             location: (await LocationListStep.getLocation(context)).name
         };
 
+        if (newName === 'angular-basicfail') {
+            throw new Error('Failed to create static web app');
+        }
+
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
         context.staticWebApp = (await context.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope));
+        context.activityResult = context.staticWebApp;
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {

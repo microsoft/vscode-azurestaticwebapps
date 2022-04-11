@@ -105,7 +105,6 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             promptSteps,
             executeSteps,
             showLoadingPrompt: true,
-            runWithActivity: async (activity: ActivityBase) => ext.rgApi.registerActivity(activity)
         });
 
         wizardContext.telemetry.properties.gotRemote = String(hasRemote);
@@ -114,36 +113,22 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
 
         await wizard.prompt();
 
-        // const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+        const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
 
         if (!context.advancedCreation) {
             wizardContext.newResourceGroupName = await wizardContext.relatedNameTask;
         }
 
-        await wizard.execute();
-        const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
-        await gitPull(nonNullProp(wizardContext, 'repo'));
+        await wizard.execute({
+            activity: {
+                name: localize('createStaticApp', 'Create Static Web App "{0}"', newStaticWebAppName),
+                registerActivity: async (activity: ActivityBase) => ext.rgApi.registerActivity(activity)
+            }
+        });
 
         await ext.rgApi.tree.refresh(context);
-
-        // const appResource = await ext.rgApi.registerActivity<AppResource>(new CreateResourceActivity({
-        //     resourceName: newStaticWebAppName,
-        //     resourceTypeDisplayName: 'static web app'
-        // }, async (): Promise<AppResource> => {
-        //     await wizard.execute();
-        //     const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
-        //     await gitPull(nonNullProp(wizardContext, 'repo'));
-
-        //     await ext.rgApi.tree.refresh(context);
-
-        //     const appResource: AppResource = {
-        //         id: nonNullProp(swa, 'id'),
-        //         name: nonNullProp(swa, 'name'),
-        //         type: nonNullProp(swa, 'type'),
-        //         ...swa
-        //     }
-        //     return appResource;
-        // }));
+        const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
+        await gitPull(nonNullProp(wizardContext, 'repo'));
 
         const appResource: AppResource = {
             id: nonNullProp(swa, 'id'),
@@ -151,6 +136,7 @@ export class SubscriptionTreeItem extends SubscriptionTreeItemBase {
             type: nonNullProp(swa, 'type'),
             ...swa
         }
+
         return appResource;
     }
 }

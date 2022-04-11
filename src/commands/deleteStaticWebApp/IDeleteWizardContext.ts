@@ -4,9 +4,11 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { AzExtTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
+import { ISubscriptionContext } from "vscode-azureextensiondev";
 import { ResolvedStaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
 
 export interface IDeleteWizardContext extends IActionContext {
     node?: ResolvedStaticWebAppTreeItem & AzExtTreeItem;
-    resourceGroupNameToDelete?: string;
+    resourceGroupToDelete?: string;
+    subscription: ISubscriptionContext;
 }
