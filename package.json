@@ -48,7 +48,6 @@
         "onCommand:staticWebApps.openGitHubRepo",
         "onCommand:staticWebApps.openInPortal",
         "onCommand:staticWebApps.openYAMLConfigFile",
-        "onCommand:staticWebApps.refresh",
         "onCommand:staticWebApps.reportIssue",
         "onCommand:staticWebApps.selectSubscriptions",
         "onCommand:staticWebApps.showActions",
@@ -207,12 +206,6 @@
                 "category": "Azure Static Web Apps"
             },
             {
-                "command": "staticWebApps.refresh",
-                "title": "%staticWebApps.refresh%",
-                "category": "Azure Static Web Apps",
-                "icon": "$(refresh)"
-            },
-            {
                 "command": "staticWebApps.reportIssue",
                 "title": "%staticWebApps.reportIssue%",
                 "category": "Azure Static Web Apps"
@@ -262,11 +255,6 @@
                     "command": "staticWebApps.createStaticWebApp",
                     "when": "view == staticWebApps",
                     "group": "navigation@1"
-                },
-                {
-                    "command": "staticWebApps.refresh",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@3"
                 },
                 {
                     "command": "staticWebApps.showDocumentation",
@@ -336,7 +324,7 @@
                     "group": "9@2"
                 },
                 {
-                    "command": "staticWebApps.refresh",
+                    "command": "azureResourceGroups.refresh",
                     "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Environment|Functions|Actions?|Job|Step|WorkflowGroup|LocalProject)|applicationSettings/",
                     "group": "9@3"
                 },
@@ -389,10 +377,6 @@
             "commandPalette": [
                 {
                     "command": "staticWebApps.loadMore",
-                    "when": "never"
-                },
-                {
-                    "command": "staticWebApps.refresh",
                     "when": "never"
                 },
                 {
