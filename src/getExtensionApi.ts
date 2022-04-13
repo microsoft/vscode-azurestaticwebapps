@@ -57,12 +57,12 @@ export async function getResourcesApi(context: IActionContext, installMessage?: 
         return rgExtension.getApi<AzureResourceGroupsExtensionApi>('^0.0.1');
     }
 
-    await context.ui.showWarningMessage(installMessage ?? localize('funcInstall', 'You must have the "Azure Functions" extension installed to perform this operation.'), { title: 'Install', stepName: 'installFunctions' });
+    await context.ui.showWarningMessage(installMessage ?? localize('resourceGroupsInstall', 'You must have the "Azure Resource Groups" extension installed to perform this operation.'), { title: 'Install', stepName: 'installResourceGroups' });
     const commandToRun: string = 'extension.open';
     void commands.executeCommand(commandToRun, rgExtensionId);
 
     // we still need to throw an error even if the user installs
-    throw new UserCancelledError('postInstallFunctions');
+    throw new UserCancelledError('postInstallResourceGroups');
 }
 
 export async function getApiExport<T>(extensionId: string): Promise<T | undefined> {
