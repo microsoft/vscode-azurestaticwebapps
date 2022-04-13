@@ -336,7 +336,7 @@
                     "group": "9@2"
                 },
                 {
-                    "command": "staticWebApps.refresh",
+                    "command": "azureResourceGroups.refresh",
                     "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Environment|Functions|Actions?|Job|Step|WorkflowGroup|LocalProject)|applicationSettings/",
                     "group": "9@3"
                 },
