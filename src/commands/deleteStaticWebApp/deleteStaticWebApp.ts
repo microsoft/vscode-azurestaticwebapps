@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ActivityBase, AzExtTreeItem, AzureWizard, IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeItem, AzureWizard, IActionContext } from '@microsoft/vscode-azext-utils';
 import { ext } from '../../extensionVariables';
 import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { localize } from '../../utils/localize';
@@ -26,7 +26,7 @@ export async function deleteStaticWebApp(context: IActionContext, node?: Resolve
     await wizard.prompt();
     await wizard.execute({
         activity: {
-            registerActivity: async (activity: ActivityBase) => ext.rgApi.registerActivity(activity)
+            registerActivity: async (activity) => ext.rgApi.registerActivity(activity)
         }
     });
 }
