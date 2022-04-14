@@ -13,6 +13,7 @@ import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
+import { createActivityContext } from '../../utils/activityUtils';
 import { createWebSiteClient } from '../../utils/azureClients';
 import { getGitHubAccessToken } from '../../utils/gitHubUtils';
 import { gitPull } from '../../utils/gitUtils';
@@ -96,9 +97,9 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     const wizardContext: IStaticWebAppWizardContext = {
         accessToken: await getGitHubAccessToken(),
         client,
-        registerActivity: async (activity) => ext.rgApi.registerActivity(activity),
         ...context,
         ...node.subscription,
+        ...(await createActivityContext())
     };
 
     const title: string = localize('createStaticApp', 'Create Static Web App');

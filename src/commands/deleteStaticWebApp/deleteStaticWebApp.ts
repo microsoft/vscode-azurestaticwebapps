@@ -6,6 +6,7 @@
 import { AzExtTreeItem, AzureWizard, IActionContext } from '@microsoft/vscode-azext-utils';
 import { ext } from '../../extensionVariables';
 import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
+import { createActivityContext } from '../../utils/activityUtils';
 import { localize } from '../../utils/localize';
 import { ConfirmDeleteStep } from './ConfirmDeleteStep';
 import { DeleteResourceGroupStep } from './DeleteResourceGroupStep';
@@ -21,7 +22,7 @@ export async function deleteStaticWebApp(context: IActionContext, node?: Resolve
         ...context,
         node,
         subscription: node.subscription,
-        registerActivity: async (activity) => ext.rgApi.registerActivity(activity)
+        ...(await createActivityContext())
     };
 
     const wizard = new AzureWizard<IDeleteWizardContext>(wizardContext, {
