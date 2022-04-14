@@ -17,16 +17,19 @@ export async function deleteStaticWebApp(context: IActionContext, node?: Resolve
         node = await ext.rgApi.tree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), { ...context, suppressCreatePick: true });
     }
 
-    const wizard = new AzureWizard<IDeleteWizardContext>({ ...context, node, subscription: node.subscription }, {
+    const wizardContext: IDeleteWizardContext = {
+        ...context,
+        node,
+        subscription: node.subscription,
+        registerActivity: async (activity) => ext.rgApi.registerActivity(activity)
+    };
+
+    const wizard = new AzureWizard<IDeleteWizardContext>(wizardContext, {
         title: localize('deleteSwa', 'Delete Static Web App "{0}"', node.name),
         promptSteps: [new ConfirmDeleteStep()],
-        executeSteps: [new StaticWebAppDeleteStep(), new DeleteResourceGroupStep()],
+        executeSteps: [new StaticWebAppDeleteStep(), new DeleteResourceGroupStep()]
     });
 
     await wizard.prompt();
-    await wizard.execute({
-        activity: {
-            registerActivity: async (activity) => ext.rgApi.registerActivity(activity)
-        }
-    });
+    await wizard.execute();
 }

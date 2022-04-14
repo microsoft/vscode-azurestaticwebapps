@@ -5,7 +5,7 @@
 
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
-import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
+import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
 import { ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
 import { Utils } from 'vscode-uri';
 import { AppResource } from '../../api';
@@ -93,10 +93,16 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         isVerifyingWorkspace = false;
     }
     const client: WebSiteManagementClient = await createWebSiteClient([context, node.subscription]);
-    const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...node.subscription };
+    const wizardContext: IStaticWebAppWizardContext = {
+        accessToken: await getGitHubAccessToken(),
+        client,
+        registerActivity: async (activity) => ext.rgApi.registerActivity(activity),
+        ...context,
+        ...node.subscription,
+    };
 
     const title: string = localize('createStaticApp', 'Create Static Web App');
-    const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
+    const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext & ExecuteActivityContext>[] = [];
     const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
     if (!context.advancedCreation) {
@@ -142,7 +148,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         title,
         promptSteps,
         executeSteps,
-        showLoadingPrompt: true,
+        showLoadingPrompt: true
     });
 
     wizardContext.telemetry.properties.gotRemote = String(hasRemote);
@@ -151,18 +157,13 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     await wizard.prompt();
 
-    const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+    wizardContext.activityTitle = localize('createStaticApp', 'Create Static Web App "{0}"', nonNullProp(wizardContext, 'newStaticWebAppName'));
 
     if (!context.advancedCreation) {
         wizardContext.newResourceGroupName = await wizardContext.relatedNameTask;
     }
 
-    await wizard.execute({
-        activity: {
-            name: localize('createStaticApp', 'Create Static Web App "{0}"', newStaticWebAppName),
-            registerActivity: async (activity) => ext.rgApi.registerActivity(activity)
-        }
-    });
+    await wizard.execute();
 
     await ext.rgApi.tree.refresh(context);
     const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
@@ -173,7 +174,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         name: nonNullProp(swa, 'name'),
         type: nonNullProp(swa, 'type'),
         ...swa
-    }
+    };
 
     return appResource;
 }
