@@ -6,7 +6,6 @@
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { IResourceGroupWizardContext } from '@microsoft/vscode-azext-azureutils';
 import { ExecuteActivityContext } from '@microsoft/vscode-azext-utils';
-import { AppResource } from '@microsoft/vscode-azext-utils/unified';
 import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { Repository } from '../../git';
 import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
@@ -46,6 +45,4 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     // created when the wizard is done executing
     staticWebApp?: WebSiteManagementModels.StaticSiteARMResource;
-
-    activityResult?: AppResource;
 }
