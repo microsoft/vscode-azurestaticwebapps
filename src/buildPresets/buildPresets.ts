@@ -59,6 +59,24 @@ export const buildPresets: IBuildPreset[] = [
         group: 'framework'
 
     },
+    {
+        id: 'nextjs',
+        displayName: 'Next.js (SSR)',
+        appLocation: '/',
+        apiLocation: '',
+        outputLocation: '',
+        port: 3000,
+        group: 'framework'
+    },
+    {
+        id: 'nextjs-export',
+        displayName: 'Next.js (static export)',
+        appLocation: '/',
+        apiLocation: '',
+        outputLocation: 'out',
+        port: 3000,
+        group: 'framework'
+    },
 
     {
         id: 'gatsby',
