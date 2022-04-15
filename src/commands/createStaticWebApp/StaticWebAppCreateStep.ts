@@ -6,6 +6,7 @@
 import { WebSiteManagementModels } from "@azure/arm-appservice";
 import { LocationListStep } from "@microsoft/vscode-azext-azureutils";
 import { AzureWizardExecuteStep } from "@microsoft/vscode-azext-utils";
+import { AppResource } from "@microsoft/vscode-azext-utils/unified";
 import { Progress } from "vscode";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
@@ -35,7 +36,8 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
-        context.staticWebApp = await context.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope);
+        context.staticWebApp = (await context.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope));
+        context.activityResult = context.staticWebApp as AppResource;
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {

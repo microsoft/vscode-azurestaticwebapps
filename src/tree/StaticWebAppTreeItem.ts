@@ -4,16 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
-import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-resources";
-import { AzExtClientContext, uiUtils } from "@microsoft/vscode-azext-azureutils";
+import { AzExtClientContext } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
-import { ProgressLocation, window } from "vscode";
 import { AppResource, ResolvedAppResourceTreeItem } from "../api";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
-import { ext } from "../extensionVariables";
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
-import { createResourceClient, createWebSiteClient } from "../utils/azureClients";
-import { getResourceGroupFromId, pollAzureAsyncOperation } from "../utils/azureUtils";
+import { createWebSiteClient } from "../utils/azureClients";
+import { getResourceGroupFromId } from "../utils/azureUtils";
 import { createTreeItemsWithErrorHandling } from "../utils/createTreeItemsWithErrorHandling";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
@@ -113,29 +110,6 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
 
     public hasMoreChildrenImpl(): boolean {
         return false;
-    }
-
-    public async deleteTreeItemImpl(context: IActionContext): Promise<void> {
-        const deleting: string = localize('deleting', 'Deleting static web app "{0}"...', this.name);
-        await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
-            ext.outputChannel.appendLog(deleting);
-
-            const resourceClient: ResourceManagementClient = await createResourceClient([context, this._subscription]);
-            const resources: GenericResourceExpanded[] = await uiUtils.listAllIterator(resourceClient.resources.listByResourceGroup(this.resourceGroup));
-
-            const client: WebSiteManagementClient = await createWebSiteClient([context, this._subscription]);
-            // the client API call only awaits the call, but doesn't poll for the result so we handle that ourself
-            const deleteResponse = await client.staticSites.deleteStaticSite(this.resourceGroup, this.name);
-            await pollAzureAsyncOperation(context, deleteResponse, this._subscription);
-
-            const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
-            void window.showInformationMessage(deleteSucceeded);
-            ext.outputChannel.appendLog(deleteSucceeded);
-
-            if (resources.length === 1) {
-                void resourceClient.resourceGroups.beginDeleteAndWait(this.resourceGroup);
-            }
-        });
     }
 
     public async browse(): Promise<void> {

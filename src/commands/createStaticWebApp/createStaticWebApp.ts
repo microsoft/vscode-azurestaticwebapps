@@ -3,15 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from '@azure/arm-appservice';
+import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
-import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
+import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
 import { ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
 import { Utils } from 'vscode-uri';
+import { AppResource } from '../../api';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
+import { createActivityContext } from '../../utils/activityUtils';
 import { createWebSiteClient } from '../../utils/azureClients';
 import { getGitHubAccessToken } from '../../utils/gitHubUtils';
 import { gitPull } from '../../utils/gitUtils';
@@ -35,7 +37,7 @@ import { StaticWebAppNameStep } from './StaticWebAppNameStep';
 import { tryGetApiLocations } from './tryGetApiLocations';
 
 let isVerifyingWorkspace: boolean = false;
-export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<void> {
+export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     if (isVerifyingWorkspace) {
         throw new VerifyingWorkspaceError(context);
     }
@@ -91,12 +93,17 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     } finally {
         isVerifyingWorkspace = false;
     }
-
     const client: WebSiteManagementClient = await createWebSiteClient([context, node.subscription]);
-    const wizardContext: IStaticWebAppWizardContext = { accessToken: await getGitHubAccessToken(), client, ...context, ...node.subscription };
+    const wizardContext: IStaticWebAppWizardContext = {
+        accessToken: await getGitHubAccessToken(),
+        client,
+        ...context,
+        ...node.subscription,
+        ...(await createActivityContext())
+    };
 
     const title: string = localize('createStaticApp', 'Create Static Web App');
-    const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext>[] = [];
+    const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext & ExecuteActivityContext>[] = [];
     const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
 
     if (!context.advancedCreation) {
@@ -151,7 +158,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     await wizard.prompt();
 
-    // const newStaticWebAppName: string = nonNullProp(wizardContext, 'newStaticWebAppName');
+    wizardContext.activityTitle = localize('createStaticApp', 'Create Static Web App "{0}"', nonNullProp(wizardContext, 'newStaticWebAppName'));
 
     if (!context.advancedCreation) {
         wizardContext.newResourceGroupName = await wizardContext.relatedNameTask;
@@ -159,13 +166,20 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     await wizard.execute();
 
-    // const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(context, 'staticWebApp');
+    await ext.rgApi.tree.refresh(context);
+    const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
     await gitPull(nonNullProp(wizardContext, 'repo'));
 
-    await ext.rgApi.tree.refresh(context);
-    void node.refresh(context);
+    const appResource: AppResource = {
+        id: nonNullProp(swa, 'id'),
+        name: nonNullProp(swa, 'name'),
+        type: nonNullProp(swa, 'type'),
+        ...swa
+    };
+
+    return appResource;
 }
 
-export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItemBase): Promise<void> {
+export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
 }
