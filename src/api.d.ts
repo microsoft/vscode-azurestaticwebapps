@@ -113,8 +113,6 @@ export interface AbstractAzExtTreeItem {
     commandId?: string;
     tooltip?: string;
 
-    collapsibleState?: vscode.TreeItemCollapsibleState;
-
     /**
      * The arguments to pass in when executing `commandId`. If not specified, this tree item will be used.
      */
@@ -127,6 +125,7 @@ export interface AbstractAzExtTreeItem {
       * @param context The action context
       */
     loadMoreChildrenImpl?(clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]>;
+    loadMoreChildrenImpl2?(clearCache: boolean, context: IActionContext, resolved: ResolvedAppResourceBase): Promise<AzExtTreeItem[]>;
 
     /**
     * Implement this as a part of the "Load more..." action. Should not be called directly
@@ -185,9 +184,14 @@ interface ContextValuesToAdd {
 
 export type ResolvedAppResourceBase = Partial<{ [P in keyof SealedAzExtTreeItem]: never }> & Partial<AbstractAzExtTreeItem> & ContextValuesToAdd;
 
-export type ResolvedAppResourceTreeItem<T extends ResolvedAppResourceBase> = SealedAzExtTreeItem & AbstractAzExtTreeItem & Omit<T, keyof ResolvedAppResourceBase>;
+export type ResolvedAppResourceTreeItem<T extends ResolvedAppResourceBase> = AppResource & SealedAzExtTreeItem & Omit<T, keyof ResolvedAppResourceBase>;
 
 export type LocalResource = AzExtTreeItem;
+
+export type ResolveResult<T> = {
+    createTreeItem: new (parent: AzExtParentTreeItem, data: T) => ResolvedAppResourceBase;
+    data: T;
+}
 
 export interface AppResourceResolver {
     resolveResource(subContext: ISubscriptionContext, resource: AppResource): vscode.ProviderResult<ResolvedAppResourceBase>;
@@ -223,3 +227,4 @@ export declare function registerApplicationResourceProvider(id: string, provider
 
 // resource extensions need to activate onView:localResourceView and call this
 export declare function registerLocalResourceProvider(id: string, provider: LocalResourceProvider): vscode.Disposable;
+
