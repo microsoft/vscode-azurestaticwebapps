@@ -59,6 +59,15 @@ export const buildPresets: IBuildPreset[] = [
         group: 'framework'
 
     },
+    {
+        id: 'nextjs',
+        displayName: 'Next.JS (SSR)',
+        appLocation: '/',
+        apiLocation: '',
+        outputLocation: '',
+        port: 3000,
+        group: 'framework'
+    },
 
     {
         id: 'gatsby',
@@ -85,6 +94,15 @@ export const buildPresets: IBuildPreset[] = [
         apiLocation: 'api',
         outputLocation: '.vuepress/dist',
         port: 8080,
+        group: 'ssg'
+    },
+    {
+        id: 'nextjs',
+        displayName: 'Next.JS (static export)',
+        appLocation: '/',
+        apiLocation: '',
+        outputLocation: 'out',
+        port: 3000,
         group: 'ssg'
     }
 ];
