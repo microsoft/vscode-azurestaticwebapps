@@ -61,7 +61,7 @@ export const buildPresets: IBuildPreset[] = [
     },
     {
         id: 'nextjs',
-        displayName: 'Next.JS (SSR)',
+        displayName: 'Next.js (SSR)',
         appLocation: '/',
         apiLocation: '',
         outputLocation: '',
@@ -70,7 +70,7 @@ export const buildPresets: IBuildPreset[] = [
     },
     {
         id: 'nextjs-export',
-        displayName: 'Next.JS (static export)',
+        displayName: 'Next.js (static export)',
         appLocation: '/',
         apiLocation: '',
         outputLocation: 'out',
