@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.10.1 - 2022-04-19
+
+### Added
+- Support for creating Static Web Apps using Next.js [#658](https://github.com/microsoft/vscode-azurestaticwebapps/pull/658)
+
 ## 0.10.0 - 2022-03-24
 
 ### Added
@@ -9,7 +14,7 @@
 - Minimum version of VS Code is now 1.62.1
 
 ### Fixed
--  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/16?closed=1)
+-  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/17?closed=1)
 
 ## 0.9.1 - 2022-02-22
 
