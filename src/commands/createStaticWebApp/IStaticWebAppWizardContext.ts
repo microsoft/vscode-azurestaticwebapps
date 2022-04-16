@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
+import { SkuDescription, StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { IResourceGroupWizardContext } from '@microsoft/vscode-azext-azureutils';
 import { ExecuteActivityContext } from '@microsoft/vscode-azext-utils';
 import { IBuildPreset } from '../../buildPresets/IBuildPreset';
@@ -41,8 +41,8 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     apiLocation?: string;
     outputLocation?: string;
 
-    sku?: WebSiteManagementModels.SkuDescription;
+    sku?: SkuDescription;
 
     // created when the wizard is done executing
-    staticWebApp?: WebSiteManagementModels.StaticSiteARMResource;
+    staticWebApp?: StaticSiteARMResource;
 }

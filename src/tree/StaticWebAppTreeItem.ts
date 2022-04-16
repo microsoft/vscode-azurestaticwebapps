@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
-import { AzExtClientContext } from "@microsoft/vscode-azext-azureutils";
+import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
+import { AzExtClientContext, uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { AppResource, ResolvedAppResourceTreeItem } from "../api";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
@@ -27,7 +27,7 @@ export function isResolvedStaticWebAppTreeItem(t: unknown): t is ResolvedStaticW
 
 export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
     public static contextValue: string = 'azureStaticWebApp';
-    public readonly data: WebSiteManagementModels.StaticSiteARMResource;
+    public readonly data: StaticSiteARMResource;
     public readonly childTypeLabel: string = localize('environment', 'Environment');
 
     public name: string;
@@ -41,7 +41,7 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
 
     private readonly _subscription: ISubscriptionContext;
 
-    constructor(subscription: ISubscriptionContext, ss: WebSiteManagementModels.StaticSiteARMResource & AppResource) {
+    constructor(subscription: ISubscriptionContext, ss: StaticSiteARMResource & AppResource) {
         this.data = ss;
         this.name = nonNullProp(this.data, 'name');
         this.resourceGroup = getResourceGroupFromId(ss.id);
@@ -81,14 +81,13 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
             console.error('error creating client in load more children', [context, this]);
             throw e;
         }
-        const envs: WebSiteManagementModels.StaticSiteBuildCollection = await client.staticSites.getStaticSiteBuilds(this.resourceGroup, this.name);
-        console.log('envs', envs);
+        const envs = await uiUtils.listAllIterator(client.staticSites.listStaticSiteBuilds(this.resourceGroup, this.name));
         // extract to static utility on azextparenttreeitem
         return await createTreeItemsWithErrorHandling(
             undefined as unknown as AzExtParentTreeItem,
             envs,
             'invalidStaticEnvironment',
-            async (env: WebSiteManagementModels.StaticSiteBuildARMResource) => {
+            async (env: StaticSiteBuildARMResource) => {
                 return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this as unknown as AzExtParentTreeItem, env);
             },
             env => env.buildId

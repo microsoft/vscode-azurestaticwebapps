@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient, WebSiteManagementModels } from "@azure/arm-appservice";
+import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "@microsoft/vscode-azext-azureappservice";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
@@ -13,7 +13,6 @@ import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createWebSiteClient } from "../utils/azureClients";
-import { pollAzureAsyncOperation } from "../utils/azureUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
 import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
@@ -35,7 +34,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
     public parent!: AzExtParentTreeItem & ResolvedAppResourceTreeItem<ResolvedStaticWebApp>;
-    public data: WebSiteManagementModels.StaticSiteBuildARMResource;
+    public data: StaticSiteBuildARMResource;
 
     public actionsTreeItem!: ActionsTreeItem;
     public gitHubConfigGroupTreeItems!: WorkflowGroupTreeItem[];
@@ -52,7 +51,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public isProduction: boolean;
     public inWorkspace!: boolean;
 
-    constructor(parent: AzExtParentTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource) {
+    constructor(parent: AzExtParentTreeItem, env: StaticSiteBuildARMResource) {
         super(parent);
         this.data = env;
 
@@ -82,7 +81,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
-    public static async createEnvironmentTreeItem(context: IActionContext, parent: AzExtParentTreeItem, env: WebSiteManagementModels.StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
+    public static async createEnvironmentTreeItem(context: IActionContext, parent: AzExtParentTreeItem, env: StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
         const ti: EnvironmentTreeItem = new EnvironmentTreeItem(parent, env);
         // initialize inWorkspace property
         await ti.refreshImpl(context);
@@ -134,9 +133,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
             ext.outputChannel.appendLog(deleting);
             const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-            const deleteResponse = await client.staticSites.deleteStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
-            await pollAzureAsyncOperation(context, deleteResponse, this.subscription);
-
+            await client.staticSites.beginDeleteStaticSiteBuildAndWait(this.parent.resourceGroup, this.parent.name, this.buildId);
             const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted environment "{0}".', this.label);
             void window.showInformationMessage(deleteSucceeded);
             ext.outputChannel.appendLog(deleteSucceeded);

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementModels } from "@azure/arm-appservice";
+import { StaticSiteFunctionOverviewARMResource } from "@azure/arm-appservice";
 import { AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { nonNullProp } from "../utils/nonNull";
 import { treeUtils } from "../utils/treeUtils";
@@ -13,9 +13,9 @@ export class FunctionTreeItem extends AzExtTreeItem {
 
     public static contextValue: string = 'azureStaticFunction';
     public readonly contextValue: string = FunctionTreeItem.contextValue;
-    public data: WebSiteManagementModels.StaticSiteFunctionOverviewARMResource;
+    public data: StaticSiteFunctionOverviewARMResource;
 
-    constructor(parent: FunctionsTreeItem, func: WebSiteManagementModels.StaticSiteFunctionOverviewARMResource) {
+    constructor(parent: FunctionsTreeItem, func: StaticSiteFunctionOverviewARMResource) {
         super(parent);
         this.data = func;
     }

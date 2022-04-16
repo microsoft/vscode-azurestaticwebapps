@@ -3,9 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as msRest from "@azure/ms-rest-js";
-import { createGenericClient } from "@microsoft/vscode-azext-azureutils";
-import { IActionContext, ISubscriptionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
+import { UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { CancellationToken, CancellationTokenSource } from "vscode";
 import { delay } from "./delay";
 import { localize } from './localize';
@@ -23,15 +21,6 @@ function parseResourceId(id: string): RegExpMatchArray {
 export function getResourceGroupFromId(id: string): string {
     return parseResourceId(id)[2];
 }
-
-type AzureAsyncOperationResponse = {
-    id?: string;
-    status: string;
-    error?: {
-        code: string;
-        message: string;
-    };
-};
 
 const activeAsyncTokens: { [key: string]: CancellationTokenSource | undefined } = {};
 export async function pollAsyncOperation(pollingOperation: () => Promise<boolean>, pollIntervalInSeconds: number, timeoutInSeconds: number, id: string): Promise<boolean> {
@@ -65,33 +54,4 @@ export async function pollAsyncOperation(pollingOperation: () => Promise<boolean
 
         tokenSource.dispose();
     }
-}
-
-//https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
-export async function pollAzureAsyncOperation(context: IActionContext, restResponse: msRest.RestResponse, subscription: ISubscriptionContext): Promise<void> {
-    const url: string | undefined = restResponse._response.headers.get('azure-asyncoperation');
-    if (!url) {
-        // if there is no asyncoperation url, just return as the delete was still initiated
-        return;
-    }
-
-    const request: msRest.WebResource = new msRest.WebResource();
-    request.prepare({ method: 'GET', url });
-
-    const client: msRest.ServiceClient = await createGenericClient(context, subscription);
-    const pollingOperation: () => Promise<boolean> = async () => {
-        const statusJsonString: msRest.HttpOperationResponse = await client.sendRequest(request);
-        const operationResponse: AzureAsyncOperationResponse | undefined = <AzureAsyncOperationResponse>statusJsonString.parsedBody;
-        if (operationResponse?.status !== 'InProgress') {
-            if (operationResponse?.error) {
-                throw operationResponse.error;
-            }
-
-            return true;
-        }
-
-        return false;
-    };
-
-    await pollAsyncOperation(pollingOperation, 2, 60, url);
 }

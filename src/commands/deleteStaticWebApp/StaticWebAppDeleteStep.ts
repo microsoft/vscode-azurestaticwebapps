@@ -8,8 +8,8 @@ import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-re
 import { uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzureWizardExecuteStep, nonNullProp } from "@microsoft/vscode-azext-utils";
 import { Progress } from "vscode";
+import { ext } from "../../extensionVariables";
 import { createResourceClient, createWebSiteClient } from "../../utils/azureClients";
-import { pollAzureAsyncOperation } from "../../utils/azureUtils";
 import { localize } from "../../utils/localize";
 import { IDeleteWizardContext } from "./IDeleteWizardContext";
 
@@ -27,9 +27,9 @@ export class StaticWebAppDeleteStep extends AzureWizardExecuteStep<IDeleteWizard
         const resources: GenericResourceExpanded[] = await uiUtils.listAllIterator(resourceClient.resources.listByResourceGroup(swaNode.resourceGroup));
 
         const client: WebSiteManagementClient = await createWebSiteClient([context, context.subscription]);
-        // the client API call only awaits the call, but doesn't poll for the result so we handle that ourself
-        const deleteResponse = await client.staticSites.deleteStaticSite(swaNode.resourceGroup, swaNode.name);
-        await pollAzureAsyncOperation(context, deleteResponse, context.subscription);
+        await client.staticSites.beginDeleteStaticSiteAndWait(swaNode.resourceGroup, swaNode.name);
+        const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', swaNode.name);
+        ext.outputChannel.appendLog(deleteSucceeded);
 
         // if there is only one resource in the resource group, delete it as well
         if (resources.length === 1) {

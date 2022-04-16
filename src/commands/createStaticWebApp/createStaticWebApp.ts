@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
+import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
 import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
 import { ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
@@ -167,7 +167,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     await wizard.execute();
 
     await ext.rgApi.tree.refresh(context);
-    const swa: WebSiteManagementModels.StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
+    const swa: StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
     await gitPull(nonNullProp(wizardContext, 'repo'));
 
     const appResource: AppResource = {

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementModels } from "@azure/arm-appservice";
+import { StaticSiteARMResource } from "@azure/arm-appservice";
 import { LocationListStep } from "@microsoft/vscode-azext-azureutils";
 import { AzureWizardExecuteStep } from "@microsoft/vscode-azext-utils";
 import { AppResource } from "@microsoft/vscode-azext-utils/unified";
@@ -19,7 +19,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
     public async execute(context: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const newName: string = nonNullProp(context, 'newStaticWebAppName');
         const branchData = nonNullProp(context, 'branchData');
-        const siteEnvelope: WebSiteManagementModels.StaticSiteARMResource = {
+        const siteEnvelope: StaticSiteARMResource = {
             repositoryUrl: context.repoHtmlUrl,
             branch: branchData.name,
             repositoryToken: context.accessToken,
@@ -36,7 +36,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
-        context.staticWebApp = (await context.client.staticSites.createOrUpdateStaticSite(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope));
+        context.staticWebApp = await context.client.staticSites.beginCreateOrUpdateStaticSiteAndWait(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope);
         context.activityResult = context.staticWebApp as AppResource;
     }
 
