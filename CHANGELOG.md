@@ -14,7 +14,7 @@
 - Minimum version of VS Code is now 1.62.1
 
 ### Fixed
--  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/17?closed=1)
+-  [Bugs fixed](https://github.com/microsoft/vscode-azurestaticwebapps/milestone/16?closed=1)
 
 ## 0.9.1 - 2022-02-22
 
