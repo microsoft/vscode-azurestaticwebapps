@@ -1,4 +1,4 @@
-import { WebSiteManagementModels } from "@azure/arm-appservice";
+import { StaticSiteARMResource } from "@azure/arm-appservice";
 import { callWithTelemetryAndErrorHandling, IActionContext, ISubscriptionContext, nonNullProp } from "@microsoft/vscode-azext-utils";
 import { AppResource, AppResourceResolver, ResolvedAppResourceBase } from "./api";
 import { StaticWebAppTreeItem } from "./tree/StaticWebAppTreeItem";
@@ -11,7 +11,7 @@ export interface ResolvedStaticWebApp extends ResolvedAppResourceBase {
     repositoryUrl: string;
     branch: string;
     defaultHostname: string;
-    data: WebSiteManagementModels.StaticSiteARMResource;
+    data: StaticSiteARMResource;
     browse: () => Promise<void>;
 }
 
