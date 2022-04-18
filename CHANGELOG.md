@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.10.1 - 2022-04-19
+## 0.10.1 - 2022-04-18
 
 ### Added
 - Support for creating Static Web Apps using Next.js [#658](https://github.com/microsoft/vscode-azurestaticwebapps/pull/658)
