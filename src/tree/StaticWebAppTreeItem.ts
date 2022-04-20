@@ -6,7 +6,7 @@
 import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { AzExtClientContext, uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
-import { AppResource, ResolvedAppResourceTreeItem } from "../api";
+import { AppResource, ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createWebSiteClient } from "../utils/azureClients";

@@ -9,8 +9,8 @@ import { registerAppServiceExtensionVariables } from '@microsoft/vscode-azext-az
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
 import { callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
 import { AzureExtensionApi, AzureExtensionApiProvider } from '@microsoft/vscode-azext-utils/api';
+import { AzureHostExtensionApi } from '@microsoft/vscode-azext-utils/hostapi';
 import * as vscode from 'vscode';
-import { AzureResourceGroupsExtensionApi } from './api';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';
@@ -54,7 +54,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
 
         const rgApiProvider = await getApiExport<AzureExtensionApiProvider>('ms-azuretools.vscode-azureresourcegroups');
         if (rgApiProvider) {
-            const api = rgApiProvider.getApi<AzureResourceGroupsExtensionApi>('0.0.1');
+            const api = rgApiProvider.getApi<AzureHostExtensionApi>('0.0.1');
             ext.rgApi = api;
             api.registerApplicationResourceResolver('Microsoft.Web/staticSites', new StaticWebAppResolver());
         } else {

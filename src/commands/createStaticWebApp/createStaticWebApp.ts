@@ -6,9 +6,9 @@
 import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
 import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
+import { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
 import { ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
 import { Utils } from 'vscode-uri';
-import { AppResource } from '../../api';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';

@@ -6,8 +6,8 @@
 import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "@microsoft/vscode-azext-azureappservice";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
-import { ResolvedAppResourceTreeItem } from "../api";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";

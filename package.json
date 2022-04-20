@@ -2,7 +2,7 @@
     "name": "vscode-azurestaticwebapps",
     "displayName": "Azure Static Web Apps",
     "description": "%staticWebApps.description%",
-    "version": "0.10.1-alpha.2",
+    "version": "0.10.1-alpha.3",
     "publisher": "ms-azuretools",
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
@@ -265,12 +265,12 @@
             "view/item/context": [
                 {
                     "command": "staticWebApps.createStaticWebApp",
-                    "when": "view == azureResourceGroups && viewItem =~ /(azureextensionui.azureSubscription|azureResourceTypeGroup/microsoft.web/staticsites)/",
+                    "when": "view == azureResourceGroups && viewItem =~ /(azureextensionui.azureSubscription|(azureResourceTypeGroup.*microsoft.web/staticsites))/",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.createStaticWebAppAdvanced",
-                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "when": "view == azureResourceGroups && viewItem =~ /(azureextensionui.azureSubscription|(azureResourceTypeGroup.*microsoft.web/staticsites))/",
                     "group": "1@2"
                 },
                 {
@@ -510,9 +510,9 @@
         "@azure/arm-appservice": "^11.0.0",
         "@azure/arm-resources": "^5.0.0",
         "@azure/ms-rest-js": "^2.2.1",
-        "@microsoft/vscode-azext-azureappservice": "^0.1.8",
-        "@microsoft/vscode-azext-azureutils": "^0.1.3",
-        "@microsoft/vscode-azext-utils": "^0.1.2",
+        "@microsoft/vscode-azext-azureappservice": "^0.2.0",
+        "@microsoft/vscode-azext-azureutils": "^0.2.0",
+        "@microsoft/vscode-azext-utils": "^0.2.0",
         "@octokit/rest": "^18.5.2",
         "dayjs": "^1.11.0",
         "git-url-parse": "^11.1.2",
