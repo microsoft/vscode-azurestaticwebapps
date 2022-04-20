@@ -5,7 +5,6 @@
 
 import { AppSettingsTreeItem, AppSettingTreeItem } from '@microsoft/vscode-azext-azureappservice';
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, registerCommand, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
-import { commands } from 'vscode';
 import { openUrl } from '../utils/openUrl';
 import { downloadAppSettings } from './appSettings/downloadAppSettings';
 import { editAppSetting } from './appSettings/editAppSetting';
@@ -36,7 +35,6 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
     registerCommand('staticWebApps.deleteEnvironment', deleteEnvironment);
     registerCommand('staticWebApps.openInPortal', openInPortal);
-    registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('staticWebApps.viewProperties', viewProperties);
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
     registerCommand('staticWebApps.browse', browse);

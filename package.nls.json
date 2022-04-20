@@ -25,7 +25,6 @@
     "staticWebApps.description": "An Azure Static Web Apps extension for Visual Studio Code.",
     "staticWebApps.enableOutputTimestamps": "Prepends each line displayed in the output channel with a timestamp.",
     "staticWebApps.installOrUpdateStaticWebAppsCli": "Install or Update Azure Static Web Apps CLI",
-    "staticWebApps.loadMore": "Load More",
     "staticWebApps.openGitHubLog": "Open GitHub Action Log",
     "staticWebApps.openGitHubRepo": "Open Repo in GitHub",
     "staticWebApps.openInPortal": "Open in Portal",

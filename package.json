@@ -43,13 +43,11 @@
         "onCommand:staticWebApps.deleteEnvironment",
         "onCommand:staticWebApps.deleteStaticWebApp",
         "onCommand:staticWebApps.installOrUpdateStaticWebAppsCli",
-        "onCommand:staticWebApps.loadMore",
         "onCommand:staticWebApps.openGitHubLog",
         "onCommand:staticWebApps.openGitHubRepo",
         "onCommand:staticWebApps.openInPortal",
         "onCommand:staticWebApps.openYAMLConfigFile",
         "onCommand:staticWebApps.reportIssue",
-        "onCommand:staticWebApps.selectSubscriptions",
         "onCommand:staticWebApps.showActions",
         "onCommand:staticWebApps.staticWebApps.action.cancel",
         "onCommand:staticWebApps.staticWebApps.action.rerun",
@@ -181,11 +179,6 @@
                 "enablement": "!virtualWorkspace"
             },
             {
-                "command": "staticWebApps.loadMore",
-                "title": "%staticWebApps.loadMore%",
-                "category": "Azure Static Web Apps"
-            },
-            {
                 "command": "staticWebApps.openGitHubLog",
                 "title": "%staticWebApps.openGitHubLog%",
                 "category": "Azure Static Web Apps"
@@ -209,11 +202,6 @@
                 "command": "staticWebApps.reportIssue",
                 "title": "%staticWebApps.reportIssue%",
                 "category": "Azure Static Web Apps"
-            },
-            {
-                "command": "staticWebApps.selectSubscriptions",
-                "title": "Select Subscriptions...",
-                "icon": "$(filter)"
             },
             {
                 "command": "staticWebApps.showActions",
@@ -245,23 +233,6 @@
             }
         ],
         "menus": {
-            "view/title": [
-                {
-                    "command": "staticWebApps.createHttpFunction",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@2"
-                },
-                {
-                    "command": "staticWebApps.createStaticWebApp",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@1"
-                },
-                {
-                    "command": "staticWebApps.showDocumentation",
-                    "when": "view == staticWebApps",
-                    "group": "navigation@4"
-                }
-            ],
             "view/item/context": [
                 {
                     "command": "staticWebApps.createStaticWebApp",
@@ -375,14 +346,6 @@
                 }
             ],
             "commandPalette": [
-                {
-                    "command": "staticWebApps.loadMore",
-                    "when": "never"
-                },
-                {
-                    "command": "staticWebApps.selectSubscriptions",
-                    "when": "never"
-                },
                 {
                     "command": "staticWebApps.toggleAppSettingVisibility",
                     "when": "never"
