@@ -265,12 +265,12 @@
             "view/item/context": [
                 {
                     "command": "staticWebApps.createStaticWebApp",
-                    "when": "view == azureResourceGroups && viewItem =~ /(azureextensionui.azureSubscription|azureResourceTypeGroup/microsoft.web/staticsites)/",
+                    "when": "view == azureResourceGroups && viewItem =~ /(azureextensionui.azureSubscription|(azureResourceTypeGroup.*microsoft.web/staticsites))/",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.createStaticWebAppAdvanced",
-                    "when": "view == azureResourceGroups && viewItem == azureextensionui.azureSubscription",
+                    "when": "view == azureResourceGroups && viewItem =~ /(azureextensionui.azureSubscription|(azureResourceTypeGroup.*microsoft.web/staticsites))/",
                     "group": "1@2"
                 },
                 {
@@ -512,7 +512,7 @@
         "@azure/ms-rest-js": "^2.2.1",
         "@microsoft/vscode-azext-azureappservice": "^0.1.8",
         "@microsoft/vscode-azext-azureutils": "^0.1.3",
-        "@microsoft/vscode-azext-utils": "^0.1.2",
+        "@microsoft/vscode-azext-utils": "^0.2.0",
         "@octokit/rest": "^18.5.2",
         "dayjs": "^1.11.0",
         "git-url-parse": "^11.1.2",
