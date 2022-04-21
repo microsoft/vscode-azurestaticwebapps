@@ -290,12 +290,12 @@
                 },
                 {
                     "command": "staticWebApps.openInPortal",
-                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Functions)|applicationSettings/",
+                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Functions)|applicationSettings.*staticWebApps/",
                     "group": "9@2"
                 },
                 {
                     "command": "azureResourceGroups.refresh",
-                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Environment|Functions|Actions?|Job|Step|WorkflowGroup|LocalProject)|applicationSettings/",
+                    "when": "view == azureResourceGroups && viewItem =~ /azureStatic(Environment|Functions|Actions?|Job|Step|WorkflowGroup|LocalProject)|applicationSettings.*staticWebApps/",
                     "group": "9@3"
                 },
                 {
