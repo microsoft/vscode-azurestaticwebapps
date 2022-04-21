@@ -2,7 +2,7 @@
     "name": "vscode-azurestaticwebapps",
     "displayName": "Azure Static Web Apps",
     "description": "%staticWebApps.description%",
-    "version": "0.10.1-alpha.4",
+    "version": "0.10.2-alpha.0",
     "publisher": "ms-azuretools",
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
@@ -56,7 +56,6 @@
         "onDebugDynamicConfigurations",
         "onDebugInitialConfigurations",
         "onDebugResolve:pwa-chrome",
-        "onView:azureResourceGroups",
         "workspaceContains:**/staticwebapp.config.json",
         "workspaceContains:**/swa-cli.config.json"
     ],
@@ -64,7 +63,7 @@
     "contributes": {
         "x-azResources": {
             "activation": {
-                "onFetch": [
+                "onResolve": [
                     "microsoft.web/staticsites"
                 ]
             },
@@ -301,37 +300,37 @@
                 },
                 {
                     "command": "staticWebApps.appSettings.add",
-                    "when": "view == azureResourceGroups && viewItem == applicationSettings",
+                    "when": "view == azureResourceGroups && viewItem =~ /applicationSettings.*staticWebApps/",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.appSettings.download",
-                    "when": "view == azureResourceGroups && viewItem == applicationSettings",
+                    "when": "view == azureResourceGroups && viewItem =~ /applicationSettings.*staticWebApps/",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.appSettings.upload",
-                    "when": "view == azureResourceGroups && viewItem == applicationSettings",
+                    "when": "view == azureResourceGroups && viewItem =~ /applicationSettings.*staticWebApps/",
                     "group": "1@3"
                 },
                 {
                     "command": "staticWebApps.appSettings.edit",
-                    "when": "view == azureResourceGroups && viewItem == applicationSettingItem",
+                    "when": "view == azureResourceGroups && viewItem =~ /applicationSettingItem.*staticWebApps/",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.appSettings.rename",
-                    "when": "view == azureResourceGroups && viewItem == applicationSettingItem",
+                    "when": "view == azureResourceGroups && viewItem =~ /applicationSettingItem.*staticWebApps/",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.appSettings.delete",
-                    "when": "view == azureResourceGroups && viewItem == applicationSettingItem",
+                    "when": "view == azureResourceGroups && viewItem =~ /applicationSettingItem.*staticWebApps/",
                     "group": "1@3"
                 },
                 {
                     "command": "staticWebApps.toggleAppSettingVisibility",
-                    "when": "view == azureResourceGroups && viewItem == applicationSettingItem",
+                    "when": "view == azureResourceGroups && viewItem =~ /applicationSettingItem.*staticWebApps/",
                     "group": "inline"
                 },
                 {
@@ -473,7 +472,7 @@
         "@azure/arm-appservice": "^11.0.0",
         "@azure/arm-resources": "^5.0.0",
         "@azure/ms-rest-js": "^2.2.1",
-        "@microsoft/vscode-azext-azureappservice": "^0.2.0",
+        "@microsoft/vscode-azext-azureappservice": "^0.3.0",
         "@microsoft/vscode-azext-azureutils": "^0.2.0",
         "@microsoft/vscode-azext-utils": "^0.2.0",
         "@octokit/rest": "^18.5.2",

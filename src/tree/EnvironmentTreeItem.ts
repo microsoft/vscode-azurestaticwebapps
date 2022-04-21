@@ -192,7 +192,9 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.actionsTreeItem = new ActionsTreeItem(this);
         try {
             await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.parent.resourceGroup, this.parent.name, this.buildId);
-            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this));
+            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this), {
+                contextValuesToAdd: ['staticWebApps']
+            });
             this.functionsTreeItem = new FunctionsTreeItem(this);
         } catch {
             // if it errors here, then there is no Functions API
