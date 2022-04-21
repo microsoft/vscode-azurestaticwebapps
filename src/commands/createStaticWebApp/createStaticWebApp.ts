@@ -50,7 +50,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     isVerifyingWorkspace = true;
     try {
         if (!node) {
-            node = await ext.rgApi.tree.showTreeItemPicker<SubscriptionTreeItemBase>(SubscriptionTreeItemBase.contextValue, context);
+            node = await ext.rgApi.appResourceTree.showTreeItemPicker<SubscriptionTreeItemBase>(SubscriptionTreeItemBase.contextValue, context);
         }
 
         await window.withProgress(progressOptions, async () => {
@@ -166,7 +166,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     await wizard.execute();
 
-    await ext.rgApi.tree.refresh(context);
+    await ext.rgApi.appResourceTree.refresh(context);
     const swa: StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
     await gitPull(nonNullProp(wizardContext, 'repo'));
 

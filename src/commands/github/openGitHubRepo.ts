@@ -10,7 +10,7 @@ import { openUrl } from '../../utils/openUrl';
 
 export async function openGitHubRepo(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.tree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
+        node = await ext.rgApi.appResourceTree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }
 
     await openUrl(`${node.parent.repositoryUrl}/tree/${node.branch}`);

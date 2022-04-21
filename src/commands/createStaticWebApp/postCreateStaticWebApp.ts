@@ -23,7 +23,7 @@ import { createOctokitClient } from "../github/createOctokitClient";
 
 export async function postCreateStaticWebApp(swaNode: ResolvedStaticWebAppTreeItem): Promise<void> {
     return await callWithTelemetryAndErrorHandling('staticWebApps.postCreateStaticWebApp', async (context: IActionContext): Promise<void> => {
-        const realSwaNode: (ResolvedStaticWebAppTreeItem & AzExtParentTreeItem) | undefined = await ext.rgApi.tree.findTreeItem(swaNode.data.id ?? '', context);
+        const realSwaNode: (ResolvedStaticWebAppTreeItem & AzExtParentTreeItem) | undefined = await ext.rgApi.appResourceTree.findTreeItem(swaNode.data.id ?? '', context);
         if (!realSwaNode) {
             return;
         }
