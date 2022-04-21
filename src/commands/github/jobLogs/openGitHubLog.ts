@@ -16,7 +16,7 @@ import { LogState, parseGitHubLog } from './parseGitHubLog';
 
 export async function openGitHubLog(context: IActionContext, node?: StepTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.tree.showTreeItemPicker<StepTreeItem>(new RegExp(StepTreeItem.contextValue), context);
+        node = await ext.rgApi.appResourceTree.showTreeItemPicker<StepTreeItem>(new RegExp(StepTreeItem.contextValue), context);
     }
 
     let content: string;

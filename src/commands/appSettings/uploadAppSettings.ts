@@ -15,7 +15,7 @@ export async function uploadAppSettings(context: IActionContext, node?: AppSetti
     const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
 
     if (!node) {
-        node = await ext.rgApi.tree.showTreeItemPicker<AppSettingsTreeItem>(AppSettingsTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.appResourceTree.showTreeItemPicker<AppSettingsTreeItem>(AppSettingsTreeItem.contextValue, { ...context, suppressCreatePick: true });
     }
 
     const client: IAppSettingsClient = await node.clientProvider.createClient(context);
