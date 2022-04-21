@@ -63,7 +63,7 @@
     "contributes": {
         "x-azResources": {
             "activation": {
-                "onFetch": [
+                "onResolve": [
                     "microsoft.web/staticsites"
                 ]
             },
