@@ -5,10 +5,15 @@
 
 import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { AzExtClientContext, uiUtils } from "@microsoft/vscode-azext-azureutils";
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, AzureWizard, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { AppResource, ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
+import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteStep";
+import { DeleteResourceGroupStep } from "../commands/deleteStaticWebApp/DeleteResourceGroupStep";
+import { IDeleteWizardContext } from "../commands/deleteStaticWebApp/IDeleteWizardContext";
+import { StaticWebAppDeleteStep } from "../commands/deleteStaticWebApp/StaticWebAppDeleteStep";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
+import { createActivityContext } from "../utils/activityUtils";
 import { createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId } from "../utils/azureUtils";
 import { createTreeItemsWithErrorHandling } from "../utils/createTreeItemsWithErrorHandling";
@@ -92,6 +97,24 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
             },
             env => env.buildId
         );
+    }
+
+    public async deleteTreeItemImpl(context: IActionContext): Promise<void> {
+        const wizardContext: IDeleteWizardContext = {
+            ...context,
+            node: this as ResolvedStaticWebAppTreeItem,
+            subscription: this._subscription,
+            ...(await createActivityContext())
+        };
+
+        const wizard = new AzureWizard<IDeleteWizardContext>(wizardContext, {
+            title: localize('deleteSwa', 'Delete Static Web App "{0}"', this.name),
+            promptSteps: [new ConfirmDeleteStep()],
+            executeSteps: [new StaticWebAppDeleteStep(), new DeleteResourceGroupStep()]
+        });
+
+        await wizard.prompt();
+        await wizard.execute();
     }
 
     // possibly return null to indicate to run super
