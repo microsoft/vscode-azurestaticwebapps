@@ -9,13 +9,14 @@ import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
 import { CST, Document, parseDocument } from 'yaml';
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
 import { ext } from "../extensionVariables";
+import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
-import { isResolvedStaticWebAppTreeItem, ResolvedStaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
+import { isResolvedStaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeItem';
 import { localize } from '../utils/localize';
 import { openUrl } from "../utils/openUrl";
 
-export async function openYAMLConfigFile(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
+export async function openYAMLConfigFile(context: IActionContext, node?: ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
     if (!node) {
         node = await ext.rgApi.appResourceTree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
     }

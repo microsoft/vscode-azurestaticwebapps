@@ -6,13 +6,14 @@
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { commands } from 'vscode';
 import { ext } from '../../extensionVariables';
-import { isResolvedStaticWebAppTreeItem, ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
+import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
+import { isResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 
-export async function cloneRepo(context: IActionContext, resource?: string | ResolvedStaticWebAppTreeItem): Promise<void> {
+export async function cloneRepo(context: IActionContext, resource?: string | ResolvedStaticWebApp): Promise<void> {
 
     if (resource === undefined) {
         // include type and kind in all context values, so we're able to pass in StaticWebAppTreeItem.kind here
-        resource = await ext.rgApi.appResourceTree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), context);
+        resource = await ext.rgApi.appResourceTree.showTreeItemPicker<ResolvedStaticWebApp & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), context) as ResolvedStaticWebApp;
     }
 
     let repoUrl: string;

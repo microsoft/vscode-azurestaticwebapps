@@ -26,7 +26,7 @@ import { EnvironmentTreeItem } from './EnvironmentTreeItem';
 
 export type ResolvedStaticWebAppTreeItem = ResolvedAppResourceTreeItem<ResolvedStaticWebApp>;
 
-export function isResolvedStaticWebAppTreeItem(t: unknown): t is ResolvedStaticWebAppTreeItem {
+export function isResolvedStaticWebAppTreeItem(t: unknown): t is ResolvedStaticWebApp {
     return (t as ResolvedStaticWebApp)?.data?.type?.toLowerCase() === 'microsoft.web/staticsites';
 }
 
