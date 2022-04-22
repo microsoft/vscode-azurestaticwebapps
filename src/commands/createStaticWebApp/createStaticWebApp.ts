@@ -13,6 +13,7 @@ import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
+import { StaticWebAppResolver } from '../../StaticWebAppResolver';
 import { createActivityContext } from '../../utils/activityUtils';
 import { createWebSiteClient } from '../../utils/azureClients';
 import { getGitHubAccessToken } from '../../utils/gitHubUtils';
@@ -24,6 +25,7 @@ import { RemoteShortnameStep } from '../createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../createRepo/RepoCreateStep';
 import { RepoNameStep } from '../createRepo/RepoNameStep';
 import { RepoPrivacyStep } from '../createRepo/RepoPrivacyStep';
+import { showSwaCreated } from '../showSwaCreated';
 import { ApiLocationStep } from './ApiLocationStep';
 import { AppLocationStep } from './AppLocationStep';
 import { BuildPresetListStep } from './BuildPresetListStep';
@@ -176,6 +178,12 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         type: nonNullProp(swa, 'type'),
         ...swa
     };
+
+    const resolver = new StaticWebAppResolver();
+    const resolvedSwa = await resolver.resolveResource(node.subscription, appResource);
+    if (resolvedSwa) {
+        await showSwaCreated(resolvedSwa);
+    }
 
     return appResource;
 }
