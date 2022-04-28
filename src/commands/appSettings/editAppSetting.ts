@@ -9,7 +9,7 @@ import { ext } from '../../extensionVariables';
 
 export async function editAppSetting(context: IActionContext, node?: AppSettingTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<AppSettingTreeItem>(AppSettingTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.appResourceTree.showTreeItemPicker<AppSettingTreeItem>(new RegExp(AppSettingTreeItem.contextValue), { ...context, suppressCreatePick: true });
     }
 
     await node.edit(context);
