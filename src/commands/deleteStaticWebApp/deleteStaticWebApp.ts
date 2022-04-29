@@ -5,11 +5,12 @@
 
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { ext } from '../../extensionVariables';
-import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 
-export async function deleteStaticWebApp(context: IActionContext, node?: ResolvedStaticWebAppTreeItem & AzExtTreeItem): Promise<void> {
+export async function deleteStaticWebApp(context: IActionContext, node?: AzExtTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.pickAppResource(context, {
+            type: 'microsoft.web/staticsites',
+        });
     }
 
     await node.deleteTreeItem(context);

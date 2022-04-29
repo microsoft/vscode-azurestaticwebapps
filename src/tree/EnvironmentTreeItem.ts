@@ -13,6 +13,7 @@ import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createWebSiteClient } from "../utils/azureClients";
+import { matchContextValue } from "../utils/contextUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
 import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
@@ -204,23 +205,5 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
 
         this.gitHubConfigGroupTreeItems = await WorkflowGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
 
-    }
-}
-
-function matchContextValue(expectedContextValue: RegExp | string, matches: (string | RegExp)[]): boolean {
-    if (expectedContextValue instanceof RegExp) {
-        return matches.some((match) => {
-            if (match instanceof RegExp) {
-                return expectedContextValue.toString() === match.toString();
-            }
-            return expectedContextValue.test(match);
-        });
-    } else {
-        return matches.some((match) => {
-            if (match instanceof RegExp) {
-                return match.test(expectedContextValue);
-            }
-            return expectedContextValue === match;
-        });
     }
 }

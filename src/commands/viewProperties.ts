@@ -3,18 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, IActionContext, openReadOnlyJson } from '@microsoft/vscode-azext-utils';
-import { ext } from '../extensionVariables';
+import { IActionContext, openReadOnlyJson } from '@microsoft/vscode-azext-utils';
 import { IAzureResourceTreeItem } from '../tree/IAzureResourceTreeItem';
-import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 
-export async function viewProperties(context: IActionContext, node?: IAzureResourceTreeItem): Promise<void> {
-    if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), context);
-    }
-
+export async function viewProperties(_context: IActionContext, node: IAzureResourceTreeItem): Promise<void> {
     if (!node.data) {
         if (node.getDataImpl) {
             await node.getDataImpl();

@@ -10,7 +10,10 @@ import { ResolvedStaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
 export async function browse(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
+        node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
+            type: 'microsoft.web/staticsites',
+            expectedChildContextValue: EnvironmentTreeItem.contextValue,
+        });
     }
 
     await node.browse();

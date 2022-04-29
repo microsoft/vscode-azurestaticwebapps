@@ -9,7 +9,10 @@ import { ext } from '../../extensionVariables';
 
 export async function renameAppSetting(context: IActionContext, node?: AppSettingTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<AppSettingTreeItem>(new RegExp(AppSettingTreeItem.contextValue), { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.pickAppResource<AppSettingTreeItem>({ ...context, suppressCreatePick: true }, {
+            type: 'microsoft.web/staticsites',
+            expectedChildContextValue: new RegExp(AppSettingTreeItem.contextValue)
+        });
     }
 
     await node.rename(context);

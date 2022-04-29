@@ -10,7 +10,10 @@ import { localize } from '../utils/localize';
 
 export async function deleteEnvironment(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>({ ...context, suppressCreatePick: true }, {
+            type: 'microsoft.web/staticsites',
+            expectedChildContextValue: EnvironmentTreeItem.contextValue
+        });
     }
 
     if (node.isProduction) {

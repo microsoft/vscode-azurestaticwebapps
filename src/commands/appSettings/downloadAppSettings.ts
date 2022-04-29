@@ -14,7 +14,10 @@ export async function downloadAppSettings(context: IActionContext, node?: AppSet
     const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);
 
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<AppSettingsTreeItem>(new RegExp(AppSettingsTreeItem.contextValue), { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.pickAppResource<AppSettingsTreeItem>({ ...context, suppressCreatePick: true }, {
+            type: 'microsoft.web/staticsites',
+            expectedChildContextValue: new RegExp(AppSettingsTreeItem.contextValue)
+        });
     }
 
     const client: IAppSettingsClient = await node.clientProvider.createClient(context);

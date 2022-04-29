@@ -5,27 +5,18 @@
 
 import { AppSettingsTreeItem } from '@microsoft/vscode-azext-azureappservice';
 import { openInPortal as openInPortalUtil } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
-import { ext } from '../extensionVariables';
+import { IActionContext } from '@microsoft/vscode-azext-utils';
 import { FunctionsTreeItem } from '../tree/FunctionsTreeItem';
-import { ResolvedStaticWebAppTreeItem, StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
+import { matchContextValue } from '../utils/contextUtils';
 
-export async function openInPortal(context: IActionContext, node?: AzExtTreeItem): Promise<void> {
-    if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<ResolvedStaticWebAppTreeItem & AzExtTreeItem>(new RegExp(StaticWebAppTreeItem.contextValue), context);
+export async function openInPortal(_context: IActionContext, node: AppSettingsTreeItem | FunctionsTreeItem): Promise<void> {
+    if (matchContextValue(node.contextValue, [new RegExp(AppSettingsTreeItem.contextValue)])) {
+        await openInPortalUtil(node, `${node.parent?.parent?.id}/configurations`);
+        return;
     }
 
-    switch (node.contextValue) {
-        // since the parents of AppSettings & Functions are always an Environment, we need to get the parent.parent to use the SWA id
-        case AppSettingsTreeItem.contextValue:
-            await openInPortalUtil(node, `${node.parent?.parent?.fullId}/configurations`);
-            return;
-        case FunctionsTreeItem.contextValue:
-            await openInPortalUtil(node, `${node.parent?.parent?.fullId}/${node.id}`);
-            return;
-        default:
-            await openInPortalUtil(node, node.fullId);
-            return;
+    if (matchContextValue(node.contextValue, [new RegExp(FunctionsTreeItem.contextValue)])) {
+        await openInPortalUtil(node, `${node.parent?.parent?.id}/${node.id}`);
+        return;
     }
-
 }

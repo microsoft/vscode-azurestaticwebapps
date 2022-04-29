@@ -18,7 +18,10 @@ import { openUrl } from "../utils/openUrl";
 
 export async function openYAMLConfigFile(context: IActionContext, node?: ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, context);
+        node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
+            type: 'microsoft.web/staticsites',
+            expectedChildContextValue: EnvironmentTreeItem.contextValue
+        });
     }
 
     let yamlFileUri: Uri | undefined;
