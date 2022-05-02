@@ -43,8 +43,8 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.action.cancel', cancelAction);
     registerCommand('staticWebApps.cloneRepo', cloneRepo);
     registerCommand('staticWebApps.openGitHubRepo', openGitHubRepo);
-    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, AppSettingsTreeItem.contextValue, node));
-    registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, AppSettingTreeItem.contextValue, node));
+    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, new RegExp(AppSettingsTreeItem.contextValue), node));
+    registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, new RegExp(AppSettingTreeItem.contextValue), node));
     registerCommand('staticWebApps.appSettings.edit', editAppSetting);
     registerCommand('staticWebApps.appSettings.rename', renameAppSetting);
     registerCommand('staticWebApps.appSettings.download', downloadAppSettings);

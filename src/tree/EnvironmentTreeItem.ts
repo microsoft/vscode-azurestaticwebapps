@@ -13,6 +13,7 @@ import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createWebSiteClient } from "../utils/azureClients";
+import { matchContextValue } from "../utils/contextUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
 import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
@@ -147,27 +148,23 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public pickTreeItemImpl(expectedContextValues: (string | RegExp)[]): AzExtTreeItem | undefined {
         const noApiError: string = localize('noAPI', 'No Functions API associated with "{0}"', `${this.parent.label}/${this.label}`);
         for (const expectedContextValue of expectedContextValues) {
-            switch (expectedContextValue) {
-                case AppSettingsTreeItem.contextValue:
-                case AppSettingTreeItem.contextValue:
-                    if (!this.appSettingsTreeItem) {
-                        throw new Error(noApiError);
-                    }
-                    return this.appSettingsTreeItem;
-                case ActionsTreeItem.contextValue:
-                case ActionTreeItem.contextValueCompleted:
-                case ActionTreeItem.contextValueInProgress:
-                case JobTreeItem.contextValue:
-                case StepTreeItem.contextValue:
-                    return this.actionsTreeItem;
-                case FunctionsTreeItem.contextValue:
-                case FunctionTreeItem.contextValue:
-                    if (!this.functionsTreeItem) {
-                        throw new Error(noApiError);
-                    }
+            if (matchContextValue(expectedContextValue, [new RegExp(AppSettingTreeItem.contextValue), new RegExp(AppSettingsTreeItem.contextValue)])) {
+                if (!this.appSettingsTreeItem) {
+                    throw new Error(noApiError);
+                }
+                return this.appSettingsTreeItem;
+            }
 
-                    return this.functionsTreeItem;
-                default:
+            if (matchContextValue(expectedContextValue, [FunctionTreeItem.contextValue, FunctionsTreeItem.contextValue])) {
+                if (!this.functionsTreeItem) {
+                    throw new Error(noApiError);
+                }
+                return this.functionsTreeItem;
+            }
+
+            const actionsContextValues = [ActionsTreeItem.contextValue, ActionTreeItem.contextValueCompleted, ActionTreeItem.contextValueInProgress, JobTreeItem.contextValue, StepTreeItem.contextValue];
+            if (matchContextValue(expectedContextValue, actionsContextValues)) {
+                return this.actionsTreeItem;
             }
         }
 

@@ -6,6 +6,7 @@
 import { IActionContext, parseError } from '@microsoft/vscode-azext-utils';
 import { EOL } from 'os';
 import { FoldingRange } from 'vscode';
+import { swaFilter } from '../../../constants';
 import { ext } from '../../../extensionVariables';
 import { JobTreeItem } from '../../../tree/JobTreeItem';
 import { StepTreeItem } from '../../../tree/StepTreeItem';
@@ -16,7 +17,10 @@ import { LogState, parseGitHubLog } from './parseGitHubLog';
 
 export async function openGitHubLog(context: IActionContext, node?: StepTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<StepTreeItem>(new RegExp(StepTreeItem.contextValue), context);
+        node = await ext.rgApi.pickAppResource<StepTreeItem>(context, {
+            filter: swaFilter,
+            expectedChildContextValue: new RegExp(StepTreeItem.contextValue)
+        });
     }
 
     let content: string;

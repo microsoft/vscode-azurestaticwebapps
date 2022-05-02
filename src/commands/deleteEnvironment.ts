@@ -4,13 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DialogResponses, IActionContext } from '@microsoft/vscode-azext-utils';
+import { swaFilter } from '../constants';
 import { ext } from '../extensionVariables';
 import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
 import { localize } from '../utils/localize';
 
 export async function deleteEnvironment(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.appResourceTree.showTreeItemPicker<EnvironmentTreeItem>(EnvironmentTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>({ ...context, suppressCreatePick: true }, {
+            filter: swaFilter,
+            expectedChildContextValue: EnvironmentTreeItem.contextValue
+        });
     }
 
     if (node.isProduction) {

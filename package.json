@@ -2,7 +2,7 @@
     "name": "vscode-azurestaticwebapps",
     "displayName": "Azure Static Web Apps",
     "description": "%staticWebApps.description%",
-    "version": "0.10.2-alpha.3",
+    "version": "0.10.2-alpha.4",
     "publisher": "ms-azuretools",
     "icon": "resources/azure-staticwebapps.png",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
@@ -346,7 +346,15 @@
             ],
             "commandPalette": [
                 {
+                    "command": "staticWebApps.openInPortal",
+                    "when": "never"
+                },
+                {
                     "command": "staticWebApps.toggleAppSettingVisibility",
+                    "when": "never"
+                },
+                {
+                    "command": "staticWebApps.viewProperties",
                     "when": "never"
                 }
             ]
@@ -474,7 +482,7 @@
         "@azure/ms-rest-js": "^2.2.1",
         "@microsoft/vscode-azext-azureappservice": "^0.3.0",
         "@microsoft/vscode-azext-azureutils": "^0.2.0",
-        "@microsoft/vscode-azext-utils": "^0.2.0",
+        "@microsoft/vscode-azext-utils": "^0.2.3",
         "@octokit/rest": "^18.5.2",
         "dayjs": "^1.11.0",
         "git-url-parse": "^11.1.2",
