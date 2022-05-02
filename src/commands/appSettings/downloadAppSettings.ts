@@ -5,6 +5,7 @@
 
 import { AppSettingsTreeItem, IAppSettingsClient } from '@microsoft/vscode-azext-azureappservice';
 import { IActionContext } from "@microsoft/vscode-azext-utils";
+import { swaFilter } from '../../constants';
 import { ext } from "../../extensionVariables";
 import { getFunctionsApi } from '../../getExtensionApi';
 import { localize } from "../../utils/localize";
@@ -15,7 +16,7 @@ export async function downloadAppSettings(context: IActionContext, node?: AppSet
 
     if (!node) {
         node = await ext.rgApi.pickAppResource<AppSettingsTreeItem>({ ...context, suppressCreatePick: true }, {
-            type: 'microsoft.web/staticsites',
+            filter: swaFilter,
             expectedChildContextValue: new RegExp(AppSettingsTreeItem.contextValue)
         });
     }

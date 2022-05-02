@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DialogResponses, IActionContext } from '@microsoft/vscode-azext-utils';
+import { swaFilter } from '../constants';
 import { ext } from '../extensionVariables';
 import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
 import { localize } from '../utils/localize';
@@ -11,7 +12,7 @@ import { localize } from '../utils/localize';
 export async function deleteEnvironment(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
         node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>({ ...context, suppressCreatePick: true }, {
-            type: 'microsoft.web/staticsites',
+            filter: swaFilter,
             expectedChildContextValue: EnvironmentTreeItem.contextValue
         });
     }

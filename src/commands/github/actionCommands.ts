@@ -6,6 +6,7 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { Octokit } from "@octokit/rest";
 import { window } from "vscode";
+import { swaFilter } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { ActionsGetWorkflowRunResponseData, Conclusion, Status } from "../../gitHubTypings";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
@@ -19,7 +20,7 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
     const noItemFoundErrorMessage: string = localize('noCompleted', 'No completed actions found.');
     if (!node) {
         node = await ext.rgApi.pickAppResource<ActionTreeItem>({ ...context, suppressCreatePick: true, noItemFoundErrorMessage }, {
-            type: 'microsoft.web/staticsites',
+            filter: swaFilter,
             expectedChildContextValue: ActionTreeItem.contextValueCompleted
         });
     }
@@ -38,7 +39,7 @@ export async function cancelAction(context: IActionContext, node?: ActionTreeIte
     const noItemFoundErrorMessage: string = localize('noInProgress', 'No in-progress actions found.');
     if (!node) {
         node = await ext.rgApi.pickAppResource<ActionTreeItem>({ ...context, suppressCreatePick: true, noItemFoundErrorMessage }, {
-            type: 'microsoft.web/staticsites',
+            filter: swaFilter,
             expectedChildContextValue: ActionTreeItem.contextValueInProgress
         });
     }

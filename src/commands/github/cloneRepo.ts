@@ -5,6 +5,7 @@
 
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { commands } from 'vscode';
+import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { isResolvedStaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
@@ -13,7 +14,7 @@ export async function cloneRepo(context: IActionContext, resource?: string | Res
 
     if (resource === undefined) {
         resource = await ext.rgApi.pickAppResource<ResolvedStaticWebApp & AzExtTreeItem>(context, {
-            type: 'microsoft.web/staticsites'
+            filter: swaFilter,
         }) as ResolvedStaticWebApp;
     }
 

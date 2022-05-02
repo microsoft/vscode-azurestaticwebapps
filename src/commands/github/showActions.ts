@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
+import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { ActionsTreeItem } from '../../tree/ActionsTreeItem';
@@ -12,7 +13,7 @@ import { openUrl } from '../../utils/openUrl';
 export async function showActions(context: IActionContext, node?: ResolvedStaticWebApp | ActionsTreeItem): Promise<void> {
     if (!node) {
         node = await ext.rgApi.pickAppResource<ResolvedStaticWebApp & AzExtTreeItem>(context, {
-            type: 'microsoft.web/staticsites'
+            filter: swaFilter,
         }) as ResolvedStaticWebApp;
     }
 

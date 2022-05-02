@@ -5,7 +5,7 @@
 
 import { AppSettingsTreeItem, IAppSettingsClient } from '@microsoft/vscode-azext-azureappservice';
 import { IActionContext } from "@microsoft/vscode-azext-utils";
-import { reservedSettingsPrefixes } from '../../constants';
+import { reservedSettingsPrefixes, swaFilter } from '../../constants';
 import { ext } from "../../extensionVariables";
 import { getFunctionsApi } from '../../getExtensionApi';
 import { localize } from "../../utils/localize";
@@ -16,7 +16,7 @@ export async function uploadAppSettings(context: IActionContext, node?: AppSetti
 
     if (!node) {
         node = await ext.rgApi.pickAppResource<AppSettingsTreeItem>({ ...context, suppressCreatePick: true }, {
-            type: 'microsoft.web/staticsites',
+            filter: swaFilter,
             expectedChildContextValue: new RegExp(AppSettingsTreeItem.contextValue)
         });
     }

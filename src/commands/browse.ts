@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { swaFilter } from '../constants';
 import { ext } from '../extensionVariables';
 import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
 import { ResolvedStaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
@@ -11,7 +12,7 @@ import { ResolvedStaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 export async function browse(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
     if (!node) {
         node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
-            type: 'microsoft.web/staticsites',
+            filter: swaFilter,
             expectedChildContextValue: EnvironmentTreeItem.contextValue,
         });
     }
