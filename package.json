@@ -71,7 +71,8 @@
                 {
                     "command": "staticWebApps.createStaticWebApp",
                     "title": "%staticWebApps.createStaticWebApp%",
-                    "type": "microsoft.web/staticsites"
+                    "type": "microsoft.web/staticsites",
+                    "detail": "%staticWebApps.createStaticWebAppDetail%"
                 }
             ]
         },
