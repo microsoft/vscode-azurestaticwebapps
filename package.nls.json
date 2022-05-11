@@ -16,7 +16,7 @@
     "staticWebApps.createHttpFunction": "Create HTTP Function...",
     "staticWebApps.createStaticWebApp": "Create Static Web App...",
     "staticWebApps.createStaticWebAppAdvanced": "Create Static Web App... (Advanced)",
-    "staticWebApps.createStaticWebAppDetail": "Host your front-end apps.",
+    "staticWebApps.createStaticWebAppDetail": "For front-end apps with optional serverless back-ends.",
     "staticWebApps.createSwaConfigFile": "Create Configuration File",
     "staticWebApps.deleteConfirmation": "The behavior to use when confirming delete of a resource group.",
     "staticWebApps.deleteConfirmation.ClickButton": "Prompts with a warning dialog where you click a button to delete.",
