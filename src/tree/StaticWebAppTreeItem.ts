@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
-import { AzExtClientContext, uiUtils } from "@microsoft/vscode-azext-azureutils";
+import { uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, AzureWizard, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { AppResource, ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteStep";
@@ -75,17 +75,7 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        let client: WebSiteManagementClient;
-        try {
-            const clientContext: AzExtClientContext = [context, this._subscription];
-            const subscription = clientContext[1] instanceof AzExtTreeItem ? clientContext[1].subscription : clientContext[1];
-            console.log('subscription', subscription);
-            client = await createWebSiteClient(clientContext);
-
-        } catch (e) {
-            console.error('error creating client in load more children', [context, this]);
-            throw e;
-        }
+        const client: WebSiteManagementClient = await createWebSiteClient([context, this._subscription]);
         const envs = await uiUtils.listAllIterator(client.staticSites.listStaticSiteBuilds(this.resourceGroup, this.name));
         // extract to static utility on azextparenttreeitem
         return await createTreeItemsWithErrorHandling(
