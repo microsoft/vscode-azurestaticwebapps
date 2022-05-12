@@ -233,6 +233,13 @@
             }
         ],
         "menus": {
+            "azureWorkspaceCreate": [
+                {
+                    "command": "staticWebApps.createHttpFunction",
+                    "when": "view == azureWorkspace",
+                    "group": "navigation@1"
+                }
+            ],
             "view/item/context": [
                 {
                     "command": "staticWebApps.createStaticWebApp",
