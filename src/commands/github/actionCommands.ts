@@ -6,6 +6,7 @@
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { Octokit } from "@octokit/rest";
 import { window } from "vscode";
+import { swaFilter } from "../../constants";
 import { ext } from "../../extensionVariables";
 import { ActionsGetWorkflowRunResponseData, Conclusion, Status } from "../../gitHubTypings";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
@@ -18,7 +19,10 @@ import { createOctokitClient } from "./createOctokitClient";
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     const noItemFoundErrorMessage: string = localize('noCompleted', 'No completed actions found.');
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValueCompleted, { ...context, suppressCreatePick: true, noItemFoundErrorMessage });
+        node = await ext.rgApi.pickAppResource<ActionTreeItem>({ ...context, suppressCreatePick: true, noItemFoundErrorMessage }, {
+            filter: swaFilter,
+            expectedChildContextValue: ActionTreeItem.contextValueCompleted
+        });
     }
 
     const rerunRunning: string = localize('rerunRunning', 'Rerun for action "{0}" has started.', node.data.id);
@@ -34,7 +38,10 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
 export async function cancelAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {
     const noItemFoundErrorMessage: string = localize('noInProgress', 'No in-progress actions found.');
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<ActionTreeItem>(ActionTreeItem.contextValueInProgress, { ...context, suppressCreatePick: true, noItemFoundErrorMessage });
+        node = await ext.rgApi.pickAppResource<ActionTreeItem>({ ...context, suppressCreatePick: true, noItemFoundErrorMessage }, {
+            filter: swaFilter,
+            expectedChildContextValue: ActionTreeItem.contextValueInProgress
+        });
     }
 
     const cancelRunning: string = localize('cancelRunning', 'Cancel for action "{0}" has started.', node.data.id);
