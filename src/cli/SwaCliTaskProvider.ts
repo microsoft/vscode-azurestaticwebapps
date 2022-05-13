@@ -94,7 +94,7 @@ export class SwaTaskProvider implements TaskProvider {
         const args: string[] = [addArg(options, 'appLocation', 'app-location'), addArg(options, 'apiLocation', 'api-location'), addArg(options, 'run', 'run', true)];
 
         // Increase devserver timeout to 3x default. See https://github.com/microsoft/vscode-azurestaticwebapps/issues/574#issuecomment-965590774
-        args.push('--devserver-timeout=90000');
+        args.push('--server-timeout=90000');
         const command = `swa start ${options.context} ${args.join(' ')}`;
         const task = new Task(
             {
