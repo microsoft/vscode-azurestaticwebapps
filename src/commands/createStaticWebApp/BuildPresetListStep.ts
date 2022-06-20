@@ -14,7 +14,7 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
         const placeHolder: string = localize('choosePreset', 'Choose build preset to configure default project structure');
 
         // Todo: Remove SSR filter when support is added
-        // https://github.com/microsoft/vscode-azurestaticwebapps/issues/695
+        // https://github.com/microsoft/vscode-azurestaticwebapps/issues/709
         const picks: IAzureQuickPickItem<IBuildPreset | undefined>[] = buildPresets
             .filter((pb) => pb.id !== "nextjs")
             .map((pb) => { return { label: pb.displayName, data: pb, group: pb.group === 'ssg' ? localize('ssg', 'Static site generator') : localize('framework', 'Framework') }; });
