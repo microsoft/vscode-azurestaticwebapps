@@ -16,7 +16,7 @@ export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWiza
         // Todo: Remove SSR filter when support is added
         // https://github.com/microsoft/vscode-azurestaticwebapps/issues/695
         const picks: IAzureQuickPickItem<IBuildPreset | undefined>[] = buildPresets
-            .filter((pb) => pb.displayName !== 'Next.js (SSR)')
+            .filter((pb) => pb.id !== "nextjs")
             .map((pb) => { return { label: pb.displayName, data: pb, group: pb.group === 'ssg' ? localize('ssg', 'Static site generator') : localize('framework', 'Framework') }; });
         picks.push({ label: localize('custom', '$(keyboard) Custom'), data: undefined, group: localize('other', 'Other') });
         const pick: IAzureQuickPickItem<IBuildPreset | undefined> = await context.ui.showQuickPick(picks, { placeHolder, suppressPersistence: true, learnMoreLink: 'https://aka.ms/SWABuildPresets', enableGrouping: true });
