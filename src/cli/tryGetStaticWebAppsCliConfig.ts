@@ -8,32 +8,34 @@ import { Uri } from "vscode";
 import { swaCliConfigFileName } from "../constants";
 import { localize } from "../utils/localize";
 
-export type SWACLIOptions = {
-    context?: string;
-    port?: number;
-    host?: string;
-    apiPort?: number;
-    ssl?: boolean;
-    apiPrefix?: "api";
-    sslCert?: string;
-    sslKey?: string;
-    swaConfigFilename?: "staticwebapp.config.json";
-    swaConfigFilenameLegacy?: "routes.json";
-    app?: string;
-    apiLocation?: string;
-    build?: boolean;
-    verbose?: string;
-    run?: string;
-    swaConfigLocation?: string;
-    customUrlScheme?: string;
-    overridableErrorCode?: number[];
-    devserverTimeout?: number;
-    funcArgs?: string;
-    appBuildCommand?: string;
-    apiBuildCommand?: string;
+export type SWACLIStartOptions = {
     appLocation?: string;
     outputLocation?: string;
-    files?: string[];
+    apiLocation?: string;
+    appDevserverUrl?: string;
+    apiDevserverUrl?: string;
+    apiPort?: number;
+    host?: string;
+    port?: number;
+    ssl?: boolean;
+    sslCert?: string;
+    sslKey?: string;
+    run?: string;
+    devserverTimeout?: number;
+    open?: boolean;
+    funcArgs?: string;
+    githubActionWorkflowLocation?: string;
+    swaConfigLocation?: string;
+};
+
+export type SWACLIOptions = {
+    apiLocation?: string;
+    appLocation?: string;
+    apiDevserverUrl?: string;
+    appDevserverUrl?: string;
+    run?: string;
+    devserverTimeout?: number;
+    open?: boolean;
 };
 
 export interface StaticWebAppsCliConfigFile {

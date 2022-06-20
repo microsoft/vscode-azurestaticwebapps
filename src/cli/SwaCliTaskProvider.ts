@@ -45,7 +45,7 @@ export class SwaTaskProvider implements TaskProvider {
 
             if (buildPreset) {
                 tasks.push(this.createSwaCliTask(workspaceFolder, `start ${path.basename(appFolder.uri.fsPath)}`, {
-                    context: `http://localhost:${buildPreset.port}`,
+                    appDevserverUrl: `http://localhost:${buildPreset.port}`,
                     ...(apiLocations?.length ? { apiLocation: funcAddress } : {}),
                     appLocation: path.relative(workspaceFolder.uri.fsPath, appFolder.uri.fsPath),
                     run: buildPreset.startCommand ?? 'npm start'
@@ -83,7 +83,7 @@ export class SwaTaskProvider implements TaskProvider {
         const task = new Task(
             { type: shell },
             workspaceFolder,
-            `${swa} ${args.join(' ')}`,
+            args.join(' '),
             swa,
             new ShellExecution(swa, args),
             swaWatchProblemMatcher
@@ -93,7 +93,7 @@ export class SwaTaskProvider implements TaskProvider {
         return task;
     }
 
-    private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'context' | 'apiLocation' | 'run' | 'appLocation'>): Task {
+    private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'appDevserverUrl' | 'apiLocation' | 'run' | 'appLocation'>): Task {
 
         const addArg = <T extends Record<string, string>>(object: T, property: keyof T, name?: string): string[] => {
             const args: string[] = [];
@@ -104,10 +104,16 @@ export class SwaTaskProvider implements TaskProvider {
             return args;
         };
 
-        const args: string[] = ['start', ...addArg(options, 'appLocation', 'app-location'), ...addArg(options, 'apiLocation', 'api-location'), ...addArg(options, 'run', 'run')];
+        const args: string[] = [
+            'start',
+            ...addArg(options, 'appDevserverUrl', 'app-devserver-url'),
+            ...addArg(options, 'appLocation', 'app-location'),
+            ...addArg(options, 'apiLocation', 'api-location'),
+            ...addArg(options, 'run', 'run'),
+            // Increase devserver timeout to 3x default. See https://github.com/microsoft/vscode-azurestaticwebapps/issues/574#issuecomment-965590774
+            '--devserver-timeout=90'
+        ];
 
-        // Increase devserver timeout to 3x default. See https://github.com/microsoft/vscode-azurestaticwebapps/issues/574#issuecomment-965590774
-        args.push('--devserver-timeout=90000');
         const task = new Task(
             { type: shell },
             workspaceFolder,
