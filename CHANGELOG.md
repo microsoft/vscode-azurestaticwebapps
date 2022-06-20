@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.11.0 - 2022-05-24
+
+We've made some large design changes to the Azure extensions for VS Code. [View App Centric release notes](https://aka.ms/AzCode/AppCentric)
+
+## 0.10.1 - 2022-04-18
+
+### Added
+- Support for creating Static Web Apps using Next.js [#658](https://github.com/microsoft/vscode-azurestaticwebapps/pull/658)
+
 ## 0.10.0 - 2022-03-24
 
 ### Added

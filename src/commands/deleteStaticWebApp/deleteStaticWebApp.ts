@@ -3,18 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppSettingTreeItem } from '@microsoft/vscode-azext-azureappservice';
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 
-export async function renameAppSetting(context: IActionContext, node?: AppSettingTreeItem): Promise<void> {
+export async function deleteStaticWebApp(context: IActionContext, node?: AzExtTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.pickAppResource<AppSettingTreeItem>({ ...context, suppressCreatePick: true }, {
+        node = await ext.rgApi.pickAppResource(context, {
             filter: swaFilter,
-            expectedChildContextValue: new RegExp(AppSettingTreeItem.contextValue)
         });
     }
 
-    await node.rename(context);
+    await node.deleteTreeItem(context);
 }

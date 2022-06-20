@@ -32,7 +32,7 @@ export function registerSwaCliTaskEvents(): void {
 }
 
 function isSwaCliTask(task: vscode.Task): boolean {
-    return !!(task.source === swa && task.execution instanceof vscode.ShellExecution && task.execution?.commandLine?.match(/^swa start/i))
+    return !!(task.source === swa && task.execution instanceof vscode.ShellExecution && task.execution?.command === swa)
 }
 
 function stopSwaTaskIfRunning(workspaceFolder: vscode.WorkspaceFolder): void {

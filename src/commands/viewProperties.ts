@@ -4,17 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext, openReadOnlyJson } from '@microsoft/vscode-azext-utils';
-import { ext } from '../extensionVariables';
 import { IAzureResourceTreeItem } from '../tree/IAzureResourceTreeItem';
-import { StaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 import { localize } from '../utils/localize';
 import { nonNullProp } from '../utils/nonNull';
 
-export async function viewProperties(context: IActionContext, node?: IAzureResourceTreeItem): Promise<void> {
-    if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
-    }
-
+export async function viewProperties(_context: IActionContext, node: IAzureResourceTreeItem): Promise<void> {
     if (!node.data) {
         if (node.getDataImpl) {
             await node.getDataImpl();

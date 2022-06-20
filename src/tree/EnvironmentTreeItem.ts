@@ -6,11 +6,14 @@
 import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { AppSettingsTreeItem, AppSettingTreeItem } from "@microsoft/vscode-azext-azureappservice";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
+import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createWebSiteClient } from "../utils/azureClients";
+import { matchContextValue } from "../utils/contextUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
 import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
@@ -24,7 +27,6 @@ import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { JobTreeItem } from "./JobTreeItem";
-import { StaticWebAppTreeItem } from "./StaticWebAppTreeItem";
 import { StepTreeItem } from "./StepTreeItem";
 import { WorkflowGroupTreeItem } from "./WorkflowGroupTreeItem";
 
@@ -32,7 +34,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
-    public parent!: StaticWebAppTreeItem;
+    public parent!: AzExtParentTreeItem & ResolvedAppResourceTreeItem<ResolvedStaticWebApp>;
     public data: StaticSiteBuildARMResource;
 
     public actionsTreeItem!: ActionsTreeItem;
@@ -50,7 +52,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public isProduction: boolean;
     public inWorkspace!: boolean;
 
-    constructor(parent: StaticWebAppTreeItem, env: StaticSiteBuildARMResource) {
+    constructor(parent: AzExtParentTreeItem, env: StaticSiteBuildARMResource) {
         super(parent);
         this.data = env;
 
@@ -80,7 +82,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
     }
 
-    public static async createEnvironmentTreeItem(context: IActionContext, parent: StaticWebAppTreeItem, env: StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
+    public static async createEnvironmentTreeItem(context: IActionContext, parent: AzExtParentTreeItem, env: StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
         const ti: EnvironmentTreeItem = new EnvironmentTreeItem(parent, env);
         // initialize inWorkspace property
         await ti.refreshImpl(context);
@@ -146,27 +148,23 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public pickTreeItemImpl(expectedContextValues: (string | RegExp)[]): AzExtTreeItem | undefined {
         const noApiError: string = localize('noAPI', 'No Functions API associated with "{0}"', `${this.parent.label}/${this.label}`);
         for (const expectedContextValue of expectedContextValues) {
-            switch (expectedContextValue) {
-                case AppSettingsTreeItem.contextValue:
-                case AppSettingTreeItem.contextValue:
-                    if (!this.appSettingsTreeItem) {
-                        throw new Error(noApiError);
-                    }
-                    return this.appSettingsTreeItem;
-                case ActionsTreeItem.contextValue:
-                case ActionTreeItem.contextValueCompleted:
-                case ActionTreeItem.contextValueInProgress:
-                case JobTreeItem.contextValue:
-                case StepTreeItem.contextValue:
-                    return this.actionsTreeItem;
-                case FunctionsTreeItem.contextValue:
-                case FunctionTreeItem.contextValue:
-                    if (!this.functionsTreeItem) {
-                        throw new Error(noApiError);
-                    }
+            if (matchContextValue(expectedContextValue, [new RegExp(AppSettingTreeItem.contextValue), new RegExp(AppSettingsTreeItem.contextValue)])) {
+                if (!this.appSettingsTreeItem) {
+                    throw new Error(noApiError);
+                }
+                return this.appSettingsTreeItem;
+            }
 
-                    return this.functionsTreeItem;
-                default:
+            if (matchContextValue(expectedContextValue, [FunctionTreeItem.contextValue, FunctionsTreeItem.contextValue])) {
+                if (!this.functionsTreeItem) {
+                    throw new Error(noApiError);
+                }
+                return this.functionsTreeItem;
+            }
+
+            const actionsContextValues = [ActionsTreeItem.contextValue, ActionTreeItem.contextValueCompleted, ActionTreeItem.contextValueInProgress, JobTreeItem.contextValue, StepTreeItem.contextValue];
+            if (matchContextValue(expectedContextValue, actionsContextValues)) {
+                return this.actionsTreeItem;
             }
         }
 
@@ -191,7 +189,9 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.actionsTreeItem = new ActionsTreeItem(this);
         try {
             await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.parent.resourceGroup, this.parent.name, this.buildId);
-            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this));
+            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this), {
+                contextValuesToAdd: ['staticWebApps']
+            });
             this.functionsTreeItem = new FunctionsTreeItem(this);
         } catch {
             // if it errors here, then there is no Functions API

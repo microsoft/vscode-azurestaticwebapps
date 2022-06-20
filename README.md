@@ -22,7 +22,12 @@ Use this extension to quickly create and manage Azure Static Web Apps directly f
 
 1. Click the '+' button in the explorer to setup a new static web app
 
-    ![Create Static Web App](resources/readme/create_static_web_app.png)
+    ![Create Static Web App](resources/readme/create_resource.png)
+
+1. Select "Create Static Web App..."
+
+    ![Create Static Web App](resources/readme/create_swa.png)
+
 1. Authorize access to your GitHub account so the extension can find your repositories
 
     ![Authorize Access to through GitHub](resources/readme/authorize_access_github.png)

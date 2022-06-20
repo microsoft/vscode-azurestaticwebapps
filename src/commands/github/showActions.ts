@@ -3,15 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
+import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
+import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { ActionsTreeItem } from '../../tree/ActionsTreeItem';
-import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 import { openUrl } from '../../utils/openUrl';
 
-export async function showActions(context: IActionContext, node?: StaticWebAppTreeItem | ActionsTreeItem): Promise<void> {
+export async function showActions(context: IActionContext, node?: ResolvedStaticWebApp | ActionsTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        node = await ext.rgApi.pickAppResource<ResolvedStaticWebApp & AzExtTreeItem>(context, {
+            filter: swaFilter,
+        }) as ResolvedStaticWebApp;
     }
 
     await openUrl(`${node.repositoryUrl}/actions`);

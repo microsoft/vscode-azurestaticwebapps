@@ -5,8 +5,6 @@
 
 import { AppSettingsTreeItem, AppSettingTreeItem } from '@microsoft/vscode-azext-azureappservice';
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, registerCommand, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
-import { commands } from 'vscode';
-import { ext } from '../extensionVariables';
 import { openUrl } from '../utils/openUrl';
 import { downloadAppSettings } from './appSettings/downloadAppSettings';
 import { editAppSetting } from './appSettings/editAppSetting';
@@ -21,7 +19,7 @@ import { createStaticWebApp, createStaticWebAppAdvanced } from './createStaticWe
 import { createSwaConfigFile } from './createSwaConfigFile';
 import { deleteEnvironment } from './deleteEnvironment';
 import { deleteNode } from './deleteNode';
-import { deleteStaticWebApp } from './deleteStaticWebApp';
+import { deleteStaticWebApp } from './deleteStaticWebApp/deleteStaticWebApp';
 import { cancelAction, rerunAction } from './github/actionCommands';
 import { cloneRepo } from './github/cloneRepo';
 import { openGitHubLog } from './github/jobLogs/openGitHubLog';
@@ -36,10 +34,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
     registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
     registerCommand('staticWebApps.deleteEnvironment', deleteEnvironment);
-    registerCommand('staticWebApps.loadMore', async (context: IActionContext, node: AzExtTreeItem) => await ext.tree.loadMore(node, context));
     registerCommand('staticWebApps.openInPortal', openInPortal);
-    registerCommand('staticWebApps.refresh', async (context: IActionContext, node?: AzExtTreeItem) => await ext.tree.refresh(context, node));
-    registerCommand('staticWebApps.selectSubscriptions', () => commands.executeCommand('azure-account.selectSubscriptions'));
     registerCommand('staticWebApps.viewProperties', viewProperties);
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
     registerCommand('staticWebApps.browse', browse);
@@ -48,8 +43,8 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.action.cancel', cancelAction);
     registerCommand('staticWebApps.cloneRepo', cloneRepo);
     registerCommand('staticWebApps.openGitHubRepo', openGitHubRepo);
-    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, AppSettingsTreeItem.contextValue, node));
-    registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, AppSettingTreeItem.contextValue, node));
+    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, new RegExp(AppSettingsTreeItem.contextValue), node));
+    registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, new RegExp(AppSettingTreeItem.contextValue), node));
     registerCommand('staticWebApps.appSettings.edit', editAppSetting);
     registerCommand('staticWebApps.appSettings.rename', renameAppSetting);
     registerCommand('staticWebApps.appSettings.download', downloadAppSettings);
