@@ -41,7 +41,7 @@ export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
                 return;
             }
 
-            if (semver.major(newestVersion) === semver.major(installedVersion) && semver.gt(newestVersion, installedVersion)) {
+            if (semver.gt(newestVersion, installedVersion)) {
                 context.telemetry.properties.outOfDateSwaCli = 'true';
                 const message: string = localize(
                     'outdatedSwaCli',
