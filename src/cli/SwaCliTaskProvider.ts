@@ -83,7 +83,7 @@ export class SwaTaskProvider implements TaskProvider {
         const task = new Task(
             { type: shell },
             workspaceFolder,
-            `swa ${args.join(' ')}`,
+            `${swa} ${args.join(' ')}`,
             swa,
             new ShellExecution(swa, args),
             swaWatchProblemMatcher
