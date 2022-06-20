@@ -75,13 +75,21 @@ export class SwaTaskProvider implements TaskProvider {
     }
 
     private createSwaConfigTask(workspaceFolder: WorkspaceFolder, configurationName?: string): Task {
-        const command = configurationName ? `start ${configurationName}` : 'start';
-        const task = new Task({
-            type: shell,
-            command,
-        }, workspaceFolder, command, swa, new ShellExecution(`swa ${command}`), swaWatchProblemMatcher);
-        task.isBackground = true;
+        const args: string[] = ['start'];
+        if (configurationName) {
+            args.push(configurationName);
+        }
 
+        const task = new Task(
+            { type: shell },
+            workspaceFolder,
+            `swa ${args.join(' ')}`,
+            swa,
+            new ShellExecution(swa, args),
+            swaWatchProblemMatcher
+        );
+
+        task.isBackground = true;
         return task;
     }
 
@@ -105,7 +113,7 @@ export class SwaTaskProvider implements TaskProvider {
             workspaceFolder,
             label,
             swa,
-            new ShellExecution('swa',
+            new ShellExecution(swa,
                 args,
                 {
                     // Prevent react-scrips auto opening browser
