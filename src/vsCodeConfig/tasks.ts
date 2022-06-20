@@ -61,11 +61,11 @@ export class SwaShellExecution extends ShellExecution {
 export class SwaTask extends Task {
     constructor(scope: WorkspaceFolder, name: string, execution: ShellExecution) {
 
-        const definition: TaskDefinition = {
+        const taskDefinition: TaskDefinition = {
             type: shell
         };
 
-        super(definition, scope, name, swa, execution, swaWatchProblemMatcher);
+        super(taskDefinition, scope, name, swa, execution, swaWatchProblemMatcher);
         this.isBackground = false;
     }
 }
