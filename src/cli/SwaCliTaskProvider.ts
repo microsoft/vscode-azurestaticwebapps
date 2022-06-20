@@ -5,11 +5,12 @@
 
 import { AzExtFsExtra, callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
-import { ShellExecution, Task, TaskProvider, workspace, WorkspaceFolder } from "vscode";
+import { Task, TaskProvider, workspace, WorkspaceFolder } from "vscode";
 import { buildPresets } from "../buildPresets/buildPresets";
 import { tryGetApiLocations } from "../commands/createStaticWebApp/tryGetApiLocations";
-import { funcAddress, shell, swa, swaWatchProblemMatcher } from "../constants";
+import { funcAddress } from "../constants";
 import { detectAppFoldersInWorkspace } from '../utils/detectorUtils';
+import { SwaShellExecution, SwaTask } from "../vsCodeConfig/tasks";
 import { SWACLIOptions, tryGetStaticWebAppsCliConfig } from "./tryGetStaticWebAppsCliConfig";
 
 export class SwaTaskProvider implements TaskProvider {
@@ -45,7 +46,7 @@ export class SwaTaskProvider implements TaskProvider {
 
             if (buildPreset) {
                 tasks.push(this.createSwaCliTask(workspaceFolder, `start ${path.basename(appFolder.uri.fsPath)}`, {
-                    appDevserverUrl: `http://localhost:${buildPreset.port}`,
+                    context: `http://localhost:${buildPreset.port}`,
                     ...(apiLocations?.length ? { apiLocation: funcAddress } : {}),
                     appLocation: path.relative(workspaceFolder.uri.fsPath, appFolder.uri.fsPath),
                     run: buildPreset.startCommand ?? 'npm start'
@@ -80,17 +81,11 @@ export class SwaTaskProvider implements TaskProvider {
             args.push(configurationName);
         }
 
-        const task = new Task(
-            { type: shell },
+        return new SwaTask(
             workspaceFolder,
             args.join(' '),
-            swa,
-            new ShellExecution(swa, args),
-            swaWatchProblemMatcher
+            new SwaShellExecution(args)
         );
-
-        task.isBackground = true;
-        return task;
     }
 
     private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'context' | 'apiLocation' | 'run' | 'appLocation'>): Task {
@@ -111,15 +106,13 @@ export class SwaTaskProvider implements TaskProvider {
             ...addArg(options, 'apiLocation', 'api-location'),
             ...addArg(options, 'run', 'run'),
             // Increase devserver timeout to 3x default. See https://github.com/microsoft/vscode-azurestaticwebapps/issues/574#issuecomment-965590774
-            '--devserver-timeout=90'
+            '--devserver-timeout=9000'
         ];
 
-        const task = new Task(
-            { type: shell },
+        return new SwaTask(
             workspaceFolder,
             label,
-            swa,
-            new ShellExecution(swa,
+            new SwaShellExecution(
                 args,
                 {
                     // Prevent react-scrips auto opening browser
@@ -127,11 +120,7 @@ export class SwaTaskProvider implements TaskProvider {
                         BROWSER: 'none'
                     }
                 }
-            ),
-            swaWatchProblemMatcher
+            )
         );
-
-        task.isBackground = true;
-        return task;
     }
 }
