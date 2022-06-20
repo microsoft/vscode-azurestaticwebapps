@@ -93,7 +93,7 @@ export class SwaTaskProvider implements TaskProvider {
         return task;
     }
 
-    private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'appDevserverUrl' | 'apiLocation' | 'run' | 'appLocation'>): Task {
+    private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'context' | 'apiLocation' | 'run' | 'appLocation'>): Task {
 
         const addArg = <T extends Record<string, string>>(object: T, property: keyof T, name?: string): string[] => {
             const args: string[] = [];
@@ -106,7 +106,7 @@ export class SwaTaskProvider implements TaskProvider {
 
         const args: string[] = [
             'start',
-            ...addArg(options, 'appDevserverUrl', 'app-devserver-url'),
+            ...(options.context ? [options.context] : []),
             ...addArg(options, 'appLocation', 'app-location'),
             ...addArg(options, 'apiLocation', 'api-location'),
             ...addArg(options, 'run', 'run'),
