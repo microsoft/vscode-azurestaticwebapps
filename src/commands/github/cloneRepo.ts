@@ -3,18 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { commands } from 'vscode';
+import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { StaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
+import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
+import { isResolvedStaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 
-export async function cloneRepo(context: IActionContext, resource?: StaticWebAppTreeItem | string): Promise<void> {
+export async function cloneRepo(context: IActionContext, resource?: string | ResolvedStaticWebApp): Promise<void> {
+
     if (resource === undefined) {
-        resource = await ext.tree.showTreeItemPicker<StaticWebAppTreeItem>(StaticWebAppTreeItem.contextValue, context);
+        resource = await ext.rgApi.pickAppResource<ResolvedStaticWebApp & AzExtTreeItem>(context, {
+            filter: swaFilter,
+        }) as ResolvedStaticWebApp;
     }
 
     let repoUrl: string;
-    if (resource instanceof StaticWebAppTreeItem) {
+    if (isResolvedStaticWebAppTreeItem(resource)) {
         repoUrl = resource.repositoryUrl;
     } else {
         repoUrl = resource;

@@ -7,12 +7,12 @@ import { callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vs
 import { MessageItem, window } from "vscode";
 import { showActionsMsg } from "../constants";
 import { ext } from "../extensionVariables";
-import { StaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
+import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { localize } from "../utils/localize";
 import { showActions } from "./github/showActions";
 import { openYAMLConfigFile } from "./openYAMLConfigFile";
 
-export async function showSwaCreated(swaNode: StaticWebAppTreeItem): Promise<void> {
+export async function showSwaCreated(swaNode: ResolvedStaticWebApp): Promise<void> {
     return await callWithTelemetryAndErrorHandling('staticWebApps.showSwaCreated', async (context: IActionContext) => {
         const createdSs: string = localize('createdSs', 'Successfully created new static web app "{0}".  GitHub Actions is building and deploying your app, it will be available once the deployment completes.', swaNode.name);
         ext.outputChannel.appendLog(createdSs);

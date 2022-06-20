@@ -7,8 +7,9 @@
 
 import { registerAppServiceExtensionVariables } from '@microsoft/vscode-azext-azureappservice';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { AzExtTreeDataProvider, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
+import { callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
 import { AzureExtensionApi, AzureExtensionApiProvider } from '@microsoft/vscode-azext-utils/api';
+import { AzureHostExtensionApi } from '@microsoft/vscode-azext-utils/hostapi';
 import * as vscode from 'vscode';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { revealTreeItem } from './commands/api/revealTreeItem';
@@ -20,7 +21,8 @@ import { registerCommands } from './commands/registerCommands';
 import { githubAuthProviderId, githubScopes, pwaChrome, shell, swa } from './constants';
 import { StaticWebAppDebugProvider } from './debug/StaticWebAppDebugProvider';
 import { ext } from './extensionVariables';
-import { AzureAccountTreeItem } from './tree/AzureAccountTreeItemWithProjects';
+import { getApiExport } from './getExtensionApi';
+import { StaticWebAppResolver } from './StaticWebAppResolver';
 
 export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<AzureExtensionApiProvider> {
     ext.context = context;
@@ -44,16 +46,20 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
          */
         await vscode.authentication.getSession(githubAuthProviderId, githubScopes, { createIfNone: false });
 
-        const accountTreeItem: AzureAccountTreeItem = new AzureAccountTreeItem();
-        context.subscriptions.push(accountTreeItem);
-        ext.tree = new AzExtTreeDataProvider(accountTreeItem, 'staticWebApps.loadMore');
-        ext.treeView = vscode.window.createTreeView('staticWebApps', { treeDataProvider: ext.tree, showCollapseAll: true, canSelectMany: true });
-        context.subscriptions.push(ext.treeView);
         context.subscriptions.push(vscode.languages.registerFoldingRangeProvider({ scheme: contentScheme }, new GitHubLogFoldingProvider()));
         context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(pwaChrome, new StaticWebAppDebugProvider()));
         context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(swa, new StaticWebAppDebugProvider(), vscode.DebugConfigurationProviderTriggerKind.Dynamic));
         context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(swa, new StaticWebAppDebugProvider(), vscode.DebugConfigurationProviderTriggerKind.Initial));
         context.subscriptions.push(vscode.tasks.registerTaskProvider(shell, new SwaTaskProvider()));
+
+        const rgApiProvider = await getApiExport<AzureExtensionApiProvider>('ms-azuretools.vscode-azureresourcegroups');
+        if (rgApiProvider) {
+            const api = rgApiProvider.getApi<AzureHostExtensionApi>('0.0.1');
+            ext.rgApi = api;
+            api.registerApplicationResourceResolver('Microsoft.Web/staticSites', new StaticWebAppResolver());
+        } else {
+            throw new Error('Could not find the Azure Resource Groups extension');
+        }
 
         registerSwaCliTaskEvents();
 

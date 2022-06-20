@@ -4,25 +4,34 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
-import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-resources";
 import { uiUtils } from "@microsoft/vscode-azext-azureutils";
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
-import { ProgressLocation, window } from "vscode";
+import { AzExtParentTreeItem, AzExtTreeItem, AzureWizard, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AppResource, ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
+import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteStep";
+import { DeleteResourceGroupStep } from "../commands/deleteStaticWebApp/DeleteResourceGroupStep";
+import { IDeleteWizardContext } from "../commands/deleteStaticWebApp/IDeleteWizardContext";
+import { StaticWebAppDeleteStep } from "../commands/deleteStaticWebApp/StaticWebAppDeleteStep";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
-import { ext } from "../extensionVariables";
-import { createResourceClient, createWebSiteClient } from "../utils/azureClients";
+import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
+import { createActivityContext } from "../utils/activityUtils";
+import { createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId } from "../utils/azureUtils";
+import { createTreeItemsWithErrorHandling } from "../utils/createTreeItemsWithErrorHandling";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from '../utils/openUrl';
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from './EnvironmentTreeItem';
-import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 
-export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
+export type ResolvedStaticWebAppTreeItem = ResolvedAppResourceTreeItem<ResolvedStaticWebApp>;
+
+export function isResolvedStaticWebAppTreeItem(t: unknown): t is ResolvedStaticWebApp {
+    return (t as ResolvedStaticWebApp)?.data?.type?.toLowerCase() === 'microsoft.web/staticsites';
+}
+
+export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
     public static contextValue: string = 'azureStaticWebApp';
-    public readonly contextValue: string = StaticWebAppTreeItem.contextValue;
     public readonly data: StaticSiteARMResource;
     public readonly childTypeLabel: string = localize('environment', 'Environment');
 
@@ -33,13 +42,18 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
     public branch: string;
     public defaultHostname: string;
 
-    constructor(parent: AzExtParentTreeItem, ss: StaticSiteARMResource) {
-        super(parent);
+    public contextValuesToAdd?: string[] = [];
+
+    private readonly _subscription: ISubscriptionContext;
+
+    constructor(subscription: ISubscriptionContext, ss: StaticSiteARMResource & AppResource) {
         this.data = ss;
         this.name = nonNullProp(this.data, 'name');
-        this.id = nonNullProp(this.data, 'id');
-        this.resourceGroup = getResourceGroupFromId(this.id);
+        this.resourceGroup = getResourceGroupFromId(ss.id);
         this.label = this.name;
+        this._subscription = subscription;
+
+        this.contextValuesToAdd?.push(StaticWebAppTreeItem.contextValue);
 
         if (this.data.repositoryUrl) {
             this.repositoryUrl = this.data.repositoryUrl;
@@ -61,19 +75,39 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
+        const client: WebSiteManagementClient = await createWebSiteClient([context, this._subscription]);
         const envs = await uiUtils.listAllIterator(client.staticSites.listStaticSiteBuilds(this.resourceGroup, this.name));
-
-        return await this.createTreeItemsWithErrorHandling(
+        // extract to static utility on azextparenttreeitem
+        return await createTreeItemsWithErrorHandling(
+            undefined as unknown as AzExtParentTreeItem,
             envs,
             'invalidStaticEnvironment',
             async (env: StaticSiteBuildARMResource) => {
-                return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this, env);
+                return await EnvironmentTreeItem.createEnvironmentTreeItem(context, this as unknown as AzExtParentTreeItem, env);
             },
             env => env.buildId
         );
     }
 
+    public async deleteTreeItemImpl(context: IActionContext): Promise<void> {
+        const wizardContext: IDeleteWizardContext = {
+            ...context,
+            node: this as ResolvedStaticWebAppTreeItem,
+            subscription: this._subscription,
+            ...(await createActivityContext())
+        };
+
+        const wizard = new AzureWizard<IDeleteWizardContext>(wizardContext, {
+            title: localize('deleteSwa', 'Delete Static Web App "{0}"', this.name),
+            promptSteps: [new ConfirmDeleteStep()],
+            executeSteps: [new StaticWebAppDeleteStep(), new DeleteResourceGroupStep()]
+        });
+
+        await wizard.prompt();
+        await wizard.execute();
+    }
+
+    // possibly return null to indicate to run super
     public compareChildrenImpl(ti1: AzExtTreeItem, ti2: AzExtTreeItem): number {
         // production environment should always be on top
         if (ti1.label === productionEnvironmentName) {
@@ -82,31 +116,12 @@ export class StaticWebAppTreeItem extends AzExtParentTreeItem implements IAzureR
             return 1;
         }
 
-        return super.compareChildrenImpl(ti1, ti2);
+        // return super.compareChildrenImpl(ti1, ti2);
+        return ti1.label.localeCompare(ti2.label);
     }
 
     public hasMoreChildrenImpl(): boolean {
         return false;
-    }
-
-    public async deleteTreeItemImpl(context: IActionContext): Promise<void> {
-        const deleting: string = localize('deleting', 'Deleting static web app "{0}"...', this.name);
-        await window.withProgress({ location: ProgressLocation.Notification, title: deleting }, async (): Promise<void> => {
-            ext.outputChannel.appendLog(deleting);
-
-            const resourceClient: ResourceManagementClient = await createResourceClient([context, this]);
-            const resources: GenericResourceExpanded[] = await uiUtils.listAllIterator(resourceClient.resources.listByResourceGroup(this.resourceGroup));
-
-            const client: WebSiteManagementClient = await createWebSiteClient([context, this]);
-            await client.staticSites.beginDeleteStaticSiteAndWait(this.resourceGroup, this.name);
-            const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', this.name);
-            void window.showInformationMessage(deleteSucceeded);
-            ext.outputChannel.appendLog(deleteSucceeded);
-
-            if (resources.length === 1) {
-                await resourceClient.resourceGroups.beginDelete(this.resourceGroup);
-            }
-        });
     }
 
     public async browse(): Promise<void> {

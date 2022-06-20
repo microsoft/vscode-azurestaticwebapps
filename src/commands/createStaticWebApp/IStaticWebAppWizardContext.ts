@@ -5,12 +5,13 @@
 
 import { SkuDescription, StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { IResourceGroupWizardContext } from '@microsoft/vscode-azext-azureutils';
-import { ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
+import { ExecuteActivityContext } from '@microsoft/vscode-azext-utils';
 import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { Repository } from '../../git';
 import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
 
-export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, ICreateChildImplContext {
+export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, ExecuteActivityContext {
+    advancedCreation?: boolean;
     accessToken: string;
     client: WebSiteManagementClient;
 

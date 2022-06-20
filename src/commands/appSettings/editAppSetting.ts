@@ -5,11 +5,15 @@
 
 import { AppSettingTreeItem } from '@microsoft/vscode-azext-azureappservice';
 import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 
 export async function editAppSetting(context: IActionContext, node?: AppSettingTreeItem): Promise<void> {
     if (!node) {
-        node = await ext.tree.showTreeItemPicker<AppSettingTreeItem>(AppSettingTreeItem.contextValue, { ...context, suppressCreatePick: true });
+        node = await ext.rgApi.pickAppResource<AppSettingTreeItem>({ ...context, suppressCreatePick: true }, {
+            filter: swaFilter,
+            expectedChildContextValue: new RegExp(AppSettingTreeItem.contextValue)
+        });
     }
 
     await node.edit(context);
