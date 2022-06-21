@@ -66,6 +66,6 @@ export class SwaTask extends Task {
         };
 
         super(taskDefinition, scope, name, swa, execution, swaWatchProblemMatcher);
-        this.isBackground = false;
+        this.isBackground = true;
     }
 }
