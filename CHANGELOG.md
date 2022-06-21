@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.11.1 - 2022-06-21
+
+### Changes
+- Upgrade shared packages [#705](https://github.com/microsoft/vscode-azurestaticwebapps/pull/705)
+
+### Fixed
+- Removed bad semver check to fix CLI update notification [#710](https://github.com/microsoft/vscode-azurestaticwebapps/pull/710)
+- Removed Next.js (SSR) build preset link in the dropdown until full supporting implementation is added [#695](https://github.com/microsoft/vscode-azurestaticwebapps/issues/695)
+
+
 ## 0.11.0 - 2022-05-24
 
 We've made some large design changes to the Azure extensions for VS Code. [View App Centric release notes](https://aka.ms/AzCode/AppCentric)
