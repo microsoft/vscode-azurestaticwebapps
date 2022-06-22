@@ -3,8 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
-import { uiUtils } from "@microsoft/vscode-azext-azureutils";
+import { StaticSiteARMResource, StaticSiteBuildARMResource } from "@azure/arm-appservice";
 import { AzExtParentTreeItem, AzExtTreeItem, AzureWizard, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { AppResource, ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteStep";
@@ -14,13 +13,13 @@ import { StaticWebAppDeleteStep } from "../commands/deleteStaticWebApp/StaticWeb
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createActivityContext } from "../utils/activityUtils";
-import { createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId } from "../utils/azureUtils";
 import { createTreeItemsWithErrorHandling } from "../utils/createTreeItemsWithErrorHandling";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from '../utils/openUrl';
+import { createRlc } from "../utils/rlc";
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from './EnvironmentTreeItem';
 
@@ -74,9 +73,15 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
         return treeUtils.getIconPath('azure-staticwebapps');
     }
 
+
+
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        const client: WebSiteManagementClient = await createWebSiteClient([context, this._subscription]);
-        const envs = await uiUtils.listAllIterator(client.staticSites.listStaticSiteBuilds(this.resourceGroup, this.name));
+
+
+
+        // const client: WebSiteManagementClient = await createWebSiteClient([context, this._subscription]);
+        // const envs = await uiUtils.listAllIterator(client.staticSites.listStaticSiteBuilds(this.resourceGroup, this.name));
+        const envs = await this.listBuilds();
         // extract to static utility on azextparenttreeitem
         return await createTreeItemsWithErrorHandling(
             undefined as unknown as AzExtParentTreeItem,
@@ -126,5 +131,28 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
 
     public async browse(): Promise<void> {
         await openUrl(`https://${this.defaultHostname}`);
+    }
+
+    private async listBuilds(): Promise<StaticSiteBuildARMResource[]> {
+        const rlc = await createRlc(this._subscription);
+        const token = await this._subscription.credentials.getToken();
+        const response = await rlc.path('/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/staticSites/{name}/builds',
+            this._subscription.subscriptionId,
+            this.resourceGroup,
+            this.name
+        ).get({
+            queryParameters: {
+                'api-version': '2019-08-01'
+            },
+            headers: {
+                'Authorization': `Bearer ${token.token}`
+            }
+        });
+
+        if (response.status === '200') {
+            return response.body.value.map((v) => Object.assign(v, v.properties));
+        }
+
+        throw new Error('Failed to list builds');
     }
 }
