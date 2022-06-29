@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TaskDefinition, workspace, WorkspaceConfiguration, WorkspaceFolder } from "vscode";
+import { ShellExecution, ShellExecutionOptions, Task, TaskDefinition, workspace, WorkspaceConfiguration, WorkspaceFolder } from "vscode";
+import { shell, swa, swaWatchProblemMatcher } from "../constants";
 
 const tasksKey: string = 'tasks';
 const versionKey: string = 'version';
@@ -49,4 +50,22 @@ export interface ITaskOptions {
     env?: {
         [key: string]: string;
     };
+}
+
+export class SwaShellExecution extends ShellExecution {
+    constructor(args: string[], options?: ShellExecutionOptions) {
+        super(swa, args, options);
+    }
+}
+
+export class SwaTask extends Task {
+    constructor(scope: WorkspaceFolder, name: string, execution: ShellExecution) {
+
+        const taskDefinition: TaskDefinition = {
+            type: shell
+        };
+
+        super(taskDefinition, scope, name, swa, execution, swaWatchProblemMatcher);
+        this.isBackground = true;
+    }
 }
