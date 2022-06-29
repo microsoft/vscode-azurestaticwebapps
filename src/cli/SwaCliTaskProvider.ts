@@ -5,11 +5,12 @@
 
 import { AzExtFsExtra, callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
-import { ShellExecution, Task, TaskProvider, workspace, WorkspaceFolder } from "vscode";
+import { Task, TaskProvider, workspace, WorkspaceFolder } from "vscode";
 import { buildPresets } from "../buildPresets/buildPresets";
 import { tryGetApiLocations } from "../commands/createStaticWebApp/tryGetApiLocations";
-import { funcAddress, shell, swa, swaWatchProblemMatcher } from "../constants";
+import { funcAddress } from "../constants";
 import { detectAppFoldersInWorkspace } from '../utils/detectorUtils';
+import { SwaShellExecution, SwaTask } from "../vsCodeConfig/tasks";
 import { SWACLIOptions, tryGetStaticWebAppsCliConfig } from "./tryGetStaticWebAppsCliConfig";
 
 export class SwaTaskProvider implements TaskProvider {
@@ -75,49 +76,51 @@ export class SwaTaskProvider implements TaskProvider {
     }
 
     private createSwaConfigTask(workspaceFolder: WorkspaceFolder, configurationName?: string): Task {
-        const command = configurationName ? `start ${configurationName}` : 'start';
-        const task = new Task({
-            type: shell,
-            command,
-        }, workspaceFolder, command, swa, new ShellExecution(`swa ${command}`), swaWatchProblemMatcher);
-        task.isBackground = true;
+        const args: string[] = ['start'];
+        if (configurationName) {
+            args.push(configurationName);
+        }
 
-        return task;
+        return new SwaTask(
+            workspaceFolder,
+            args.join(' '),
+            new SwaShellExecution(args)
+        );
     }
 
     private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'context' | 'apiLocation' | 'run' | 'appLocation'>): Task {
 
-        const addArg = <T>(object: T, property: keyof T, name?: string, quote?: boolean): string => {
-            return object[property] ? quote ? `--${name ?? property.toString()}=\"${object[property]}\"` : `--${name ?? property.toString()}=${object[property]}` : '';
+        const addArg = <T extends Record<string, string>>(object: T, property: keyof T, name?: string): string[] => {
+            const args: string[] = [];
+            if (object[property]) {
+                args.push(`--${name ?? property.toString()}`);
+                args.push(object[property] as string);
+            }
+            return args;
         };
 
-        const args: string[] = [addArg(options, 'appLocation', 'app-location'), addArg(options, 'apiLocation', 'api-location'), addArg(options, 'run', 'run', true)];
+        const args: string[] = [
+            'start',
+            ...(options.context ? [options.context] : []),
+            ...addArg(options, 'appLocation', 'app-location'),
+            ...addArg(options, 'apiLocation', 'api-location'),
+            ...addArg(options, 'run', 'run'),
+            // Increase devserver timeout to 3x default. See https://github.com/microsoft/vscode-azurestaticwebapps/issues/574#issuecomment-965590774
+            '--devserver-timeout=90000'
+        ];
 
-        // Increase devserver timeout to 3x default. See https://github.com/microsoft/vscode-azurestaticwebapps/issues/574#issuecomment-965590774
-        args.push('--devserver-timeout=90000');
-        const command = `swa start ${options.context} ${args.join(' ')}`;
-        const task = new Task(
-            {
-                type: shell,
-                command,
-            },
+        return new SwaTask(
             workspaceFolder,
             label,
-            swa,
-            new ShellExecution(command,
+            new SwaShellExecution(
+                args,
                 {
                     // Prevent react-scrips auto opening browser
                     env: {
                         BROWSER: 'none'
                     }
                 }
-            ),
-            swaWatchProblemMatcher
+            )
         );
-
-        task.isBackground = true;
-        task.detail = command;
-
-        return task;
     }
 }
