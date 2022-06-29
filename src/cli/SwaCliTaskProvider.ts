@@ -106,7 +106,7 @@ export class SwaTaskProvider implements TaskProvider {
             ...addArg(options, 'apiLocation', 'api-location'),
             ...addArg(options, 'run', 'run'),
             // Increase devserver timeout to 3x default. See https://github.com/microsoft/vscode-azurestaticwebapps/issues/574#issuecomment-965590774
-            '--devserver-timeout=9000'
+            '--devserver-timeout=90000'
         ];
 
         return new SwaTask(
