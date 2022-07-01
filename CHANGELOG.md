@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.11.2 - 2022-07-05
+
+### Changed
+- Update @vscode/extension-telemetry to 0.6.2 [#715](https://github.com/microsoft/vscode-azurestaticwebapps/pull/715)
+
+### Fixed
+- Debug task shell quoting [#718](https://github.com/microsoft/vscode-azurestaticwebapps/pull/718)
+
 ## 0.11.1 - 2022-06-21
 
 ### Changes
