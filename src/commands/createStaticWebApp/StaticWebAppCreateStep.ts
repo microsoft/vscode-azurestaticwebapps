@@ -5,12 +5,12 @@
 
 import { StaticSiteARMResource } from "@azure/arm-appservice";
 import { LocationListStep } from "@microsoft/vscode-azext-azureutils";
-import { AzureWizardExecuteStep } from "@microsoft/vscode-azext-utils";
+import { AzureWizardExecuteStep, nonNullProp } from "@microsoft/vscode-azext-utils";
 import { AppResource } from "@microsoft/vscode-azext-utils/hostapi";
 import { Progress } from "vscode";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
-import { nonNullProp, nonNullValueAndProp } from "../../utils/nonNull";
+import { nonNullValueAndProp } from "../../utils/nonNull";
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {

@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SkuDescription } from '@azure/arm-appservice';
-import { AzureWizardPromptStep, IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
+import { AzureWizardPromptStep, IAzureQuickPickItem, nonNullProp } from '@microsoft/vscode-azext-utils';
 import { localize } from '../../utils/localize';
-import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {

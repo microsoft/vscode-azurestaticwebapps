@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardExecuteStep } from "@microsoft/vscode-azext-utils";
+import { AzureWizardExecuteStep, nonNullProp } from "@microsoft/vscode-azext-utils";
 import { Octokit } from '@octokit/rest';
 import { Progress } from 'vscode';
 import { handleGitError } from '../../errors';
@@ -12,7 +12,6 @@ import { Branch, Repository } from '../../git';
 import { delay } from '../../utils/delay';
 import { isUser } from "../../utils/gitHubUtils";
 import { localize } from '../../utils/localize';
-import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../github/createOctokitClient';
 

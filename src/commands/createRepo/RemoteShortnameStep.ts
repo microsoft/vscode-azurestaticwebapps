@@ -3,12 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, parseError } from '@microsoft/vscode-azext-utils';
+import { AzureWizardPromptStep, nonNullProp, parseError } from '@microsoft/vscode-azext-utils';
 import { basename } from 'path';
 import { cpUtils } from '../../utils/cpUtils';
 import { remoteShortnameExists } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
-import { nonNullProp } from '../../utils/nonNull';
 import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 
 export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
