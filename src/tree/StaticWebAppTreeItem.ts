@@ -5,7 +5,7 @@
 
 import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { parseAzureResourceId, uiUtils } from "@microsoft/vscode-azext-azureutils";
-import { AzExtParentTreeItem, AzExtTreeItem, AzureWizard, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, AzureWizard, IActionContext, ISubscriptionContext, nonNullProp, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { AppResource, ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteStep";
 import { DeleteResourceGroupStep } from "../commands/deleteStaticWebApp/DeleteResourceGroupStep";
@@ -18,7 +18,6 @@ import { createWebSiteClient } from "../utils/azureClients";
 import { createTreeItemsWithErrorHandling } from "../utils/createTreeItemsWithErrorHandling";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
-import { nonNullProp } from "../utils/nonNull";
 import { openUrl } from '../utils/openUrl';
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from './EnvironmentTreeItem';

@@ -5,7 +5,6 @@
 
 import { AzureWizardPromptStep, DialogResponses } from '@microsoft/vscode-azext-utils';
 import { localize } from '../../utils/localize';
-import { nonNullValueAndProp } from '../../utils/nonNull';
 import { IDeleteWizardContext } from './IDeleteWizardContext';
 
 export class ConfirmDeleteStep extends AzureWizardPromptStep<IDeleteWizardContext> {
