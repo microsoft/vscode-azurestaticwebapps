@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
-import { uiUtils } from "@microsoft/vscode-azext-azureutils";
+import { parseAzureResourceId, uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzExtParentTreeItem, AzExtTreeItem, AzureWizard, IActionContext, ISubscriptionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { AppResource, ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteStep";
@@ -15,7 +15,6 @@ import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createActivityContext } from "../utils/activityUtils";
 import { createWebSiteClient } from "../utils/azureClients";
-import { getResourceGroupFromId } from "../utils/azureUtils";
 import { createTreeItemsWithErrorHandling } from "../utils/createTreeItemsWithErrorHandling";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
@@ -49,7 +48,7 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
     constructor(subscription: ISubscriptionContext, ss: StaticSiteARMResource & AppResource) {
         this.data = ss;
         this.name = nonNullProp(this.data, 'name');
-        this.resourceGroup = getResourceGroupFromId(ss.id);
+        this.resourceGroup = parseAzureResourceId(ss.id).resourceGroup;
         this.label = this.name;
         this._subscription = subscription;
 

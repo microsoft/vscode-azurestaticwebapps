@@ -6,21 +6,6 @@
 import { UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { CancellationToken, CancellationTokenSource } from "vscode";
 import { delay } from "./delay";
-import { localize } from './localize';
-
-function parseResourceId(id: string): RegExpMatchArray {
-    const matches: RegExpMatchArray | null = id.match(/\/subscriptions\/(.*)\/resourceGroups\/(.*)\/providers\/(.*)\/(.*)/);
-
-    if (matches === null || matches.length < 3) {
-        throw new Error(localize('InvalidResourceId', 'Invalid Azure Resource Id'));
-    }
-
-    return matches;
-}
-
-export function getResourceGroupFromId(id: string): string {
-    return parseResourceId(id)[2];
-}
 
 const activeAsyncTokens: { [key: string]: CancellationTokenSource | undefined } = {};
 export async function pollAsyncOperation(pollingOperation: () => Promise<boolean>, pollIntervalInSeconds: number, timeoutInSeconds: number, id: string): Promise<boolean> {
