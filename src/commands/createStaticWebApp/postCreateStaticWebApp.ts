@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, callWithTelemetryAndErrorHandling, IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, callWithTelemetryAndErrorHandling, IActionContext, nonNullValue, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { Octokit } from "@octokit/rest";
 import { MessageItem, window } from "vscode";
 import { productionEnvironmentName, showActionsMsg } from "../../constants";
@@ -15,7 +15,6 @@ import { ResolvedStaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
 import { delay } from "../../utils/delay";
 import { getRepoFullname } from "../../utils/gitUtils";
 import { localize } from "../../utils/localize";
-import { nonNullValue } from "../../utils/nonNull";
 import { openUrl } from "../../utils/openUrl";
 import { browse } from "../browse";
 import { checkActionStatus } from "../github/actionCommands";

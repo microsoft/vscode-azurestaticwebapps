@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, IAzureQuickPickItem, parseError, UserCancelledError } from '@microsoft/vscode-azext-utils';
+import { IActionContext, IAzureQuickPickItem, nonNullProp, parseError, UserCancelledError } from '@microsoft/vscode-azext-utils';
 import { Octokit } from '@octokit/rest';
 import { authentication, ProgressLocation, window } from 'vscode';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
@@ -12,7 +12,6 @@ import { ext } from '../extensionVariables';
 import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposCreateForkResponse, ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
 import { localize } from './localize';
-import { nonNullProp } from './nonNull';
 
 /**
  * @param label Property of JSON that will be used as the QuickPicks label

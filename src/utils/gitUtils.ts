@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtFsExtra, IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
+import { AzExtFsExtra, IActionContext, nonNullValue, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as gitUrlParse from 'git-url-parse';
 import { join } from 'path';
 import { MessageItem, ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
@@ -17,7 +17,6 @@ import { API, CommitOptions, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
 import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
-import { nonNullValue } from './nonNull';
 import { getSingleRootFsPath } from './workspaceUtils';
 
 export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteRepo: ReposGetResponseData | undefined; hasAdminAccess: boolean };
@@ -106,7 +105,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         await promptForCommit(context, gitWorkspaceState.repo, localize('commitMade', 'Commit made from VS Code Azure Static Web Apps'), 'dirtyCommit');
     }
 
-    const verifiedRepo: Repository = nonNullValue(repo);
+    const verifiedRepo: Repository = nonNullValue(repo ?? undefined);
     return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo }
 }
 
