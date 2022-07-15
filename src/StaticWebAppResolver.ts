@@ -1,5 +1,5 @@
 import { StaticSiteARMResource } from "@azure/arm-appservice";
-import { parseAzureResourceId } from "@microsoft/vscode-azext-azureutils";
+import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
 import { callWithTelemetryAndErrorHandling, IActionContext, ISubscriptionContext, nonNullProp } from "@microsoft/vscode-azext-utils";
 import { AppResource, AppResourceResolver, ResolvedAppResourceBase } from "@microsoft/vscode-azext-utils/hostapi";
 import { StaticWebAppTreeItem } from "./tree/StaticWebAppTreeItem";
@@ -22,7 +22,7 @@ export class StaticWebAppResolver implements AppResourceResolver {
         return await callWithTelemetryAndErrorHandling('resolveResource', async (context: IActionContext) => {
             try {
                 const client = await createWebSiteClient({ ...context, ...subContext });
-                const swa = await client.staticSites.getStaticSite(parseAzureResourceId(nonNullProp(resource, 'id')).resourceGroup, nonNullProp(resource, 'name'));
+                const swa = await client.staticSites.getStaticSite(getResourceGroupFromId(nonNullProp(resource, 'id')), nonNullProp(resource, 'name'));
 
                 return new StaticWebAppTreeItem(subContext, { ...resource, ...swa });
             } catch (e) {
