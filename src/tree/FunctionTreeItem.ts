@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSiteFunctionOverviewARMResource } from "@azure/arm-appservice";
-import { AzExtTreeItem, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
-import { nonNullProp } from "../utils/nonNull";
+import { AzExtTreeItem, nonNullProp, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { treeUtils } from "../utils/treeUtils";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
 

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import { IActionContext, nonNullProp, nonNullValue } from "@microsoft/vscode-azext-utils";
 import { Octokit } from "@octokit/rest";
 import { window } from "vscode";
 import { swaFilter } from "../../constants";
@@ -13,7 +13,6 @@ import { ActionTreeItem } from "../../tree/ActionTreeItem";
 import { ensureConclusion, ensureStatus } from "../../utils/actionUtils";
 import { pollAsyncOperation } from "../../utils/azureUtils";
 import { localize } from "../../utils/localize";
-import { nonNullProp, nonNullValue } from "../../utils/nonNull";
 import { createOctokitClient } from "./createOctokitClient";
 
 export async function rerunAction(context: IActionContext, node?: ActionTreeItem): Promise<void> {

@@ -3,12 +3,11 @@
  *  Licensed under the MIT License. See LICENSE.md in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { nonNullValue } from "@microsoft/vscode-azext-utils";
 import { CancellationToken, commands, FoldingRange, TextDocument, TextDocumentContentProvider, Uri, window, workspace } from "vscode";
 import { ext } from '../../../extensionVariables';
 import { JobTreeItem } from "../../../tree/JobTreeItem";
 import { StepTreeItem } from "../../../tree/StepTreeItem";
-import { nonNullValue } from "../../../utils/nonNull";
-
 
 export const contentScheme: string = 'github-action-log';
 
