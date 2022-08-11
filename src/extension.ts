@@ -23,6 +23,8 @@ import { StaticWebAppDebugProvider } from './debug/StaticWebAppDebugProvider';
 import { ext } from './extensionVariables';
 import { getApiExport } from './getExtensionApi';
 import { StaticWebAppResolver } from './StaticWebAppResolver';
+import { branchDataProvider } from './tree/StaticWebAppBranchDataProvider';
+import { V2AzureResourcesApi } from './vscode-azureresourcegroups.api.v2';
 
 export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<AzureExtensionApiProvider> {
     ext.context = context;
@@ -57,6 +59,14 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
             const api = rgApiProvider.getApi<AzureHostExtensionApi>('0.0.1');
             ext.rgApi = api;
             api.registerApplicationResourceResolver('Microsoft.Web/staticSites', new StaticWebAppResolver());
+
+        } else {
+            throw new Error('Could not find the Azure Resource Groups extension');
+        }
+
+        if (rgApiProvider) {
+            const api = rgApiProvider.getApi<V2AzureResourcesApi>('2');
+            (api as unknown as V2AzureResourcesApi).registerApplicationResourceBranchDataProvider('microsoft.web/staticsites', branchDataProvider);
         } else {
             throw new Error('Could not find the Azure Resource Groups extension');
         }
