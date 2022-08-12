@@ -25,8 +25,12 @@ export class StaticWebAppBranchDataProvider extends vscode.Disposable implements
         return new StaticWebAppItem(element);
     }
 
-    getTreeItem(element: StaticWebAppModel): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        return element.getTreeItem();
+    async getTreeItem(element: StaticWebAppModel): Promise<vscode.TreeItem> {
+        const ti = {
+            ...(await element.getTreeItem()),
+            contextValue: element.contextValues.sort().join(';')
+        }
+        return ti;
     }
 
     refresh(element: StaticWebAppModel): void {

@@ -17,5 +17,9 @@ export async function browse(context: IActionContext, node?: ResolvedStaticWebAp
         });
     }
 
-    await node.browse();
+    if (node.branchItem) {
+        await node.branchItem.browse();
+    } else {
+        await node.browse();
+    }
 }
