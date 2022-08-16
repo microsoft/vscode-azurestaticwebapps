@@ -67,6 +67,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         if (rgApiProvider) {
             const api = rgApiProvider.getApi<V2AzureResourcesApi>('2');
             (api as unknown as V2AzureResourcesApi).registerApplicationResourceBranchDataProvider('microsoft.web/staticsites', branchDataProvider);
+            ext.rgApiv2 = api;
         } else {
             throw new Error('Could not find the Azure Resource Groups extension');
         }

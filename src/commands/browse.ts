@@ -4,22 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext } from '@microsoft/vscode-azext-utils';
-import { swaFilter } from '../constants';
+import { AppResourceFilter } from '../AppResourceFilter';
+import { ContextValueFilter } from '../ContextValueFilter';
 import { ext } from '../extensionVariables';
-import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
-import { ResolvedStaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
+import { EnvironmentItem } from '../tree/EnvironmentItem';
+import { StaticWebAppItem } from '../tree/StaticWebAppItem';
 
-export async function browse(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
+export async function browse(context: IActionContext, node?: StaticWebAppItem | EnvironmentItem): Promise<void> {
     if (!node) {
-        node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
-            filter: swaFilter,
-            expectedChildContextValue: EnvironmentTreeItem.contextValue,
-        });
+        node = await ext.rgApiv2.pickResource<EnvironmentItem>({
+            filter: new AppResourceFilter({
+                type: 'microsoft.web/staticsites'
+            }),
+            childFilter: new ContextValueFilter('azureStaticEnvironment')
+        })
     }
 
-    if (node.branchItem) {
-        await node.branchItem.browse();
-    } else {
-        await node.browse();
-    }
+    await node.browse();
 }

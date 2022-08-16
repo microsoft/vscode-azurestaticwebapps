@@ -6,6 +6,7 @@
 import { AppSettingsTreeItem, AppSettingTreeItem } from '@microsoft/vscode-azext-azureappservice';
 import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, registerCommand, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
 import { openUrl } from '../utils/openUrl';
+import { registerCommandWithTreeNodeUnboxing } from '../vscode-azureresourcegroups.api.v2';
 import { downloadAppSettings } from './appSettings/downloadAppSettings';
 import { editAppSetting } from './appSettings/editAppSetting';
 import { renameAppSetting } from './appSettings/renameAppSetting';
@@ -37,7 +38,7 @@ export function registerCommands(): void {
     registerCommand('staticWebApps.openInPortal', openInPortal);
     registerCommand('staticWebApps.viewProperties', viewProperties);
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
-    registerCommand('staticWebApps.browse', browse);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.browse', browse);
     registerCommand('staticWebApps.showActions', showActions);
     registerCommand('staticWebApps.action.rerun', rerunAction);
     registerCommand('staticWebApps.action.cancel', cancelAction);

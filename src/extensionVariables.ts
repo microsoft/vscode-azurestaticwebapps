@@ -6,6 +6,7 @@
 import { IAzExtOutputChannel, IExperimentationServiceAdapter } from "@microsoft/vscode-azext-utils";
 import { AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
 import { ExtensionContext } from "vscode";
+import { V2AzureResourcesApi } from "./vscode-azureresourcegroups.api.v2";
 
 /**
  * Namespace for common variables used throughout the extension. They must be initialized in the activate() method of extension.ts
@@ -17,4 +18,5 @@ export namespace ext {
     export const prefix: string = 'staticWebApps';
     export let experimentationService: IExperimentationServiceAdapter;
     export let rgApi: AzureHostExtensionApi;
+    export let rgApiv2: V2AzureResourcesApi;
 }
