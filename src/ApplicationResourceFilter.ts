@@ -15,7 +15,7 @@ export class AppResourceFilter implements Filter<ApplicationResource> {
             return false;
         }
 
-        // if (this.options.kind && this.options.kind !== resource.kind) {
+        // if (this.options.kind && this.options.kind !== resource.type.kinds) {
         //     return false;
         // }
 

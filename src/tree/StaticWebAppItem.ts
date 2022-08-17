@@ -49,10 +49,6 @@ export class StaticWebAppItem implements StaticWebAppModel {
         }) ?? new TreeItem(this.resource.name);
     }
 
-    public async delete(context: IActionContext): Promise<void> {
-
-    }
-
     public async browse(): Promise<void> {
         if (this.swa) {
             await openUrl(`https://${this.swa.defaultHostname}`);

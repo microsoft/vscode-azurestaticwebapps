@@ -1,6 +1,5 @@
 import type { Environment } from '@azure/ms-rest-azure-env';
 import { IActionContext } from '@microsoft/vscode-azext-utils';
-import { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
 import * as vscode from 'vscode';
 
 export interface ApplicationAuthentication {
@@ -146,7 +145,7 @@ export interface ResourcePickOptions {
     /**
      * Options to filter the picks to resources that match any of the provided filters
      */
-    filter?: Filter<AppResource>;
+    filter?: Filter<ApplicationResource>;
 
     /**
      * Set this to pick a child of the selected app resource

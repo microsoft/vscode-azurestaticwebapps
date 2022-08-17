@@ -13,9 +13,7 @@ import { StaticWebAppItem } from '../tree/StaticWebAppItem';
 export async function browse(context: IActionContext, node?: StaticWebAppItem | EnvironmentItem): Promise<void> {
     if (!node) {
         node = await ext.rgApiv2.pickResource<EnvironmentItem>({
-            filter: new AppResourceFilter({
-                type: 'microsoft.web/staticsites'
-            }),
+            filter: new AppResourceFilter({ type: 'microsoft.web/staticsites' }),
             childFilter: new ContextValueFilter('azureStaticEnvironment')
         })
     }
