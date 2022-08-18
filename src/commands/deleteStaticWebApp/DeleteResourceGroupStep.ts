@@ -8,12 +8,12 @@ import { AzureWizardExecuteStep, nonNullProp } from "@microsoft/vscode-azext-uti
 import { Progress } from "vscode";
 import { createResourceClient } from "../../utils/azureClients";
 import { localize } from "../../utils/localize";
-import { IDeleteWizardContext } from "./IDeleteWizardContext";
+import { IDeleteWizardContextV2 } from "./IDeleteWizardContextv2";
 
-export class DeleteResourceGroupStep extends AzureWizardExecuteStep<IDeleteWizardContext> {
+export class DeleteResourceGroupStep extends AzureWizardExecuteStep<IDeleteWizardContextV2> {
     public priority: number = 250;
 
-    public async execute(context: IDeleteWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
+    public async execute(context: IDeleteWizardContextV2, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const resourceGroupName = nonNullProp(context, 'resourceGroupToDelete');
         const message = localize('deleteResourceGroup', 'Deleting resource group "{0}"...', resourceGroupName);
         progress.report({ message });
@@ -21,7 +21,7 @@ export class DeleteResourceGroupStep extends AzureWizardExecuteStep<IDeleteWizar
         await resourceClient.resourceGroups.beginDeleteAndWait(resourceGroupName);
     }
 
-    public shouldExecute(context: IDeleteWizardContext): boolean {
+    public shouldExecute(context: IDeleteWizardContextV2): boolean {
         return !!context.resourceGroupToDelete;
     }
 }

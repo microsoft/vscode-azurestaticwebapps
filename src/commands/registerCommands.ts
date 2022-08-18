@@ -33,7 +33,7 @@ import { viewProperties } from './viewProperties';
 export function registerCommands(): void {
     registerCommand('staticWebApps.createStaticWebApp', createStaticWebApp);
     registerCommand('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
-    registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
     registerCommand('staticWebApps.deleteEnvironment', deleteEnvironment);
     registerCommand('staticWebApps.openInPortal', openInPortal);
     registerCommand('staticWebApps.viewProperties', viewProperties);

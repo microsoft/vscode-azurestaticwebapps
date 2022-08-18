@@ -15,10 +15,5 @@ export async function deleteNode(context: IActionContext, expectedContextValue: 
         });
     }
 
-    if (node.branchItem) {
-        await node.branchItem.delete(context);
-    } else {
-        await node.deleteTreeItem(context);
-    }
-
+    await node.deleteTreeItem(context);
 }

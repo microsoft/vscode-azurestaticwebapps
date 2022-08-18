@@ -26,9 +26,9 @@ export class StaticWebAppBranchDataProvider extends vscode.Disposable implements
     }
 
     async getTreeItem(element: StaticWebAppModel): Promise<vscode.TreeItem> {
-        const ti = {
+        const ti: vscode.TreeItem = {
             ...(await element.getTreeItem()),
-            contextValue: element.contextValues.sort().join(';')
+            contextValue: element.contextValues.sort().join(';'),
         }
         return ti;
     }
@@ -39,4 +39,3 @@ export class StaticWebAppBranchDataProvider extends vscode.Disposable implements
 }
 
 export const branchDataProvider = new StaticWebAppBranchDataProvider();
-

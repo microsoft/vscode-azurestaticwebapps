@@ -11,12 +11,12 @@ import { Progress } from "vscode";
 import { ext } from "../../extensionVariables";
 import { createResourceClient, createWebSiteClient } from "../../utils/azureClients";
 import { localize } from "../../utils/localize";
-import { IDeleteWizardContext } from "./IDeleteWizardContext";
+import { IDeleteWizardContextV2 } from "./IDeleteWizardContextv2";
 
-export class StaticWebAppDeleteStep extends AzureWizardExecuteStep<IDeleteWizardContext> {
+export class StaticWebAppDeleteStep extends AzureWizardExecuteStep<IDeleteWizardContextV2> {
     public priority: number = 100;
 
-    public async execute(context: IDeleteWizardContext, progress: Progress<{ message?: string; increment?: number }>): Promise<void> {
+    public async execute(context: IDeleteWizardContextV2, progress: Progress<{ message?: string; increment?: number }>): Promise<void> {
 
         const swaNode = nonNullProp(context, 'node');
 
@@ -37,7 +37,7 @@ export class StaticWebAppDeleteStep extends AzureWizardExecuteStep<IDeleteWizard
         }
     }
 
-    public shouldExecute(_wizardContext: IDeleteWizardContext): boolean {
+    public shouldExecute(_wizardContext: IDeleteWizardContextV2): boolean {
         return true;
     }
 }
