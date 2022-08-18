@@ -3,30 +3,13 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { AppResourceFilter as AppResourceFilterOptions } from "@microsoft/vscode-azext-utils/hostapi";
+import { AzExtResourceType } from "@microsoft/vscode-azext-utils";
 import { ApplicationResource, Filter } from "./vscode-azureresourcegroups.api.v2";
 
 export class AppResourceFilter implements Filter<ApplicationResource> {
-
-    constructor(private readonly options: AppResourceFilterOptions) { }
+    constructor(private readonly azExtResourceType: AzExtResourceType) { }
 
     public matches(resource: ApplicationResource): boolean {
-        if (this.options.type !== resource.type.type) {
-            return false;
-        }
-
-        // if (this.options.kind && this.options.kind !== resource.kind) {
-        //     return false;
-        // }
-
-        if (this.options.tags) {
-            for (const tag of Object.keys(this.options.tags)) {
-                if (this.options.tags[tag] !== resource.tags?.[tag]) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return this.azExtResourceType === resource.azExtResourceType;
     }
 }

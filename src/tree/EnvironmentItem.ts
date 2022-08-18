@@ -9,7 +9,8 @@ import { StaticWebAppModel } from "./StaticWebAppModel";
 
 export class EnvironmentItem implements StaticWebAppModel {
     constructor(private readonly environment: StaticSiteBuildARMResource) { }
-    contextValues: string[] = ['azureStaticEnvironment'];
+    public static contextValue = 'azureStaticEnvironment';
+    contextValues: string[] = [EnvironmentItem.contextValue];
     quickPickOptions?: ResourceQuickPickOptions | undefined = {
         contexts: this.contextValues,
     }

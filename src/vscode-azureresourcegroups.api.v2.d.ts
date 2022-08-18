@@ -1,5 +1,5 @@
 import type { Environment } from '@azure/ms-rest-azure-env';
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtResourceType, IActionContext } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
 
 export interface ApplicationAuthentication {
@@ -36,6 +36,7 @@ export interface ApplicationResource extends ResourceBase {
     readonly type: ApplicationResourceType;
     readonly location?: string;
     readonly resourceGroup?: string;
+    readonly azExtResourceType?: AzExtResourceType;
     /** Resource tags */
     readonly tags?: {
         [propertyName: string]: string;
