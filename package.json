@@ -74,7 +74,21 @@
                     "type": "microsoft.web/staticsites",
                     "detail": "%staticWebApps.createStaticWebAppDetail%"
                 }
-            ]
+            ],
+            "actionGroups": [
+                {
+                    "id": "staticWebApps",
+                    "title": "Static Web Apps",
+                    "icon": "resources/azure-staticwebapps.svg"
+                }
+            ],
+            "actions": {
+                "staticWebApps": [
+                    {
+                        "command": "staticWebApps.createHttpFunction"
+                    }
+                ]
+            }
         },
         "debuggers": [
             {
