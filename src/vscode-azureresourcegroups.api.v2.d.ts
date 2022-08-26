@@ -1,6 +1,11 @@
 import type { Environment } from '@azure/ms-rest-azure-env';
-import { AzExtResourceType, IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtResourceType } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
+
+export interface ResourceGroupsItem {
+    getChildren(): vscode.ProviderResult<ResourceGroupsItem[]>;
+    getTreeItem(): vscode.TreeItem | Thenable<vscode.TreeItem>;
+}
 
 export interface ApplicationAuthentication {
     getSession(scopes?: string[]): vscode.ProviderResult<vscode.AuthenticationSession>;
@@ -34,9 +39,9 @@ export interface ApplicationResourceType {
 export interface ApplicationResource extends ResourceBase {
     readonly subscription: ApplicationSubscription;
     readonly type: ApplicationResourceType;
+    readonly azExtResourceType?: AzExtResourceType;
     readonly location?: string;
     readonly resourceGroup?: string;
-    readonly azExtResourceType?: AzExtResourceType;
     /** Resource tags */
     readonly tags?: {
         [propertyName: string]: string;
@@ -58,8 +63,8 @@ export interface ApplicationResourceProvider extends ResourceProviderBase<Applic
 }
 
 export interface ResourceQuickPickOptions {
-    readonly contexts?: string[];
-    readonly isParent?: boolean;
+    readonly contexts: string[];
+    readonly isLeaf: boolean;
 }
 
 export interface ResourceModelBase {
@@ -168,7 +173,12 @@ export interface V2AzureResourcesApi extends AzureResourcesApiBase {
     /**
      * Show a quick picker of app resources. Set `options.type` to filter the picks.
      */
-    pickResource<TModel>(options?: ResourcePickOptions): Promise<TModel>
+    pickResource2<TModel extends ResourceModelBase>(callback: (resourcesTreeDataProvider: vscode.TreeDataProvider<ResourceGroupsItem>) => Promise<TModel>): Promise<TModel>;
+
+    /**
+     * Show a quick picker of app resources. Set `options.type` to filter the picks.
+     */
+    pickResource<TModel extends ResourceModelBase>(options: ResourcePickOptions): Promise<TModel>;
 
     /**
      * Reveals an item in the application/workspace resource tree
@@ -210,6 +220,13 @@ export interface AzureResourcesApiBase {
 }
 
 /**
+ *
+ */
+export interface GetApiOptions {
+    readonly extensionId?: string;
+}
+
+/**
  * Exported object of the Azure Resources extension.
  */
 export interface AzureResourcesApiManager {
@@ -222,49 +239,8 @@ export interface AzureResourcesApiManager {
      *
      * @returns The requested API or undefined, if not available.
      */
-    getApi<T extends AzureResourcesApiBase>(versionRange: string): T | undefined
+    getApi<T extends AzureResourcesApiBase>(versionRange: string, options?: GetApiOptions): T | undefined
 }
-
-
-
-/**
- * Interface describing an object that wraps another object.
- *
- * The host extension will wrap all tree nodes provided by the client
- * extensions. When commands are executed, the wrapper objects are
- * sent directly to the client extension, which will need to unwrap
- * them. The `registerCommandWithTreeNodeUnboxing` method below, used
- * in place of `registerCommand`, will intelligently do this
- * unboxing automatically (i.e., will not unbox if the arguments
- * aren't boxes)
- */
-export interface Box {
-    unwrap<T>(): Promise<T>;
-}
-
-/**
- * Tests to see if something is a box, by ensuring it is an object
- * and has an "unwrap" function
- * @param maybeBox An object to test if it is a box
- * @returns True if a box, false otherwise
- */
-export declare function isBox(maybeBox: unknown): maybeBox is Box;
-
-/**
- * Describes command callbacks for tree node context menu commands
- */
-export type TreeNodeCommandCallback<T> = (context: IActionContext, node?: T, nodes?: T[], ...args: any[]) => any;
-
-/**
- * Used to register VSCode tree node context menu commands that are in the host extension's tree. It wraps your callback with consistent error and telemetry handling
- * Use debounce property if you need a delay between clicks for this particular command
- * A telemetry event is automatically sent whenever a command is executed. The telemetry event ID will default to the same as the
- *   commandId passed in, but can be overridden per command with telemetryId
- * The telemetry event for this command will be named telemetryId if specified, otherwise it defaults to the commandId
- * NOTE: If the environment variable `DEBUGTELEMETRY` is set to a non-empty, non-zero value, then telemetry will not be sent. If the value is 'verbose' or 'v', telemetry will be displayed in the console window.
- */
-export declare function registerCommandWithTreeNodeUnboxing<T>(commandId: string, callback: TreeNodeCommandCallback<T>, debounce?: number, telemetryId?: string): void;
-
 
 export interface Filter<T> {
     matches(value: T): boolean;
