@@ -3,11 +3,10 @@
  *  Licensed under the MIT License. See License.md in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, IActionContext } from "@microsoft/vscode-azext-utils";
+import { AzExtTreeItem, IActionContext, isBox } from "@microsoft/vscode-azext-utils";
 import { ext } from "./extensionVariables";
 import { branchDataProvider } from "./tree/StaticWebAppBranchDataProvider";
 import { StaticWebAppModel } from "./tree/StaticWebAppModel";
-import { isBox } from "./utils/unbox";
 import { WrappedResourceModel } from "./vscode-azureresourcegroups.api.v2";
 
 export async function refreshTreeItem(actionContext: IActionContext, node: (AzExtTreeItem) | WrappedResourceModel | StaticWebAppModel | undefined): Promise<void> {

@@ -1,7 +1,7 @@
 import { AzExtServiceClientCredentials, ISubscriptionContext } from '@microsoft/vscode-azext-utils';
+import { ApplicationSubscription } from '@microsoft/vscode-azext-utils/hostapi.v2';
 import * as vscode from 'vscode';
 import { localize } from '../../utils/localize';
-import { ApplicationSubscription } from '../../vscode-azureresourcegroups.api.v2';
 
 /**
  * Converts a VS Code authentication session to an Azure Track 1 & 2 compatible compatible credential.

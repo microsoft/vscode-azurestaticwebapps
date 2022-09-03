@@ -1,5 +1,6 @@
+import { ApplicationResource } from '@microsoft/vscode-azext-utils/hostapi.v2';
 import * as vscode from 'vscode';
-import { ApplicationResource, BranchDataProvider } from '../vscode-azureresourcegroups.api.v2';
+import { BranchDataProvider } from '../vscode-azureresourcegroups.api.v2';
 import { StaticWebAppItem } from './StaticWebAppItem';
 import { StaticWebAppModel } from './StaticWebAppModel';
 

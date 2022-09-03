@@ -1,5 +1,5 @@
+import { ResourceModelBase } from '@microsoft/vscode-azext-utils/hostapi.v2';
 import * as vscode from 'vscode';
-import { ResourceModelBase } from "../vscode-azureresourcegroups.api.v2";
 
 export interface StaticWebAppModel extends ResourceModelBase {
     getChildren(): vscode.ProviderResult<StaticWebAppModel[]>;

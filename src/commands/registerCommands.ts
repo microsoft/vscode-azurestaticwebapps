@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppSettingsTreeItem, AppSettingTreeItem } from '@microsoft/vscode-azext-azureappservice';
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, registerCommand, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, registerCommand, registerCommandWithTreeNodeUnboxing, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
 import { openUrl } from '../utils/openUrl';
-import { registerCommandWithTreeNodeUnboxing } from '../utils/unbox';
 import { downloadAppSettings } from './appSettings/downloadAppSettings';
 import { editAppSetting } from './appSettings/editAppSetting';
 import { renameAppSetting } from './appSettings/renameAppSetting';

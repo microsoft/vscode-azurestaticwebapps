@@ -1,6 +1,7 @@
 import { StaticSiteARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { getResourceGroupFromId, uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzureWizard, callWithTelemetryAndErrorHandling, IActionContext, nonNullProp, openUrl } from "@microsoft/vscode-azext-utils";
+import { ApplicationResource, ResourceQuickPickOptions } from "@microsoft/vscode-azext-utils/hostapi.v2";
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { ISubscriptionContext } from "vscode-azureextensiondev";
 import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteStep";
@@ -13,7 +14,6 @@ import { createWebSiteClient } from "../utils/azureClients";
 import { getRepoFullname } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
 import { createSubscriptionContext } from "../utils/v2/credentialsUtils";
-import { ApplicationResource, ResourceQuickPickOptions } from "../vscode-azureresourcegroups.api.v2";
 import { EnvironmentItem } from "./EnvironmentItem";
 import { StaticWebAppModel } from "./StaticWebAppModel";
 

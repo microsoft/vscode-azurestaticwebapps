@@ -1,5 +1,6 @@
 import type { Environment } from '@azure/ms-rest-azure-env';
 import { AzExtResourceType } from '@microsoft/vscode-azext-utils';
+import { ContextValueFilter, ResourceModelBase } from '@microsoft/vscode-azext-utils/hostapi.v2';
 import * as vscode from 'vscode';
 
 export interface ResourceGroupsItem {
@@ -60,16 +61,6 @@ export interface ProvideResourceOptions {
 
 export interface ApplicationResourceProvider extends ResourceProviderBase<ApplicationResource> {
     getResources(subscription: ApplicationSubscription, options?: ProvideResourceOptions): vscode.ProviderResult<ApplicationResource[]>;
-}
-
-export interface ResourceQuickPickOptions {
-    readonly contexts: string[];
-    readonly isLeaf: boolean;
-}
-
-export interface ResourceModelBase {
-    readonly quickPickOptions?: ResourceQuickPickOptions;
-    readonly azureResourceId?: string;
 }
 
 /**
@@ -173,7 +164,7 @@ export interface V2AzureResourcesApi extends AzureResourcesApiBase {
     /**
      * Show a quick picker of app resources. Set `options.type` to filter the picks.
      */
-    pickResource2<TModel extends ResourceModelBase>(callback: (resourcesTreeDataProvider: vscode.TreeDataProvider<ResourceGroupsItem>) => Promise<TModel>): Promise<TModel>;
+    pickResource2<TModel extends ResourceModelBase>(type: AzExtResourceType, childFilter?: ContextValueFilter): Promise<TModel>;
 
     /**
      * Show a quick picker of app resources. Set `options.type` to filter the picks.

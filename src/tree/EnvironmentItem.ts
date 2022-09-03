@@ -1,10 +1,10 @@
 import { StaticSiteBuildARMResource } from "@azure/arm-appservice";
 import { openUrl } from "@microsoft/vscode-azext-utils";
+import { ResourceQuickPickOptions } from "@microsoft/vscode-azext-utils/hostapi.v2";
 import { ProviderResult, TreeItem } from "vscode";
 import { productionEnvironmentName } from "../constants";
 import { localize } from "../utils/localize";
 import { treeUtils } from "../utils/treeUtils";
-import { ResourceQuickPickOptions } from "../vscode-azureresourcegroups.api.v2";
 import { StaticWebAppModel } from "./StaticWebAppModel";
 
 export class EnvironmentItem implements StaticWebAppModel {
@@ -12,7 +12,8 @@ export class EnvironmentItem implements StaticWebAppModel {
     public static contextValue = 'azureStaticEnvironment';
     contextValues: string[] = [EnvironmentItem.contextValue];
     quickPickOptions?: ResourceQuickPickOptions | undefined = {
-        contexts: this.contextValues,
+        contextValues: this.contextValues,
+        isLeaf: false,
     }
     azureResourceId?: string | undefined;
 

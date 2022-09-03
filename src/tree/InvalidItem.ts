@@ -6,7 +6,7 @@ import { StaticWebAppModel } from "./StaticWebAppModel";
 export class InvalidItem implements StaticWebAppModel {
     public readonly data?: unknown;
 
-    constructor(private readonly _error: unknown, private readonly options: IInvalidTreeItemOptions) { }
+    constructor(public readonly _error: unknown, private readonly options: IInvalidTreeItemOptions) { }
 
     getTreeItem(): TreeItem | Thenable<TreeItem> {
         return {
