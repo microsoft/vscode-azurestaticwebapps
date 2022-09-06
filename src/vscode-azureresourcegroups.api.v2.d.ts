@@ -1,6 +1,6 @@
 import type { Environment } from '@azure/ms-rest-azure-env';
 import { AzExtResourceType } from '@microsoft/vscode-azext-utils';
-import { ContextValueFilter, ResourceModelBase } from '@microsoft/vscode-azext-utils/hostapi.v2';
+import { ContextValueFilter, ContextValueFilterableTreeNode, ResourceModelBase } from '@microsoft/vscode-azext-utils/hostapi.v2';
 import * as vscode from 'vscode';
 
 export interface ResourceGroupsItem {
@@ -157,10 +157,15 @@ export interface ResourcePickOptions {
     resolveQuickPicksBeforeDisplay?: boolean;
 }
 
+export type ResourceGroupsTreeDataProvider = vscode.TreeDataProvider<ContextValueFilterableTreeNode>;
+
 /**
  * The current (v2) Azure Resources extension API.
  */
 export interface V2AzureResourcesApi extends AzureResourcesApiBase {
+
+    getResourceGroupsTreeDataProvider(): ResourceGroupsTreeDataProvider;
+
     /**
      * Show a quick picker of app resources. Set `options.type` to filter the picks.
      */
