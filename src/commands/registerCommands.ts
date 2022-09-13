@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppSettingsTreeItem, AppSettingTreeItem } from '@microsoft/vscode-azext-azureappservice';
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, registerCommand, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, registerCommandWithTreeNodeUnboxing, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
 import { openUrl } from '../utils/openUrl';
 import { downloadAppSettings } from './appSettings/downloadAppSettings';
 import { editAppSetting } from './appSettings/editAppSetting';
@@ -30,33 +30,33 @@ import { openYAMLConfigFile } from './openYAMLConfigFile';
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
-    registerCommand('staticWebApps.createStaticWebApp', createStaticWebApp);
-    registerCommand('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
-    registerCommand('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
-    registerCommand('staticWebApps.deleteEnvironment', deleteEnvironment);
-    registerCommand('staticWebApps.openInPortal', openInPortal);
-    registerCommand('staticWebApps.viewProperties', viewProperties);
-    registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
-    registerCommand('staticWebApps.browse', browse);
-    registerCommand('staticWebApps.showActions', showActions);
-    registerCommand('staticWebApps.action.rerun', rerunAction);
-    registerCommand('staticWebApps.action.cancel', cancelAction);
-    registerCommand('staticWebApps.cloneRepo', cloneRepo);
-    registerCommand('staticWebApps.openGitHubRepo', openGitHubRepo);
-    registerCommand('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, new RegExp(AppSettingsTreeItem.contextValue), node));
-    registerCommand('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, new RegExp(AppSettingTreeItem.contextValue), node));
-    registerCommand('staticWebApps.appSettings.edit', editAppSetting);
-    registerCommand('staticWebApps.appSettings.rename', renameAppSetting);
-    registerCommand('staticWebApps.appSettings.download', downloadAppSettings);
-    registerCommand('staticWebApps.appSettings.upload', uploadAppSettings);
-    registerCommand('staticWebApps.toggleAppSettingVisibility', async (context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(context); }, 250);
-    registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
-    registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
-    registerCommand('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
-    registerCommand('staticWebApps.createSwaConfigFile', createSwaConfigFile);
-    registerCommand('staticWebApps.openGitHubLog', openGitHubLog);
-    registerCommand('staticWebApps.installOrUpdateStaticWebAppsCli', installOrUpdateSwaCli);
-    registerCommand('staticWebApps.uninstallStaticWebAppsCli', uninstallSwaCli);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.createStaticWebApp', createStaticWebApp);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.deleteEnvironment', deleteEnvironment);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.openInPortal', openInPortal);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.viewProperties', viewProperties);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.createHttpFunction', createHttpFunction);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.browse', browse);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.showActions', showActions);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.action.rerun', rerunAction);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.action.cancel', cancelAction);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.cloneRepo', cloneRepo);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.openGitHubRepo', openGitHubRepo);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, new RegExp(AppSettingsTreeItem.contextValue), node));
+    registerCommandWithTreeNodeUnboxing('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, new RegExp(AppSettingTreeItem.contextValue), node));
+    registerCommandWithTreeNodeUnboxing('staticWebApps.appSettings.edit', editAppSetting);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.appSettings.rename', renameAppSetting);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.appSettings.download', downloadAppSettings);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.appSettings.upload', uploadAppSettings);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.toggleAppSettingVisibility', async (context: IActionContext, node: AppSettingTreeItem) => { await node.toggleValueVisibility(context); }, 250);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
+    registerCommandWithTreeNodeUnboxing('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
+    registerCommandWithTreeNodeUnboxing('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.createSwaConfigFile', createSwaConfigFile);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.openGitHubLog', openGitHubLog);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.installOrUpdateStaticWebAppsCli', installOrUpdateSwaCli);
+    registerCommandWithTreeNodeUnboxing('staticWebApps.uninstallStaticWebAppsCli', uninstallSwaCli);
 
     // Suppress "Report an Issue" button for all errors in favor of the command
     registerErrorHandler(c => c.errorHandling.suppressReportIssue = true);
