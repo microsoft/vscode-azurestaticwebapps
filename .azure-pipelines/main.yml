@@ -23,6 +23,8 @@ jobs:
   - template: common/sbom.yml # only generate on linux
   - template: common/lint.yml
   - template: common/test.yml
+  variables:
+    Codeql.Enabled: true
 
 - job: macOS
   pool:
