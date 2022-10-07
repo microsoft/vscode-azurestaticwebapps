@@ -77,7 +77,15 @@ export const buildPresets: IBuildPreset[] = [
         port: 3000,
         group: 'framework'
     },
-
+    {
+        id: 'nuxt3',
+        displayName: 'Nuxt 3',
+        appLocation: '/',
+        apiLocation: '.output/server',
+        outputLocation: '.output/public',
+        port: 3000,
+        group: 'framework'
+    },
     {
         id: 'gatsby',
         displayName: 'Gatsby',
