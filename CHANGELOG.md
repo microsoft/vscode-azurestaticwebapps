@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.11.3 - 2022-10-11
+## 0.11.3 - 2022-10-13
 
 ### Added
 - Next.JS SSR preset [#743](https://github.com/microsoft/vscode-azurestaticwebapps/pull/743)
