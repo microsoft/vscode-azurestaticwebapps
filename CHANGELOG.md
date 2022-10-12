@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.11.3 - 2022-10-13
+
+### Added
+- Next.JS SSR preset [#743](https://github.com/microsoft/vscode-azurestaticwebapps/pull/743)
+- Nuxt 3 preset [#741](https://github.com/microsoft/vscode-azurestaticwebapps/pull/741)
+
 ## 0.11.2 - 2022-07-05
 
 ### Changed
