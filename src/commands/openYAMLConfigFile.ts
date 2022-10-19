@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-utils";
+import { IActionContext, IAzureQuickPickItem, nonNullValue } from "@microsoft/vscode-azext-utils";
 import { basename } from 'path';
 import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
 import { CST, Document, parseDocument } from 'yaml';
@@ -17,7 +17,15 @@ import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeIte
 import { localize } from '../utils/localize';
 import { openUrl } from "../utils/openUrl";
 
-export async function openYAMLConfigFile(context: IActionContext, node?: ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem, buildConfigToSelect?: BuildConfig): Promise<void> {
+type YamlTreeItems = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;
+
+export async function openYAMLConfigFile(context: IActionContext, treeItem?: YamlTreeItems, treeItems?: YamlTreeItems[], buildConfigToSelect?: BuildConfig): Promise<void> {
+    if (treeItems?.length) {
+        throw new Error(localize('multipleSelectionNotSupported', 'Multiple selections are not supported for this feature.'));
+    }
+
+    let node = nonNullValue(treeItem);
+
     if (!node) {
         node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
             filter: swaFilter,

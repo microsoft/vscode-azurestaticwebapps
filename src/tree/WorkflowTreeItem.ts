@@ -22,7 +22,7 @@ export class WorkflowTreeItem extends AzExtTreeItem {
         this.buildConfigValue = buildConfigValue;
 
         this.commandId = 'staticWebApps.openYAMLConfigFile';
-        this.commandArgs = [this.parent, this.buildConfig];
+        this.commandArgs = [this.parent, undefined, this.buildConfig];
     }
 
     public get label(): string {
