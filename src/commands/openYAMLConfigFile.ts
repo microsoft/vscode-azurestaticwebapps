@@ -17,11 +17,11 @@ import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeIte
 import { localize } from '../utils/localize';
 import { openUrl } from "../utils/openUrl";
 
-type YamlTreeItems = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;
+type YamlTreeItem = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;
 
-export async function openYAMLConfigFile(context: IActionContext, treeItem?: YamlTreeItems, treeItems?: YamlTreeItems[], buildConfigToSelect?: BuildConfig): Promise<void> {
+export async function openYAMLConfigFile(context: IActionContext, treeItem?: YamlTreeItem, treeItems?: YamlTreeItem[], buildConfigToSelect?: BuildConfig): Promise<void> {
     if (treeItems?.length) {
-        throw new Error(localize('multipleSelectionNotSupported', 'Multiple selections are not supported for this feature.'));
+        return;
     }
 
     let node = nonNullValue(treeItem);
