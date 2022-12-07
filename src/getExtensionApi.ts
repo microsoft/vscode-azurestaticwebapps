@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
+import { getExtensionExports, IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import { AzureExtensionApiProvider } from "@microsoft/vscode-azext-utils/api";
-import { commands, Extension, extensions } from "vscode";
+import { commands } from "vscode";
 import { API, GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";
@@ -16,7 +16,7 @@ import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
  */
 export async function getFunctionsApi(context: IActionContext, installMessage?: string): Promise<AzureFunctionsExtensionApi> {
     const funcExtensionId: string = 'ms-azuretools.vscode-azurefunctions';
-    const funcExtension: AzureExtensionApiProvider | undefined = await getApiExport(funcExtensionId);
+    const funcExtension: AzureExtensionApiProvider | undefined = await getExtensionExports(funcExtensionId);
 
     if (funcExtension) {
         return funcExtension.getApi<AzureFunctionsExtensionApi>('^1.7.0');
@@ -32,7 +32,7 @@ export async function getFunctionsApi(context: IActionContext, installMessage?: 
 
 export async function getGitApi(): Promise<API> {
     try {
-        const gitExtension: GitExtension | undefined = await getApiExport('vscode.git');
+        const gitExtension: GitExtension | undefined = await getExtensionExports('vscode.git');
         if (gitExtension) {
             return gitExtension.getAPI(1);
         } else {
@@ -46,17 +46,4 @@ export async function getGitApi(): Promise<API> {
             throw err;
         }
     }
-}
-
-export async function getApiExport<T>(extensionId: string): Promise<T | undefined> {
-    const extension: Extension<T> | undefined = extensions.getExtension(extensionId);
-    if (extension) {
-        if (!extension.isActive) {
-            await extension.activate();
-        }
-
-        return extension.exports;
-    }
-
-    return undefined;
 }
