@@ -61,8 +61,8 @@
     ],
     "main": "./main.js",
     "contributes": {
-        "x-azResourcesV2": {
-            "application": {
+        "x-azResources": {
+            "azure": {
                 "branches": [
                     {
                         "type": "StaticWebApps"
@@ -76,22 +76,12 @@
                     "type": "microsoft.web/staticsites",
                     "detail": "%staticWebApps.createStaticWebAppDetail%"
                 }
-            ]
-        },
-        "x-azResources": {
+            ],
             "activation": {
                 "onResolve": [
                     "microsoft.web/staticsites"
                 ]
-            },
-            "commands": [
-                {
-                    "command": "staticWebApps.createStaticWebApp",
-                    "title": "%staticWebApps.createStaticWebApp%",
-                    "type": "microsoft.web/staticsites",
-                    "detail": "%staticWebApps.createStaticWebAppDetail%"
-                }
-            ]
+            }
         },
         "debuggers": [
             {
@@ -507,7 +497,7 @@
         "@azure/ms-rest-js": "^2.2.1",
         "@microsoft/vscode-azext-azureappservice": "^0.6.4",
         "@microsoft/vscode-azext-azureutils": "^0.3.4",
-        "@microsoft/vscode-azext-utils": "file:../vscode-azuretools/utils/microsoft-vscode-azext-utils-0.3.15.tgz",
+        "@microsoft/vscode-azext-utils": "^0.3.21",
         "@octokit/rest": "^18.5.2",
         "dayjs": "^1.11.0",
         "git-url-parse": "^13.1.0",
