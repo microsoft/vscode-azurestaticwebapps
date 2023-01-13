@@ -18,6 +18,7 @@ async function main(): Promise<void> {
                 ...args,
                 '--install-extension', 'ms-vscode.azure-account',
                 '--install-extension', 'ms-azuretools.vscode-azureresourcegroups',
+                '--install-extension', 'ms-azuretools.vscode-azurefunctions',
             ],
             {
                 encoding: 'utf-8',

@@ -458,6 +458,7 @@
     },
     "devDependencies": {
         "@microsoft/eslint-config-azuretools": "^0.1.0",
+        "@microsoft/vscode-azext-dev": "^0.1.5",
         "@octokit/types": "^6.13.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
@@ -480,7 +481,6 @@
         "ts-node": "^7.0.1",
         "typescript": "^4.3.5",
         "vsce": "^2.11.0",
-        "vscode-azureextensiondev": "^0.10.4",
         "webpack": "^5.28.0",
         "webpack-cli": "^4.6.0"
     },
