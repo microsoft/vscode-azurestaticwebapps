@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See LICENSE.md in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { TestOutputChannel, TestUserInput } from '@microsoft/vscode-azext-dev';
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { TestOutputChannel, TestUserInput } from 'vscode-azureextensiondev';
 import { ext, registerOnActionStartHandler } from '../extension.bundle';
 
 export let longRunningTestsEnabled: boolean;
