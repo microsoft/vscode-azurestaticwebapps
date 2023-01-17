@@ -7,7 +7,7 @@
 
 import { registerAppServiceExtensionVariables } from '@microsoft/vscode-azext-azureappservice';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, getExtensionExports, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
+import { AzExtResourceType, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, getExtensionExports, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
 import { AzureExtensionApi, AzureExtensionApiProvider } from '@microsoft/vscode-azext-utils/api';
 import { AzureHostExtensionApi } from '@microsoft/vscode-azext-utils/hostapi';
 import * as vscode from 'vscode';
@@ -55,7 +55,7 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         if (rgApiProvider) {
             const api = rgApiProvider.getApi<AzureHostExtensionApi>('0.0.1');
             ext.rgApi = api;
-            api.registerApplicationResourceResolver('Microsoft.Web/staticSites', new StaticWebAppResolver());
+            api.registerApplicationResourceResolver(AzExtResourceType.StaticWebApps, new StaticWebAppResolver());
         } else {
             throw new Error('Could not find the Azure Resource Groups extension');
         }

@@ -62,9 +62,11 @@
     "main": "./main.js",
     "contributes": {
         "x-azResources": {
-            "activation": {
-                "onResolve": [
-                    "microsoft.web/staticsites"
+            "azure": {
+                "branches": [
+                    {
+                        "type": "StaticWebApps"
+                    }
                 ]
             },
             "commands": [
@@ -74,7 +76,12 @@
                     "type": "microsoft.web/staticsites",
                     "detail": "%staticWebApps.createStaticWebAppDetail%"
                 }
-            ]
+            ],
+            "activation": {
+                "onResolve": [
+                    "microsoft.web/staticsites"
+                ]
+            }
         },
         "debuggers": [
             {
@@ -243,12 +250,12 @@
             "view/item/context": [
                 {
                     "command": "staticWebApps.createStaticWebApp",
-                    "when": "view == azureResourceGroups && viewItem =~ /azureResourceTypeGroup.*microsoft.web/staticsites/",
+                    "when": "view == azureResourceGroups && viewItem =~ /StaticWebApps/i && viewItem =~ /azureResourceTypeGroup/i",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.createStaticWebAppAdvanced",
-                    "when": "view == azureResourceGroups && viewItem =~ /azureResourceTypeGroup.*microsoft.web/staticsites/",
+                    "when": "view == azureResourceGroups && viewItem =~ /StaticWebApps/i && viewItem =~ /azureResourceTypeGroup/i",
                     "group": "1@2"
                 },
                 {
@@ -490,7 +497,7 @@
         "@azure/ms-rest-js": "^2.2.1",
         "@microsoft/vscode-azext-azureappservice": "^0.6.4",
         "@microsoft/vscode-azext-azureutils": "^0.3.4",
-        "@microsoft/vscode-azext-utils": "^0.3.17",
+        "@microsoft/vscode-azext-utils": "^0.3.21",
         "@octokit/rest": "^18.5.2",
         "dayjs": "^1.11.0",
         "git-url-parse": "^13.1.0",

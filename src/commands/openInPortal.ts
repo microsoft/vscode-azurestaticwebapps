@@ -5,11 +5,13 @@
 
 import { AppSettingsTreeItem } from '@microsoft/vscode-azext-azureappservice';
 import { openInPortal as openInPortalUtil } from '@microsoft/vscode-azext-azureutils';
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { IActionContext, nonNullValue } from '@microsoft/vscode-azext-utils';
 import { FunctionsTreeItem } from '../tree/FunctionsTreeItem';
 import { matchContextValue } from '../utils/contextUtils';
 
-export async function openInPortal(_context: IActionContext, node: AppSettingsTreeItem | FunctionsTreeItem): Promise<void> {
+export async function openInPortal(_context: IActionContext, treeItem?: AppSettingsTreeItem | FunctionsTreeItem): Promise<void> {
+    const node = nonNullValue(treeItem);
+
     if (matchContextValue(node.contextValue, [new RegExp(AppSettingsTreeItem.contextValue)])) {
         await openInPortalUtil(node, `${node.parent?.parent?.id}/configurations`);
         return;
