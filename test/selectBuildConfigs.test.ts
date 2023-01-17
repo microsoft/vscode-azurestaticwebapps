@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See LICENSE.md in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { createTestActionContext } from '@microsoft/vscode-azext-dev';
 import * as assert from 'assert';
 import { Position, Range, TextDocument, TextDocumentContentProvider, Uri, workspace } from 'vscode';
-import { createTestActionContext } from 'vscode-azureextensiondev';
 import { BuildConfig, tryGetSelection } from "../extension.bundle";
 
 interface ISelectBuildConfigTestCase {
