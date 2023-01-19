@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, IAzureQuickPickItem, nonNullValue } from "@microsoft/vscode-azext-utils";
+import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-utils";
 import { basename } from 'path';
 import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
 import { CST, Document, parseDocument } from 'yaml';
@@ -19,13 +19,7 @@ import { openUrl } from "../utils/openUrl";
 
 type YamlTreeItem = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;
 
-export async function openYAMLConfigFile(context: IActionContext, treeItem?: YamlTreeItem, treeItems?: YamlTreeItem[], buildConfigToSelect?: BuildConfig): Promise<void> {
-    if (treeItems?.length) {
-        return;
-    }
-
-    let node = nonNullValue(treeItem);
-
+export async function openYAMLConfigFile(context: IActionContext, node?: YamlTreeItem, _nodes?: YamlTreeItem[], buildConfigToSelect?: BuildConfig): Promise<void> {
     if (!node) {
         node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
             filter: swaFilter,
