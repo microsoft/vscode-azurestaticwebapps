@@ -1,5 +1,29 @@
 # Change Log
 
+## 0.11.4 - 2023-01-26
+
+### Added
+* Allow creating .NET 7.0 Functions by @alexweininger in [#759](https://github.com/microsoft/vscode-azurestaticwebapps/pull/759)
+* Forward compatibility with Azure Resources API v2 by @alexweininger in [#778](https://github.com/microsoft/vscode-azurestaticwebapps/pull/778)
+
+### Changed
+* Remove support for creating .NET Core 3.1 functions by @alexweininger in [#760](https://github.com/microsoft/vscode-azurestaticwebapps/pull/760)
+
+### Engineering
+* Fix readme badges by @bwateratmsft in [#751](https://github.com/microsoft/vscode-azurestaticwebapps/pull/751)
+* Use new `getExtensionExports` util by @alexweininger in [#772](https://github.com/microsoft/vscode-azurestaticwebapps/pull/772)
+* Add .nvmrc file by @alexweininger in [#774](https://github.com/microsoft/vscode-azurestaticwebapps/pull/774)
+* Migrate to @vscode/test-electron package by @alexweininger in [#779](https://github.com/microsoft/vscode-azurestaticwebapps/pull/779)
+
+### Dependencies
+* Bump @xmldom/xmldom from 0.7.5 to 0.7.8 by @dependabot in [#756](https://github.com/microsoft/vscode-azurestaticwebapps/pull/756)
+* Bump loader-utils from 1.4.0 to 1.4.2 by @dependabot in [#762](https://github.com/microsoft/vscode-azurestaticwebapps/pull/762)
+* Bump decode-uri-component from 0.2.0 to 0.2.2 by @dependabot in [#769](https://github.com/microsoft/vscode-azurestaticwebapps/pull/769)
+* Bump qs from 6.10.1 to 6.11.0 by @dependabot in [#771](https://github.com/microsoft/vscode-azurestaticwebapps/pull/771)
+* Bump minimatch from 3.0.4 to 3.1.2 by @dependabot in [#763](https://github.com/microsoft/vscode-azurestaticwebapps/pull/763)
+* Bump simple-git from 3.5.0 to 3.15.1 by @dependabot in [#773](https://github.com/microsoft/vscode-azurestaticwebapps/pull/773)
+* Bump json5 from 1.0.1 to 1.0.2 by @dependabot in [#776](https://github.com/microsoft/vscode-azurestaticwebapps/pull/776)
+
 ## 0.11.3 - 2022-10-13
 
 ### Added
