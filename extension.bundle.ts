@@ -20,10 +20,10 @@ export { createFoldingRanges } from './src/commands/github/jobLogs/createFolding
 export { LogState, parseGitHubLog } from './src/commands/github/jobLogs/parseGitHubLog';
 export { tryGetSelection } from './src/commands/openYAMLConfigFile';
 export { StaticWebAppDebugProvider } from './src/debug/StaticWebAppDebugProvider';
-export { NodeConstants } from './src/detectors/node/nodeConstants';
 export { DetectorResults, NodeDetector } from './src/detectors/node/NodeDetector';
+export { NodeConstants } from './src/detectors/node/nodeConstants';
 // Export activate/deactivate for main.js
-export { activateInternal, deactivateInternal } from './src/extension';
+export { activate, deactivate } from './src/extension';
 export * from './src/extensionVariables';
 export { BuildConfig } from './src/tree/WorkflowGroupTreeItem';
 

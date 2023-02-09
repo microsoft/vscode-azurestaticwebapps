@@ -5,11 +5,9 @@
 
 'use strict';
 
-import { registerAppServiceExtensionVariables } from '@microsoft/vscode-azext-azureappservice';
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { AzExtResourceType, callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, createExperimentationService, getExtensionExports, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
-import { AzureExtensionApi, AzureExtensionApiProvider } from '@microsoft/vscode-azext-utils/api';
-import { AzureHostExtensionApi } from '@microsoft/vscode-azext-utils/hostapi';
+import { callWithTelemetryAndErrorHandling, createApiProvider, createAzExtOutputChannel, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
+import { apiUtils, AzExtResourceType, AzureExtensionApi } from "@microsoft/vscode-azureresources-api";
 import * as vscode from 'vscode';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { revealTreeItem } from './commands/api/revealTreeItem';
@@ -21,22 +19,21 @@ import { registerCommands } from './commands/registerCommands';
 import { githubAuthProviderId, githubScopes, pwaChrome, shell, swa } from './constants';
 import { StaticWebAppDebugProvider } from './debug/StaticWebAppDebugProvider';
 import { ext } from './extensionVariables';
+import { getResourceGroupsApi } from './getExtensionApi';
 import { StaticWebAppResolver } from './StaticWebAppResolver';
 
-export async function activateInternal(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<AzureExtensionApiProvider> {
+export async function activate(context: vscode.ExtensionContext, _perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<apiUtils.AzureExtensionApiProvider> {
     ext.context = context;
     ext.ignoreBundle = ignoreBundle;
     ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps', ext.prefix);
     context.subscriptions.push(ext.outputChannel);
 
-    registerUIExtensionVariables(ext);
+    await registerUIExtensionVariables(ext);
     registerAzureUtilsExtensionVariables(ext);
-    registerAppServiceExtensionVariables(ext);
 
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
-        activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
-
+        // activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
         void validateStaticWebAppsCliIsLatest();
 
         /**
@@ -51,20 +48,14 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
         context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(swa, new StaticWebAppDebugProvider(), vscode.DebugConfigurationProviderTriggerKind.Initial));
         context.subscriptions.push(vscode.tasks.registerTaskProvider(shell, new SwaTaskProvider()));
 
-        const rgApiProvider = await getExtensionExports<AzureExtensionApiProvider>('ms-azuretools.vscode-azureresourcegroups');
-        if (rgApiProvider) {
-            const api = rgApiProvider.getApi<AzureHostExtensionApi>('0.0.1');
-            ext.rgApi = api;
-            api.registerApplicationResourceResolver(AzExtResourceType.StaticWebApps, new StaticWebAppResolver());
-        } else {
-            throw new Error('Could not find the Azure Resource Groups extension');
-        }
+        ext.rgApi = await getResourceGroupsApi();
+        ext.rgApi.registerApplicationResourceResolver(AzExtResourceType.StaticWebApps, new StaticWebAppResolver());
 
         registerSwaCliTaskEvents();
 
         registerCommands();
 
-        ext.experimentationService = await createExperimentationService(context);
+        // ext.experimentationService = await createExperimentationService(context);
     });
 
     return createApiProvider([<AzureExtensionApi>{
@@ -74,5 +65,5 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export function deactivateInternal(): void {
+export function deactivate(): void {
 }

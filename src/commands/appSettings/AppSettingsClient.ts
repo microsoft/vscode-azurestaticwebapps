@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse, WebSiteManagementClient } from '@azure/arm-appservice';
-import { AppSettingsClientProvider, IAppSettingsClient } from '@microsoft/vscode-azext-azureappservice';
 import { IActionContext } from '@microsoft/vscode-azext-utils';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { createWebSiteClient } from '../../utils/azureClients';
+import { AppSettingsClientProvider, IAppSettingsClient } from '../../vscode-azext-azureappservice/IAppSettingsClient';
 
 export class SwaAppSettingsClientProvider implements AppSettingsClientProvider {
     private _node: EnvironmentTreeItem;

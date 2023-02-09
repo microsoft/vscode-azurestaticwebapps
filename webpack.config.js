@@ -11,6 +11,7 @@
 
 const process = require('process');
 const dev = require("@microsoft/vscode-azext-dev");
+const webpack = require('webpack');
 
 let DEBUG_WEBPACK = !/^(false|0)?$/i.test(process.env.DEBUG_WEBPACK || '');
 
@@ -26,7 +27,15 @@ let config = dev.getDefaultWebpackConfig({
         '../build/default/validation': 'commonjs ../build/default/validation',
         '../build/Release/bufferutil': 'commonjs ../build/Release/bufferutil',
         '../build/default/bufferutil': 'commonjs ../build/default/bufferutil',
-    }
+    },
+    target: 'webworker',
+    resolveFallbackAliases: {
+        "process": require.resolve("process/browser.js"),
+
+    },
+    plugins: [new webpack.ProvidePlugin({
+        process: 'process/browser.js'
+    })]
 });
 
 if (DEBUG_WEBPACK) {

@@ -7,7 +7,7 @@ import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IAct
 import { basename, join } from "path";
 import { FileType, Range, ThemeIcon, Uri, workspace } from "vscode";
 // eslint-disable-next-line import/no-internal-modules
-import { YAMLSyntaxError } from "yaml/util";
+import { YAMLError } from "yaml";
 import { localize } from "../utils/localize";
 import { parseYamlFile } from "../utils/yamlUtils";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
@@ -22,16 +22,18 @@ export type BuildConfigs = {
     'app_artifact_location'?: string
 }
 
-function getRangeFromError(error: YAMLSyntaxError): Range {
+function getRangeFromError(error: YAMLError): Range {
     if (error.linePos) {
-        const { start, end } = error.linePos;
+        const start = error.linePos[0];
+        const end = error.linePos[1] || start;
+
         return new Range(start.line - 1, start.col - 1, end.line - 1, end.col - 1);
     }
     return new Range(0, 0, 0, 0);
 }
 
 function getYamlErrorMessage(error: unknown): string {
-    if (error instanceof YAMLSyntaxError) {
+    if (error instanceof YAMLError) {
         const range = getRangeFromError(error);
         return `Error: Invalid YAML between lines ${range.start.line} and ${range.end.line}`;
     } else {
@@ -95,7 +97,7 @@ export class WorkflowGroupTreeItem extends AzExtParentTreeItem {
     }
 
     public get errorRange(): Range | undefined {
-        return this.parseYamlError instanceof YAMLSyntaxError ? getRangeFromError(this.parseYamlError) : undefined;
+        return this.parseYamlError instanceof YAMLError ? getRangeFromError(this.parseYamlError) : undefined;
     }
 
     public async loadMoreChildrenImpl(): Promise<AzExtTreeItem[]> {

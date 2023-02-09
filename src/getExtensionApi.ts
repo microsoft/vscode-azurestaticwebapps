@@ -3,20 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getExtensionExports, IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
-import { AzureExtensionApiProvider } from "@microsoft/vscode-azext-utils/api";
-import { commands } from "vscode";
+import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
+import { AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
+import { apiUtils } from '@microsoft/vscode-azureresources-api';
+import { Extension, commands, extensions } from "vscode";
+import { AzureExtensionApiProvider } from "../azext-utils-api";
 import { API, GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";
 import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
+
 
 /**
  * @param installMessage Override default message shown if extension is not installed.
  */
 export async function getFunctionsApi(context: IActionContext, installMessage?: string): Promise<AzureFunctionsExtensionApi> {
     const funcExtensionId: string = 'ms-azuretools.vscode-azurefunctions';
-    const funcExtension: AzureExtensionApiProvider | undefined = await getExtensionExports(funcExtensionId);
+    const funcExtension: AzureExtensionApiProvider | undefined = await apiUtils.getExtensionExports(funcExtensionId);
 
     if (funcExtension) {
         return funcExtension.getApi<AzureFunctionsExtensionApi>('^1.7.0');
@@ -32,7 +35,7 @@ export async function getFunctionsApi(context: IActionContext, installMessage?: 
 
 export async function getGitApi(): Promise<API> {
     try {
-        const gitExtension: GitExtension | undefined = await getExtensionExports('vscode.git');
+        const gitExtension: GitExtension | undefined = await apiUtils.getExtensionExports('vscode.git');
         if (gitExtension) {
             return gitExtension.getAPI(1);
         } else {
@@ -45,5 +48,27 @@ export async function getGitApi(): Promise<API> {
         } else {
             throw err;
         }
+    }
+}
+
+export async function getApiExport<T>(extensionId: string): Promise<T | undefined> {
+    const extension: Extension<T> | undefined = extensions.getExtension(extensionId);
+    if (extension) {
+        if (!extension.isActive) {
+            await extension.activate();
+        }
+
+        return extension.exports;
+    }
+
+    return undefined;
+}
+
+export async function getResourceGroupsApi(): Promise<AzureHostExtensionApi> {
+    const rgApiProvider = await getApiExport<AzureExtensionApiProvider>('ms-azuretools.vscode-azureresourcegroups');
+    if (rgApiProvider) {
+        return rgApiProvider.getApi<AzureHostExtensionApi>('0.0.1');
+    } else {
+        throw new Error(localize('noResourceGroupExt', 'Could not find the Azure Resource Groups extension'));
     }
 }

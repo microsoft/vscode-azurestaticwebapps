@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
-import { AppSettingsTreeItem, AppSettingTreeItem } from "@microsoft/vscode-azext-azureappservice";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, nonNullProp, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath, nonNullProp } from "@microsoft/vscode-azext-utils";
 import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ProgressLocation, ThemeIcon, window } from "vscode";
+import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
-import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createWebSiteClient } from "../utils/azureClients";
 import { matchContextValue } from "../utils/contextUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
@@ -20,10 +19,12 @@ import { localize } from "../utils/localize";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { getSingleRootFsPath } from "../utils/workspaceUtils";
-import { ActionsTreeItem } from "./ActionsTreeItem";
+import { AppSettingTreeItem } from "../vscode-azext-azureappservice/AppSettingTreeItem";
+import { AppSettingsTreeItem } from "../vscode-azext-azureappservice/AppSettingsTreeItem";
 import { ActionTreeItem } from "./ActionTreeItem";
-import { FunctionsTreeItem } from "./FunctionsTreeItem";
+import { ActionsTreeItem } from "./ActionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
+import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { JobTreeItem } from "./JobTreeItem";
 import { StepTreeItem } from "./StepTreeItem";

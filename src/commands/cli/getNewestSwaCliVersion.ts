@@ -3,7 +3,6 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { HttpOperationResponse } from "@azure/ms-rest-js";
 import { sendRequestWithTimeout } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { swaCliPackageName } from "../../constants";
@@ -18,11 +17,11 @@ interface IPackageMetadata {
 
 export async function getNewestSwaCliVersion(context: IActionContext): Promise<string | undefined> {
     try {
-        const response: HttpOperationResponse = await sendRequestWithTimeout(context, {
+        const response = await sendRequestWithTimeout(context, {
             method: 'GET',
             url: `https://registry.npmjs.org/${swaCliPackageName}`
         }, 15000, undefined);
-        const packageMetadata: IPackageMetadata = <IPackageMetadata>response.parsedBody;
+        const packageMetadata: IPackageMetadata = response.bodyAsText as unknown as IPackageMetadata;
         return packageMetadata["dist-tags"].latest;
     } catch (error) {
         throw new Error(localize('noLatestTag', 'Failed to retrieve then latest version of the Azure Static Web Apps CLI.'));
