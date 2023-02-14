@@ -1,4 +1,6 @@
 variables:
+  WEB_BUILDS_STG_ACCT: vscodedotdev
+  WEB_BUILDS_CONTAINER: web-builds
   ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
     ENABLE_LONG_RUNNING_TESTS: true
     ENABLE_COMPLIANCE: true
