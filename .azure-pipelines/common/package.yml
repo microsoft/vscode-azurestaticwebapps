@@ -20,14 +20,12 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy web bundle to staging directory'
   inputs:
-    Contents: 'dist/web/*.js*'
+    Contents: |
+      dist/web/*.js*
+      package.json
+      package.nls.json
+      resources/**
     TargetFolder: '$(build.artifactstagingdirectory)/web/'
-
-- task: CopyFiles@2
-  displayName: 'Copy package.json to staging directory'
-  inputs:
-    Contents: 'package.json'
-    TargetFolder: '$(build.artifactstagingdirectory)/web'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish artifacts: vsix'
