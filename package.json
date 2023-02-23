@@ -61,6 +61,10 @@
     ],
     "main": "./main.js",
     "browser": "./dist/web/extension.bundle.js",
+    "extensionKind": [
+        "ui",
+        "workspace"
+    ],
     "contributes": {
         "x-azResources": {
             "azure": {
@@ -114,7 +118,8 @@
             {
                 "command": "staticWebApps.appSettings.download",
                 "title": "%staticWebApps.appSettings.download%",
-                "category": "Azure Static Web Apps"
+                "category": "Azure Static Web Apps",
+                "enablement": "!isWeb"
             },
             {
                 "command": "staticWebApps.appSettings.edit",
@@ -129,7 +134,8 @@
             {
                 "command": "staticWebApps.appSettings.upload",
                 "title": "%staticWebApps.appSettings.upload%",
-                "category": "Azure Static Web Apps"
+                "category": "Azure Static Web Apps",
+                "enablement": "!isWeb"
             },
             {
                 "command": "staticWebApps.browse",
@@ -155,20 +161,17 @@
                 "command": "staticWebApps.createStaticWebApp",
                 "title": "%staticWebApps.createStaticWebApp%",
                 "category": "Azure Static Web Apps",
-                "icon": "$(add)",
-                "enablement": "!virtualWorkspace"
+                "icon": "$(add)"
             },
             {
                 "command": "staticWebApps.createStaticWebAppAdvanced",
                 "title": "%staticWebApps.createStaticWebAppAdvanced%",
-                "category": "Azure Static Web Apps",
-                "enablement": "!virtualWorkspace"
+                "category": "Azure Static Web Apps"
             },
             {
                 "command": "staticWebApps.createSwaConfigFile",
                 "title": "%staticWebApps.createSwaConfigFile%",
-                "category": "Azure Static Web Apps",
-                "enablement": "!virtualWorkspace"
+                "category": "Azure Static Web Apps"
             },
             {
                 "command": "staticWebApps.deleteEnvironment",
@@ -462,7 +465,9 @@
         "webpack": "npm run build && gulp webpack-dev",
         "webpack-prod": "npm run build && gulp webpack-prod",
         "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "serve": "npx serve --cors -l 5000",
+        "tunnel": "npx localtunnel -p 5000"
     },
     "devDependencies": {
         "@microsoft/eslint-config-azuretools": "^0.1.0",
@@ -497,10 +502,11 @@
     "dependencies": {
         "@azure/arm-appservice": "^11.0.0",
         "@azure/arm-resources": "^5.0.0",
-        "@microsoft/vscode-azext-azureutils": "0.4.0-alpha",
+        "@microsoft/vscode-azext-azureutils": "0.4.0-alpha.1",
         "@microsoft/vscode-azext-utils": "0.4.3-alpha",
         "@microsoft/vscode-azureresources-api": "^2.0.3",
         "@octokit/rest": "^18.5.2",
+        "buffer": "^6.0.3",
         "dayjs": "^1.11.0",
         "git-url-parse": "^13.1.0",
         "open": "^8.0.4",

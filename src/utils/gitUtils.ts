@@ -23,6 +23,15 @@ export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remot
 export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository };
 
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
+    // this is where we would have a split in logic
+    // check if there is a remote repo opened (this can be in web or desktop)
+    // if not, then we can check if there is a local repo opened
+    // if we have access to git, we should use this method
+
+    // how to refactor?
+    // we could either have two totally separate methods or select the logic based on the context
+    // having separate methods might be a little cleaner, but it would be a lot of duplicated code
+
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
     const gitApi: API = await getGitApi();
     let repo: Repository | null = null;
@@ -34,7 +43,8 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
     }
 
     if (repo) {
-        const originUrl: string | undefined = await tryGetRemote(uri.fsPath);
+        // remote repo should have metadata to get a lot of this information so hopefully we can just fill it all out here
+        const originUrl: string | undefined = await tryGetRemote(repo);
         gitWorkspaceState.repo = repo;
         gitWorkspaceState.dirty = !!(repo.state.workingTreeChanges.length || repo.state.indexChanges.length);
 
@@ -109,21 +119,8 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo }
 }
 
-export async function tryGetRemote(localProjectPath?: string): Promise<string | undefined> {
-    let originUrl: string | void | undefined;
-    localProjectPath = localProjectPath || getSingleRootFsPath();
-    // only try to get remote if provided a path or if there's only a single workspace opened
-    if (localProjectPath) {
-        try {
-            const gitApi: API = await getGitApi();
-            const repo = await gitApi.openRepository(Uri.file(localProjectPath));
-            return repo?.state.remotes.find(remote => remote.name === 'origin')?.fetchUrl;
-        } catch (err) {
-            // do nothing, remote origin does not exist
-        }
-    }
-
-    return originUrl ? originUrl : undefined;
+export async function tryGetRemote(repo: Repository): Promise<string | undefined> {
+    return repo.state.remotes.find(remote => remote.name === 'origin')?.fetchUrl;
 }
 
 export function getRepoFullname(gitUrl: string): { owner: string; name: string } {
@@ -132,9 +129,9 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 }
 
 
-export async function remoteShortnameExists(fsPath: string, remoteName: string): Promise<boolean> {
+export async function remoteShortnameExists(uri: Uri, remoteName: string): Promise<boolean> {
     const gitApi: API = await getGitApi();
-    const repo = await gitApi.openRepository(Uri.file(fsPath));
+    const repo = await gitApi.openRepository(uri);
     let remoteExists: boolean = false;
 
     try {
@@ -153,7 +150,9 @@ async function promptForCommit(context: IActionContext, repo: Repository, value?
 
     const commitMsg: string = await context.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value, stepName });
     try {
-        await repo.commit(commitMsg, commitOptions)
+        await repo.commit(commitMsg, commitOptions);
+        // doesn't seem to work when called directly
+        // await commands.executeCommand('remoteHub.commit', repo.sourceControl);
     } catch (err) {
         handleGitError(err);
     }

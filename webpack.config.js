@@ -35,6 +35,9 @@ let config = dev.getDefaultWebpackConfig({
     },
     plugins: [new webpack.ProvidePlugin({
         process: 'process/browser.js'
+    }),
+    new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
     })]
 });
 

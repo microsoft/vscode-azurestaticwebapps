@@ -8,6 +8,7 @@ import { AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
 import { apiUtils } from '@microsoft/vscode-azureresources-api';
 import { Extension, commands, extensions } from "vscode";
 import { AzureExtensionApiProvider } from "../azext-utils-api";
+import { ext } from "./extensionVariables";
 import { API, GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";
@@ -34,12 +35,33 @@ export async function getFunctionsApi(context: IActionContext, installMessage?: 
 }
 
 export async function getGitApi(): Promise<API> {
+    // this is where we would have a split in logic
+    // check if there is a remote repo opened (this can be in web or desktop)
+    // if not, then we can check if there is a local repo opened
+    // if we have access to git, we should use this method
+
+    // how to refactor?
+    // we could either have two totally separate methods or select the logic based on the context
+    // having separate methods might be a little cleaner, but it would be a lot of duplicated code
+
+    // I think Git API and Remote Hubs should have the same API so just determined which to use
+    // Things to check:
+    // Can I have a remote opened with a local repo?
+    // Should I switch everything to API calls instead of using local git?
+    // What happens if I have multiple repos open?
+
     try {
-        const gitExtension: GitExtension | undefined = await apiUtils.getExtensionExports('vscode.git');
-        if (gitExtension) {
-            return gitExtension.getAPI(1);
+        if (!ext.gitApi.state) {
+            const gitExtension: GitExtension | undefined = await apiUtils.getExtensionExports('vscode.git');
+            if (gitExtension) {
+                const api = gitExtension.getAPI(1);
+                return api;
+
+            } else {
+                throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
+            }
         } else {
-            throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
+            return ext.gitApi;
         }
     } catch (err) {
         if (!getWorkspaceSetting<boolean>('enabled', undefined, 'git')) {

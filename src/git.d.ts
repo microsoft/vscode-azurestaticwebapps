@@ -5,6 +5,7 @@
 
 // copied from https://github.com/microsoft/vscode/blob/master/extensions/git/src/api/git.d.ts
 import { Disposable, Event, ProviderResult, Uri } from 'vscode';
+import { PostCommitCommandsProvider } from './rrapi';
 export { ProviderResult } from 'vscode';
 
 export interface Git {
@@ -325,4 +326,31 @@ export const enum GitErrorCodes {
     PatchDoesNotApply = 'PatchDoesNotApply',
     NoPathFound = 'NoPathFound',
     UnknownPath = 'UnknownPath',
+}
+
+export interface RemoteSourcePublisher {
+    readonly name: string;
+    readonly icon?: string; // codicon name
+    publishRepository(repository: Repository): Promise<void>;
+}
+
+export interface GitAPI {
+    readonly state: APIState;
+    readonly onDidChangeState: Event<APIState>;
+    readonly onDidPublish: Event<PublishEvent>;
+    readonly git: Git;
+    readonly repositories: Repository[];
+    readonly onDidOpenRepository: Event<Repository>;
+    readonly onDidCloseRepository: Event<Repository>;
+
+    toGitUri(uri: Uri, ref: string): Uri;
+    getRepository(uri: Uri): Repository | null;
+    init(root: Uri): Promise<Repository | null>;
+    openRepository(root: Uri): Promise<Repository | null>
+
+    registerRemoteSourcePublisher(publisher: RemoteSourcePublisher): Disposable;
+    registerRemoteSourceProvider(provider: RemoteSourceProvider): Disposable;
+    registerCredentialsProvider(provider: CredentialsProvider): Disposable;
+    registerPostCommitCommandsProvider(provider: PostCommitCommandsProvider): Disposable;
+    registerPushErrorHandler(handler: PushErrorHandler): Disposable;
 }

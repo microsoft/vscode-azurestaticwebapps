@@ -36,7 +36,8 @@ export async function setWorkspaceContexts(context: IActionContext & Partial<ISt
             context.orgData = await GitHubOrgListStep.getAuthenticatedUser(context);
         }
     }
+
     const origin: string = 'origin';
-    context.originExists = await remoteShortnameExists(context.fsPath, origin);
+    context.originExists = await remoteShortnameExists(folder.uri, origin);
     context.newRemoteShortname = context.originExists ? undefined : origin;
 }
