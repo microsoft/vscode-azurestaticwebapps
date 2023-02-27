@@ -5,6 +5,7 @@
 
 import { AzureWizardPromptStep, nonNullProp, parseError } from '@microsoft/vscode-azext-utils';
 import { basename } from 'path';
+import { Uri } from 'vscode';
 import { cpUtils } from '../../utils/cpUtils';
 import { remoteShortnameExists } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
@@ -25,7 +26,7 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
                     // remotes have same naming rules as branches
                     // https://stackoverflow.com/questions/41461152/which-characters-are-illegal-within-a-git-remote-name
                     try {
-                        await cpUtils.executeCommand(undefined, context.fsPath, 'git', 'check-ref-format', '--branch', cpUtils.wrapArgInQuotes(value));
+                        await cpUtils.executeCommand(undefined, context.uri?.fsPath, 'git', 'check-ref-format', '--branch', cpUtils.wrapArgInQuotes(value));
                     } catch (err) {
                         if (/is not a valid branch name/g.test(parseError(err).message)) {
                             return localize('notValid', '"{0}" is not a valid remote shortname.', value);
@@ -33,9 +34,9 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
                         // ignore other errors, we may not be able to access git so we shouldn't block users here
                     }
 
-                    const fsPath: string = nonNullProp(context, 'fsPath');
+                    const fsPath: Uri = nonNullProp(context, 'uri');
                     if (await remoteShortnameExists(fsPath, value)) {
-                        return localize('remoteExists', 'Remote shortname "{0}" already exists in "{1}".', value, basename(fsPath));
+                        return localize('remoteExists', 'Remote shortname "{0}" already exists in "{1}".', value, basename(fsPath.fsPath));
                     }
                 }
 

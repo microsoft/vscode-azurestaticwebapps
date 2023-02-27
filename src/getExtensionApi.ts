@@ -9,7 +9,7 @@ import { apiUtils } from '@microsoft/vscode-azureresources-api';
 import { Extension, commands, extensions } from "vscode";
 import { AzureExtensionApiProvider } from "../azext-utils-api";
 import { ext } from "./extensionVariables";
-import { API, GitExtension } from "./git";
+import { API, GitExtension, IGit } from "./git";
 import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";
 import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
@@ -34,7 +34,7 @@ export async function getFunctionsApi(context: IActionContext, installMessage?: 
     throw new UserCancelledError('postInstallFunctions');
 }
 
-export async function getGitApi(): Promise<API> {
+export async function getGitApi(): Promise<IGit> {
     // this is where we would have a split in logic
     // check if there is a remote repo opened (this can be in web or desktop)
     // if not, then we can check if there is a local repo opened
@@ -51,17 +51,21 @@ export async function getGitApi(): Promise<API> {
     // What happens if I have multiple repos open?
 
     try {
-        if (!ext.gitApi.state) {
-            const gitExtension: GitExtension | undefined = await apiUtils.getExtensionExports('vscode.git');
-            if (gitExtension) {
-                const api = gitExtension.getAPI(1);
-                return api;
+        // if we have a remote repo, we should use that
+        if (!ext.remoteRepoApi.state) {
+            if (!ext.vscodeGitApi) {
+                const gitExtension: GitExtension | undefined = await apiUtils.getExtensionExports('vscode.git');
+                if (gitExtension) {
+                    const api = gitExtension.getAPI(1);
+                    ext.vscodeGitApi = api;
+                }
 
+                return ext.vscodeGitApi;
             } else {
                 throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
             }
         } else {
-            return ext.gitApi;
+            return ext.remoteRepoApi as unknown as API;
         }
     } catch (err) {
         if (!getWorkspaceSetting<boolean>('enabled', undefined, 'git')) {

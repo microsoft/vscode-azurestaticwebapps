@@ -15,7 +15,7 @@ export async function setWorkspaceContexts(context: IActionContext & Partial<ISt
     const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
     await warnIfNotOnDefaultBranch(context, verifiedWorkspace);
-    context.fsPath = folder.uri.fsPath;
+    context.uri = folder.uri;
     context.repo = verifiedWorkspace.repo;
 
     if (gitWorkspaceState.remoteRepo) {

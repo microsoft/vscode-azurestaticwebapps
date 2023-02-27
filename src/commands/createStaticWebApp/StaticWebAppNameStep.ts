@@ -18,7 +18,7 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
-        const folderName: string = path.basename(nonNullProp(context, 'fsPath'));
+        const folderName: string = path.basename(nonNullProp(context, 'uri').fsPath);
 
         const prompt: string = localize('staticWebAppNamePrompt', 'Enter a name for the new static web app.');
         context.newStaticWebAppName = (await context.ui.showInputBox({

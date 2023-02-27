@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CancellationToken, Command, Disposable, Event, Uri } from 'vscode';
-import { AzureExtensionApiProvider } from '../azext-utils-api';
-import { APIState, PublishEvent, RefType } from './git';
+import { RefType, Repository } from './git';
 
 export interface InputBox {
     value: string;
@@ -241,22 +240,7 @@ export interface PostCommitCommandsProvider {
     getCommands(repository: Repository): Command[];
 }
 
-
-export interface IGit {
-    readonly repositories: Repository[];
-    readonly onDidOpenRepository: Event<Repository>;
-    readonly onDidCloseRepository: Event<Repository>;
-
-    // Used by the actual git extension to indicate it has finished initializing state information
-    readonly state?: APIState;
-    readonly metadata?:
-    readonly onDidChangeState?: Event<APIState>;
-    readonly onDidPublish?: Event<PublishEvent>;
-
-    registerPostCommitCommandsProvider?(provider: PostCommitCommandsProvider): Disposable;
-}
-
-export interface API extends AzureExtensionApiProvider {
+export interface API {
     /**
      * Register a [git provider](#IGit)
      */
@@ -275,9 +259,9 @@ export interface RepositoryDescriptor {
     [key: string]: unknown;
 }
 
-export interface RepositoryMetadataWithPath<T extends RepositoryDescriptor = RepositoryDescriptor>
-    extends RepositoryMetadata<T> {
-    path: string;
+export interface Metadata<T extends RepositoryMetadata = RepositoryMetadata> {
+    readonly revision: string | undefined;
+    readonly cachedMetadata?: Readonly<T>;
 }
 
 export enum AccessLevel {

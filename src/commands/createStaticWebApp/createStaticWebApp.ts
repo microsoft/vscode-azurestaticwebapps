@@ -156,7 +156,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     });
 
     wizardContext.telemetry.properties.gotRemote = String(hasRemote);
-    wizardContext.fsPath = wizardContext.fsPath || getSingleRootFsPath();
+    wizardContext.uri = wizardContext.uri || getSingleRootFsPath();
     wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
 
     await wizard.prompt();

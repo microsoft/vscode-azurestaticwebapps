@@ -29,7 +29,7 @@ export const isStartGroup = (t: string): boolean => /##\[group\]/.test(t);
 export const isEndGroup = (t: string): boolean => /##\[endgroup\]/.test(t)
 
 export const githubAuthProviderId: string = 'github';
-export const githubScopes: string[] = ['repo', 'workflow', 'admin:public_key'];
+export const githubScopes: string[] = ['repo', 'workflow', 'user:email', 'read:user'];
 
 export const angularOutputLocation = 'dist/<project-name>';
 

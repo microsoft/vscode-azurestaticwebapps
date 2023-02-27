@@ -5,7 +5,7 @@
 
 import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
-import { commands, FileType, MessageItem, OpenDialogOptions, Uri, workspace, WorkspaceFolder } from "vscode";
+import { FileType, MessageItem, OpenDialogOptions, Uri, WorkspaceFolder, commands, workspace } from "vscode";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { openExistingProject } from '../constants';
 import { NoWorkspaceError } from '../errors';
@@ -16,9 +16,9 @@ export function isMultiRootWorkspace(): boolean {
         && workspace.name !== workspace.workspaceFolders[0].name; // multi-root workspaces always have something like "(Workspace)" appended to their name
 }
 
-export function getSingleRootFsPath(): string | undefined {
+export function getSingleRootFsPath(): Uri | undefined {
     // if this is no workspace or a multi-root workspace, return undefined
-    return workspace.workspaceFolders && workspace.workspaceFolders.length === 1 ? workspace.workspaceFolders[0].uri.fsPath : undefined;
+    return workspace.workspaceFolders && workspace.workspaceFolders.length === 1 ? workspace.workspaceFolders[0].uri : undefined;
 }
 
 export async function selectWorkspaceFolder(context: IActionContext, placeHolder: string, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {

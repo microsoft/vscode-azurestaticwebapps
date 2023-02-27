@@ -67,7 +67,8 @@ export class WorkflowGroupTreeItem extends AzExtParentTreeItem {
         const treeItems: WorkflowGroupTreeItem[] = [];
 
         if (parent.localProjectPath && parent.inWorkspace) {
-            const workflowsDir: string = join(parent.localProjectPath, '.github/workflows');
+            // TODO: Change to Uri utils
+            const workflowsDir: string = join(parent.localProjectPath.fsPath, '.github/workflows');
             const yamlFiles: string[] = await AzExtFsExtra.pathExists(workflowsDir) ?
                 (await workspace.fs.readDirectory(Uri.file(workflowsDir))).filter(file => file[1] === FileType.File && /\.(yml|yaml)$/i.test(file[0])).map(file => file[0]) :
                 [];

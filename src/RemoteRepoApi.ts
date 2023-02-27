@@ -5,9 +5,10 @@
 
 import { AzureExtensionApi, createApiProvider } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
+import { AzureExtensionApiProvider } from '../azext-utils-api';
 import { revealTreeItem } from './commands/api/revealTreeItem';
-import { APIState, PublishEvent } from './git';
-import { API, IGit, PostCommitCommandsProvider, Repository } from './rrapi';
+import { APIState, IGit, PublishEvent } from './git';
+import { API, PostCommitCommandsProvider, Repository } from './rrapi';
 
 export const enum RefType {
     Head,
@@ -50,7 +51,7 @@ export const enum GitErrorCodes {
     PatchDoesNotApply = 'PatchDoesNotApply',
 }
 
-export class GitApiImpl implements API, IGit, vscode.Disposable {
+export class RemoteRepoApi implements AzureExtensionApiProvider, API, IGit, vscode.Disposable {
     private static _handlePool: number = 0;
     private _providers = new Map<number, IGit>();
 
@@ -64,6 +65,10 @@ export class GitApiImpl implements API, IGit, vscode.Disposable {
         });
 
         return ret;
+    }
+
+    public openRepository(uri: vscode.Uri): Repository | null {
+        return this.repositories.find(repo => uri === repo.rootUri) || null;
     }
 
     public get state(): APIState | undefined {
@@ -176,7 +181,7 @@ export class GitApiImpl implements API, IGit, vscode.Disposable {
     }
 
     private _nextHandle(): number {
-        return GitApiImpl._handlePool++;
+        return RemoteRepoApi._handlePool++;
     }
 
     dispose(): void {
@@ -184,9 +189,4 @@ export class GitApiImpl implements API, IGit, vscode.Disposable {
             disposable.dispose();
         }
     }
-
-    public openRepository(uri: vscode.Uri): Repository | null {
-        return this.repositories.find(repo => uri === repo.rootUri) || null;
-    }
-
 }

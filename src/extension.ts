@@ -19,7 +19,7 @@ import { githubAuthProviderId, githubScopes, pwaChrome, shell, swa } from './con
 import { StaticWebAppDebugProvider } from './debug/StaticWebAppDebugProvider';
 import { ext } from './extensionVariables';
 import { getResourceGroupsApi } from './getExtensionApi';
-import { GitApiImpl } from './RemoteRepoApi';
+import { RemoteRepoApi } from './RemoteRepoApi';
 import { StaticWebAppResolver } from './StaticWebAppResolver';
 
 export async function activate(context: vscode.ExtensionContext, _perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<apiUtils.AzureExtensionApiProvider> {
@@ -51,15 +51,15 @@ export async function activate(context: vscode.ExtensionContext, _perfStats: { l
         ext.rgApi = await getResourceGroupsApi();
         ext.rgApi.registerApplicationResourceResolver(AzExtResourceType.StaticWebApps, new StaticWebAppResolver());
 
-        ext.gitApi = new GitApiImpl();
+        ext.remoteRepoApi = new RemoteRepoApi();
         registerSwaCliTaskEvents();
-
         registerCommands();
 
         // ext.experimentationService = await createExperimentationService(context);
     });
 
-    return ext.gitApi;
+    // remoteRepoApi is combined with the SWA API required for resource gropus, but the remote repo relies on extension exports
+    return ext.remoteRepoApi;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function

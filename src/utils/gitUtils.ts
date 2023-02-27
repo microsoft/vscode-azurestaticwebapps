@@ -44,7 +44,7 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
 
     if (repo) {
         // remote repo should have metadata to get a lot of this information so hopefully we can just fill it all out here
-        const originUrl: string | undefined = await tryGetRemote(repo);
+        const originUrl: string | undefined = await tryGetRemote(uri);
         gitWorkspaceState.repo = repo;
         gitWorkspaceState.dirty = !!(repo.state.workingTreeChanges.length || repo.state.indexChanges.length);
 
@@ -119,8 +119,14 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo }
 }
 
-export async function tryGetRemote(repo: Repository): Promise<string | undefined> {
-    return repo.state.remotes.find(remote => remote.name === 'origin')?.fetchUrl;
+export async function tryGetRemote(uri?: Uri): Promise<string | undefined> {
+    if (!uri) {
+        return undefined;
+    }
+
+    const gitApi: API = await getGitApi();
+    const repo = await gitApi.openRepository(uri);
+    return repo?.state.remotes.find(remote => remote.name === 'origin')?.fetchUrl;
 }
 
 export function getRepoFullname(gitUrl: string): { owner: string; name: string } {
@@ -160,11 +166,11 @@ async function promptForCommit(context: IActionContext, repo: Repository, value?
 
 export async function tryGetLocalBranch(): Promise<string | undefined> {
     try {
-        const localProjectPath: string | undefined = getSingleRootFsPath();
+        const localProjectPath: Uri | undefined = getSingleRootFsPath();
         if (localProjectPath) {
             // only try to get branch if there's only a single workspace opened
             const gitApi: API = await getGitApi();
-            const repo = await gitApi.openRepository(Uri.file(localProjectPath));
+            const repo = await gitApi.openRepository(localProjectPath);
             return repo?.state.HEAD?.name;
         }
     } catch (error) {
