@@ -22,7 +22,11 @@ import { getResourceGroupsApi } from './getExtensionApi';
 import { RemoteRepoApi } from './RemoteRepoApi';
 import { StaticWebAppResolver } from './StaticWebAppResolver';
 
-export async function activate(context: vscode.ExtensionContext, _perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<apiUtils.AzureExtensionApiProvider> {
+export async function activate(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<apiUtils.AzureExtensionApiProvider> {
+    // the entry point for vscode.dev is this activate, not main.js, so we need to instantiate perfStats here
+    // the perf stats don't matter for vscode because there is no main file to load-- we may need to see if we can track the download time
+    perfStats ||= { loadStartTime: Date.now(), loadEndTime: Date.now() };
+
     ext.context = context;
     ext.ignoreBundle = ignoreBundle;
     ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps', ext.prefix);
@@ -33,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext, _perfStats: { l
 
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
-        // activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
+        activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
         void validateStaticWebAppsCliIsLatest();
 
         /**

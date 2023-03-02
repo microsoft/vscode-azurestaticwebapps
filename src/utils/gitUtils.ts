@@ -13,8 +13,9 @@ import { defaultGitignoreContents, gitignoreFileName } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
-import { API, CommitOptions, Repository } from "../git";
+import { CommitOptions, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
+import { IGit } from "../IGit";
 import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 import { getSingleRootFsPath } from './workspaceUtils';
@@ -33,7 +34,7 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
     // having separate methods might be a little cleaner, but it would be a lot of duplicated code
 
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
-    const gitApi: API = await getGitApi();
+    const gitApi: IGit = await getGitApi();
     let repo: Repository | null = null;
 
     try {
@@ -71,9 +72,11 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to proceed. Create a local git repository and GitHub remote to create a Static Web App.');
 
         await context.ui.showWarningMessage(gitRequired, { modal: true, stepName: 'initRepo' }, { title: localize('create', 'Create') });
-        const gitApi: API = await getGitApi();
+        const gitApi: IGit = await getGitApi();
         try {
-            repo = await gitApi.init(uri)
+            if (gitApi.init) {
+                repo = await gitApi.init(uri)
+            }
         } catch (err) {
             handleGitError(err);
         }
@@ -124,7 +127,7 @@ export async function tryGetRemote(uri?: Uri): Promise<string | undefined> {
         return undefined;
     }
 
-    const gitApi: API = await getGitApi();
+    const gitApi: IGit = await getGitApi();
     const repo = await gitApi.openRepository(uri);
     return repo?.state.remotes.find(remote => remote.name === 'origin')?.fetchUrl;
 }
@@ -136,7 +139,7 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 
 
 export async function remoteShortnameExists(uri: Uri, remoteName: string): Promise<boolean> {
-    const gitApi: API = await getGitApi();
+    const gitApi: IGit = await getGitApi();
     const repo = await gitApi.openRepository(uri);
     let remoteExists: boolean = false;
 
@@ -169,7 +172,7 @@ export async function tryGetLocalBranch(): Promise<string | undefined> {
         const localProjectPath: Uri | undefined = getSingleRootFsPath();
         if (localProjectPath) {
             // only try to get branch if there's only a single workspace opened
-            const gitApi: API = await getGitApi();
+            const gitApi: IGit = await getGitApi();
             const repo = await gitApi.openRepository(localProjectPath);
             return repo?.state.HEAD?.name;
         }

@@ -6,9 +6,10 @@
 import { AzureExtensionApi, createApiProvider } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
 import { AzureExtensionApiProvider } from '../azext-utils-api';
+import { IGit } from './IGit';
 import { revealTreeItem } from './commands/api/revealTreeItem';
-import { APIState, IGit, PublishEvent } from './git';
-import { API, PostCommitCommandsProvider, Repository } from './rrapi';
+import { APIState, PublishEvent } from './git';
+import { PostCommitCommandsProvider, RemoteRepository } from './rrapi';
 
 export const enum RefType {
     Head,
@@ -51,12 +52,12 @@ export const enum GitErrorCodes {
     PatchDoesNotApply = 'PatchDoesNotApply',
 }
 
-export class RemoteRepoApi implements AzureExtensionApiProvider, API, IGit, vscode.Disposable {
+export class RemoteRepoApi implements AzureExtensionApiProvider, IGit, vscode.Disposable {
     private static _handlePool: number = 0;
     private _providers = new Map<number, IGit>();
 
-    public get repositories(): Repository[] {
-        const ret: Repository[] = [];
+    public get repositories(): RemoteRepository[] {
+        const ret: RemoteRepository[] = [];
 
         this._providers.forEach(({ repositories }) => {
             if (repositories) {
@@ -67,7 +68,7 @@ export class RemoteRepoApi implements AzureExtensionApiProvider, API, IGit, vsco
         return ret;
     }
 
-    public openRepository(uri: vscode.Uri): Repository | null {
+    public async openRepository(uri: vscode.Uri): Promise<RemoteRepository | null> {
         return this.repositories.find(repo => uri === repo.rootUri) || null;
     }
 
@@ -90,10 +91,10 @@ export class RemoteRepoApi implements AzureExtensionApiProvider, API, IGit, vsco
         apiVersion: '1.0.0'
     }]).getApi;
 
-    private _onDidOpenRepository = new vscode.EventEmitter<Repository>();
-    readonly onDidOpenRepository: vscode.Event<Repository> = this._onDidOpenRepository.event;
-    private _onDidCloseRepository = new vscode.EventEmitter<Repository>();
-    readonly onDidCloseRepository: vscode.Event<Repository> = this._onDidCloseRepository.event;
+    private _onDidOpenRepository = new vscode.EventEmitter<RemoteRepository>();
+    readonly onDidOpenRepository: vscode.Event<RemoteRepository> = this._onDidOpenRepository.event;
+    private _onDidCloseRepository = new vscode.EventEmitter<RemoteRepository>();
+    readonly onDidCloseRepository: vscode.Event<RemoteRepository> = this._onDidCloseRepository.event;
     private _onDidChangeState = new vscode.EventEmitter<APIState>();
     readonly onDidChangeState: vscode.Event<APIState> = this._onDidChangeState.event;
     private _onDidPublish = new vscode.EventEmitter<PublishEvent>();

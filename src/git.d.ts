@@ -5,7 +5,7 @@
 
 // copied from https://github.com/microsoft/vscode/blob/master/extensions/git/src/api/git.d.ts
 import { Disposable, Event, ProviderResult, Uri } from 'vscode';
-import { Metadata, PostCommitCommandsProvider, Repository as RemoteRepository } from './rrapi';
+import { IGit } from './IGit';
 export { ProviderResult } from 'vscode';
 
 export interface Git {
@@ -253,24 +253,6 @@ export interface PublishEvent {
     branch?: string;
 }
 
-export interface API extends IGit {
-    readonly state: APIState;
-    readonly onDidChangeState: Event<APIState>;
-    readonly onDidPublish: Event<PublishEvent>;
-    readonly git: Git;
-    readonly repositories: Repository[];
-    readonly onDidOpenRepository: Event<Repository>;
-    readonly onDidCloseRepository: Event<Repository>;
-
-    toGitUri(uri: Uri, ref: string): Uri;
-    getRepository(uri: Uri): Repository | null;
-    init(root: Uri): Promise<Repository | null>;
-
-    registerRemoteSourceProvider(provider: RemoteSourceProvider): Disposable;
-    registerCredentialsProvider(provider: CredentialsProvider): Disposable;
-    registerPushErrorHandler(handler: PushErrorHandler): Disposable;
-}
-
 export interface GitExtension {
 
     readonly enabled: boolean;
@@ -286,7 +268,7 @@ export interface GitExtension {
      * @param version Version number.
      * @returns API instance
      */
-    getAPI(version: 1): API;
+    getAPI(version: 1): GitAPI;
 }
 
 export const enum GitErrorCodes {
@@ -333,14 +315,10 @@ export interface RemoteSourcePublisher {
     publishRepository(repository: Repository): Promise<void>;
 }
 
-export interface GitAPI {
+export interface GitAPI extends IGit {
     readonly state: APIState;
-    readonly onDidChangeState: Event<APIState>;
-    readonly onDidPublish: Event<PublishEvent>;
     readonly git: Git;
-    readonly repositories: Repository[] | RemoteRepository[];
-    readonly onDidOpenRepository: Event<Repository>;
-    readonly onDidCloseRepository: Event<Repository>;
+    readonly repositories: Repository[];
 
     toGitUri(uri: Uri, ref: string): Uri;
     getRepository(uri: Uri): Repository | null;
@@ -350,21 +328,5 @@ export interface GitAPI {
     registerRemoteSourcePublisher(publisher: RemoteSourcePublisher): Disposable;
     registerRemoteSourceProvider(provider: RemoteSourceProvider): Disposable;
     registerCredentialsProvider(provider: CredentialsProvider): Disposable;
-    registerPostCommitCommandsProvider(provider: PostCommitCommandsProvider): Disposable;
     registerPushErrorHandler(handler: PushErrorHandler): Disposable;
-}
-
-export interface IGit {
-    readonly repositories: Repository[];
-    readonly onDidOpenRepository: Event<Repository>;
-    readonly onDidCloseRepository: Event<Repository>;
-    openRepository(root: Uri): Promise<Repository | null>
-
-    // Used by the actual git extension to indicate it has finished initializing state information
-    readonly state?: APIState;
-    readonly metadata?: Metadata;
-    readonly onDidChangeState?: Event<APIState>;
-    readonly onDidPublish?: Event<PublishEvent>;
-
-    registerPostCommitCommandsProvider?(provider: PostCommitCommandsProvider): Disposable;
 }
