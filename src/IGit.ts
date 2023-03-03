@@ -7,8 +7,6 @@ import { Disposable, Event, Uri } from "vscode";
 import { APIState, PublishEvent, Repository } from "./git";
 import { Metadata, PostCommitCommandsProvider } from "./rrapi";
 
-
-
 export interface IGit {
     readonly repositories: Repository[];
     readonly onDidOpenRepository: Event<Repository>;
