@@ -160,8 +160,6 @@ async function promptForCommit(context: IActionContext, repo: Repository, value?
     const commitMsg: string = await context.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value, stepName });
     try {
         await repo.commit(commitMsg, commitOptions);
-        // doesn't seem to work when called directly
-        // await commands.executeCommand('remoteHub.commit', repo.sourceControl);
     } catch (err) {
         handleGitError(err);
     }

@@ -14,7 +14,7 @@ import { addLocationTelemetry } from "./addLocationTelemetry";
 export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const defaultValue: string = context.buildPreset?.appLocation ?? defaultAppLocation;
-        const workspaceSetting: string | undefined = getWorkspaceSetting(appSubpathSetting, context.uri?.fsPath);
+        const workspaceSetting: string | undefined = getWorkspaceSetting(appSubpathSetting, context.uri);
 
         context.appLocation = (await context.ui.showInputBox({
             value: workspaceSetting || defaultValue,

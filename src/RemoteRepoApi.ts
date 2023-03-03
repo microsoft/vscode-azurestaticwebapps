@@ -86,6 +86,8 @@ export class RemoteRepoApi implements AzureExtensionApiProvider, IGit, vscode.Di
         return 'initialized';
     }
 
+    // Remote Repositories extension needs to have this API exported to be used,
+    // so we need to merge it with the Static Web App extension API. The easiest way to do this is to just implement getApi on RemoteRepoApi
     public getApi = createApiProvider([<AzureExtensionApi>{
         revealTreeItem,
         apiVersion: '1.0.0'
@@ -143,22 +145,6 @@ export class RemoteRepoApi implements AzureExtensionApiProvider, IGit, vscode.Di
                 this._providers.delete(handle);
             },
         };
-    }
-
-    getGitProvider(_uri: vscode.Uri): IGit | undefined {
-        const foldersMap = vscode.workspace.workspaceFolders;
-
-        this._providers.forEach(provider => {
-            const repos = provider.repositories;
-            if (repos && repos.length > 0) {
-                for (const repository of repos) {
-                    console.log(repository, foldersMap);
-                    // foldersMap.set(repository.rootUri, provider);
-                }
-            }
-        });
-
-        return undefined; //foldersMap.findSubstr(uri);
     }
 
     registerPostCommitCommandsProvider(provider: PostCommitCommandsProvider): vscode.Disposable {

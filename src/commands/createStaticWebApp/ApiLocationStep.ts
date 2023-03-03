@@ -15,7 +15,7 @@ import { promptForApiFolder } from "./tryGetApiLocations";
 export class ApiLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
         const defaultValue: string = context.buildPreset?.apiLocation ?? defaultApiLocation;
-        const workspaceSetting: string | undefined = getWorkspaceSetting(apiSubpathSetting, context.uri?.fsPath);
+        const workspaceSetting: string | undefined = getWorkspaceSetting(apiSubpathSetting, context.uri);
 
         context.apiLocation = context.detectedApiLocations?.length ?
             await promptForApiFolder(context, context.detectedApiLocations) :

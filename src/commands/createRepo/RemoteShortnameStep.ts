@@ -32,11 +32,12 @@ export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWiza
                             return localize('notValid', '"{0}" is not a valid remote shortname.', value);
                         }
                         // ignore other errors, we may not be able to access git so we shouldn't block users here
+                        // this also will not work for vscode.dev
                     }
 
-                    const fsPath: Uri = nonNullProp(context, 'uri');
-                    if (await remoteShortnameExists(fsPath, value)) {
-                        return localize('remoteExists', 'Remote shortname "{0}" already exists in "{1}".', value, basename(fsPath.fsPath));
+                    const uri: Uri = nonNullProp(context, 'uri');
+                    if (await remoteShortnameExists(uri, value)) {
+                        return localize('remoteExists', 'Remote shortname "{0}" already exists in "{1}".', value, basename(uri.fsPath));
                     }
                 }
 

@@ -61,10 +61,6 @@
     ],
     "main": "./main.js",
     "browser": "./dist/web/extension.bundle.js",
-    "extensionKind": [
-        "ui",
-        "workspace"
-    ],
     "contributes": {
         "x-azResources": {
             "azure": {
@@ -465,9 +461,7 @@
         "webpack": "npm run build && gulp webpack-dev",
         "webpack-prod": "npm run build && gulp webpack-prod",
         "webpack-profile": "webpack --profile --json --mode production > webpack-stats.json && echo Use http://webpack.github.io/analyse to analyze the stats",
-        "prepare": "husky install",
-        "serve": "npx serve --cors -l 5000",
-        "tunnel": "npx localtunnel -p 5000"
+        "prepare": "husky install"
     },
     "devDependencies": {
         "@microsoft/eslint-config-azuretools": "^0.1.0",

@@ -35,7 +35,7 @@ import { OutputLocationStep } from './OutputLocationStep';
 import { SkuListStep } from './SkuListStep';
 import { StaticWebAppCreateStep } from './StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from './StaticWebAppNameStep';
-import { setWorkspaceContexts } from './setWorkspaceContexts';
+import { setGitWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
 
 let isVerifyingWorkspace: boolean = false;
@@ -86,8 +86,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
                     }
                 });
 
-                // this is the entry point for using git stuff. I think we should refactor this to be more obvious that git is being used here
-                await setWorkspaceContexts(context, folder);
+                await setGitWorkspaceContexts(context, folder);
                 context.detectedApiLocations = await tryGetApiLocations(context, folder);
             } else {
                 await showNoWorkspacePrompt(context);

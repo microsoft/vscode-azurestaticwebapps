@@ -10,7 +10,7 @@ import { localize } from '../../utils/localize';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export async function setWorkspaceContexts(context: IActionContext & Partial<IStaticWebAppWizardContext>, folder: WorkspaceFolder): Promise<void> {
+export async function setGitWorkspaceContexts(context: IActionContext & Partial<IStaticWebAppWizardContext>, folder: WorkspaceFolder): Promise<void> {
     const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
     const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
