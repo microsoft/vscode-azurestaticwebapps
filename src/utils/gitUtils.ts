@@ -5,8 +5,8 @@
 
 import { AzExtFsExtra, IActionContext, nonNullValue, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as gitUrlParse from 'git-url-parse';
-import { join } from 'path';
 import { MessageItem, ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
+import { Utils } from "vscode-uri";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { defaultGitignoreContents, gitignoreFileName } from '../constants';
@@ -86,7 +86,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         }
 
         // create a generic .gitignore for user if we do not detect one
-        const gitignorePath: string = join(uri.fsPath, gitignoreFileName);
+        const gitignorePath: Uri = Utils.joinPath(uri, gitignoreFileName);
         if (!await AzExtFsExtra.pathExists(gitignorePath)) {
             await AzExtFsExtra.writeFile(gitignorePath, defaultGitignoreContents);
         }
