@@ -29,7 +29,8 @@ export const isStartGroup = (t: string): boolean => /##\[group\]/.test(t);
 export const isEndGroup = (t: string): boolean => /##\[endgroup\]/.test(t)
 
 export const githubAuthProviderId: string = 'github';
-export const githubScopes: string[] = ['repo', 'workflow', 'admin:public_key'];
+// same scopes as the GitHub extension so we won't have to prompt for auth again
+export const githubScopes: string[] = ['repo', 'workflow', 'user:email', 'read:user'];
 
 export const angularOutputLocation = 'dist/<project-name>';
 

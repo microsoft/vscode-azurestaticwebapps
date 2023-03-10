@@ -10,12 +10,12 @@ import { localize } from '../../utils/localize';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-export async function setWorkspaceContexts(context: IActionContext & Partial<IStaticWebAppWizardContext>, folder: WorkspaceFolder): Promise<void> {
+export async function setGitWorkspaceContexts(context: IActionContext & Partial<IStaticWebAppWizardContext>, folder: WorkspaceFolder): Promise<void> {
     const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);
     const verifiedWorkspace: VerifiedGitWorkspaceState = await verifyGitWorkspaceForCreation(context, gitWorkspaceState, folder.uri);
 
     await warnIfNotOnDefaultBranch(context, verifiedWorkspace);
-    context.fsPath = folder.uri.fsPath;
+    context.uri = folder.uri;
     context.repo = verifiedWorkspace.repo;
 
     if (gitWorkspaceState.remoteRepo) {
@@ -36,7 +36,8 @@ export async function setWorkspaceContexts(context: IActionContext & Partial<ISt
             context.orgData = await GitHubOrgListStep.getAuthenticatedUser(context);
         }
     }
+
     const origin: string = 'origin';
-    context.originExists = await remoteShortnameExists(context.fsPath, origin);
+    context.originExists = await remoteShortnameExists(folder.uri, origin);
     context.newRemoteShortname = context.originExists ? undefined : origin;
 }

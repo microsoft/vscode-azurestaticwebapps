@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
+import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { ActionsTreeItem } from '../../tree/ActionsTreeItem';
 import { openUrl } from '../../utils/openUrl';
 

@@ -5,7 +5,8 @@
 
 import { AzExtFsExtra, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
-import { RelativePattern, workspace, WorkspaceFolder } from "vscode";
+import { RelativePattern, WorkspaceFolder, workspace } from "vscode";
+import { URI, Utils } from "vscode-uri";
 import { localize } from '../../utils/localize';
 import { telemetryUtils } from '../../utils/telemetryUtils';
 
@@ -55,5 +56,5 @@ export async function promptForApiFolder(context: IActionContext, detectedApiLoc
 
 // Use 'host.json' as an indicator that this is a functions project
 async function isFunctionProject(folderPath: string): Promise<boolean> {
-    return await AzExtFsExtra.pathExists(path.join(folderPath, hostFileName));
+    return await AzExtFsExtra.pathExists(Utils.joinPath(URI.parse(folderPath), hostFileName));
 }

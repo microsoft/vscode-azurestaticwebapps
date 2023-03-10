@@ -6,7 +6,7 @@
 import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath, nonNullProp } from "@microsoft/vscode-azext-utils";
 import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
-import { ProgressLocation, ThemeIcon, window } from "vscode";
+import { ProgressLocation, ThemeIcon, Uri, window } from "vscode";
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
@@ -47,7 +47,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public repositoryUrl: string;
     public branch: string;
     public buildId: string;
-    public localProjectPath: string | undefined;
+    public localProjectPath: Uri | undefined;
 
     public isProduction: boolean;
     public inWorkspace!: boolean;

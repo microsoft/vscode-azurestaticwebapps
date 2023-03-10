@@ -8,7 +8,9 @@ import { AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
 import { apiUtils } from '@microsoft/vscode-azureresources-api';
 import { Extension, commands, extensions } from "vscode";
 import { AzureExtensionApiProvider } from "../azext-utils-api";
-import { API, GitExtension } from "./git";
+import { IGit } from "./IGit";
+import { ext } from "./extensionVariables";
+import { GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";
 import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
@@ -33,13 +35,23 @@ export async function getFunctionsApi(context: IActionContext, installMessage?: 
     throw new UserCancelledError('postInstallFunctions');
 }
 
-export async function getGitApi(): Promise<API> {
+export async function getGitApi(): Promise<IGit> {
     try {
-        const gitExtension: GitExtension | undefined = await apiUtils.getExtensionExports('vscode.git');
-        if (gitExtension) {
-            return gitExtension.getAPI(1);
+        // if there is no remote repo state, then try to get the local git api
+        if (!ext.remoteRepoApi.state) {
+            if (!ext.vscodeGitApi) {
+                const gitExtension: GitExtension | undefined = await apiUtils.getExtensionExports('vscode.git');
+                if (gitExtension) {
+                    const api = gitExtension.getAPI(1);
+                    ext.vscodeGitApi = api;
+                }
+
+                return ext.vscodeGitApi;
+            } else {
+                throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
+            }
         } else {
-            throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
+            return ext.remoteRepoApi;
         }
     } catch (err) {
         if (!getWorkspaceSetting<boolean>('enabled', undefined, 'git')) {

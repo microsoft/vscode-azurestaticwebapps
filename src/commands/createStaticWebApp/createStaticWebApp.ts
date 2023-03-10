@@ -9,11 +9,11 @@ import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptSte
 import { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
 import { ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
 import { Utils } from 'vscode-uri';
-import { NodeConstants } from '../../detectors/node/nodeConstants';
+import { StaticWebAppResolver } from '../../StaticWebAppResolver';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
+import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
-import { StaticWebAppResolver } from '../../StaticWebAppResolver';
 import { createActivityContext } from '../../utils/activityUtils';
 import { createWebSiteClient } from '../../utils/azureClients';
 import { getGitHubAccessToken } from '../../utils/gitHubUtils';
@@ -32,10 +32,10 @@ import { BuildPresetListStep } from './BuildPresetListStep';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
 import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { OutputLocationStep } from './OutputLocationStep';
-import { setWorkspaceContexts } from './setWorkspaceContexts';
 import { SkuListStep } from './SkuListStep';
 import { StaticWebAppCreateStep } from './StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from './StaticWebAppNameStep';
+import { setGitWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
 
 let isVerifyingWorkspace: boolean = false;
@@ -86,7 +86,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
                     }
                 });
 
-                await setWorkspaceContexts(context, folder);
+                await setGitWorkspaceContexts(context, folder);
                 context.detectedApiLocations = await tryGetApiLocations(context, folder);
             } else {
                 await showNoWorkspacePrompt(context);
@@ -155,7 +155,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     });
 
     wizardContext.telemetry.properties.gotRemote = String(hasRemote);
-    wizardContext.fsPath = wizardContext.fsPath || getSingleRootFsPath();
+    wizardContext.uri = wizardContext.uri || getSingleRootFsPath();
     wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
 
     await wizard.prompt();

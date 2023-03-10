@@ -24,7 +24,7 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
 
     const apiLocation: string = detectedApiLocations?.length ?
         await promptForApiFolder(context, detectedApiLocations) :
-        getWorkspaceSetting(apiSubpathSetting, workspace.workspaceFolders[0].uri.fsPath) || defaultApiLocation;
+        getWorkspaceSetting(apiSubpathSetting, workspace.workspaceFolders[0].uri) || defaultApiLocation;
     const folderPath: string = path.join(workspace.workspaceFolders[0].uri.fsPath, apiLocation);
 
     const funcApi: AzureFunctionsExtensionApi = await getFunctionsApi(context);

@@ -5,7 +5,7 @@
 
 import { IActionContext, IAzureQuickPickItem, nonNullProp, parseError, UserCancelledError } from '@microsoft/vscode-azext-utils';
 import { Octokit } from '@octokit/rest';
-import { authentication, ProgressLocation, window } from 'vscode';
+import { authentication, ProgressLocation, Uri, window } from 'vscode';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { githubAuthProviderId, githubScopes } from '../constants';
 import { ext } from '../extensionVariables';
@@ -65,7 +65,7 @@ export function hasAdminAccessToRepo(repoData?: ReposGetResponseData): boolean {
     return !!repoData?.permissions?.admin
 }
 
-export async function tryGetRepoDataForCreation(context: IActionContext, localProjectPath?: string): Promise<ReposGetResponseData | undefined> {
+export async function tryGetRepoDataForCreation(context: IActionContext, localProjectPath?: Uri): Promise<ReposGetResponseData | undefined> {
     const originUrl: string | undefined = await tryGetRemote(localProjectPath);
     if (originUrl) {
         const repoData: ReposGetResponseData | undefined = await tryGetReposGetResponseData(context, originUrl);

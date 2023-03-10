@@ -5,16 +5,17 @@
 
 import { AzExtFsExtra, IActionContext, nonNullValue, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as gitUrlParse from 'git-url-parse';
-import { join } from 'path';
 import { MessageItem, ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
+import { Utils } from "vscode-uri";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { defaultGitignoreContents, gitignoreFileName } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getGitApi } from "../getExtensionApi";
-import { API, CommitOptions, Repository } from "../git";
+import { CommitOptions, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
+import { IGit } from "../IGit";
 import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 import { getSingleRootFsPath } from './workspaceUtils';
@@ -23,8 +24,17 @@ export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remot
 export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository };
 
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
+    // this is where we would have a split in logic
+    // check if there is a remote repo opened (this can be in web or desktop)
+    // if not, then we can check if there is a local repo opened
+    // if we have access to git, we should use this method
+
+    // how to refactor?
+    // we could either have two totally separate methods or select the logic based on the context
+    // having separate methods might be a little cleaner, but it would be a lot of duplicated code
+
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
-    const gitApi: API = await getGitApi();
+    const gitApi: IGit = await getGitApi();
     let repo: Repository | null = null;
 
     try {
@@ -34,7 +44,8 @@ export async function getGitWorkspaceState(context: IActionContext & Partial<ISt
     }
 
     if (repo) {
-        const originUrl: string | undefined = await tryGetRemote(uri.fsPath);
+        // remote repo should have metadata to get a lot of this information so hopefully we can just fill it all out here
+        const originUrl: string | undefined = await tryGetRemote(uri);
         gitWorkspaceState.repo = repo;
         gitWorkspaceState.dirty = !!(repo.state.workingTreeChanges.length || repo.state.indexChanges.length);
 
@@ -61,9 +72,11 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to proceed. Create a local git repository and GitHub remote to create a Static Web App.');
 
         await context.ui.showWarningMessage(gitRequired, { modal: true, stepName: 'initRepo' }, { title: localize('create', 'Create') });
-        const gitApi: API = await getGitApi();
+        const gitApi: IGit = await getGitApi();
         try {
-            repo = await gitApi.init(uri)
+            if (gitApi.init) {
+                repo = await gitApi.init(uri)
+            }
         } catch (err) {
             handleGitError(err);
         }
@@ -73,7 +86,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         }
 
         // create a generic .gitignore for user if we do not detect one
-        const gitignorePath: string = join(uri.fsPath, gitignoreFileName);
+        const gitignorePath: Uri = Utils.joinPath(uri, gitignoreFileName);
         if (!await AzExtFsExtra.pathExists(gitignorePath)) {
             await AzExtFsExtra.writeFile(gitignorePath, defaultGitignoreContents);
         }
@@ -109,21 +122,14 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo }
 }
 
-export async function tryGetRemote(localProjectPath?: string): Promise<string | undefined> {
-    let originUrl: string | void | undefined;
-    localProjectPath = localProjectPath || getSingleRootFsPath();
-    // only try to get remote if provided a path or if there's only a single workspace opened
-    if (localProjectPath) {
-        try {
-            const gitApi: API = await getGitApi();
-            const repo = await gitApi.openRepository(Uri.file(localProjectPath));
-            return repo?.state.remotes.find(remote => remote.name === 'origin')?.fetchUrl;
-        } catch (err) {
-            // do nothing, remote origin does not exist
-        }
+export async function tryGetRemote(uri?: Uri): Promise<string | undefined> {
+    if (!uri) {
+        return undefined;
     }
 
-    return originUrl ? originUrl : undefined;
+    const gitApi: IGit = await getGitApi();
+    const repo = await gitApi.openRepository(uri);
+    return repo?.state.remotes.find(remote => remote.name === 'origin')?.fetchUrl;
 }
 
 export function getRepoFullname(gitUrl: string): { owner: string; name: string } {
@@ -132,9 +138,9 @@ export function getRepoFullname(gitUrl: string): { owner: string; name: string }
 }
 
 
-export async function remoteShortnameExists(fsPath: string, remoteName: string): Promise<boolean> {
-    const gitApi: API = await getGitApi();
-    const repo = await gitApi.openRepository(Uri.file(fsPath));
+export async function remoteShortnameExists(uri: Uri, remoteName: string): Promise<boolean> {
+    const gitApi: IGit = await getGitApi();
+    const repo = await gitApi.openRepository(uri);
     let remoteExists: boolean = false;
 
     try {
@@ -153,7 +159,7 @@ async function promptForCommit(context: IActionContext, repo: Repository, value?
 
     const commitMsg: string = await context.ui.showInputBox({ prompt: commitPrompt, placeHolder: `${commitPrompt}..`, value, stepName });
     try {
-        await repo.commit(commitMsg, commitOptions)
+        await repo.commit(commitMsg, commitOptions);
     } catch (err) {
         handleGitError(err);
     }
@@ -161,11 +167,11 @@ async function promptForCommit(context: IActionContext, repo: Repository, value?
 
 export async function tryGetLocalBranch(): Promise<string | undefined> {
     try {
-        const localProjectPath: string | undefined = getSingleRootFsPath();
+        const localProjectPath: Uri | undefined = getSingleRootFsPath();
         if (localProjectPath) {
             // only try to get branch if there's only a single workspace opened
-            const gitApi: API = await getGitApi();
-            const repo = await gitApi.openRepository(Uri.file(localProjectPath));
+            const gitApi: IGit = await getGitApi();
+            const repo = await gitApi.openRepository(localProjectPath);
             return repo?.state.HEAD?.name;
         }
     } catch (error) {
