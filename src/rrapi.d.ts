@@ -11,8 +11,6 @@ export interface InputBox {
     value: string;
 }
 
-export { GitErrorCodes, RefType } from './RemoteRepoApi';
-
 // unique to Remote Repositories API
 export interface RefQuery {
     readonly contains?: string;

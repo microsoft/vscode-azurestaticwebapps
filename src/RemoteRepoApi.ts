@@ -3,6 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+
+// adopted from https://github.com/microsoft/vscode-pull-request-github/blob/main/src/api/api1.ts
 import { AzureExtensionApi, createApiProvider } from '@microsoft/vscode-azext-utils';
 import * as vscode from 'vscode';
 import { AzureExtensionApiProvider } from '../azext-utils-api';
@@ -10,47 +12,6 @@ import { IGit } from './IGit';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { APIState, PublishEvent } from './git';
 import { PostCommitCommandsProvider, RemoteRepository } from './rrapi';
-
-export const enum RefType {
-    Head,
-    RemoteHead,
-    Tag,
-}
-
-export const enum GitErrorCodes {
-    BadConfigFile = 'BadConfigFile',
-    AuthenticationFailed = 'AuthenticationFailed',
-    NoUserNameConfigured = 'NoUserNameConfigured',
-    NoUserEmailConfigured = 'NoUserEmailConfigured',
-    NoRemoteRepositorySpecified = 'NoRemoteRepositorySpecified',
-    NotAGitRepository = 'NotAGitRepository',
-    NotAtRepositoryRoot = 'NotAtRepositoryRoot',
-    Conflict = 'Conflict',
-    StashConflict = 'StashConflict',
-    UnmergedChanges = 'UnmergedChanges',
-    PushRejected = 'PushRejected',
-    RemoteConnectionError = 'RemoteConnectionError',
-    DirtyWorkTree = 'DirtyWorkTree',
-    CantOpenResource = 'CantOpenResource',
-    GitNotFound = 'GitNotFound',
-    CantCreatePipe = 'CantCreatePipe',
-    CantAccessRemote = 'CantAccessRemote',
-    RepositoryNotFound = 'RepositoryNotFound',
-    RepositoryIsLocked = 'RepositoryIsLocked',
-    BranchNotFullyMerged = 'BranchNotFullyMerged',
-    NoRemoteReference = 'NoRemoteReference',
-    InvalidBranchName = 'InvalidBranchName',
-    BranchAlreadyExists = 'BranchAlreadyExists',
-    NoLocalChanges = 'NoLocalChanges',
-    NoStashFound = 'NoStashFound',
-    LocalChangesOverwritten = 'LocalChangesOverwritten',
-    NoUpstreamBranch = 'NoUpstreamBranch',
-    IsInSubmodule = 'IsInSubmodule',
-    WrongCase = 'WrongCase',
-    CantLockRef = 'CantLockRef',
-    CantRebaseMultipleBranches = 'CantRebaseMultipleBranches',
-    PatchDoesNotApply = 'PatchDoesNotApply',
-}
 
 export class RemoteRepoApi implements AzureExtensionApiProvider, IGit, vscode.Disposable {
     private static _handlePool: number = 0;
