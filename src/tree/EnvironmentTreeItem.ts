@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
+import { AppSettingTreeItem, AppSettingsTreeItem } from "@microsoft/vscode-azext-azureappsettings";
 import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath, nonNullProp } from "@microsoft/vscode-azext-utils";
 import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ProgressLocation, ThemeIcon, Uri, window } from "vscode";
@@ -19,8 +20,6 @@ import { localize } from "../utils/localize";
 import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { getSingleRootFsPath } from "../utils/workspaceUtils";
-import { AppSettingTreeItem } from "../vscode-azext-azureappservice/AppSettingTreeItem";
-import { AppSettingsTreeItem } from "../vscode-azext-azureappservice/AppSettingsTreeItem";
 import { ActionTreeItem } from "./ActionTreeItem";
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
@@ -189,7 +188,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.actionsTreeItem = new ActionsTreeItem(this);
         try {
             await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.parent.resourceGroup, this.parent.name, this.buildId);
-            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this), {
+            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this), ext.prefix, {
                 contextValuesToAdd: ['staticWebApps']
             });
             this.functionsTreeItem = new FunctionsTreeItem(this);
