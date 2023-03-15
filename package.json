@@ -510,6 +510,7 @@
         "yaml": "^2.2.1"
     },
     "extensionDependencies": [
+        "ms-vscode.azure-account",
         "ms-azuretools.vscode-azureresourcegroups"
     ]
 }
