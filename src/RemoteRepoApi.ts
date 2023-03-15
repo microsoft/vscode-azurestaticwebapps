@@ -3,17 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 // adopted from https://github.com/microsoft/vscode-pull-request-github/blob/main/src/api/api1.ts
 import { AzureExtensionApi, createApiProvider } from '@microsoft/vscode-azext-utils';
+import { apiUtils } from '@microsoft/vscode-azureresources-api';
 import * as vscode from 'vscode';
-import { AzureExtensionApiProvider } from '../azext-utils-api';
 import { IGit } from './IGit';
 import { revealTreeItem } from './commands/api/revealTreeItem';
 import { APIState, PublishEvent } from './git';
 import { PostCommitCommandsProvider, RemoteRepository } from './rrapi';
 
-export class RemoteRepoApi implements AzureExtensionApiProvider, IGit, vscode.Disposable {
+export class RemoteRepoApi implements apiUtils.AzureExtensionApiProvider, IGit, vscode.Disposable {
     private static _handlePool: number = 0;
     private _providers = new Map<number, IGit>();
 
