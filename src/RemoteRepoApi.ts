@@ -85,7 +85,6 @@ export class RemoteRepoApi implements AzureExtensionApiProvider, IGit, vscode.Di
             this._onDidOpenRepository.fire(e);
         }));
         if (provider.onDidChangeState) {
-            console.log(provider.onDidChangeState);
             this._disposables.push(provider.onDidChangeState(e => this._onDidChangeState.fire(e)));
         }
         if (provider.onDidPublish) {

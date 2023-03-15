@@ -55,6 +55,8 @@ export const reservedSettingsPrefixes: (RegExp | string)[] = [/^APPSETTING_/, /^
 
 export const gitignoreFileName = '.gitignore';
 
+export const openRemoteProjectMsg: MessageItem = { title: localize('openRemoteProject', 'Open remote repository') };
+
 // Source: https://github.com/github/gitignore/blob/master/Node.gitignore
 export const defaultGitignoreContents: string = `# Logs
 logs

@@ -18,7 +18,6 @@ export class AppSettingTreeItem extends AzExtTreeItem {
     public static contextValueNoSlots: string = 'applicationSettingItemNoSlots';
     public get contextValue(): string {
         const contextValue = this.parent.supportsSlots ? AppSettingTreeItem.contextValue : AppSettingTreeItem.contextValueNoSlots;
-        console.log('Is this where the error is?');
         return createContextValue([contextValue, ...this.parent.contextValuesToAdd]);
     }
     public readonly parent: AppSettingsTreeItem;

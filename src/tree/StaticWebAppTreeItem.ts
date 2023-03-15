@@ -51,7 +51,6 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
         this.resourceGroup = getResourceGroupFromId(ss.id);
         this.label = this.name;
         this._subscription = subscription;
-        console.log('StaticWebAppTreeItem', this.name);
 
         this.contextValuesToAdd?.push(StaticWebAppTreeItem.contextValue);
 

@@ -7,7 +7,6 @@ import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-util
 import { AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
 import { apiUtils } from '@microsoft/vscode-azureresources-api';
 import { Extension, commands, extensions } from "vscode";
-import { AzureExtensionApiProvider } from "../azext-utils-api";
 import { IGit } from "./IGit";
 import { ext } from "./extensionVariables";
 import { GitExtension } from "./git";
@@ -21,7 +20,7 @@ import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
  */
 export async function getFunctionsApi(context: IActionContext, installMessage?: string): Promise<AzureFunctionsExtensionApi> {
     const funcExtensionId: string = 'ms-azuretools.vscode-azurefunctions';
-    const funcExtension: AzureExtensionApiProvider | undefined = await apiUtils.getExtensionExports(funcExtensionId);
+    const funcExtension: apiUtils.AzureExtensionApiProvider | undefined = await apiUtils.getExtensionExports(funcExtensionId);
 
     if (funcExtension) {
         return funcExtension.getApi<AzureFunctionsExtensionApi>('^1.7.0');

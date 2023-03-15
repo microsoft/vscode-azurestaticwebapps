@@ -7,8 +7,9 @@ import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-uti
 import * as path from 'path';
 import { FileType, MessageItem, OpenDialogOptions, Uri, WorkspaceFolder, commands, workspace } from "vscode";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { openExistingProject } from '../constants';
+import { openExistingProject, openRemoteProjectMsg } from '../constants';
 import { NoWorkspaceError } from '../errors';
+import { getApiExport } from "../getExtensionApi";
 import { localize } from "./localize";
 
 export function isMultiRootWorkspace(): boolean {
@@ -71,15 +72,28 @@ export async function tryGetWorkspaceFolder(context: IActionContext): Promise<Wo
 export async function showNoWorkspacePrompt(context: IActionContext): Promise<void> {
     const noWorkspaceWarning: string = 'noWorkspaceWarning';
     const message: string = localize(noWorkspaceWarning, 'You must have a git project open to create a Static Web App.');
+    const buttons: MessageItem[] = [];
     const cloneProjectMsg: MessageItem = { title: localize('cloneProject', 'Clone project from GitHub') };
-    const openExistingProjectMsg: MessageItem = { title: localize(openExistingProject, 'Open existing project') };
-    const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, openExistingProjectMsg, cloneProjectMsg);
+    const openExistingProjectMsg: MessageItem = { title: localize(openExistingProject, 'Open local project') };
+
+    const isVirtualWorkspace = workspace.workspaceFolders && workspace.workspaceFolders.every(f => f.uri.scheme !== 'file');
+    if (!isVirtualWorkspace) {
+        buttons.push(cloneProjectMsg, openExistingProjectMsg);
+    }
+
+    if (await getApiExport('ms-vscode.remote-repositories')) {
+        buttons.push(openRemoteProjectMsg);
+    }
+
+    const result = await context.ui.showWarningMessage(message, { modal: true, stepName: noWorkspaceWarning }, ...buttons);
     if (result === cloneProjectMsg) {
         await cloneRepo(context, '');
         context.telemetry.properties.noWorkspaceResult = 'cloneProject';
     } else if (result === openExistingProjectMsg) {
         await openFolder(context)
         context.telemetry.properties.noWorkspaceResult = openExistingProject;
+    } else if (result === openRemoteProjectMsg) {
+        await commands.executeCommand('remoteHub.openRepository');
     }
     context.errorHandling.suppressDisplay = true;
     throw new NoWorkspaceError();

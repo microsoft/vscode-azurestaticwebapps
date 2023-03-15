@@ -5,14 +5,14 @@
 
 import { AzExtFsExtra, IActionContext, nonNullValue, UserCancelledError } from "@microsoft/vscode-azext-utils";
 import * as gitUrlParse from 'git-url-parse';
-import { MessageItem, ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
+import { commands, env, MessageItem, ProgressLocation, ProgressOptions, UIKind, Uri, window, workspace } from 'vscode';
 import { Utils } from "vscode-uri";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { defaultGitignoreContents, gitignoreFileName } from '../constants';
+import { defaultGitignoreContents, gitignoreFileName, openRemoteProjectMsg } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
-import { getGitApi } from "../getExtensionApi";
+import { getApiExport, getGitApi } from "../getExtensionApi";
 import { CommitOptions, Repository } from "../git";
 import { ReposGetResponseData } from '../gitHubTypings';
 import { IGit } from "../IGit";
@@ -102,13 +102,25 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         let cancelStep: string = 'cloneFork';
         let forkSuccess: string = localize('forkSuccess', 'Successfully forked "{0}".', gitWorkspaceState.remoteRepo.name);
         ext.outputChannel.appendLog(forkSuccess);
-        forkSuccess += localize('cloneNewRepo', ' Would you like to clone your new repository?');
 
+        const buttons: MessageItem[] = [];
         const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
-        const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, clone)
+
+        if (env.uiKind === UIKind.Desktop) {
+            forkSuccess += localize('cloneNewRepo', ' Would you like to clone your new repository?');
+            buttons.push(clone);
+        }
+
+        if (await getApiExport('ms-vscode.remote-repositories')) {
+            buttons.push(openRemoteProjectMsg)
+        }
+
+        const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, ...buttons);
         if (result === clone) {
             void cloneRepo(context, repoUrl);
             cancelStep = 'afterCloneFork';
+        } else if (result === openRemoteProjectMsg) {
+            await commands.executeCommand('remoteHub.openRepository');
         }
 
         throw new UserCancelledError(cancelStep);
