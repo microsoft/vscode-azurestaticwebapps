@@ -32,7 +32,7 @@ export async function activate(context: vscode.ExtensionContext, perfStats: { lo
     ext.outputChannel = createAzExtOutputChannel('Azure Static Web Apps', ext.prefix);
     context.subscriptions.push(ext.outputChannel);
 
-    await registerUIExtensionVariables(ext);
+    registerUIExtensionVariables(ext);
     registerAzureUtilsExtensionVariables(ext);
 
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
