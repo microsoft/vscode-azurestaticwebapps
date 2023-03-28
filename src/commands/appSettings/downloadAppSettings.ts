@@ -3,13 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AppSettingsTreeItem, IAppSettingsClient } from "@microsoft/vscode-azext-azureappsettings";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { swaFilter } from '../../constants';
 import { ext } from "../../extensionVariables";
 import { getFunctionsApi } from '../../getExtensionApi';
 import { localize } from "../../utils/localize";
-import { AppSettingsTreeItem } from "../../vscode-azext-azureappservice/AppSettingsTreeItem";
-import { IAppSettingsClient } from "../../vscode-azext-azureappservice/IAppSettingsClient";
 import { AzureFunctionsExtensionApi } from '../../vscode-azurefunctions.api';
 
 export async function downloadAppSettings(context: IActionContext, node?: AppSettingsTreeItem): Promise<void> {

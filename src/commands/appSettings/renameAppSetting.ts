@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AppSettingTreeItem } from '@microsoft/vscode-azext-azureappsettings';
 import { IActionContext } from '@microsoft/vscode-azext-utils';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { AppSettingTreeItem } from '../../vscode-azext-azureappservice/AppSettingTreeItem';
 
 export async function renameAppSetting(context: IActionContext, node?: AppSettingTreeItem): Promise<void> {
     if (!node) {
