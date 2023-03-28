@@ -3,8 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, nonNullValue, registerCommand, registerCommandWithTreeNodeUnwrapping, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
-import { openUrl } from '../utils/openUrl';
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, nonNullValue, openUrl, registerCommand, registerCommandWithTreeNodeUnwrapping, registerErrorHandler, registerReportIssueCommand } from '@microsoft/vscode-azext-utils';
 import { AppSettingTreeItem } from '../vscode-azext-azureappservice/AppSettingTreeItem';
 import { AppSettingsTreeItem } from '../vscode-azext-azureappservice/AppSettingsTreeItem';
 import { downloadAppSettings } from './appSettings/downloadAppSettings';

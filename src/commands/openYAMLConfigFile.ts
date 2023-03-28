@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-utils";
+import { IActionContext, IAzureQuickPickItem, openUrl } from "@microsoft/vscode-azext-utils";
 import { basename } from 'path';
 import { Range, TextDocument, Uri, window, workspace } from 'vscode';
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
@@ -13,7 +13,6 @@ import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
 import { isResolvedStaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeItem';
 import { localize } from '../utils/localize';
-import { openUrl } from "../utils/openUrl";
 
 type YamlTreeItem = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;
 

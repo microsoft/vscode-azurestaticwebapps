@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath, nonNullProp } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath, nonNullProp, openUrl } from "@microsoft/vscode-azext-utils";
 import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
 import { ProgressLocation, ThemeIcon, Uri, window } from "vscode";
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
@@ -16,7 +16,6 @@ import { matchContextValue } from "../utils/contextUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
 import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
-import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { getSingleRootFsPath } from "../utils/workspaceUtils";
 import { AppSettingTreeItem } from "../vscode-azext-azureappservice/AppSettingTreeItem";
