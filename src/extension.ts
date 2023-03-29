@@ -6,7 +6,7 @@
 'use strict';
 
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { callWithTelemetryAndErrorHandling, createAzExtOutputChannel, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
+import { callWithTelemetryAndErrorHandling, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
 import { apiUtils, AzExtResourceType } from "@microsoft/vscode-azureresources-api";
 import * as vscode from 'vscode';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
@@ -59,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext, perfStats: { lo
         registerSwaCliTaskEvents();
         registerCommands();
 
-        // ext.experimentationService = await createExperimentationService(context);
+        ext.experimentationService = await createExperimentationService(context);
     });
 
     // remoteRepoApi is combined with the SWA API required for resource gropus, but the remote repo relies on extension exports

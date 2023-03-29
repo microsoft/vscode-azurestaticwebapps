@@ -496,7 +496,7 @@
     "dependencies": {
         "@azure/arm-appservice": "^11.0.0",
         "@azure/arm-resources": "^5.0.0",
-        "@microsoft/vscode-azext-azureappsettings": "^0.0.1",
+        "@microsoft/vscode-azext-azureappsettings": "^0.0.2",
         "@microsoft/vscode-azext-azureutils": "^1.0.1",
         "@microsoft/vscode-azext-utils": "^1.1.0",
         "@microsoft/vscode-azureresources-api": "^2.0.3",
@@ -507,7 +507,7 @@
         "semver": "^7.3.5",
         "vscode-nls": "^4.1.1",
         "vscode-uri": "^3.0.2",
-        "yaml": "^2.2.1"
+        "yaml": "^1.10.2"
     },
     "extensionDependencies": [
         "ms-azuretools.vscode-azureresourcegroups"

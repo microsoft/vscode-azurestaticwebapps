@@ -5,7 +5,9 @@
 
 import { IActionContext, IAzureQuickPickItem, openUrl } from "@microsoft/vscode-azext-utils";
 import { basename } from 'path';
-import { Range, TextDocument, Uri, window, workspace } from 'vscode';
+import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
+import { CST, Document, parseDocument } from 'yaml';
+import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { swaFilter } from "../constants";
 import { ext } from "../extensionVariables";
@@ -16,7 +18,7 @@ import { localize } from '../utils/localize';
 
 type YamlTreeItem = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;
 
-export async function openYAMLConfigFile(context: IActionContext, node?: YamlTreeItem, _nodes?: YamlTreeItem[], buildConfigToSelect?: unknown): Promise<void> {
+export async function openYAMLConfigFile(context: IActionContext, node?: YamlTreeItem, _nodes?: YamlTreeItem[], buildConfigToSelect?: BuildConfig | unknown): Promise<void> {
     if (!node) {
         node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
             filter: swaFilter,
@@ -75,52 +77,52 @@ export async function tryGetSelection(context: IActionContext, configDocument: T
     }
 
     try {
-        // type YamlNode = YAMLMap | YAMLSeq | Pair | Scalar | undefined | null;
-        // const yamlNodes: YamlNode[] = [];
-        // const parsedYaml: Document.Parsed = parseDocument(configDocumentText, {/* keepCstNodes: true*/ });
-        // const yamlNode: ParsedNode | null = parsedYaml.contents;
+        type YamlNode = YAMLMap | YAMLSeq | Pair | Scalar | undefined | null;
+        const yamlNodes: YamlNode[] = [];
+        const parsedYaml: Document.Parsed = parseDocument(configDocumentText, { keepCstNodes: true });
+        let yamlNode: YamlNode = parsedYaml.contents;
 
-        // while (yamlNode) {
-        //     if ('key' in yamlNode && (yamlNode.value === buildConfigToSelect && 'value' in yamlNode) {
-        //         const cstNode: CST.Node | undefined = (<Scalar>yamlNode.value)?.cstNode;
-        //         const range = cstNode?.rangeAsLinePos;
+        while (yamlNode) {
+            if ('key' in yamlNode && (<Scalar>yamlNode.key).value === buildConfigToSelect && 'value' in yamlNode) {
+                const cstNode: CST.Node | undefined = (<Scalar>yamlNode.value)?.cstNode;
+                const range = cstNode?.rangeAsLinePos;
 
-        //         if (range && range.end) {
-        //             // Range isn't zero-indexed by default
-        //             range.start.line--;
-        //             range.start.col--;
-        //             range.end.line--;
-        //             range.end.col--;
+                if (range && range.end) {
+                    // Range isn't zero-indexed by default
+                    range.start.line--;
+                    range.start.col--;
+                    range.end.line--;
+                    range.end.col--;
 
-        //             if (cstNode?.comment) {
-        //                 // The end range includes the length of the comment
-        //                 range.end.col -= cstNode.comment.length + 1;
+                    if (cstNode?.comment) {
+                        // The end range includes the length of the comment
+                        range.end.col -= cstNode.comment.length + 1;
 
-        //                 const lineText: string = (configDocument.lineAt(range.start.line)).text;
+                        const lineText: string = (configDocument.lineAt(range.start.line)).text;
 
-        //                 // Don't include the comment character
-        //                 if (lineText[range.end.col] === '#') {
-        //                     range.end.col--;
-        //                 }
+                        // Don't include the comment character
+                        if (lineText[range.end.col] === '#') {
+                            range.end.col--;
+                        }
 
-        //                 // Don't include any horizontal whitespace between the end of the YAML value and the comment
-        //                 while (/[ \t]/.test(lineText[range.end.col - 1])) {
-        //                     range.end.col--;
-        //                 }
-        //             }
+                        // Don't include any horizontal whitespace between the end of the YAML value and the comment
+                        while (/[ \t]/.test(lineText[range.end.col - 1])) {
+                            range.end.col--;
+                        }
+                    }
 
-        //             const startPosition: Position = new Position(range.start.line, range.start.col);
-        //             const endPosition: Position = new Position(range.end.line, range.end.col);
-        //             return configDocument.validateRange(new Range(startPosition, endPosition));
-        //         }
-        //     } else if ('items' in yamlNode) {
-        //         yamlNodes.push(...yamlNode.items)
-        //     } else if ('value' in yamlNode && typeof yamlNode.value === 'object') {
-        //         yamlNodes.push(yamlNode.value)
-        //     }
+                    const startPosition: Position = new Position(range.start.line, range.start.col);
+                    const endPosition: Position = new Position(range.end.line, range.end.col);
+                    return configDocument.validateRange(new Range(startPosition, endPosition));
+                }
+            } else if ('items' in yamlNode) {
+                yamlNodes.push(...yamlNode.items)
+            } else if ('value' in yamlNode && typeof yamlNode.value === 'object') {
+                yamlNodes.push(yamlNode.value)
+            }
 
-        //     yamlNode = yamlNodes.pop();
-        // }
+            yamlNode = yamlNodes.pop();
+        }
     } catch {
         // Ignore errors
     }
