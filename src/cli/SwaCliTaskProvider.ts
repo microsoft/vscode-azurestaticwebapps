@@ -11,6 +11,7 @@ import { tryGetApiLocations } from "../commands/createStaticWebApp/tryGetApiLoca
 import { funcAddress } from "../constants";
 import { detectAppFoldersInWorkspace } from '../utils/detectorUtils';
 import { SwaShellExecution, SwaTask } from "../vsCodeConfig/tasks";
+import { getFolderContainingDbConfigFile } from "./dab";
 import { SWACLIOptions, tryGetStaticWebAppsCliConfig } from "./tryGetStaticWebAppsCliConfig";
 
 export class SwaTaskProvider implements TaskProvider {
@@ -39,8 +40,9 @@ export class SwaTaskProvider implements TaskProvider {
         const tasks: Task[] = [];
 
         const apiLocations = await tryGetApiLocations(context, workspaceFolder, true);
-
         const appFolders = await detectAppFoldersInWorkspace(context, workspaceFolder);
+        const dbConfigDirPath = await getFolderContainingDbConfigFile(workspaceFolder);
+
         appFolders.forEach((appFolder) => {
             const buildPreset = buildPresets.find((preset) => appFolder.frameworks.find((info) => info.framework === preset.displayName));
 
@@ -49,7 +51,8 @@ export class SwaTaskProvider implements TaskProvider {
                     context: `http://localhost:${buildPreset.port}`,
                     ...(apiLocations?.length ? { apiLocation: funcAddress } : {}),
                     appLocation: path.relative(workspaceFolder.uri.fsPath, appFolder.uri.fsPath),
-                    run: buildPreset.startCommand ?? 'npm start'
+                    run: buildPreset.startCommand ?? 'npm start',
+                    ...(dbConfigDirPath ? { dataApiLocation: dbConfigDirPath } : {})
                 }));
             }
         });
@@ -88,7 +91,7 @@ export class SwaTaskProvider implements TaskProvider {
         );
     }
 
-    private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'context' | 'apiLocation' | 'run' | 'appLocation'>): Task {
+    private createSwaCliTask(workspaceFolder: WorkspaceFolder, label: string, options: Pick<SWACLIOptions, 'context' | 'apiLocation' | 'run' | 'appLocation' | 'dataApiLocation'>): Task {
 
         const addArg = <T extends Record<string, string>>(object: T, property: keyof T, name?: string): string[] => {
             const args: string[] = [];
@@ -105,6 +108,7 @@ export class SwaTaskProvider implements TaskProvider {
             ...addArg(options, 'appLocation', 'app-location'),
             ...addArg(options, 'apiLocation', 'api-location'),
             ...addArg(options, 'run', 'run'),
+            ...addArg(options, 'dataApiLocation', 'data-api-location'),
             // Increase devserver timeout to 3x default. See https://github.com/microsoft/vscode-azurestaticwebapps/issues/574#issuecomment-965590774
             '--devserver-timeout=90000'
         ];

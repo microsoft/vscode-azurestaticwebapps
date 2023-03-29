@@ -10,6 +10,10 @@ import { localize } from "../utils/localize";
 
 export type SWACLIOptions = {
     context?: string;
+    /**
+     * Directory the DAB configuration file is in
+     */
+    dataApiLocation?: string;
     port?: number;
     host?: string;
     apiPort?: number;
