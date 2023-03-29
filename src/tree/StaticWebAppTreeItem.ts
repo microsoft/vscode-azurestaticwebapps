@@ -43,6 +43,7 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
     public contextValuesToAdd?: string[] = [];
 
     private readonly _subscription: ISubscriptionContext;
+    readonly viewProperties;
 
     constructor(subscription: ISubscriptionContext, ss: StaticSiteARMResource & AppResource) {
         this.data = ss;
@@ -50,6 +51,11 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
         this.resourceGroup = getResourceGroupFromId(ss.id);
         this.label = this.name;
         this._subscription = subscription;
+
+        this.viewProperties = {
+            data: this.data,
+            label: this.name
+        };
 
         this.contextValuesToAdd?.push(StaticWebAppTreeItem.contextValue);
 
