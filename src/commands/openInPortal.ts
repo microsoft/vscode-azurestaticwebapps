@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppSettingsTreeItem } from '@microsoft/vscode-azext-azureappservice';
+import { AppSettingsTreeItem } from '@microsoft/vscode-azext-azureappsettings';
 import { openInPortal as openInPortalUtil } from '@microsoft/vscode-azext-azureutils';
 import { IActionContext, nonNullValue } from '@microsoft/vscode-azext-utils';
 import { FunctionsTreeItem } from '../tree/FunctionsTreeItem';

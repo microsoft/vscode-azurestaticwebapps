@@ -3,11 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { IActionContext, openUrl } from '@microsoft/vscode-azext-utils';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
-import { openUrl } from '../../utils/openUrl';
 
 export async function openGitHubRepo(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {

@@ -5,9 +5,9 @@
 
 import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
 import { commands } from 'vscode';
+import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { isResolvedStaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
 
 export async function cloneRepo(context: IActionContext, resource?: string | ResolvedStaticWebApp): Promise<void> {

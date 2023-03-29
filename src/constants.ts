@@ -29,7 +29,8 @@ export const isStartGroup = (t: string): boolean => /##\[group\]/.test(t);
 export const isEndGroup = (t: string): boolean => /##\[endgroup\]/.test(t)
 
 export const githubAuthProviderId: string = 'github';
-export const githubScopes: string[] = ['repo', 'workflow', 'admin:public_key'];
+// same scopes as the GitHub extension so we won't have to prompt for auth again
+export const githubScopes: string[] = ['repo', 'workflow', 'user:email', 'read:user'];
 
 export const angularOutputLocation = 'dist/<project-name>';
 
@@ -53,6 +54,8 @@ export const swaFilter = {
 export const reservedSettingsPrefixes: (RegExp | string)[] = [/^APPSETTING_/, /^AZUREBLOBSTORAGE_/, /^AZUREFILESSTORAGE_/, /^AZURE_FUNCTION_/, /^CONTAINER_/, /^DIAGNOSTICS_/, /^DOCKER_/, /^FUNCTIONS_/, /^IDENTITY_/, /^MACHINEKEY_/, /^MAINSITE_/, /^MSDEPLOY_/, /^SCMSITE_/, /^SCM_/, /^WEBSITES_/, /^WEBSITE_/, /^WEBSOCKET_/, /^AzureWeb/];
 
 export const gitignoreFileName = '.gitignore';
+
+export const openRemoteProjectMsg: MessageItem = { title: localize('openRemoteProject', 'Open remote repository') };
 
 // Source: https://github.com/github/gitignore/blob/master/Node.gitignore
 export const defaultGitignoreContents: string = `# Logs

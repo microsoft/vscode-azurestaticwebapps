@@ -3,8 +3,7 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { HttpOperationResponse } from "@azure/ms-rest-js";
-import { sendRequestWithTimeout } from "@microsoft/vscode-azext-azureutils";
+import { AzExtPipelineResponse, sendRequestWithTimeout } from "@microsoft/vscode-azext-azureutils";
 import { IActionContext } from "@microsoft/vscode-azext-utils";
 import { swaCliPackageName } from "../../constants";
 import { localize } from "../../utils/localize";
@@ -18,10 +17,11 @@ interface IPackageMetadata {
 
 export async function getNewestSwaCliVersion(context: IActionContext): Promise<string | undefined> {
     try {
-        const response: HttpOperationResponse = await sendRequestWithTimeout(context, {
+        const response: AzExtPipelineResponse = await sendRequestWithTimeout(context, {
             method: 'GET',
             url: `https://registry.npmjs.org/${swaCliPackageName}`
         }, 15000, undefined);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         const packageMetadata: IPackageMetadata = <IPackageMetadata>response.parsedBody;
         return packageMetadata["dist-tags"].latest;
     } catch (error) {

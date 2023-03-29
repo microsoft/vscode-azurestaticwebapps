@@ -3,7 +3,7 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
+import { AzExtFsExtra, callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import { CancellationToken, commands, debug, DebugConfiguration, DebugConfigurationProvider, MessageItem, Uri, WorkspaceFolder } from "vscode";
 import { buildPresets } from "../buildPresets/buildPresets";
@@ -14,7 +14,6 @@ import { tryGetApiLocations } from '../commands/createStaticWebApp/tryGetApiLoca
 import { emulatorAddress, funcAddress, pwaChrome, swaCliConfigFileName } from "../constants";
 import { getFunctionsApi } from '../getExtensionApi';
 import { detectAppFoldersInWorkspace } from "../utils/detectorUtils";
-import { writeFormattedJson } from "../utils/fs";
 import { localize } from '../utils/localize';
 import { getDebugConfigs } from "../vsCodeConfig/launch";
 
@@ -88,7 +87,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
                         }, fixMi).then(async (action) => {
                             if (action === fixMi) {
                                 config.apiLocation = funcAddress;
-                                await writeFormattedJson(Uri.joinPath(folder.uri, swaCliConfigFileName).fsPath, swaCliConfigFile);
+                                await AzExtFsExtra.writeJSON(Uri.joinPath(folder.uri, swaCliConfigFileName).fsPath, swaCliConfigFile);
                             }
                         });
                     }

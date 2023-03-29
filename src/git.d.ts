@@ -5,6 +5,7 @@
 
 // copied from https://github.com/microsoft/vscode/blob/master/extensions/git/src/api/git.d.ts
 import { Disposable, Event, ProviderResult, Uri } from 'vscode';
+import { IGit } from './IGit';
 export { ProviderResult } from 'vscode';
 
 export interface Git {
@@ -252,25 +253,6 @@ export interface PublishEvent {
     branch?: string;
 }
 
-export interface API {
-    readonly state: APIState;
-    readonly onDidChangeState: Event<APIState>;
-    readonly onDidPublish: Event<PublishEvent>;
-    readonly git: Git;
-    readonly repositories: Repository[];
-    readonly onDidOpenRepository: Event<Repository>;
-    readonly onDidCloseRepository: Event<Repository>;
-
-    toGitUri(uri: Uri, ref: string): Uri;
-    getRepository(uri: Uri): Repository | null;
-    init(root: Uri): Promise<Repository | null>;
-    openRepository(root: Uri): Promise<Repository | null>
-
-    registerRemoteSourceProvider(provider: RemoteSourceProvider): Disposable;
-    registerCredentialsProvider(provider: CredentialsProvider): Disposable;
-    registerPushErrorHandler(handler: PushErrorHandler): Disposable;
-}
-
 export interface GitExtension {
 
     readonly enabled: boolean;
@@ -286,7 +268,7 @@ export interface GitExtension {
      * @param version Version number.
      * @returns API instance
      */
-    getAPI(version: 1): API;
+    getAPI(version: 1): GitAPI;
 }
 
 export const enum GitErrorCodes {
@@ -325,4 +307,26 @@ export const enum GitErrorCodes {
     PatchDoesNotApply = 'PatchDoesNotApply',
     NoPathFound = 'NoPathFound',
     UnknownPath = 'UnknownPath',
+}
+
+export interface RemoteSourcePublisher {
+    readonly name: string;
+    readonly icon?: string; // codicon name
+    publishRepository(repository: Repository): Promise<void>;
+}
+
+export interface GitAPI extends IGit {
+    readonly state: APIState;
+    readonly git: Git;
+    readonly repositories: Repository[];
+
+    toGitUri(uri: Uri, ref: string): Uri;
+    getRepository(uri: Uri): Repository | null;
+    init(root: Uri): Promise<Repository | null>;
+    openRepository(root: Uri): Promise<Repository | null>
+
+    registerRemoteSourcePublisher(publisher: RemoteSourcePublisher): Disposable;
+    registerRemoteSourceProvider(provider: RemoteSourceProvider): Disposable;
+    registerCredentialsProvider(provider: CredentialsProvider): Disposable;
+    registerPushErrorHandler(handler: PushErrorHandler): Disposable;
 }

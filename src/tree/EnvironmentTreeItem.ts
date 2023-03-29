@@ -4,26 +4,25 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
-import { AppSettingsTreeItem, AppSettingTreeItem } from "@microsoft/vscode-azext-azureappservice";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, nonNullProp, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AppSettingTreeItem, AppSettingsTreeItem } from "@microsoft/vscode-azext-azureappsettings";
+import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath, nonNullProp, openUrl } from "@microsoft/vscode-azext-utils";
 import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
-import { ProgressLocation, ThemeIcon, window } from "vscode";
+import { ProgressLocation, ThemeIcon, Uri, window } from "vscode";
+import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
-import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { createWebSiteClient } from "../utils/azureClients";
 import { matchContextValue } from "../utils/contextUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
 import { tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
-import { openUrl } from "../utils/openUrl";
 import { treeUtils } from "../utils/treeUtils";
 import { getSingleRootFsPath } from "../utils/workspaceUtils";
-import { ActionsTreeItem } from "./ActionsTreeItem";
 import { ActionTreeItem } from "./ActionTreeItem";
-import { FunctionsTreeItem } from "./FunctionsTreeItem";
+import { ActionsTreeItem } from "./ActionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
+import { FunctionsTreeItem } from "./FunctionsTreeItem";
 import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { JobTreeItem } from "./JobTreeItem";
 import { StepTreeItem } from "./StepTreeItem";
@@ -46,7 +45,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     public repositoryUrl: string;
     public branch: string;
     public buildId: string;
-    public localProjectPath: string | undefined;
+    public localProjectPath: Uri | undefined;
 
     public isProduction: boolean;
     public inWorkspace!: boolean;
@@ -188,7 +187,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.actionsTreeItem = new ActionsTreeItem(this);
         try {
             await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.parent.resourceGroup, this.parent.name, this.buildId);
-            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this), {
+            this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this), ext.prefix, {
                 contextValuesToAdd: ['staticWebApps']
             });
             this.functionsTreeItem = new FunctionsTreeItem(this);

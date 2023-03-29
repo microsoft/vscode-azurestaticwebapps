@@ -3,23 +3,22 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-utils";
+import { IActionContext, IAzureQuickPickItem, openUrl } from "@microsoft/vscode-azext-utils";
 import { basename } from 'path';
 import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
 import { CST, Document, parseDocument } from 'yaml';
 import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
+import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { swaFilter } from "../constants";
 import { ext } from "../extensionVariables";
-import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
 import { isResolvedStaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeItem';
 import { localize } from '../utils/localize';
-import { openUrl } from "../utils/openUrl";
 
 type YamlTreeItem = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;
 
-export async function openYAMLConfigFile(context: IActionContext, node?: YamlTreeItem, _nodes?: YamlTreeItem[], buildConfigToSelect?: BuildConfig): Promise<void> {
+export async function openYAMLConfigFile(context: IActionContext, node?: YamlTreeItem, _nodes?: YamlTreeItem[], buildConfigToSelect?: BuildConfig | unknown): Promise<void> {
     if (!node) {
         node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
             filter: swaFilter,
@@ -55,7 +54,7 @@ export async function openYAMLConfigFile(context: IActionContext, node?: YamlTre
     }
 
     const configDocument: TextDocument = await workspace.openTextDocument(yamlFileUri);
-    const selection: Range | undefined = await tryGetSelection(context, configDocument, buildConfigToSelect, node instanceof WorkflowGroupTreeItem ? node : undefined);
+    const selection: Range | undefined = await tryGetSelection(context, configDocument, buildConfigToSelect as BuildConfig, node instanceof WorkflowGroupTreeItem ? node : undefined);
     await window.showTextDocument(configDocument, { selection });
 }
 

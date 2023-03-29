@@ -5,13 +5,15 @@
 
 import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, parseError, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { basename, join } from "path";
-import { FileType, Range, ThemeIcon, Uri, workspace } from "vscode";
+import { FileType, Range, ThemeIcon, workspace } from "vscode";
+import { URI, Utils } from "vscode-uri";
 // eslint-disable-next-line import/no-internal-modules
 import { YAMLSyntaxError } from "yaml/util";
 import { localize } from "../utils/localize";
 import { parseYamlFile } from "../utils/yamlUtils";
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
 import { WorkflowTreeItem } from "./WorkflowTreeItem";
+
 
 export type BuildConfig = 'app_location' | 'api_location' | 'output_location' | 'app_artifact_location';
 
@@ -25,6 +27,7 @@ export type BuildConfigs = {
 function getRangeFromError(error: YAMLSyntaxError): Range {
     if (error.linePos) {
         const { start, end } = error.linePos;
+
         return new Range(start.line - 1, start.col - 1, end.line - 1, end.col - 1);
     }
     return new Range(0, 0, 0, 0);
@@ -65,15 +68,15 @@ export class WorkflowGroupTreeItem extends AzExtParentTreeItem {
         const treeItems: WorkflowGroupTreeItem[] = [];
 
         if (parent.localProjectPath && parent.inWorkspace) {
-            const workflowsDir: string = join(parent.localProjectPath, '.github/workflows');
+            const workflowsDir: URI = Utils.joinPath(parent.localProjectPath, '.github/workflows');
             const yamlFiles: string[] = await AzExtFsExtra.pathExists(workflowsDir) ?
-                (await workspace.fs.readDirectory(Uri.file(workflowsDir))).filter(file => file[1] === FileType.File && /\.(yml|yaml)$/i.test(file[0])).map(file => file[0]) :
+                (await workspace.fs.readDirectory(workflowsDir)).filter(file => file[1] === FileType.File && /\.(yml|yaml)$/i.test(file[0])).map(file => file[0]) :
                 [];
 
             context.telemetry.properties.numWorkflows = yamlFiles.length.toString();
 
             for (const yamlFile of yamlFiles) {
-                const ti = new WorkflowGroupTreeItem(parent, join(workflowsDir, yamlFile));
+                const ti = new WorkflowGroupTreeItem(parent, join(workflowsDir.fsPath, yamlFile));
                 await ti.refreshImpl(context);
                 treeItems.push(ti);
             }
