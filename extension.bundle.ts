@@ -15,6 +15,7 @@
 // The tests should import '../extension.bundle'. At design-time they live in tests/ and so will pick up this file (extension.bundle.ts).
 // At runtime the tests live in dist/tests and will therefore pick up the main webpack bundle at dist/extension.bundle.js.
 export * from '@microsoft/vscode-azext-utils';
+export * from './src/cli/SwaCliTaskProvider';
 export { SwaTaskProvider } from './src/cli/SwaCliTaskProvider';
 export { createFoldingRanges } from './src/commands/github/jobLogs/createFoldingRanges';
 export { LogState, parseGitHubLog } from './src/commands/github/jobLogs/parseGitHubLog';

@@ -24,13 +24,24 @@ export class SwaTaskProvider implements TaskProvider {
         return await callWithTelemetryAndErrorHandling<Task[]>('staticWebApps.provideTasks', async (context: IActionContext): Promise<Task[]> => {
             const tasks: Task[] = [];
             for await (const workspaceFolder of workspace.workspaceFolders ?? []) {
-                if (await AzExtFsExtra.pathExists(workspaceFolder.uri)) {
-                    const configTasks = await this.getTasksFromSwaConfig(workspaceFolder);
-                    const detectorTasks = await this.getTasksFromDetector(context, workspaceFolder);
-                    tasks.push(...configTasks, ...detectorTasks);
-                    context.telemetry.measurements.configCount = configTasks.length;
-                    context.telemetry.measurements.detectedCount = detectorTasks.length;
-                }
+                const workspaceTasks = await this.provideTasksForWorkspaceFolder(workspaceFolder);
+                tasks.push(...workspaceTasks);
+            }
+            context.telemetry.measurements.workspaceFolderCount = workspace.workspaceFolders?.length ?? 0;
+            context.telemetry.measurements.detectedCount = tasks.length;
+            return tasks;
+        }) ?? [];
+    }
+
+    async provideTasksForWorkspaceFolder(workspaceFolder: WorkspaceFolder): Promise<Task[]> {
+        return await callWithTelemetryAndErrorHandling<Task[]>('staticWebApps.provideTasksForWorkspaceFolder', async (context: IActionContext): Promise<Task[]> => {
+            const tasks: Task[] = [];
+            if (await AzExtFsExtra.pathExists(workspaceFolder.uri)) {
+                const configTasks = await this.getTasksFromSwaConfig(workspaceFolder);
+                const detectorTasks = await this.getTasksFromDetector(context, workspaceFolder);
+                tasks.push(...configTasks, ...detectorTasks);
+                context.telemetry.measurements.configCount = configTasks.length;
+                context.telemetry.measurements.detectedCount = detectorTasks.length;
             }
             return tasks;
         }) ?? [];
