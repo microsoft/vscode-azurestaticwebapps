@@ -44,7 +44,7 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
 
     private readonly _subscription: ISubscriptionContext;
 
-    constructor(subscription: ISubscriptionContext, ss: StaticSiteARMResource & AppResource) {
+    constructor(context: IActionContext, subscription: ISubscriptionContext, ss: StaticSiteARMResource & AppResource) {
         this.data = ss;
         this.name = nonNullProp(this.data, 'name');
         this.resourceGroup = getResourceGroupFromId(ss.id);
@@ -56,6 +56,7 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
         if (this.data.repositoryUrl) {
             this.repositoryUrl = this.data.repositoryUrl;
         } else {
+            context.errorHandling.suppressDisplay = true;
             throw new Error(onlyGitHubSupported);
         }
 
