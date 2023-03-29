@@ -24,7 +24,7 @@ export class StaticWebAppResolver implements AppResourceResolver {
                 const client = await createWebSiteClient({ ...context, ...subContext });
                 const swa = await client.staticSites.getStaticSite(getResourceGroupFromId(nonNullProp(resource, 'id')), nonNullProp(resource, 'name'));
 
-                return new StaticWebAppTreeItem(subContext, { ...resource, ...swa });
+                return new StaticWebAppTreeItem(context, subContext, { ...resource, ...swa });
             } catch (e) {
                 console.error({ ...context, ...subContext });
                 throw e;
