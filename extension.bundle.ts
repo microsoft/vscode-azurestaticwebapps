@@ -15,13 +15,14 @@
 // The tests should import '../extension.bundle'. At design-time they live in tests/ and so will pick up this file (extension.bundle.ts).
 // At runtime the tests live in dist/tests and will therefore pick up the main webpack bundle at dist/extension.bundle.js.
 export * from '@microsoft/vscode-azext-utils';
+export * from './src/cli/SwaCliTaskProvider';
 export { SwaTaskProvider } from './src/cli/SwaCliTaskProvider';
 export { createFoldingRanges } from './src/commands/github/jobLogs/createFoldingRanges';
 export { LogState, parseGitHubLog } from './src/commands/github/jobLogs/parseGitHubLog';
 export { tryGetSelection } from './src/commands/openYAMLConfigFile';
 export { StaticWebAppDebugProvider } from './src/debug/StaticWebAppDebugProvider';
-export { NodeConstants } from './src/detectors/node/nodeConstants';
 export { DetectorResults, NodeDetector } from './src/detectors/node/NodeDetector';
+export { NodeConstants } from './src/detectors/node/nodeConstants';
 // Export activate/deactivate for main.js
 export { activateInternal, deactivateInternal } from './src/extension';
 export * from './src/extensionVariables';

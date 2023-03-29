@@ -1,9 +1,6 @@
 {
     "folders": [
         {
-            "path": "./testWorkspace"
-        },
-        {
             "path": "./testProject/angular-basic"
         },
         {
@@ -23,6 +20,9 @@
         },
         {
             "path": "./testProject/vue-basic"
+        },
+        {
+            "path": "./testProject/react-basic-dab"
         }
     ]
 }
