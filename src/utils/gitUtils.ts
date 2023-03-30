@@ -120,7 +120,8 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
             void cloneRepo(context, repoUrl);
             cancelStep = 'afterCloneFork';
         } else if (result === openRemoteProjectMsg) {
-            await commands.executeCommand('remoteHub.openRepository');
+            const { owner, name } = getRepoFullname(repoUrl);
+            await commands.executeCommand('vscode.openFolder', Uri.parse(`vscode-vfs://github/${owner}/${name}`, true));
         }
 
         throw new UserCancelledError(cancelStep);
