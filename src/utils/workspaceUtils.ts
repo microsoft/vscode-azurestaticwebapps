@@ -22,7 +22,7 @@ export function getSingleRootFsPath(): Uri | undefined {
     return workspace.workspaceFolders && workspace.workspaceFolders.length === 1 ? workspace.workspaceFolders[0].uri : undefined;
 }
 
-export async function selectWorkspaceFolder(context: IActionContext, placeHolder: string, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {
+export async function selectWorkspaceFolder(context: IActionContext, placeHolder: string, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<Uri> {
     return await selectWorkspaceItem(
         context,
         placeHolder,
@@ -36,22 +36,22 @@ export async function selectWorkspaceFolder(context: IActionContext, placeHolder
         getSubPath);
 }
 
-export async function selectWorkspaceItem(context: IActionContext, placeHolder: string, options: OpenDialogOptions, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<string> {
+export async function selectWorkspaceItem(context: IActionContext, placeHolder: string, options: OpenDialogOptions, getSubPath?: (f: WorkspaceFolder) => string | undefined | Promise<string | undefined>): Promise<Uri> {
     const folders: readonly WorkspaceFolder[] = workspace.workspaceFolders || [];
-    const folderPicks: IAzureQuickPickItem<string | undefined>[] = await Promise.all(folders.map(async (f: WorkspaceFolder) => {
+    const folderPicks: IAzureQuickPickItem<Uri | undefined>[] = await Promise.all(folders.map(async (f: WorkspaceFolder) => {
         let subpath: string | undefined;
         if (getSubPath) {
             subpath = await getSubPath(f);
         }
 
-        const fsPath: string = subpath ? path.join(f.uri.fsPath, subpath) : f.uri.fsPath;
-        return { label: path.basename(fsPath), description: fsPath, data: fsPath };
+        const uri: Uri = subpath ? Uri.joinPath(f.uri, subpath) : f.uri;
+        return { label: path.basename(uri.fsPath), description: uri.fsPath, data: uri };
     }));
 
     folderPicks.push({ label: localize('browse', '$(file-directory) Browse...'), description: '', data: undefined });
-    const folder: IAzureQuickPickItem<string | undefined> = await context.ui.showQuickPick(folderPicks, { placeHolder });
+    const folder: IAzureQuickPickItem<Uri | undefined> = await context.ui.showQuickPick(folderPicks, { placeHolder });
 
-    return folder.data ? folder.data : (await context.ui.showOpenDialog(options))[0].fsPath;
+    return folder.data ? folder.data : (await context.ui.showOpenDialog(options))[0];
 }
 
 export async function tryGetWorkspaceFolder(context: IActionContext): Promise<WorkspaceFolder | undefined> {
@@ -65,7 +65,7 @@ export async function tryGetWorkspaceFolder(context: IActionContext): Promise<Wo
         const selectAppFolder: string = 'selectAppFolder';
         const folder = await selectWorkspaceFolder(context, localize(selectAppFolder, 'Select folder with your app'));
         context.telemetry.properties.noWorkspaceResult = 'multiRootProject';
-        return workspace.getWorkspaceFolder(Uri.parse(folder));
+        return workspace.getWorkspaceFolder(folder);
     }
 }
 
