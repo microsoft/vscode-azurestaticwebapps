@@ -47,7 +47,7 @@ steps:
     Destination: AzureBlob
     storage: $(WEB_BUILDS_STG_ACCT)
     ContainerName: $(WEB_BUILDS_CONTAINER)
-    BlobPrefix: '$(build.buildnumber)'
+    BlobPrefix: '$(build.definitionname)/$(build.buildnumber)'
   # Only do steps for publishing web bits on Windows as AzureFileCopy is only supported on Windows
   # See: https://github.com/microsoft/azure-pipelines-tasks/issues/8920
   condition: and(eq(variables['Agent.OS'], 'Windows_NT'), ne(variables['System.PullRequest.IsFork'], 'True'))
@@ -69,7 +69,7 @@ steps:
         --out tsv
       # Replace all % with %25 so vscode.dev does not re-encode the URL thus breaking it.
       $sasToken = $sasToken -replace ("%", "%25")
-      $extensionRootUrl = "https://$(WEB_BUILDS_STG_ACCT).blob.core.windows.net/$(WEB_BUILDS_CONTAINER)/" + "$(build.buildnumber)" + "/?" + $sasToken
+      $extensionRootUrl = "https://$(WEB_BUILDS_STG_ACCT).blob.core.windows.net/$(WEB_BUILDS_CONTAINER)/" + "$(build.definitionname)/$(build.buildnumber)" + "/?" + $sasToken
       $extensionRootUrl | Out-File -FilePath '$(build.artifactstagingdirectory)/web-sas.txt'
       echo $extensionRootUrl
   # Only do steps for publishing web bits on Windows as AzureFileCopy is only supported on Windows
