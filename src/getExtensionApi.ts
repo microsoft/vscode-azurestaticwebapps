@@ -42,13 +42,13 @@ export async function getGitApi(): Promise<IGit> {
                 if (gitExtension) {
                     const api = gitExtension.getAPI(1);
                     ext.vscodeGitApi = api;
-                }
-
-                return ext.vscodeGitApi;
-            } else {
-                throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
+                } else
+                    throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
             }
-        } else {
+
+            return ext.vscodeGitApi;
+        }
+        else {
             return ext.remoteRepoApi;
         }
     } catch (err) {
