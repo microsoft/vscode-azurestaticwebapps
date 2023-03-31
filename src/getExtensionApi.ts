@@ -43,11 +43,14 @@ export async function getGitApi(): Promise<IGit> {
                     const api = gitExtension.getAPI(1);
                     ext.vscodeGitApi = api;
                 }
+            }
 
-                return ext.vscodeGitApi;
-            } else {
+            if (!ext.vscodeGitApi) {
+                // if we still don't have it after trying to activate it, then throw an error
                 throw new Error(localize('unableGit', 'Unable to retrieve VS Code Git API. Please ensure git is properly installed and reload VS Code.'));
             }
+
+            return ext.vscodeGitApi;
         } else {
             return ext.remoteRepoApi;
         }

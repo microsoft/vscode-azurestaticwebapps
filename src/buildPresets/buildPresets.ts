@@ -87,6 +87,15 @@ export const buildPresets: IBuildPreset[] = [
         group: 'framework'
     },
     {
+        id: 'svelte-kit',
+        displayName: 'SvelteKit',
+        appLocation: '/',
+        apiLocation: 'build/server',
+        outputLocation: 'build/static',
+        port: 3000,
+        group: 'framework'
+    },
+    {
         id: 'gatsby',
         displayName: 'Gatsby',
         appLocation: '/',
