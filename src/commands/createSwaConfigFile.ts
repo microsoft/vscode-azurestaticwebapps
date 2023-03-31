@@ -11,8 +11,8 @@ import { localize } from '../utils/localize';
 import { selectWorkspaceFolder } from '../utils/workspaceUtils';
 
 export async function createSwaConfigFile(context: IActionContext): Promise<void> {
-    const destPath: string = await selectWorkspaceFolder(context, localize('selectConfigFileLocation', 'Select location to create "{0}"', configFileName));
-    const configFilePath: URI = Utils.joinPath(URI.parse(destPath), configFileName);
+    const destPath: URI = await selectWorkspaceFolder(context, localize('selectConfigFileLocation', 'Select location to create "{0}"', configFileName));
+    const configFilePath: URI = Utils.joinPath(destPath, configFileName);
 
     if (await AzExtFsExtra.pathExists(configFilePath)) {
         const configFileExists: string = localize('configFileExists', 'Static Web App configuration file "{0}" already exists.', configFilePath.fsPath);
