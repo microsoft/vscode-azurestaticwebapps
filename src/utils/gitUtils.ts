@@ -9,7 +9,7 @@ import { commands, env, MessageItem, ProgressLocation, ProgressOptions, UIKind, 
 import { Utils } from "vscode-uri";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { defaultGitignoreContents, gitignoreFileName, openRemoteProjectMsg } from '../constants';
+import { defaultGitignoreContents, gitignoreFileName, openRemoteProjectMsg, remoteRepositoriesId } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getApiExport, getGitApi } from "../getExtensionApi";

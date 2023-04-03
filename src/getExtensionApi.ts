@@ -8,6 +8,7 @@ import { AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
 import { apiUtils } from '@microsoft/vscode-azureresources-api';
 import { Extension, commands, extensions } from "vscode";
 import { IGit } from "./IGit";
+import { remoteRepositoriesId } from "./constants";
 import { ext } from "./extensionVariables";
 import { GitExtension } from "./git";
 import { localize } from "./utils/localize";
