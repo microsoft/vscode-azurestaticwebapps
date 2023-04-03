@@ -14,7 +14,7 @@ Use this extension to quickly create and manage Azure Static Web Apps directly f
 
 ## Support for [vscode.dev](https://vscode.dev/)
 
-The Azure Static Web Apps extension supports running on [vscode.dev](https://vscode.dev/) and [github.dev](http://github.dev/). Create and update Static Web Apps directly from your browser! Debugging is not supported on the web. Note that this does not require the Azure Accounts extension and uses VS Code's built-in authentication provider.
+The Azure Static Web Apps extension supports running on [vscode.dev](https://vscode.dev/) and [github.dev](http://github.dev/). Create and update Static Web Apps directly from your browser! Debugging is not supported on the web. Note that this does not require the Azure Account extension and uses VS Code's built-in authentication provider.
 
 ## Run and debug your static web app
 
