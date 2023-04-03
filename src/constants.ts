@@ -7,6 +7,7 @@ import { MessageItem } from "vscode";
 import { localize } from "./utils/localize";
 
 export const githubApiEndpoint: string = 'https://api.github.com';
+export const remoteRepositoriesId: string = 'ms-vscode.remote-repositories';
 
 export const defaultAppLocation: string = '/';
 export const defaultApiLocation: string = 'api';

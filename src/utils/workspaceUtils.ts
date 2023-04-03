@@ -81,7 +81,7 @@ export async function showNoWorkspacePrompt(context: IActionContext): Promise<vo
         buttons.push(cloneProjectMsg, openExistingProjectMsg);
     }
 
-    if (await getApiExport('ms-vscode.remote-repositories')) {
+    if (await getApiExport(remoteRepositoriesId)) {
         buttons.push(openRemoteProjectMsg);
     }
 
