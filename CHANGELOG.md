@@ -1,5 +1,18 @@
 # Change Log
 
+## 0.12.0 - 2023-04-03
+
+### Added
+* VS Code for the Web support. Create and deploy Static Web Apps right from the browser with [vscode.dev](https://vscode[#com].dev)! @nturinski in [#801](https://github.com/microsoft/vscode-azurestaticwebapps/pull/801)
+* Basic support for debugging Static Web Apps that use [Data API builder for Azure Databases](https://github.com/Azure/[#s:/]data-api-builder) by @alexweininger in [#808](https://github.com/microsoft/vscode-azurestaticwebapps/pull/808)
+* [SvelteKit](https://kit.svelte.dev/) build preset by @nturinski in [#816](https://github.com/microsoft/vscode-azurestaticwebapps/pull/816)
+
+### Fixed
+* Suppress not github repo error by @nturinski in [#811](https://github.com/microsoft/vscode-azurestaticwebapps/pull/811)
+
+### Dependencies
+* Bump simple-git from 3.15.1 to 3.16.0 by @dependabot in [#787](https://github.com/microsoft/vscode-azurestaticwebapps/pull/787)
+
 ## 0.11.4 - 2023-01-26
 
 ### Added
