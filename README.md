@@ -12,6 +12,10 @@ Use this extension to quickly create and manage Azure Static Web Apps directly f
 
 > Sign up today for your free Azure account and receive 12 months of free popular services, $200 free credit and 25+ always free services 👉 [Start Free](https://azure.microsoft.com/free/open-source).
 
+## Support for [vscode.dev](https://vscode.dev/)
+
+The Azure Static Web Apps extension supports running on [vscode.dev](https://vscode.dev/) and [github.dev](http://github.dev/). Open a GitHub repository to create and update Static Web Apps directly from your browser! Debugging is not supported on the web. Note that this does not require the Azure Account extension and uses VS Code's built-in authentication provider.
+
 ## Run and debug your static web app
 
 ![Debug static web app with a dynamic configuration](resources/readme/debugging.gif)
