@@ -3,8 +3,8 @@
 ## 0.12.0 - 2023-04-03
 
 ### Added
-* VS Code for the Web support. Create and deploy Static Web Apps right from the browser with [vscode.dev](https://vscode[#com].dev)! @nturinski in [#801](https://github.com/microsoft/vscode-azurestaticwebapps/pull/801)
-* Basic support for debugging Static Web Apps that use [Data API builder for Azure Databases](https://github.com/Azure/[#s:/]data-api-builder) by @alexweininger in [#808](https://github.com/microsoft/vscode-azurestaticwebapps/pull/808)
+* VS Code for the Web support. Create and deploy Static Web Apps right from the browser with [vscode.dev](https://vscode.dev)! @nturinski in [#801](https://github.com/microsoft/vscode-azurestaticwebapps/pull/801)
+* Basic support for debugging Static Web Apps that use [Data API builder for Azure Databases](https://github.com/Azure/data-api-builder) by @alexweininger in [#808](https://github.com/microsoft/vscode-azurestaticwebapps/pull/808)
 * [SvelteKit](https://kit.svelte.dev/) build preset by @nturinski in [#816](https://github.com/microsoft/vscode-azurestaticwebapps/pull/816)
 
 ### Fixed
