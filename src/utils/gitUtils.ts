@@ -9,7 +9,7 @@ import { commands, env, MessageItem, ProgressLocation, ProgressOptions, UIKind, 
 import { Utils } from "vscode-uri";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { defaultGitignoreContents, gitignoreFileName, openRemoteProjectMsg } from '../constants';
+import { defaultGitignoreContents, gitignoreFileName, openRemoteProjectMsg, remoteRepositoriesId } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getApiExport, getGitApi } from "../getExtensionApi";
@@ -23,16 +23,9 @@ import { getSingleRootFsPath } from './workspaceUtils';
 export type GitWorkspaceState = { repo: Repository | null, dirty: boolean, remoteRepo: ReposGetResponseData | undefined; hasAdminAccess: boolean };
 export type VerifiedGitWorkspaceState = GitWorkspaceState & { repo: Repository };
 
+const isWeb: boolean = env.uiKind === UIKind.Web;
+
 export async function getGitWorkspaceState(context: IActionContext & Partial<IStaticWebAppWizardContext>, uri: Uri): Promise<GitWorkspaceState> {
-    // this is where we would have a split in logic
-    // check if there is a remote repo opened (this can be in web or desktop)
-    // if not, then we can check if there is a local repo opened
-    // if we have access to git, we should use this method
-
-    // how to refactor?
-    // we could either have two totally separate methods or select the logic based on the context
-    // having separate methods might be a little cleaner, but it would be a lot of duplicated code
-
     const gitWorkspaceState: GitWorkspaceState = { repo: null, dirty: false, remoteRepo: undefined, hasAdminAccess: false };
     const gitApi: IGit = await getGitApi();
     let repo: Repository | null = null;
@@ -69,6 +62,14 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     let repo: Repository | null = gitWorkspaceState.repo;
 
     if (!gitWorkspaceState.repo) {
+        if (isWeb) {
+            const remoteRepoRequired: string = localize('remoteRepoRequired', 'A GitHub repository is required to proceed. Open a remote repository?');
+            await context.ui.showWarningMessage(remoteRepoRequired, { modal: true, stepName: 'openRemoteRepo' }, { title: localize('open', 'Open') });
+            // if they're in web, remote repo is installed
+            await commands.executeCommand('remoteHub.openRepository');
+            throw new UserCancelledError('openedRemoteRepo');
+        }
+
         const gitRequired: string = localize('gitRequired', 'A GitHub repository is required to proceed. Create a local git repository and GitHub remote to create a Static Web App.');
 
         await context.ui.showWarningMessage(gitRequired, { modal: true, stepName: 'initRepo' }, { title: localize('create', 'Create') });
@@ -106,12 +107,12 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const buttons: MessageItem[] = [];
         const clone: MessageItem = { title: localize('clone', 'Clone Repo') };
 
-        if (env.uiKind === UIKind.Desktop) {
+        if (!isWeb) {
             forkSuccess += localize('cloneNewRepo', ' Would you like to clone your new repository?');
             buttons.push(clone);
         }
 
-        if (await getApiExport('ms-vscode.remote-repositories')) {
+        if (await getApiExport(remoteRepositoriesId)) {
             buttons.push(openRemoteProjectMsg)
         }
 

@@ -8,6 +8,7 @@ import { AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
 import { apiUtils } from '@microsoft/vscode-azureresources-api';
 import { Extension, commands, extensions } from "vscode";
 import { IGit } from "./IGit";
+import { remoteRepositoriesId } from "./constants";
 import { ext } from "./extensionVariables";
 import { GitExtension } from "./git";
 import { localize } from "./utils/localize";
@@ -52,7 +53,10 @@ export async function getGitApi(): Promise<IGit> {
             return ext.remoteRepoApi;
         }
     } catch (err) {
-        if (!getWorkspaceSetting<boolean>('enabled', undefined, 'git')) {
+        // if there is no local git, but remote repo is installed, then use that
+        if (await getApiExport(remoteRepositoriesId)) {
+            return ext.remoteRepoApi;
+        } else if (!getWorkspaceSetting<boolean>('enabled', undefined, 'git')) {
             // the getExtension error is very vague and unactionable so throw our own error if git isn't enabled
             throw new Error(localize('gitEnabled', 'If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D). To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).'));
         } else {

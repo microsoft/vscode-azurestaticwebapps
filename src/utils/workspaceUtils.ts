@@ -7,7 +7,7 @@ import { IActionContext, IAzureQuickPickItem } from "@microsoft/vscode-azext-uti
 import * as path from 'path';
 import { FileType, MessageItem, OpenDialogOptions, Uri, WorkspaceFolder, commands, workspace } from "vscode";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { openExistingProject, openRemoteProjectMsg } from '../constants';
+import { openExistingProject, openRemoteProjectMsg, remoteRepositoriesId } from '../constants';
 import { NoWorkspaceError } from '../errors';
 import { getApiExport } from "../getExtensionApi";
 import { localize } from "./localize";
@@ -81,7 +81,7 @@ export async function showNoWorkspacePrompt(context: IActionContext): Promise<vo
         buttons.push(cloneProjectMsg, openExistingProjectMsg);
     }
 
-    if (await getApiExport('ms-vscode.remote-repositories')) {
+    if (await getApiExport(remoteRepositoriesId)) {
         buttons.push(openRemoteProjectMsg);
     }
 
