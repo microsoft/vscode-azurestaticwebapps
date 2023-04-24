@@ -508,7 +508,7 @@
         "semver": "^7.3.5",
         "vscode-nls": "^4.1.1",
         "vscode-uri": "^3.0.2",
-        "yaml": "^1.10.2"
+        "yaml": "^2.2.2"
     },
     "extensionDependencies": [
         "ms-azuretools.vscode-azureresourcegroups"
