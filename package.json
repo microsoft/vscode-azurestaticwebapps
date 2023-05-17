@@ -252,12 +252,12 @@
             "view/item/context": [
                 {
                     "command": "staticWebApps.createStaticWebApp",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /StaticWebApps/i && viewItem =~ /azureResourceTypeGroup/i",
+                    "when": "view == azureResourceGroups && viewItem =~ /StaticWebApps/i && viewItem =~ /azureResourceTypeGroup/i",
                     "group": "1@1"
                 },
                 {
                     "command": "staticWebApps.createStaticWebAppAdvanced",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /StaticWebApps/i && viewItem =~ /azureResourceTypeGroup/i",
+                    "when": "view == azureResourceGroups && viewItem =~ /StaticWebApps/i && viewItem =~ /azureResourceTypeGroup/i",
                     "group": "1@2"
                 },
                 {
