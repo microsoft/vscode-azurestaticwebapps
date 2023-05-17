@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.12.1 - 2023-05-17
+
+### Added
+* Add support for the upcoming Azure Resources Focus feature
+
 ## 0.12.0 - 2023-04-03
 
 ### Added
