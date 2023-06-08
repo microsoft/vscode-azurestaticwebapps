@@ -96,6 +96,15 @@ export const buildPresets: IBuildPreset[] = [
         group: 'framework'
     },
     {
+        id: 'html',
+        displayName: 'HTML',
+        appLocation: '/',
+        apiLocation: '',
+        outputLocation: '/',
+        port: 3000, // port not currently used for HTML preset
+        group: 'framework'
+    },
+    {
         id: 'gatsby',
         displayName: 'Gatsby',
         appLocation: '/',
