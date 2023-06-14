@@ -118,7 +118,7 @@ export async function tryGetSelection(context: IActionContext, configDocument: T
             } else if ('items' in yamlNode) {
                 yamlNodes.push(...yamlNode.items)
             } else if ('value' in yamlNode && typeof yamlNode.value === 'object') {
-                yamlNodes.push(yamlNode.value)
+                yamlNodes.push(yamlNode.value as YamlNode)
             }
 
             yamlNode = yamlNodes.pop();
