@@ -241,12 +241,33 @@
                 "category": "Azure Static Web Apps"
             }
         ],
+        "submenus": [
+            {
+                "id": "staticWebApps.submenus.workspaceActions",
+                "label": "Azure Static Web Apps",
+                "icon": "resources/azure-staticwebapps.svg"
+            }
+        ],
         "menus": {
-            "azureWorkspaceCreate": [
+            "staticWebApps.submenus.workspaceActions": [
                 {
                     "command": "staticWebApps.createHttpFunction",
-                    "when": "view == azureWorkspace",
-                    "group": "navigation@1"
+                    "group": "1_project@1"
+                },
+                {
+                    "command": "staticWebApps.createStaticWebApp",
+                    "group": "2_create@1"
+                },
+                {
+                    "command": "staticWebApps.createStaticWebAppAdvanced",
+                    "group": "2_create@2"
+                }
+            ],
+            "view/title": [
+                {
+                    "submenu": "staticWebApps.submenus.workspaceActions",
+                    "group": "navigation@3",
+                    "when": "view == azureWorkspace"
                 }
             ],
             "view/item/context": [
@@ -467,7 +488,7 @@
     },
     "devDependencies": {
         "@microsoft/eslint-config-azuretools": "^0.2.1",
-        "@microsoft/vscode-azext-dev": "^2.0.0",
+        "@microsoft/vscode-azext-dev": "^2.0.1",
         "@octokit/types": "^6.13.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
