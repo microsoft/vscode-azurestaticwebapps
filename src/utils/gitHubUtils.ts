@@ -38,7 +38,14 @@ export function createQuickPickFromJsons<T>(data: T[], label: keyof T): IAzureQu
 
 export async function getGitHubAccessToken(): Promise<string> {
     try {
-        return (await authentication.getSession(githubAuthProviderId, githubScopes, { createIfNone: true })).accessToken;
+        const token = (await authentication.getSession(githubAuthProviderId, githubScopes, { createIfNone: true })).accessToken;
+        // Workaround for VS Code returning a different token when connected to a CodeSpace in a browser
+        // see https://github.com/microsoft/vscode-azurestaticwebapps/issues/827#issuecomment-1597881084 for details
+        if (token.startsWith('ghu_')) {
+            // Request a fake scope to force VS Code to give us a token of the right type
+            return (await authentication.getSession(githubAuthProviderId, [...githubScopes, 'x-SwaScope'], { createIfNone: true })).accessToken;
+        }
+        return token;
     } catch (error) {
         if (parseError(error).message === 'User did not consent to login.') {
             throw new UserCancelledError('getGitHubToken');
