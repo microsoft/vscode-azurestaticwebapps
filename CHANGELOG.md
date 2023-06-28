@@ -2,10 +2,10 @@
 
 ## 0.12.2 - 2023-06-28
 
-## What's Changed
-
 ### Added
 * Add HTML preset by @alexweininger in [#835](https://github.com/microsoft/vscode-azurestaticwebapps/pull/835)
+
+### Changed
 * Add actions submenu to workspace view title by @alexweininger in [#838](https://github.com/microsoft/vscode-azurestaticwebapps/pull/838)
 
 ### Fixed
