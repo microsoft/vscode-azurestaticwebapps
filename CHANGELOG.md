@@ -1,5 +1,22 @@
 # Change Log
 
+## 0.12.2 - 2023-06-28
+
+### Added
+* Add HTML preset by @alexweininger in [#835](https://github.com/microsoft/vscode-azurestaticwebapps/pull/835)
+
+### Changed
+* Add actions submenu to workspace view title by @alexweininger in [#838](https://github.com/microsoft/vscode-azurestaticwebapps/pull/838)
+
+### Fixed
+* Fix detecting linked environments by @alexweininger in [#843](https://github.com/microsoft/vscode-azurestaticwebapps/pull/843)
+* Fix creating SWA in browser CodeSpaces by @alexweininger in [#841](https://github.com/microsoft/vscode-azurestaticwebapps/pull/841)
+
+### Engineering
+* Update shared packages to v2 by @alexweininger in [#836](https://github.com/microsoft/vscode-azurestaticwebapps/pull/836)
+* Upgrade to TS 5.1.3 by @alexweininger in [#837](https://github.com/microsoft/vscode-azurestaticwebapps/pull/837)
+* Use `@vscode/vsce` instead of `vsce` by @bwateratmsft in [#839](https://github.com/microsoft/vscode-azurestaticwebapps/pull/839)
+
 ## 0.12.1 - 2023-05-17
 
 ### Added
