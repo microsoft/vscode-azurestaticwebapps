@@ -38,6 +38,16 @@ import { StaticWebAppNameStep } from './StaticWebAppNameStep';
 import { setGitWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
 
+function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTreeItemBase {
+    try {
+        // Accessing item.subscription throws an error for some workspace items
+        // see https://github.com/microsoft/vscode-azurefunctions/issues/3731
+        return !!item && !!item.subscription;
+    } catch {
+        return false;
+    }
+}
+
 let isVerifyingWorkspace: boolean = false;
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     if (isVerifyingWorkspace) {
@@ -51,7 +61,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     isVerifyingWorkspace = true;
     try {
-        if (!node) {
+        if (!isSubscription(node)) {
             node = await ext.rgApi.appResourceTree.showTreeItemPicker<SubscriptionTreeItemBase>(SubscriptionTreeItemBase.contextValue, context);
         }
 
