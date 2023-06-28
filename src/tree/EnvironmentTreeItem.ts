@@ -197,7 +197,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
             this.functionsTreeItem = undefined;
         }
 
-        const remote: string | undefined = (await tryGetRepoDataForCreation(context))?.html_url;
+        const remote: string | undefined = (await tryGetRepoDataForCreation(context, this.localProjectPath))?.html_url;
         const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
 
