@@ -220,7 +220,10 @@
             {
                 "id": "staticWebApps.submenus.workspaceActions",
                 "label": "Azure Static Web Apps",
-                "icon": "resources/azure-staticwebapps.svg"
+                "icon": {
+                    "light": "resources/azure-staticwebapps.svg",
+                    "dark": "resources/azure-staticwebapps.svg"
+                }
             }
         ],
         "menus": {
