@@ -49,7 +49,7 @@
                 {
                     "command": "staticWebApps.createStaticWebApp",
                     "title": "%staticWebApps.createStaticWebApp%",
-                    "type": "microsoft.web/staticsites",
+                    "type": "StaticWebApps",
                     "detail": "%staticWebApps.createStaticWebAppDetail%"
                 }
             ],
