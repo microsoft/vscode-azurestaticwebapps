@@ -465,7 +465,7 @@
         "prepare": "husky install"
     },
     "devDependencies": {
-        "@microsoft/eslint-config-azuretools": "^0.2.1",
+        "@microsoft/eslint-config-azuretools": "^0.2.2",
         "@microsoft/vscode-azext-dev": "^2.0.1",
         "@octokit/types": "^6.13.0",
         "@types/fs-extra": "^8.1.1",
