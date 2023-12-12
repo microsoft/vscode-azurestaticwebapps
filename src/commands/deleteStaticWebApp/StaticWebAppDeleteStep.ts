@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from "@azure/arm-appservice";
-import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-resources";
+import { type WebSiteManagementClient } from "@azure/arm-appservice";
+import { type GenericResourceExpanded, type ResourceManagementClient } from "@azure/arm-resources";
 import { uiUtils } from "@microsoft/vscode-azext-azureutils";
 import { AzureWizardExecuteStep, nonNullProp } from "@microsoft/vscode-azext-utils";
-import { Progress } from "vscode";
+import { type Progress } from "vscode";
 import { ext } from "../../extensionVariables";
 import { createResourceClient, createWebSiteClient } from "../../utils/azureClients";
 import { localize } from "../../utils/localize";
-import { IDeleteWizardContext } from "./IDeleteWizardContext";
+import { type IDeleteWizardContext } from "./IDeleteWizardContext";
 
 export class StaticWebAppDeleteStep extends AzureWizardExecuteStep<IDeleteWizardContext> {
     public priority: number = 100;

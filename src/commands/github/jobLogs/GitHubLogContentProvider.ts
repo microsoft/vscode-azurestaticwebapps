@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nonNullValue } from "@microsoft/vscode-azext-utils";
-import { CancellationToken, commands, FoldingRange, TextDocument, TextDocumentContentProvider, Uri, window, workspace } from "vscode";
+import { Uri, commands, window, workspace, type CancellationToken, type FoldingRange, type TextDocument, type TextDocumentContentProvider } from "vscode";
 import { ext } from '../../../extensionVariables';
 import { JobTreeItem } from "../../../tree/JobTreeItem";
-import { StepTreeItem } from "../../../tree/StepTreeItem";
+import { type StepTreeItem } from "../../../tree/StepTreeItem";
 
 export const contentScheme: string = 'github-action-log';
 

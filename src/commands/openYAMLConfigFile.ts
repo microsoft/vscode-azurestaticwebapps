@@ -3,17 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, IAzureQuickPickItem, openUrl } from "@microsoft/vscode-azext-utils";
+import { openUrl, type IActionContext, type IAzureQuickPickItem } from "@microsoft/vscode-azext-utils";
 import { basename } from 'path';
-import { Position, Range, TextDocument, Uri, window, workspace } from 'vscode';
-import { CST, Document, parseDocument } from 'yaml';
-import { Pair, Scalar, YAMLMap, YAMLSeq } from 'yaml/types';
-import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
+import { Position, Range, Uri, window, workspace, type TextDocument } from 'vscode';
+import { parseDocument, type CST, type Document } from 'yaml';
+import { type Pair, type Scalar, type YAMLMap, type YAMLSeq } from 'yaml/types';
+import { type ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { swaFilter } from "../constants";
 import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
 import { isResolvedStaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
-import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeItem';
+import { WorkflowGroupTreeItem, type BuildConfig } from '../tree/WorkflowGroupTreeItem';
 import { localize } from '../utils/localize';
 
 type YamlTreeItem = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;

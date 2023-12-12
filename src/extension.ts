@@ -6,9 +6,11 @@
 'use strict';
 
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { callWithTelemetryAndErrorHandling, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
-import { apiUtils, AzExtResourceType } from "@microsoft/vscode-azureresources-api";
+import { callWithTelemetryAndErrorHandling, createAzExtOutputChannel, createExperimentationService, registerUIExtensionVariables, type IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtResourceType, type apiUtils } from "@microsoft/vscode-azureresources-api";
 import * as vscode from 'vscode';
+import { RemoteRepoApi } from './RemoteRepoApi';
+import { StaticWebAppResolver } from './StaticWebAppResolver';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';
 import { validateStaticWebAppsCliIsLatest } from './commands/cli/validateSwaCliIsLatest';
@@ -19,8 +21,6 @@ import { githubAuthProviderId, githubScopes, pwaChrome, shell, swa } from './con
 import { StaticWebAppDebugProvider } from './debug/StaticWebAppDebugProvider';
 import { ext } from './extensionVariables';
 import { getResourceGroupsApi } from './getExtensionApi';
-import { RemoteRepoApi } from './RemoteRepoApi';
-import { StaticWebAppResolver } from './StaticWebAppResolver';
 
 export async function activate(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<apiUtils.AzureExtensionApiProvider> {
     // the entry point for vscode.dev is this activate, not main.js, so we need to instantiate perfStats here

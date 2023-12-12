@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IParsedError, nonNullProp, parseError } from '@microsoft/vscode-azext-utils';
-import { Octokit } from '@octokit/rest';
+import { AzureWizardPromptStep, nonNullProp, parseError, type IParsedError } from '@microsoft/vscode-azext-utils';
+import { type Octokit } from '@octokit/rest';
 import { localize } from '../../utils/localize';
-import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
+import { type IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 import { createOctokitClient } from '../github/createOctokitClient';
 
 export class RepoNameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {

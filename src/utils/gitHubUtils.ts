@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, IAzureQuickPickItem, nonNullProp, parseError, UserCancelledError } from '@microsoft/vscode-azext-utils';
-import { Octokit } from '@octokit/rest';
-import { authentication, ProgressLocation, Uri, window } from 'vscode';
+import { UserCancelledError, nonNullProp, parseError, type IActionContext, type IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
+import { type Octokit } from '@octokit/rest';
+import { ProgressLocation, authentication, window, type Uri } from 'vscode';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
 import { githubAuthProviderId, githubScopes } from '../constants';
 import { ext } from '../extensionVariables';
-import { ListOrgsForUserData, OrgForAuthenticatedUserData, ReposCreateForkResponse, ReposGetResponseData } from '../gitHubTypings';
+import { type ListOrgsForUserData, type OrgForAuthenticatedUserData, type ReposCreateForkResponse, type ReposGetResponseData } from '../gitHubTypings';
 import { getRepoFullname, tryGetRemote } from './gitUtils';
 import { localize } from './localize';
 

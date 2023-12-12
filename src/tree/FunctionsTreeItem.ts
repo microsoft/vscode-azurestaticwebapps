@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from "@azure/arm-appservice";
+import { type WebSiteManagementClient } from "@azure/arm-appservice";
 import { uiUtils } from "@microsoft/vscode-azext-azureutils";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, GenericTreeItem, type AzExtTreeItem, type IActionContext, type TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { ThemeIcon } from "vscode";
 import { createWebSiteClient } from "../utils/azureClients";
 import { localize } from '../utils/localize';
-import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
+import { type EnvironmentTreeItem } from "./EnvironmentTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 
 export class FunctionsTreeItem extends AzExtParentTreeItem {

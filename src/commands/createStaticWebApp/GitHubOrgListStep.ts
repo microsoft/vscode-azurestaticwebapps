@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IActionContext, IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
-import { Octokit } from "@octokit/rest";
-import { OctokitResponse } from "@octokit/types";
-import { ListOrgsForUserData, OrgForAuthenticatedUserData } from "../../gitHubTypings";
+import { AzureWizardPromptStep, type IActionContext, type IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
+import { type Octokit } from "@octokit/rest";
+import { type OctokitResponse } from "@octokit/types";
+import { type ListOrgsForUserData, type OrgForAuthenticatedUserData } from "../../gitHubTypings";
 import { createQuickPickFromJsons } from '../../utils/gitHubUtils';
 import { localize } from '../../utils/localize';
 import { createOctokitClient } from "../github/createOctokitClient";
-import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { type IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class GitHubOrgListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {

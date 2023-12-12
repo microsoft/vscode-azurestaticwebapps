@@ -3,16 +3,16 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { AzExtFsExtra, callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
+import { AzExtFsExtra, callWithTelemetryAndErrorHandling, type IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
-import { Task, TaskProvider, workspace, WorkspaceFolder } from "vscode";
+import { workspace, type Task, type TaskProvider, type WorkspaceFolder } from "vscode";
 import { buildPresets } from "../buildPresets/buildPresets";
 import { tryGetApiLocations } from "../commands/createStaticWebApp/tryGetApiLocations";
 import { funcAddress } from "../constants";
 import { detectAppFoldersInWorkspace } from '../utils/detectorUtils';
 import { SwaShellExecution, SwaTask } from "../vsCodeConfig/tasks";
 import { getFolderContainingDbConfigFile } from "./dab";
-import { SWACLIOptions, tryGetStaticWebAppsCliConfig } from "./tryGetStaticWebAppsCliConfig";
+import { tryGetStaticWebAppsCliConfig, type SWACLIOptions } from "./tryGetStaticWebAppsCliConfig";
 
 export class SwaTaskProvider implements TaskProvider {
 

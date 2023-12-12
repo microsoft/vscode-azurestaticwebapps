@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from '@microsoft/vscode-azext-utils';
+import { type IActionContext } from '@microsoft/vscode-azext-utils';
 import { swaFilter } from '../constants';
 import { ext } from '../extensionVariables';
 import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
-import { ResolvedStaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
+import { type ResolvedStaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
 
 export async function browse(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
     if (!node) {

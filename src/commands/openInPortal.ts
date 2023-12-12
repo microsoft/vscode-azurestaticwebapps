@@ -5,7 +5,7 @@
 
 import { AppSettingsTreeItem } from '@microsoft/vscode-azext-azureappsettings';
 import { openInPortal as openInPortalUtil } from '@microsoft/vscode-azext-azureutils';
-import { IActionContext, nonNullValue } from '@microsoft/vscode-azext-utils';
+import { nonNullValue, type IActionContext } from '@microsoft/vscode-azext-utils';
 import { FunctionsTreeItem } from '../tree/FunctionsTreeItem';
 import { matchContextValue } from '../utils/contextUtils';
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { UserCancelledError } from "@microsoft/vscode-azext-utils";
-import { CancellationToken, CancellationTokenSource } from "vscode";
+import { CancellationTokenSource, type CancellationToken } from "vscode";
 import { delay } from "./delay";
 import { localize } from './localize';
 
