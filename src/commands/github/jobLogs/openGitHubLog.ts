@@ -3,17 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, parseError } from '@microsoft/vscode-azext-utils';
+import { parseError, type IActionContext } from '@microsoft/vscode-azext-utils';
 import { EOL } from 'os';
-import { FoldingRange } from 'vscode';
+import { type FoldingRange } from 'vscode';
 import { swaFilter } from '../../../constants';
 import { ext } from '../../../extensionVariables';
 import { JobTreeItem } from '../../../tree/JobTreeItem';
 import { StepTreeItem } from '../../../tree/StepTreeItem';
 import { localize } from '../../../utils/localize';
-import { createFoldingRanges } from './createFoldingRanges';
 import { openGitHubLogContent } from './GitHubLogContentProvider';
-import { LogState, parseGitHubLog } from './parseGitHubLog';
+import { createFoldingRanges } from './createFoldingRanges';
+import { parseGitHubLog, type LogState } from './parseGitHubLog';
 
 export async function openGitHubLog(context: IActionContext, node?: StepTreeItem): Promise<void> {
     if (!node) {

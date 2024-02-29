@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { FoldingRange, FoldingRangeKind } from "vscode";
-import { LogState } from "./parseGitHubLog";
+import { type LogState } from "./parseGitHubLog";
 
 export function createFoldingRanges(state: LogState): FoldingRange[] {
     const foldingRanges: FoldingRange[] = [];

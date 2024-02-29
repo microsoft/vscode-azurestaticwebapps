@@ -3,9 +3,9 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from "@microsoft/vscode-azext-utils";
-import { Uri, WorkspaceFolder } from "vscode";
-import { DetectorResults, NodeDetector } from "../detectors/node/NodeDetector";
+import { type IActionContext } from "@microsoft/vscode-azext-utils";
+import { type Uri, type WorkspaceFolder } from "vscode";
+import { NodeDetector, type DetectorResults } from "../detectors/node/NodeDetector";
 import { getSubFolders } from "./workspaceUtils";
 
 export interface FolderDetectionResult extends DetectorResults {

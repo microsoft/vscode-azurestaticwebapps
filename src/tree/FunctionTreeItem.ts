@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteFunctionOverviewARMResource } from "@azure/arm-appservice";
-import { AzExtTreeItem, nonNullProp, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { type StaticSiteFunctionOverviewARMResource } from "@azure/arm-appservice";
+import { AzExtTreeItem, nonNullProp, type TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { treeUtils } from "../utils/treeUtils";
-import { FunctionsTreeItem } from "./FunctionsTreeItem";
+import { type FunctionsTreeItem } from "./FunctionsTreeItem";
 
 export class FunctionTreeItem extends AzExtTreeItem {
 

@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
+import { type StaticSiteARMResource, type StaticSiteBuildARMResource, type WebSiteManagementClient } from "@azure/arm-appservice";
 import { uiUtils } from "@microsoft/vscode-azext-azureutils";
-import { AzExtParentTreeItem, AzExtTreeItem, AzureWizard, IActionContext, ISubscriptionContext, TreeItemIconPath, nonNullProp, openUrl } from "@microsoft/vscode-azext-utils";
-import { AppResource, ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
-import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
+import { AzureWizard, nonNullProp, openUrl, type AzExtParentTreeItem, type AzExtTreeItem, type IActionContext, type ISubscriptionContext, type TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { type AppResource, type ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
+import { type ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteStep";
 import { DeleteResourceGroupStep } from "../commands/deleteStaticWebApp/DeleteResourceGroupStep";
-import { IDeleteWizardContext } from "../commands/deleteStaticWebApp/IDeleteWizardContext";
+import { type IDeleteWizardContext } from "../commands/deleteStaticWebApp/IDeleteWizardContext";
 import { StaticWebAppDeleteStep } from "../commands/deleteStaticWebApp/StaticWebAppDeleteStep";
 import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
 import { createActivityContext } from "../utils/activityUtils";

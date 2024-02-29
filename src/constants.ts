@@ -3,7 +3,7 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { MessageItem } from "vscode";
+import { type MessageItem } from "vscode";
 import { localize } from "./utils/localize";
 
 export const githubApiEndpoint: string = 'https://api.github.com';

@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, nonNullProp, nonNullValue } from "@microsoft/vscode-azext-utils";
-import { Octokit } from "@octokit/rest";
+import { nonNullProp, nonNullValue, type IActionContext } from "@microsoft/vscode-azext-utils";
+import { type Octokit } from "@octokit/rest";
 import { window } from "vscode";
 import { swaFilter } from "../../constants";
 import { ext } from "../../extensionVariables";
-import { ActionsGetWorkflowRunResponseData, Conclusion, Status } from "../../gitHubTypings";
+import { Status, type ActionsGetWorkflowRunResponseData, type Conclusion } from "../../gitHubTypings";
 import { ActionTreeItem } from "../../tree/ActionTreeItem";
 import { ensureConclusion, ensureStatus } from "../../utils/actionUtils";
 import { pollAsyncOperation } from "../../utils/azureUtils";

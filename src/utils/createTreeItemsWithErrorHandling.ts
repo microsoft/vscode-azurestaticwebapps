@@ -1,4 +1,4 @@
-import { AzExtParentTreeItem, AzExtTreeItem, InvalidTreeItem } from "@microsoft/vscode-azext-utils";
+import { InvalidTreeItem, type AzExtParentTreeItem, type AzExtTreeItem } from "@microsoft/vscode-azext-utils";
 import { isNullOrUndefined } from "util";
 import { localize } from "./localize";
 

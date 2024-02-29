@@ -3,19 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtFsExtra, IActionContext, nonNullValue, UserCancelledError } from "@microsoft/vscode-azext-utils";
+import { AzExtFsExtra, nonNullValue, UserCancelledError, type IActionContext } from "@microsoft/vscode-azext-utils";
 import * as gitUrlParse from 'git-url-parse';
-import { commands, env, MessageItem, ProgressLocation, ProgressOptions, UIKind, Uri, window, workspace } from 'vscode';
+import { commands, env, ProgressLocation, UIKind, Uri, window, workspace, type MessageItem, type ProgressOptions } from 'vscode';
 import { Utils } from "vscode-uri";
-import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
+import { type IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
 import { defaultGitignoreContents, gitignoreFileName, openRemoteProjectMsg, remoteRepositoriesId } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getApiExport, getGitApi } from "../getExtensionApi";
-import { CommitOptions, Repository } from "../git";
-import { ReposGetResponseData } from '../gitHubTypings';
-import { IGit } from "../IGit";
+import { type CommitOptions, type Repository } from "../git";
+import { type ReposGetResponseData } from '../gitHubTypings';
+import { type IGit } from "../IGit";
 import { createFork, hasAdminAccessToRepo, tryGetReposGetResponseData } from "./gitHubUtils";
 import { localize } from "./localize";
 import { getSingleRootFsPath } from './workspaceUtils';

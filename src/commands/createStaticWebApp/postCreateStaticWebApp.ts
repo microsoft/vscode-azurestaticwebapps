@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, callWithTelemetryAndErrorHandling, IActionContext, nonNullValue, openUrl, UserCancelledError } from "@microsoft/vscode-azext-utils";
-import { Octokit } from "@octokit/rest";
-import { MessageItem, window } from "vscode";
+import { UserCancelledError, callWithTelemetryAndErrorHandling, nonNullValue, openUrl, type AzExtParentTreeItem, type IActionContext } from "@microsoft/vscode-azext-utils";
+import { type Octokit } from "@octokit/rest";
+import { window, type MessageItem } from "vscode";
 import { productionEnvironmentName, showActionsMsg } from "../../constants";
 import { ext } from "../../extensionVariables";
-import { ActionsGetWorkflowResponseData, Conclusion, Status } from "../../gitHubTypings";
-import { ActionTreeItem } from "../../tree/ActionTreeItem";
+import { Conclusion, Status, type ActionsGetWorkflowResponseData } from "../../gitHubTypings";
+import { type ActionTreeItem } from "../../tree/ActionTreeItem";
 import { EnvironmentTreeItem } from "../../tree/EnvironmentTreeItem";
-import { ResolvedStaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
+import { type ResolvedStaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
 import { delay } from "../../utils/delay";
 import { getRepoFullname } from "../../utils/gitUtils";
 import { localize } from "../../utils/localize";
