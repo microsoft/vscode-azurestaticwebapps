@@ -33,7 +33,6 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
         suppressCreateProjectPrompt: true,
         templateId: 'HttpTrigger',
         languageFilter: /Python|C\#|^(Java|Type)Script$/i,
-        functionSettings: { authLevel: 'anonymous' },
-        targetFramework: ['net6.0', 'net7.0'] // Will only work on functions api v1.4.0, but won't hurt on v1.3.0
+        functionSettings: { authLevel: 'anonymous' }
     });
 }
