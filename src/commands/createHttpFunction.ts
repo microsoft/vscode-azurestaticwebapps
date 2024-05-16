@@ -33,6 +33,7 @@ export async function createHttpFunction(context: IActionContext): Promise<void>
         suppressCreateProjectPrompt: true,
         templateId: 'HttpTrigger',
         languageFilter: /Python|C\#|^(Java|Type)Script$/i,
-        functionSettings: { authLevel: 'anonymous' }
+        functionSettings: { authLevel: 'anonymous' },
+        targetFramework: ['net8.0']
     });
 }
