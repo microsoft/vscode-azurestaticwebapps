@@ -50,6 +50,7 @@ function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTr
 
 let isVerifyingWorkspace: boolean = false;
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
+    console.log("STARTING STATIC WEB APP LOG");
     if (isVerifyingWorkspace) {
         throw new VerifyingWorkspaceError(context);
     }
