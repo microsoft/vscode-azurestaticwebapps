@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.12.3 - 2024-05-28
+
+### Added
+* Support for .NET 8.0 HTTP functions in [#897](https://github.com/microsoft/vscode-azurestaticwebapps/pull/897)
+
 ## 0.12.2 - 2023-06-28
 
 ### Added
