@@ -7,7 +7,6 @@ import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appse
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
 import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
 import { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
-import { exec } from 'child_process';
 import { homedir } from 'os';
 import { join } from 'path';
 import { ExtensionContext, ProgressLocation, ProgressOptions, Uri, WorkspaceFolder, window, workspace } from 'vscode';
@@ -40,6 +39,7 @@ import { StaticWebAppCreateStep } from './StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from './StaticWebAppNameStep';
 import { setGitWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
+
 
 function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTreeItemBase {
     try {
@@ -98,7 +98,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     }
 
     promptSteps.push(new StaticWebAppNameStep(), new SkuListStep());
-    const hasRemote: boolean = !!wizardContext.repoHtmlUrl;
+
     // ----
 
     const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
@@ -108,7 +108,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         showLoadingPrompt: true
     });
 
-    wizardContext.telemetry.properties.gotRemote = String(hasRemote);
     wizardContext.uri = wizardContext.uri || getSingleRootFsPath();
 
     //this prompt is new. it allows us to get the name early
@@ -117,12 +116,55 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     //cloning template ---
 
-    const repoUrl = 'https://github.com/alain-zhiyanov/template-swa-la';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
     const folderName: string = wizardContext.newStaticWebAppName || 'default_folder_name';
     const homeDir = homedir();
     const clonePath = join(homeDir, folderName);
-    const command = `git clone ${repoUrl} "${clonePath}"`;
+
+    const clonePathUri: Uri = Uri.file(clonePath);
+    /*
+    let repo: Repository | null = null;
+    const gitApi: IGit = await getGitApi();
+    if (gitApi.init) {
+        repo = await gitApi.init(clonePathUri)
+    }
+
+
+
+    const octokitClient: Octokit = await createOctokitClient(context);
+
+    const {data: response} = await octokitClient.rest.repos.createUsingTemplate({
+        template_owner: "alain-zhiyanov",
+        template_repo: "template-swa-la",
+        name: folderName,
+    });
+    await sleep(1000);
+    const repoUrl = response.html_url;
+
+
+
+
+   //const repoUrl = "https://github.com/alain-zhiyanov/my-app-420";
+
+   const command = `git clone ${repoUrl} ${clonePath}`;
+
+   await cpUtils.executeCommand(undefined, clonePath, command);
+
+
+/*
+
+
+
+
+
+
+
+
+    //const repoUrl = 'https://github.com/alain-zhiyanov/template-swa-la';
+
+/*
+    const repoUrl = 'https://github.com/alain-zhiyanov/didactic-enigma';
+    const command = `gh repo create ${folderName} --template ${repoUrl} --public --clone`;
     exec(command, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error: ${error.message}`);
@@ -134,11 +176,13 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         }
         console.log(`Repo cloned to folder: ${clonePath}`);
     });
+    */
+
     // ---
 
     try {
 
-        const clonePathUri: Uri = Uri.file(clonePath);
+
 
         await window.withProgress(progressOptions, async () => {
             const folder: WorkspaceFolder = {
@@ -191,6 +235,12 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         isVerifyingWorkspace = false;
     }
 
+    //----
+    let hasRemote: boolean = false;
+    if (wizardContext.repoHtmlUrl !== null) {
+        hasRemote = true;
+    }
+    wizardContext.telemetry.properties.gotRemote = String(hasRemote);//these may have been moved ^
 
     // if the local project doesn't have a GitHub remote, we will create it for them
     // this used to be right below website management client, maybe doesn't even need to be ran?
@@ -263,3 +313,6 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
 }
+
+
+
