@@ -18,7 +18,6 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
     public priority: number = 250;
 
     public async execute(context: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
-        context.branchData = {name : "main"};
 
         const octokitClient: Octokit = await createOctokitClient(context);
 
@@ -27,6 +26,20 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
 
         const { data } = await octokitClient.repos.get({ owner, repo });
         context.repoHtmlUrl = data.html_url;
+
+        const { data: branches } = await octokitClient.repos.listBranches({
+            owner,
+            repo
+        });
+
+        const defaultBranch = branches.find(branch => branch.name === 'main');
+
+        if (defaultBranch) {
+            context.branchData = { name: defaultBranch.name };
+
+        } else {
+            context.branchData = {name: branches[0].name };
+        }
 
         const newName: string = nonNullProp(context, 'newStaticWebAppName');
         const branchData = nonNullProp(context, 'branchData');
