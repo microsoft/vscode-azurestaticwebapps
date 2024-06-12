@@ -7,9 +7,10 @@ import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appse
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
 import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
 import { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
+import { Octokit } from '@octokit/rest';
 import { homedir } from 'os';
 import { join } from 'path';
-import { ExtensionContext, ProgressLocation, ProgressOptions, Uri, WorkspaceFolder, window, workspace } from 'vscode';
+import { ProgressLocation, ProgressOptions, Uri, WorkspaceFolder, window, workspace } from 'vscode';
 import { Utils } from 'vscode-uri';
 import { StaticWebAppResolver } from '../../StaticWebAppResolver';
 import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
@@ -18,15 +19,17 @@ import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { createActivityContext } from '../../utils/activityUtils';
 import { createWebSiteClient } from '../../utils/azureClients';
+import { cpUtils } from '../../utils/cpUtils';
 import { getGitHubAccessToken } from '../../utils/gitHubUtils';
 import { gitPull } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
 import { telemetryUtils } from '../../utils/telemetryUtils';
-import { getSingleRootFsPath, getSubFolders, showNoWorkspacePrompt } from '../../utils/workspaceUtils';
+import { getSingleRootFsPath, getSubFolders, showNoWorkspacePrompt, tryGetWorkspaceFolder } from '../../utils/workspaceUtils';
 import { RemoteShortnameStep } from '../createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../createRepo/RepoCreateStep';
 import { RepoNameStep } from '../createRepo/RepoNameStep';
 import { RepoPrivacyStep } from '../createRepo/RepoPrivacyStep';
+import { createOctokitClient } from '../github/createOctokitClient';
 import { showSwaCreated } from '../showSwaCreated';
 import { ApiLocationStep } from './ApiLocationStep';
 import { AppLocationStep } from './AppLocationStep';
@@ -52,7 +55,7 @@ function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTr
 }
 
 let isVerifyingWorkspace: boolean = false;
-export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & ExtensionContext & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
+export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     console.log("STARTING STATIC WEB APP LOG");
 
     if (isVerifyingWorkspace) {
@@ -114,7 +117,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     await wizard.prompt();
 
 
-    //cloning template ---
+    //creating and cloning template ---
 
 
     const folderName: string = wizardContext.newStaticWebAppName || 'default_folder_name';
@@ -122,12 +125,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     const clonePath = join(homeDir, folderName);
 
     const clonePathUri: Uri = Uri.file(clonePath);
-    /*
-    let repo: Repository | null = null;
-    const gitApi: IGit = await getGitApi();
-    if (gitApi.init) {
-        repo = await gitApi.init(clonePathUri)
-    }
+
 
 
 
@@ -140,46 +138,11 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     });
     await sleep(1000);
     const repoUrl = response.html_url;
-
-
-
-
-   //const repoUrl = "https://github.com/alain-zhiyanov/my-app-420";
-
    const command = `git clone ${repoUrl} ${clonePath}`;
-
    await cpUtils.executeCommand(undefined, clonePath, command);
 
-
-/*
-
-
-
-
-
-
-
-
-    //const repoUrl = 'https://github.com/alain-zhiyanov/template-swa-la';
-
-/*
-    const repoUrl = 'https://github.com/alain-zhiyanov/didactic-enigma';
-    const command = `gh repo create ${folderName} --template ${repoUrl} --public --clone`;
-    exec(command, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.error(`Stderr: ${stderr}`);
-            return;
-        }
-        console.log(`Repo cloned to folder: ${clonePath}`);
-    });
-    */
-
     // ---
-
+    await tryGetWorkspaceFolder(context);
     try {
 
 
@@ -291,7 +254,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     await ext.rgApi.appResourceTree.refresh(context);
     const swa: StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
-    await gitPull(nonNullProp(wizardContext, 'repo'));
+    await gitPull(nonNullProp(context, 'repo'));
 
     const appResource: AppResource = {
         id: nonNullProp(swa, 'id'),
@@ -313,6 +276,10 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
 }
+
+function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
 
 
