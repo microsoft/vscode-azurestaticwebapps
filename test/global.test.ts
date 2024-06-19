@@ -29,6 +29,6 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
     });
 
     ext.outputChannel = new TestOutputChannel();
-    longRunningTestsEnabled = !/^(false|0)?$/i.test(process.env.ENABLE_LONG_RUNNING_TESTS || '');
+    longRunningTestsEnabled = !/^(false|0)?$/i.test(process.env.AzCode_UseAzureFederatedCredentials || '');
     isCI = /^True$/i.test(process.env.TF_BUILD || '');
 });
