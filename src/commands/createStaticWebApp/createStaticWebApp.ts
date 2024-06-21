@@ -3,17 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
+import type { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
-import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
-import { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
-import { Octokit } from '@octokit/rest';
-import { homedir } from 'os';
-import { join } from 'path';
-import { ProgressLocation, ProgressOptions, Uri, WorkspaceFolder, window, workspace } from 'vscode';
+import { AzExtFsExtra, AzureWizard, nonNullProp, type AzureWizardExecuteStep, type AzureWizardPromptStep, type ExecuteActivityContext, type IActionContext, type ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
+import type { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
+import type { Octokit } from '@octokit/rest';
+import { promises as fs } from 'node:fs'; // Import the promises API from fs
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { ProgressLocation, Uri, window, workspace, type ProgressOptions, type WorkspaceFolder } from 'vscode';
 import { Utils } from 'vscode-uri';
 import { StaticWebAppResolver } from '../../StaticWebAppResolver';
-import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
+import { NodeDetector, type DetectorResults } from '../../detectors/node/NodeDetector';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
@@ -35,13 +36,14 @@ import { ApiLocationStep } from './ApiLocationStep';
 import { AppLocationStep } from './AppLocationStep';
 import { BuildPresetListStep } from './BuildPresetListStep';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
-import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import type { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { OutputLocationStep } from './OutputLocationStep';
 import { SkuListStep } from './SkuListStep';
 import { StaticWebAppCreateStep } from './StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from './StaticWebAppNameStep';
 import { setGitWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
+
 
 
 function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTreeItemBase {
@@ -54,7 +56,7 @@ function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTr
     }
 }
 
-let isVerifyingWorkspace: boolean = false;
+let isVerifyingWorkspace =  false;
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     console.log("STARTING STATIC WEB APP LOG");
 
@@ -119,27 +121,33 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     //creating and cloning template ---
 
-
     const folderName: string = wizardContext.newStaticWebAppName || 'default_folder_name';
     const homeDir = homedir();
-    const clonePath = join(homeDir, folderName);
+    const baseClonePath = join(homeDir, folderName);
+    const clonePath = join(baseClonePath, 'static-web-app');
 
     const clonePathUri: Uri = Uri.file(clonePath);
 
-
-
-
     const octokitClient: Octokit = await createOctokitClient(context);
 
-    const {data: response} = await octokitClient.rest.repos.createUsingTemplate({
+    const { data: response } = await octokitClient.rest.repos.createUsingTemplate({
+        private: true,
         template_owner: "alain-zhiyanov",
         template_repo: "template-swa-la",
         name: folderName,
+
     });
+
     await sleep(1000);
+
     const repoUrl = response.html_url;
-   const command = `git clone ${repoUrl} ${clonePath}`;
-   await cpUtils.executeCommand(undefined, clonePath, command);
+    const command = `git clone ${repoUrl} ${clonePath}`;
+
+    // Ensure the baseClonePath and clonePath directories exist
+    await fs.mkdir(clonePath, { recursive: true });
+
+    // Execute the command to clone the repository
+    await cpUtils.executeCommand(undefined, clonePath, command);
 
     // ---
     await tryGetWorkspaceFolder(context);
@@ -199,7 +207,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     }
 
     //----
-    let hasRemote: boolean = false;
+    let hasRemote = false;
     if (wizardContext.repoHtmlUrl !== null) {
         hasRemote = true;
     }
@@ -270,8 +278,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     }
 
     return appResource;
-}
 
+}
 
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
@@ -280,6 +288,8 @@ export async function createStaticWebAppAdvanced(context: IActionContext, node?:
 function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+
 
 
 
