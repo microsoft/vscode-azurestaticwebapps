@@ -5,11 +5,11 @@
 
 import { AzureWizardPromptStep, nonNullProp, parseError } from '@microsoft/vscode-azext-utils';
 import { basename } from 'path';
-import { Uri } from 'vscode';
+import { type Uri } from 'vscode';
 import { cpUtils } from '../../utils/cpUtils';
 import { remoteShortnameExists } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
-import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
+import { type IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 
 export class RemoteShortnameStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 

@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteARMResource } from "@azure/arm-appservice";
+import { type StaticSiteARMResource } from "@azure/arm-appservice";
 import { LocationListStep } from "@microsoft/vscode-azext-azureutils";
 import { AzureWizardExecuteStep, nonNullProp, nonNullValueAndProp } from "@microsoft/vscode-azext-utils";
-import { AppResource } from "@microsoft/vscode-azext-utils/hostapi";
-import { Progress } from "vscode";
+import { type AppResource } from "@microsoft/vscode-azext-utils/hostapi";
+import { type Progress } from "vscode";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
-import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import { type IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     public priority: number = 250;

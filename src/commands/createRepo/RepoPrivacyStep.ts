@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
+import { AzureWizardPromptStep, type IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
 import { localize } from '../../utils/localize';
-import { IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
+import { type IStaticWebAppWizardContext } from '../createStaticWebApp/IStaticWebAppWizardContext';
 
 export class RepoPrivacyStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
 

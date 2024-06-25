@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import { type IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export function addLocationTelemetry(context: IStaticWebAppWizardContext, key: 'appLocation' | 'apiLocation' | 'outputLocation', defaultValue: string, valueFromSetting?: string): void {
     const value: string | undefined = context[key];

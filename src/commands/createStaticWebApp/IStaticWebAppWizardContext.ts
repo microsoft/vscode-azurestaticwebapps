@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SkuDescription, StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
-import { IResourceGroupWizardContext } from '@microsoft/vscode-azext-azureutils';
-import { ExecuteActivityContext } from '@microsoft/vscode-azext-utils';
-import { Uri } from 'vscode';
-import { IBuildPreset } from '../../buildPresets/IBuildPreset';
-import { Repository } from '../../git';
-import { BranchData, ListOrgsForUserData, OrgForAuthenticatedUserData } from '../../gitHubTypings';
+import { type SkuDescription, type StaticSiteARMResource, type WebSiteManagementClient } from '@azure/arm-appservice';
+import { type IResourceGroupWizardContext } from '@microsoft/vscode-azext-azureutils';
+import { type ExecuteActivityContext } from '@microsoft/vscode-azext-utils';
+import { type Uri } from 'vscode';
+import { type IBuildPreset } from '../../buildPresets/IBuildPreset';
+import { type Repository } from '../../git';
+import { type BranchData, type ListOrgsForUserData, type OrgForAuthenticatedUserData } from '../../gitHubTypings';
 
 export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext, ExecuteActivityContext {
     advancedCreation?: boolean;

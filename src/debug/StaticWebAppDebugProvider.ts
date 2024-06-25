@@ -3,11 +3,11 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { AzExtFsExtra, callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
+import { AzExtFsExtra, callWithTelemetryAndErrorHandling, type IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
-import { CancellationToken, commands, debug, DebugConfiguration, DebugConfigurationProvider, MessageItem, Uri, WorkspaceFolder } from "vscode";
+import { Uri, commands, debug, type CancellationToken, type DebugConfiguration, type DebugConfigurationProvider, type MessageItem, type WorkspaceFolder } from "vscode";
+import { type IBuildPreset } from '../buildPresets/IBuildPreset';
 import { buildPresets } from "../buildPresets/buildPresets";
-import { IBuildPreset } from '../buildPresets/IBuildPreset';
 import { tryGetStaticWebAppsCliConfig } from "../cli/tryGetStaticWebAppsCliConfig";
 import { validateSwaCliInstalled } from '../commands/cli/validateSwaCliInstalled';
 import { tryGetApiLocations } from '../commands/createStaticWebApp/tryGetApiLocations';

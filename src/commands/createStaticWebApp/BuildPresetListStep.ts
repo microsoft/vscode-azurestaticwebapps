@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzureWizardPromptStep, IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
+import { AzureWizardPromptStep, type IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
+import { type IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { buildPresets } from '../../buildPresets/buildPresets';
-import { IBuildPreset } from '../../buildPresets/IBuildPreset';
 import { localize } from '../../utils/localize';
-import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { type IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 
 export class BuildPresetListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {
