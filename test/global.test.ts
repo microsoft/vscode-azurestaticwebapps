@@ -8,8 +8,11 @@ import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { ext, registerOnActionStartHandler } from '../extension.bundle';
 
-export let longRunningTestsEnabled: boolean;
+const longRunningLocalTestsEnabled: boolean = !/^(false|0)?$/i.test(process.env.AzCode_EnableLongRunningTestsLocal || '');
+const longRunningRemoteTestsEnabled: boolean = !/^(false|0)?$/i.test(process.env.AzCode_UseAzureFederatedCredentials || '');
+
 export let isCI: boolean;
+export const longRunningTestsEnabled: boolean = longRunningLocalTestsEnabled || longRunningRemoteTestsEnabled;
 
 // Runs before all tests
 suiteSetup(async function (this: Mocha.Context): Promise<void> {
@@ -29,6 +32,5 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
     });
 
     ext.outputChannel = new TestOutputChannel();
-    longRunningTestsEnabled = !/^(false|0)?$/i.test(process.env.AzCode_UseAzureFederatedCredentials || '');
     isCI = /^True$/i.test(process.env.TF_BUILD || '');
 });
