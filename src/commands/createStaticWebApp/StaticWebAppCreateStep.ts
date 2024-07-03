@@ -21,27 +21,33 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
 
     public async execute(context: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
 
-        const octokitClient: Octokit = await createOctokitClient(context);
+        if(context.logicApp) {
+            //There was an issue where some fields of context would be lost when SWA called with LA. This is a temporary fix to find the branch data again here because of that. Note this will only work with alain github.
+            const octokitClient: Octokit = await createOctokitClient(context);
 
-        const owner = "alain-zhiyanov";
-        const repo = context.newStaticWebAppName || 'def';
 
-        const { data } = await octokitClient.repos.get({ owner, repo });
-        context.repoHtmlUrl = data.html_url;
+            const owner = "alain-zhiyanov";
+            const repo = context.newStaticWebAppName || 'def';
 
-        const { data: branches } = await octokitClient.repos.listBranches({
-            owner,
-            repo
-        });
+            const { data } = await octokitClient.repos.get({ owner, repo });
+            context.repoHtmlUrl = data.html_url;
 
-        const defaultBranch = branches.find(branch => branch.name === 'main');
+            const { data: branches } = await octokitClient.repos.listBranches({
+                owner,
+                repo
+            });
 
-        if (defaultBranch) {
-            context.branchData = { name: defaultBranch.name };
+            const defaultBranch = branches.find(branch => branch.name === 'main');
 
-        } else {
-            context.branchData = {name: branches[0].name };
+            if (defaultBranch) {
+                context.branchData = { name: defaultBranch.name };
+
+            } else {
+                context.branchData = {name: branches[0].name };
+            }
         }
+
+
 
         //api call to ARM
         const newName: string = nonNullProp(context, 'newStaticWebAppName');
@@ -73,19 +79,22 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
         context.staticWebApp = await context.client.staticSites.beginCreateOrUpdateStaticSiteAndWait(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope);
         context.activityResult = context.staticWebApp as AppResource;
 
-        const staticSiteLinkedBackendEnvelope = {
-            backendResourceId: context.logicApp,
-            region: "eastus", //change TODO
-        };
-        const credential = new DefaultAzureCredential();
-        const client = new WebSiteManagementClient(credential, context.subscriptionId);
+        if (context.logicApp) {
+            //link backends only if SWA called with LA
+            const staticSiteLinkedBackendEnvelope = {
+                backendResourceId: context.logicApp.backendResourceId,
+                region: context.logicApp.region
+            };
+            const credential = new DefaultAzureCredential();
+            const client = new WebSiteManagementClient(credential, context.subscriptionId);
 
-        try{
-        const result = await client.staticSites.beginLinkBackendAndWait(
-            nonNullValueAndProp(context.resourceGroup, 'name'), nonNullValueAndProp(context.staticWebApp, "name"), "alainLA2", staticSiteLinkedBackendEnvelope);
-        console.log(result);
-        } catch(error) {
-            console.log(error);
+            try{
+            const result = await client.staticSites.beginLinkBackendAndWait(
+                nonNullValueAndProp(context.resourceGroup, 'name'), nonNullValueAndProp(context.staticWebApp, "name"), context.logicApp.name, staticSiteLinkedBackendEnvelope);
+            console.log(result);
+            } catch(error) {
+                console.log(error);
+            }
         }
     }
 

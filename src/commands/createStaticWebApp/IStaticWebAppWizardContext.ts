@@ -48,7 +48,7 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
     staticWebApp?: StaticSiteARMResource;
 
     // logic app
-    logicApp?: string;
+    logicApp?: {backendResourceId: string, region: string, name: string};
 
 
 }
