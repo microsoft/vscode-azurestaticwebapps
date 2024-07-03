@@ -3,14 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+import { promises as fs } from 'fs'; // Import the promises API from fs
+// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+import { homedir } from 'os';
+
+
 import type { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
 import { AzExtFsExtra, AzureWizard, nonNullProp, type AzureWizardExecuteStep, type AzureWizardPromptStep, type ExecuteActivityContext, type IActionContext, type ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
 import type { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
 import type { Octokit } from '@octokit/rest';
-import { promises as fs } from 'node:fs'; // Import the promises API from fs
-import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { join } from 'path';
+import * as vscodeExtension from 'vscode';
 import { ProgressLocation, Uri, window, workspace, type ProgressOptions, type WorkspaceFolder } from 'vscode';
 import { Utils } from 'vscode-uri';
 import { StaticWebAppResolver } from '../../StaticWebAppResolver';
@@ -56,8 +61,15 @@ function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTr
     }
 }
 
-let isVerifyingWorkspace =  false;
-export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
+let isVerifyingWorkspace = false;
+export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase, logicApp?: string): Promise<AppResource> {
+    await vscodeExtension.commands.executeCommand('staticWebApps.createStaticWebApp', undefined, "my-logic-app");
+
+
+
+
+
+
     console.log("STARTING STATIC WEB APP LOG");
 
     if (isVerifyingWorkspace) {
@@ -96,7 +108,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
 
     if (!context.advancedCreation) {
-        wizardContext.sku = SkuListStep.getSkus()[0];
+        //[1] gets standard and not free
+        wizardContext.sku = SkuListStep.getSkus()[1];
         executeSteps.push(new ResourceGroupCreateStep());
     } else {
         promptSteps.push(new ResourceGroupListStep());
@@ -287,7 +300,7 @@ export async function createStaticWebAppAdvanced(context: IActionContext, node?:
 
 function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
+}
 
 
 

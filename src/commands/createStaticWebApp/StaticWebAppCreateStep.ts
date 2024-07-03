@@ -3,19 +3,21 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteARMResource } from "@azure/arm-appservice";
+import { WebSiteManagementClient, type StaticSiteARMResource } from "@azure/arm-appservice";
+import { DefaultAzureCredential } from "@azure/identity";
 import { LocationListStep } from "@microsoft/vscode-azext-azureutils";
 import { AzureWizardExecuteStep, nonNullProp, nonNullValueAndProp } from "@microsoft/vscode-azext-utils";
-import { AppResource } from "@microsoft/vscode-azext-utils/hostapi";
-import { Octokit } from "@octokit/rest";
-import { Progress } from "vscode";
+import type { AppResource } from "@microsoft/vscode-azext-utils/hostapi";
+import type { Octokit } from "@octokit/rest";
+import type { Progress } from "vscode";
 import { ext } from "../../extensionVariables";
 import { localize } from "../../utils/localize";
 import { createOctokitClient } from "../github/createOctokitClient";
-import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import type { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+
 
 export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
-    public priority: number = 250;
+    public priority = 250;
 
     public async execute(context: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
 
@@ -41,6 +43,7 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
             context.branchData = {name: branches[0].name };
         }
 
+        //api call to ARM
         const newName: string = nonNullProp(context, 'newStaticWebAppName');
         const branchData = nonNullProp(context, 'branchData');
         const siteEnvelope: StaticSiteARMResource = {
@@ -57,14 +60,40 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
             location: (await LocationListStep.getLocation(context)).name
         };
 
+
+
+
+
+
+
+
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
         context.staticWebApp = await context.client.staticSites.beginCreateOrUpdateStaticSiteAndWait(nonNullValueAndProp(context.resourceGroup, 'name'), newName, siteEnvelope);
         context.activityResult = context.staticWebApp as AppResource;
+
+        const staticSiteLinkedBackendEnvelope = {
+            backendResourceId: context.logicApp,
+            region: "eastus", //change TODO
+        };
+        const credential = new DefaultAzureCredential();
+        const client = new WebSiteManagementClient(credential, context.subscriptionId);
+
+        try{
+        const result = await client.staticSites.beginLinkBackendAndWait(
+            nonNullValueAndProp(context.resourceGroup, 'name'), nonNullValueAndProp(context.staticWebApp, "name"), "alainLA2", staticSiteLinkedBackendEnvelope);
+        console.log(result);
+        } catch(error) {
+            console.log(error);
+        }
     }
 
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {
         return true;
     }
+
+
+
+
 }

@@ -46,4 +46,9 @@ export interface IStaticWebAppWizardContext extends IResourceGroupWizardContext,
 
     // created when the wizard is done executing
     staticWebApp?: StaticSiteARMResource;
+
+    // logic app
+    logicApp?: string;
+
+
 }
