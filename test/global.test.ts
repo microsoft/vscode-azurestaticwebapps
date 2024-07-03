@@ -11,7 +11,7 @@ import { ext, registerOnActionStartHandler } from '../extension.bundle';
 const longRunningLocalTestsEnabled: boolean = !/^(false|0)?$/i.test(process.env.AzCode_EnableLongRunningTestsLocal || '');
 const longRunningRemoteTestsEnabled: boolean = !/^(false|0)?$/i.test(process.env.AzCode_UseAzureFederatedCredentials || '');
 
-export let isCI: boolean;
+export const isCI: boolean = /^True$/i.test(process.env.TF_BUILD || '');
 export const longRunningTestsEnabled: boolean = longRunningLocalTestsEnabled || longRunningRemoteTestsEnabled;
 
 // Runs before all tests
@@ -32,5 +32,4 @@ suiteSetup(async function (this: Mocha.Context): Promise<void> {
     });
 
     ext.outputChannel = new TestOutputChannel();
-    isCI = /^True$/i.test(process.env.TF_BUILD || '');
 });
