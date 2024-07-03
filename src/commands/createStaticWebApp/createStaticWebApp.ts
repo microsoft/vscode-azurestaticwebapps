@@ -6,14 +6,12 @@
 // biome-ignore lint/style/useNodejsImportProtocol: <explanation>
 import { promises as fs } from 'fs'; // Import the promises API from fs
 // biome-ignore lint/style/useNodejsImportProtocol: <explanation>
-import { homedir } from 'os';
-
-
 import type { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
 import { AzExtFsExtra, AzureWizard, nonNullProp, type AzureWizardExecuteStep, type AzureWizardPromptStep, type ExecuteActivityContext, type IActionContext, type ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
 import type { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
 import type { Octokit } from '@octokit/rest';
+import { homedir } from 'os';
 import { join } from 'path';
 import { ProgressLocation, Uri, window, workspace, type ProgressOptions, type WorkspaceFolder } from 'vscode';
 import { Utils } from 'vscode-uri';
@@ -61,14 +59,14 @@ function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTr
 }
 
 let isVerifyingWorkspace = false;
-export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase, nodes?: SubscriptionTreeItemBase[], ...args: unknown[]): Promise<AppResource> {
+export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase, _nodes?: SubscriptionTreeItemBase[], ...args: unknown[]): Promise<AppResource> {
 
     //logic app paramater was passed in args so flow which inits SWA with LA is called
     if (args.length > 0) {
         type Resource = {backendResourceId: string, region: string, name: string};
         const logicApp = args[0] as unknown as Resource;
         context.logicApp = logicApp;
-        return createStaticWebAppWithLogicApp(context, node, nodes, args);
+        return await createStaticWebAppWithLogicApp(context);
     }
 
     if (isVerifyingWorkspace) {
@@ -198,7 +196,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
 
 
-export async function createStaticWebAppWithLogicApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase, nodes?: SubscriptionTreeItemBase[], ...args: unknown[]): Promise<AppResource> {
+export async function createStaticWebAppWithLogicApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     console.log("STARTING STATIC WEB APP LOG");
 
     if (isVerifyingWorkspace) {
