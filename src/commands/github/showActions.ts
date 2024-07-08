@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, IActionContext, openUrl } from '@microsoft/vscode-azext-utils';
-import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
+import { openUrl, type AzExtTreeItem, type IActionContext } from '@microsoft/vscode-azext-utils';
+import { type ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
-import { ActionsTreeItem } from '../../tree/ActionsTreeItem';
+import { type ActionsTreeItem } from '../../tree/ActionsTreeItem';
 
 export async function showActions(context: IActionContext, node?: ResolvedStaticWebApp | ActionsTreeItem): Promise<void> {
     if (!node) {

@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
+import { type StaticSiteBuildARMResource, type WebSiteManagementClient } from "@azure/arm-appservice";
 import { AppSettingTreeItem, AppSettingsTreeItem } from "@microsoft/vscode-azext-azureappsettings";
-import { AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, TreeItemIconPath, nonNullProp, openUrl } from "@microsoft/vscode-azext-utils";
-import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
-import { ProgressLocation, ThemeIcon, Uri, window } from "vscode";
-import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
+import { AzExtParentTreeItem, GenericTreeItem, nonNullProp, openUrl, type AzExtTreeItem, type IActionContext, type TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { type ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hostapi";
+import { ProgressLocation, ThemeIcon, window, type Uri } from "vscode";
+import { type ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
 import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
@@ -23,7 +23,7 @@ import { ActionTreeItem } from "./ActionTreeItem";
 import { ActionsTreeItem } from "./ActionsTreeItem";
 import { FunctionTreeItem } from "./FunctionTreeItem";
 import { FunctionsTreeItem } from "./FunctionsTreeItem";
-import { IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
+import { type IAzureResourceTreeItem } from "./IAzureResourceTreeItem";
 import { JobTreeItem } from "./JobTreeItem";
 import { StepTreeItem } from "./StepTreeItem";
 import { WorkflowGroupTreeItem } from "./WorkflowGroupTreeItem";

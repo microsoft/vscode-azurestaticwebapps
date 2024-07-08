@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { angularOutputLocation } from "../constants";
-import { IBuildPreset } from "./IBuildPreset";
+import { type IBuildPreset } from "./IBuildPreset";
 
 // hard-coded defaults for build presets until there is an API that supports this
 export const buildPresets: IBuildPreset[] = [

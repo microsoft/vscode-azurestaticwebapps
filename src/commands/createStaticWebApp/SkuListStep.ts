@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SkuDescription } from '@azure/arm-appservice';
-import { AzureWizardPromptStep, IAzureQuickPickItem, nonNullProp } from '@microsoft/vscode-azext-utils';
+import { type SkuDescription } from '@azure/arm-appservice';
+import { AzureWizardPromptStep, nonNullProp, type IAzureQuickPickItem } from '@microsoft/vscode-azext-utils';
 import { localize } from '../../utils/localize';
-import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import { type IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export class SkuListStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {
     public async prompt(context: IStaticWebAppWizardContext): Promise<void> {

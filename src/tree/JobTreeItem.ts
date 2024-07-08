@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
-import { Octokit } from '@octokit/rest';
+import { AzExtParentTreeItem, type AzExtTreeItem, type IActionContext, type TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { type Octokit } from '@octokit/rest';
 import { createOctokitClient } from '../commands/github/createOctokitClient';
-import { ActionsGetJobForWorkflowRunResponseData } from '../gitHubTypings';
+import { type ActionsGetJobForWorkflowRunResponseData } from '../gitHubTypings';
 import { getActionDescription, getActionIconPath } from '../utils/actionUtils';
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from '../utils/localize';
-import { ActionTreeItem } from './ActionTreeItem';
-import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
+import { type ActionTreeItem } from './ActionTreeItem';
+import { type IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { StepTreeItem } from './StepTreeItem';
 
 export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {

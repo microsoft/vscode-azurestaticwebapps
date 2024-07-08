@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationToken, FoldingContext, FoldingRange, FoldingRangeProvider, TextDocument } from "vscode";
+import  { type CancellationToken, type FoldingContext, type FoldingRange, type FoldingRangeProvider, type TextDocument } from "vscode";
 import { getGitHubLogFoldingRanges } from "./GitHubLogContentProvider";
 
 export default class GitHubLogFoldingProvider implements FoldingRangeProvider {

@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
+import { type StaticSiteARMResource, type WebSiteManagementClient } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
-import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
-import { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
-import { ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
+import { AzExtFsExtra, AzureWizard, nonNullProp, type AzureWizardExecuteStep, type AzureWizardPromptStep, type ExecuteActivityContext, type IActionContext, type ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
+import { type AppResource } from '@microsoft/vscode-azext-utils/hostapi';
+import { ProgressLocation, Uri, window, workspace, type ProgressOptions } from 'vscode';
 import { Utils } from 'vscode-uri';
 import { StaticWebAppResolver } from '../../StaticWebAppResolver';
-import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
+import { NodeDetector, type DetectorResults } from '../../detectors/node/NodeDetector';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
@@ -30,7 +30,7 @@ import { ApiLocationStep } from './ApiLocationStep';
 import { AppLocationStep } from './AppLocationStep';
 import { BuildPresetListStep } from './BuildPresetListStep';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
-import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import { type IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { OutputLocationStep } from './OutputLocationStep';
 import { SkuListStep } from './SkuListStep';
 import { StaticWebAppCreateStep } from './StaticWebAppCreateStep';

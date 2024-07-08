@@ -3,15 +3,15 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IActionContext, parseError, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtFsExtra, AzExtParentTreeItem, GenericTreeItem, parseError, type AzExtTreeItem, type IActionContext, type TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { basename, join } from "path";
 import { FileType, Range, ThemeIcon, workspace } from "vscode";
-import { URI, Utils } from "vscode-uri";
+import { Utils, type URI } from "vscode-uri";
 // eslint-disable-next-line import/no-internal-modules
 import { YAMLSyntaxError } from "yaml/util";
 import { localize } from "../utils/localize";
 import { parseYamlFile } from "../utils/yamlUtils";
-import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
+import { type EnvironmentTreeItem } from "./EnvironmentTreeItem";
 import { WorkflowTreeItem } from "./WorkflowTreeItem";
 
 
