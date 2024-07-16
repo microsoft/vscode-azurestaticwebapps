@@ -51,7 +51,7 @@ import { tryGetApiLocations } from './tryGetApiLocations';
 function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTreeItemBase {
     try {
         // Accessing item.subscription throws an error for some workspace items
-        // see https://github.com/microsoft/vscode-azurefunctions/issues/3731s
+        // see https://github.com/microsoft/vscode-azurefunctions/issues/3731
         return !!item && !!item.subscription;
     } catch {
         return false;
