@@ -3,19 +3,26 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
+// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+import { promises as fs } from 'fs'; // Import the promises API from fs
+// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+import type { StaticSiteARMResource, WebSiteManagementClient } from '@azure/arm-appservice';
 import { LocationListStep, ResourceGroupCreateStep, ResourceGroupListStep, SubscriptionTreeItemBase, VerifyProvidersStep } from '@microsoft/vscode-azext-azureutils';
-import { AzExtFsExtra, AzureWizard, AzureWizardExecuteStep, AzureWizardPromptStep, ExecuteActivityContext, IActionContext, ICreateChildImplContext, nonNullProp } from '@microsoft/vscode-azext-utils';
-import { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
-import { ProgressLocation, ProgressOptions, Uri, window, workspace } from 'vscode';
+import { AzExtFsExtra, AzureWizard, nonNullProp, type AzureWizardExecuteStep, type AzureWizardPromptStep, type ExecuteActivityContext, type IActionContext, type ICreateChildImplContext } from '@microsoft/vscode-azext-utils';
+import type { AppResource } from '@microsoft/vscode-azext-utils/hostapi';
+import type { Octokit } from '@octokit/rest';
+import { homedir } from 'os';
+import { join } from 'path';
+import { ProgressLocation, Uri, window, workspace, type ProgressOptions, type WorkspaceFolder } from 'vscode';
 import { Utils } from 'vscode-uri';
 import { StaticWebAppResolver } from '../../StaticWebAppResolver';
-import { DetectorResults, NodeDetector } from '../../detectors/node/NodeDetector';
+import { NodeDetector, type DetectorResults } from '../../detectors/node/NodeDetector';
 import { NodeConstants } from '../../detectors/node/nodeConstants';
 import { VerifyingWorkspaceError } from '../../errors';
 import { ext } from '../../extensionVariables';
 import { createActivityContext } from '../../utils/activityUtils';
 import { createWebSiteClient } from '../../utils/azureClients';
+import { cpUtils } from '../../utils/cpUtils';
 import { getGitHubAccessToken } from '../../utils/gitHubUtils';
 import { gitPull } from '../../utils/gitUtils';
 import { localize } from '../../utils/localize';
@@ -25,18 +32,21 @@ import { RemoteShortnameStep } from '../createRepo/RemoteShortnameStep';
 import { RepoCreateStep } from '../createRepo/RepoCreateStep';
 import { RepoNameStep } from '../createRepo/RepoNameStep';
 import { RepoPrivacyStep } from '../createRepo/RepoPrivacyStep';
+import { createOctokitClient } from '../github/createOctokitClient';
 import { showSwaCreated } from '../showSwaCreated';
 import { ApiLocationStep } from './ApiLocationStep';
 import { AppLocationStep } from './AppLocationStep';
 import { BuildPresetListStep } from './BuildPresetListStep';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
-import { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
+import type { IStaticWebAppWizardContext } from './IStaticWebAppWizardContext';
 import { OutputLocationStep } from './OutputLocationStep';
 import { SkuListStep } from './SkuListStep';
 import { StaticWebAppCreateStep } from './StaticWebAppCreateStep';
 import { StaticWebAppNameStep } from './StaticWebAppNameStep';
 import { setGitWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
+
+
 
 function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTreeItemBase {
     try {
@@ -48,11 +58,151 @@ function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTr
     }
 }
 
-let isVerifyingWorkspace: boolean = false;
-export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
+let isVerifyingWorkspace = false;
+export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase, _nodes?: SubscriptionTreeItemBase[], ...args: unknown[]): Promise<AppResource> {
+
+    //logic app paramater was passed in args so flow which inits SWA with LA is called
+    if (args.length > 0) {
+        type Resource = {backendResourceId: string, region: string, name: string};
+        const logicApp = args[0] as unknown as Resource;
+        context.logicApp = logicApp;
+        return await createStaticWebAppWithLogicApp(context);
+    }
+
     if (isVerifyingWorkspace) {
         throw new VerifyingWorkspaceError(context);
     }
+    const progressOptions: ProgressOptions = {
+        location: ProgressLocation.Window,
+        title: localize('verifyingWorkspace', 'Verifying workspace...')
+    };
+    isVerifyingWorkspace = true;
+    try {
+        if (!isSubscription(node)) {
+            node = await ext.rgApi.appResourceTree.showTreeItemPicker<SubscriptionTreeItemBase>(SubscriptionTreeItemBase.contextValue, context);
+        }
+        await window.withProgress(progressOptions, async () => {
+            const folder = await tryGetWorkspaceFolder(context);
+            if (folder) {
+                await telemetryUtils.runWithDurationTelemetry(context, 'tryGetFrameworks', async () => {
+                    const detector = new NodeDetector();
+                    const detectorResult = await detector.detect(folder.uri);
+                    // comma separated list of all frameworks detected in this project
+                    context.telemetry.properties.detectedFrameworks = `(${detectorResult?.frameworks.map(fi => fi.framework).join('), (')})` ?? 'N/A';
+                    context.telemetry.properties.rootHasSrcFolder = (await AzExtFsExtra.pathExists(Uri.joinPath(folder.uri, NodeConstants.srcFolderName))).toString();
+                    const subfolderDetectorResults: DetectorResults[] = [];
+                    const subWithSrcFolder: string[] = []
+                    const subfolders = await getSubFolders(context, folder.uri);
+                    for (const subfolder of subfolders) {
+                        const subResult = await detector.detect(subfolder);
+                        if (subResult) {
+                            subfolderDetectorResults.push(subResult);
+                            if (await AzExtFsExtra.pathExists(Uri.joinPath(subfolder, NodeConstants.srcFolderName))) {
+                                subWithSrcFolder.push(Utils.basename(subfolder));
+                            }
+                        }
+                    }
+                    if (subfolderDetectorResults.length > 0) {
+                        // example print: "(Angular,Typescript), (Next.js,React), (Nuxt.js), (React), (Svelte), (Vue.js,Vue.js)"
+                        context.telemetry.properties.detectedFrameworksSub = `(${subfolderDetectorResults.map(dr => dr.frameworks).map(fis => fis.map(fi => fi.framework)).join('), (')})`;
+                        context.telemetry.properties.subFoldersWithSrc = subWithSrcFolder.join(', ');
+                    }
+                });
+                await setGitWorkspaceContexts(context, folder);
+                context.detectedApiLocations = await tryGetApiLocations(context, folder);
+            } else {
+                await showNoWorkspacePrompt(context);
+            }
+        });
+    } finally {
+        isVerifyingWorkspace = false;
+    }
+    const client: WebSiteManagementClient = await createWebSiteClient([context, node.subscription]);
+    const wizardContext: IStaticWebAppWizardContext = {
+        accessToken: await getGitHubAccessToken(),
+        client,
+        ...context,
+        ...node.subscription,
+        ...(await createActivityContext())
+    };
+    const title: string = localize('createStaticApp', 'Create Static Web App');
+    const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext & ExecuteActivityContext>[] = [];
+    const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
+    if (!context.advancedCreation) {
+        wizardContext.sku = SkuListStep.getSkus()[0];
+        executeSteps.push(new ResourceGroupCreateStep());
+    } else {
+        promptSteps.push(new ResourceGroupListStep());
+    }
+    promptSteps.push(new StaticWebAppNameStep(), new SkuListStep());
+    const hasRemote: boolean = !!wizardContext.repoHtmlUrl;
+    // if the local project doesn't have a GitHub remote, we will create it for them
+    if (!hasRemote) {
+        promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
+        executeSteps.push(new RepoCreateStep());
+    }
+    // hard-coding locations available during preview
+    // https://github.com/microsoft/vscode-azurestaticwebapps/issues/18
+    const locations = [
+        'Central US',
+        'East US 2',
+        'East Asia',
+        'West Europe',
+        'West US 2'
+    ];
+    const webProvider: string = 'Microsoft.Web';
+    LocationListStep.setLocationSubset(wizardContext, Promise.resolve(locations), webProvider);
+    LocationListStep.addStep(wizardContext, promptSteps, {
+        placeHolder: localize('selectLocation', 'Select a region for Azure Functions API and staging environments'),
+        noPicksMessage: localize('noRegions', 'No available regions.')
+    });
+    promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
+    executeSteps.push(new VerifyProvidersStep([webProvider]));
+    executeSteps.push(new StaticWebAppCreateStep());
+    const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
+        title,
+        promptSteps,
+        executeSteps,
+        showLoadingPrompt: true
+    });
+    wizardContext.telemetry.properties.gotRemote = String(hasRemote);
+    wizardContext.uri = wizardContext.uri || getSingleRootFsPath();
+    wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
+    await wizard.prompt();
+    wizardContext.activityTitle = localize('createStaticApp', 'Create Static Web App "{0}"', nonNullProp(wizardContext, 'newStaticWebAppName'));
+    if (!context.advancedCreation) {
+        wizardContext.newResourceGroupName = await wizardContext.relatedNameTask;
+    }
+    await wizard.execute();
+    await ext.rgApi.appResourceTree.refresh(context);
+    const swa: StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
+    await gitPull(nonNullProp(wizardContext, 'repo'));
+    const appResource: AppResource = {
+        id: nonNullProp(swa, 'id'),
+        name: nonNullProp(swa, 'name'),
+        type: nonNullProp(swa, 'type'),
+        ...swa
+    };
+    const resolver = new StaticWebAppResolver();
+    const resolvedSwa = await resolver.resolveResource(node.subscription, appResource);
+    if (resolvedSwa) {
+        await showSwaCreated(resolvedSwa);
+    }
+    return appResource;
+
+}
+
+
+
+
+
+export async function createStaticWebAppWithLogicApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
+    console.log("STARTING STATIC WEB APP LOG");
+
+    if (isVerifyingWorkspace) {
+        throw new VerifyingWorkspaceError(context);
+    }
+
 
     const progressOptions: ProgressOptions = {
         location: ProgressLocation.Window,
@@ -60,14 +210,102 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     };
 
     isVerifyingWorkspace = true;
+
+
+    if (!isSubscription(node)) {
+        node = await ext.rgApi.appResourceTree.showTreeItemPicker<SubscriptionTreeItemBase>(SubscriptionTreeItemBase.contextValue, context);
+    }
+    //folder is manually set below
+    //const folder = await tryGetWorkspaceFolder(context);
+
+
+    // ---- this used to be below the if (folder)
+    const client: WebSiteManagementClient = await createWebSiteClient([context, node.subscription]);
+    const wizardContext: IStaticWebAppWizardContext = {
+        accessToken: await getGitHubAccessToken(),
+        client,
+        ...context,
+        ...node.subscription,
+        ...(await createActivityContext())
+    };
+
+    const title: string = localize('createStaticApp', 'Create Static Web App');
+    const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext & ExecuteActivityContext>[] = [];
+    const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
+
+
+    if (!context.advancedCreation) {
+        //[1] gets standard and not free
+        wizardContext.sku = SkuListStep.getSkus()[1];
+        executeSteps.push(new ResourceGroupCreateStep());
+    } else {
+        promptSteps.push(new ResourceGroupListStep());
+    }
+
+    promptSteps.push(new StaticWebAppNameStep(), new SkuListStep());
+
+    // ----
+
+    const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
+        title,
+        promptSteps,
+        executeSteps,
+        showLoadingPrompt: true
+    });
+
+    wizardContext.uri = wizardContext.uri || getSingleRootFsPath();
+
+    //this prompt is new. it allows us to get the name early
+    await wizard.prompt();
+
+
+    //creating and cloning template ---
+
+    const folderName: string = wizardContext.newStaticWebAppName || 'default_folder_name';
+    const homeDir = homedir();
+    const baseClonePath = join(homeDir, folderName);
+    const clonePath = join(baseClonePath, 'static-web-app');
+
+    const clonePathUri: Uri = Uri.file(clonePath);
+
+    const octokitClient: Octokit = await createOctokitClient(context);
+
+    const { data: response } = await octokitClient.rest.repos.createUsingTemplate({
+        private: true,
+        template_owner: "alain-zhiyanov",
+        template_repo: "template-swa-la",
+        name: folderName,
+
+    });
+
+    await sleep(1000);
+
+    const repoUrl = response.html_url;
+    const command = `git clone ${repoUrl} ${clonePath}`;
+
+    // Ensure the baseClonePath and clonePath directories exist
+    await fs.mkdir(clonePath, { recursive: true });
+
+    // Execute the command to clone the repository
+    await cpUtils.executeCommand(undefined, clonePath, command);
+
+    // ---
+    await tryGetWorkspaceFolder(context);
     try {
-        if (!isSubscription(node)) {
-            node = await ext.rgApi.appResourceTree.showTreeItemPicker<SubscriptionTreeItemBase>(SubscriptionTreeItemBase.contextValue, context);
-        }
+
+
 
         await window.withProgress(progressOptions, async () => {
-            const folder = await tryGetWorkspaceFolder(context);
+            const folder: WorkspaceFolder = {
+                uri: clonePathUri,
+                name: "myUri",
+                index: 0
+            }
+
+
+
             if (folder) {
+
                 await telemetryUtils.runWithDurationTelemetry(context, 'tryGetFrameworks', async () => {
                     const detector = new NodeDetector();
 
@@ -98,6 +336,8 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
                 await setGitWorkspaceContexts(context, folder);
                 context.detectedApiLocations = await tryGetApiLocations(context, folder);
+
+
             } else {
                 await showNoWorkspacePrompt(context);
             }
@@ -105,32 +345,19 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     } finally {
         isVerifyingWorkspace = false;
     }
-    const client: WebSiteManagementClient = await createWebSiteClient([context, node.subscription]);
-    const wizardContext: IStaticWebAppWizardContext = {
-        accessToken: await getGitHubAccessToken(),
-        client,
-        ...context,
-        ...node.subscription,
-        ...(await createActivityContext())
-    };
 
-    const title: string = localize('createStaticApp', 'Create Static Web App');
-    const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext & ExecuteActivityContext>[] = [];
-    const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
-
-    if (!context.advancedCreation) {
-        wizardContext.sku = SkuListStep.getSkus()[0];
-        executeSteps.push(new ResourceGroupCreateStep());
-    } else {
-        promptSteps.push(new ResourceGroupListStep());
+    //----
+    let hasRemote = false;
+    if (wizardContext.repoHtmlUrl !== null) {
+        hasRemote = true;
     }
-
-    promptSteps.push(new StaticWebAppNameStep(), new SkuListStep());
-    const hasRemote: boolean = !!wizardContext.repoHtmlUrl;
+    wizardContext.telemetry.properties.gotRemote = String(hasRemote);//these may have been moved ^
 
     // if the local project doesn't have a GitHub remote, we will create it for them
+    // this used to be right below website management client, maybe doesn't even need to be ran?
     if (!hasRemote) {
         promptSteps.push(new GitHubOrgListStep(), new RepoNameStep(), new RepoPrivacyStep(), new RemoteShortnameStep());
+
         executeSteps.push(new RepoCreateStep());
     }
 
@@ -157,15 +384,9 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     executeSteps.push(new VerifyProvidersStep([webProvider]));
     executeSteps.push(new StaticWebAppCreateStep());
 
-    const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
-        title,
-        promptSteps,
-        executeSteps,
-        showLoadingPrompt: true
-    });
 
-    wizardContext.telemetry.properties.gotRemote = String(hasRemote);
-    wizardContext.uri = wizardContext.uri || getSingleRootFsPath();
+
+
     wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
 
     await wizard.prompt();
@@ -176,11 +397,12 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         wizardContext.newResourceGroupName = await wizardContext.relatedNameTask;
     }
 
+
     await wizard.execute();
 
     await ext.rgApi.appResourceTree.refresh(context);
     const swa: StaticSiteARMResource = nonNullProp(wizardContext, 'staticWebApp');
-    await gitPull(nonNullProp(wizardContext, 'repo'));
+    await gitPull(nonNullProp(context, 'repo'));
 
     const appResource: AppResource = {
         id: nonNullProp(swa, 'id'),
@@ -201,3 +423,14 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 export async function createStaticWebAppAdvanced(context: IActionContext, node?: SubscriptionTreeItemBase): Promise<AppResource> {
     return await createStaticWebApp({ ...context, advancedCreation: true }, node);
 }
+
+function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+
+
+
+
+
