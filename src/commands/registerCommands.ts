@@ -25,6 +25,7 @@ import { openGitHubLog } from './github/jobLogs/openGitHubLog';
 import { openGitHubRepo } from './github/openGitHubRepo';
 import { showActions } from './github/showActions';
 import { openInPortal } from './openInPortal';
+import { openYAMLConfigFile } from "./openYAMLConfigFile";
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
@@ -50,7 +51,7 @@ export function registerCommands(): void {
     registerCommandWithTreeNodeUnwrapping('staticWebApps.toggleAppSettingVisibility', async (context: IActionContext, node?: AppSettingTreeItem) => { await nonNullValue(node).toggleValueVisibility(context); }, 250);
     registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
     registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
-    //registerCommandWithTreeNodeUnwrapping('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
+    registerCommandWithTreeNodeUnwrapping('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
     registerCommand('staticWebApps.createSwaConfigFile', createSwaConfigFile);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.openGitHubLog', openGitHubLog);
     registerCommand('staticWebApps.installOrUpdateStaticWebAppsCli', installOrUpdateSwaCli);

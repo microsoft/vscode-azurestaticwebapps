@@ -15,39 +15,27 @@ import { localize } from "../../utils/localize";
 import { createOctokitClient } from "../github/createOctokitClient";
 import type { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
-
+const branch_owner = "alain-zhiyanov";
 export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardContext> {
     public priority = 250;
-
     public async execute(context: IStaticWebAppWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
-
         if(context.logicApp) {
             //There was an issue where some fields of context would be lost when SWA called with LA. This is a temporary fix to find the branch data again here because of that. Note this will only work with alain github.
             const octokitClient: Octokit = await createOctokitClient(context);
-
-
-            const owner = "alain-zhiyanov";
             const repo = context.newStaticWebAppName || 'def';
-
-            const { data } = await octokitClient.repos.get({ owner, repo });
+            const { data } = await octokitClient.repos.get({ owner: branch_owner, repo });
             context.repoHtmlUrl = data.html_url;
-
             const { data: branches } = await octokitClient.repos.listBranches({
-                owner,
+                owner: branch_owner,
                 repo
             });
-
             const defaultBranch = branches.find(branch => branch.name === 'main');
-
             if (defaultBranch) {
                 context.branchData = { name: defaultBranch.name };
-
             } else {
                 context.branchData = {name: branches[0].name };
             }
         }
-
-
 
         //api call to ARM
         const newName: string = nonNullProp(context, 'newStaticWebAppName');
@@ -65,14 +53,6 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
             sku: context.sku,
             location: (await LocationListStep.getLocation(context)).name
         };
-
-
-
-
-
-
-
-
         const creatingSwa: string = localize('creatingSwa', 'Creating new static web app "{0}"...', newName);
         progress.report({ message: creatingSwa });
         ext.outputChannel.appendLog(creatingSwa);
@@ -101,8 +81,5 @@ export class StaticWebAppCreateStep extends AzureWizardExecuteStep<IStaticWebApp
     public shouldExecute(_wizardContext: IStaticWebAppWizardContext): boolean {
         return true;
     }
-
-
-
 
 }

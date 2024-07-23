@@ -47,7 +47,6 @@ import { setGitWorkspaceContexts } from './setWorkspaceContexts';
 import { tryGetApiLocations } from './tryGetApiLocations';
 
 
-
 function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTreeItemBase {
     try {
         // Accessing item.subscription throws an error for some workspace items
@@ -60,11 +59,10 @@ function isSubscription(item?: SubscriptionTreeItemBase): item is SubscriptionTr
 
 let isVerifyingWorkspace = false;
 export async function createStaticWebApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase, _nodes?: SubscriptionTreeItemBase[], ...args: unknown[]): Promise<AppResource> {
-
-    //logic app paramater was passed in args so flow which inits SWA with LA is called
-    if (args.length > 0) {
+    const isLogicAppParameterPassed = args.length > 0;
+    if (isLogicAppParameterPassed) {
         type Resource = {backendResourceId: string, region: string, name: string};
-        const logicApp = args[0] as unknown as Resource;
+        const logicApp = args[0] as Resource;
         context.logicApp = logicApp;
         return await createStaticWebAppWithLogicApp(context);
     }
@@ -189,37 +187,21 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
         await showSwaCreated(resolvedSwa);
     }
     return appResource;
-
 }
 
-
-
-
-
 export async function createStaticWebAppWithLogicApp(context: IActionContext & Partial<ICreateChildImplContext> & Partial<IStaticWebAppWizardContext>, node?: SubscriptionTreeItemBase): Promise<AppResource> {
-    console.log("STARTING STATIC WEB APP LOG");
-
     if (isVerifyingWorkspace) {
         throw new VerifyingWorkspaceError(context);
     }
-
-
     const progressOptions: ProgressOptions = {
         location: ProgressLocation.Window,
         title: localize('verifyingWorkspace', 'Verifying workspace...')
     };
 
     isVerifyingWorkspace = true;
-
-
     if (!isSubscription(node)) {
         node = await ext.rgApi.appResourceTree.showTreeItemPicker<SubscriptionTreeItemBase>(SubscriptionTreeItemBase.contextValue, context);
     }
-    //folder is manually set below
-    //const folder = await tryGetWorkspaceFolder(context);
-
-
-    // ---- this used to be below the if (folder)
     const client: WebSiteManagementClient = await createWebSiteClient([context, node.subscription]);
     const wizardContext: IStaticWebAppWizardContext = {
         accessToken: await getGitHubAccessToken(),
@@ -228,12 +210,9 @@ export async function createStaticWebAppWithLogicApp(context: IActionContext & P
         ...node.subscription,
         ...(await createActivityContext())
     };
-
     const title: string = localize('createStaticApp', 'Create Static Web App');
     const promptSteps: AzureWizardPromptStep<IStaticWebAppWizardContext & ExecuteActivityContext>[] = [];
     const executeSteps: AzureWizardExecuteStep<IStaticWebAppWizardContext>[] = [];
-
-
     if (!context.advancedCreation) {
         //[1] gets standard and not free
         wizardContext.sku = SkuListStep.getSkus()[1];
@@ -243,9 +222,6 @@ export async function createStaticWebAppWithLogicApp(context: IActionContext & P
     }
 
     promptSteps.push(new StaticWebAppNameStep(), new SkuListStep());
-
-    // ----
-
     const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
         title,
         promptSteps,
@@ -254,22 +230,15 @@ export async function createStaticWebAppWithLogicApp(context: IActionContext & P
     });
 
     wizardContext.uri = wizardContext.uri || getSingleRootFsPath();
-
-    //this prompt is new. it allows us to get the name early
     await wizard.prompt();
 
-
-    //creating and cloning template ---
-
+    //create github template
     const folderName: string = wizardContext.newStaticWebAppName || 'default_folder_name';
     const homeDir = homedir();
     const baseClonePath = join(homeDir, folderName);
     const clonePath = join(baseClonePath, 'static-web-app');
-
     const clonePathUri: Uri = Uri.file(clonePath);
-
     const octokitClient: Octokit = await createOctokitClient(context);
-
     const { data: response } = await octokitClient.rest.repos.createUsingTemplate({
         private: true,
         template_owner: "alain-zhiyanov",
@@ -277,38 +246,25 @@ export async function createStaticWebAppWithLogicApp(context: IActionContext & P
         name: folderName,
 
     });
-
     await sleep(1000);
 
+    //clone github template
     const repoUrl = response.html_url;
     const command = `git clone ${repoUrl} ${clonePath}`;
-
-    // Ensure the baseClonePath and clonePath directories exist
     await fs.mkdir(clonePath, { recursive: true });
-
-    // Execute the command to clone the repository
     await cpUtils.executeCommand(undefined, clonePath, command);
 
-    // ---
     await tryGetWorkspaceFolder(context);
     try {
-
-
-
         await window.withProgress(progressOptions, async () => {
             const folder: WorkspaceFolder = {
                 uri: clonePathUri,
                 name: "myUri",
                 index: 0
             }
-
-
-
             if (folder) {
-
                 await telemetryUtils.runWithDurationTelemetry(context, 'tryGetFrameworks', async () => {
                     const detector = new NodeDetector();
-
                     const detectorResult = await detector.detect(folder.uri);
                     // comma separated list of all frameworks detected in this project
                     context.telemetry.properties.detectedFrameworks = `(${detectorResult?.frameworks.map(fi => fi.framework).join('), (')})` ?? 'N/A';
@@ -345,14 +301,11 @@ export async function createStaticWebAppWithLogicApp(context: IActionContext & P
     } finally {
         isVerifyingWorkspace = false;
     }
-
-    //----
     let hasRemote = false;
     if (wizardContext.repoHtmlUrl !== null) {
         hasRemote = true;
     }
-    wizardContext.telemetry.properties.gotRemote = String(hasRemote);//these may have been moved ^
-
+    wizardContext.telemetry.properties.gotRemote = String(hasRemote);
     // if the local project doesn't have a GitHub remote, we will create it for them
     // this used to be right below website management client, maybe doesn't even need to be ran?
     if (!hasRemote) {
@@ -383,9 +336,6 @@ export async function createStaticWebAppWithLogicApp(context: IActionContext & P
 
     executeSteps.push(new VerifyProvidersStep([webProvider]));
     executeSteps.push(new StaticWebAppCreateStep());
-
-
-
 
     wizardContext.telemetry.properties.numberOfWorkspaces = !workspace.workspaceFolders ? String(0) : String(workspace.workspaceFolders.length);
 

@@ -494,8 +494,9 @@
         "webpack-cli": "^4.6.0"
     },
     "dependencies": {
-        "@azure/arm-appservice": "^11.0.0",
+        "@azure/arm-appservice": "^15.0.0",
         "@azure/arm-resources": "^5.0.0",
+        "@azure/identity": "^4.3.0",
         "@microsoft/vscode-azext-azureappsettings": "^0.2.0",
         "@microsoft/vscode-azext-azureutils": "^2.0.0",
         "@microsoft/vscode-azext-utils": "^2.0.0",
