@@ -466,7 +466,7 @@
     },
     "devDependencies": {
         "@microsoft/eslint-config-azuretools": "^0.2.1",
-        "@microsoft/vscode-azext-dev": "^2.0.1",
+        "@microsoft/vscode-azext-dev": "^2.0.4",
         "@octokit/types": "^6.13.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
@@ -498,7 +498,7 @@
         "@azure/arm-resources": "^5.0.0",
         "@microsoft/vscode-azext-azureappsettings": "^0.2.0",
         "@microsoft/vscode-azext-azureutils": "^2.0.0",
-        "@microsoft/vscode-azext-utils": "^2.0.0",
+        "@microsoft/vscode-azext-utils": "^2.5.1",
         "@microsoft/vscode-azureresources-api": "^2.0.3",
         "@octokit/rest": "^18.5.2",
         "buffer": "^6.0.3",
