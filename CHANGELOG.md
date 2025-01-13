@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.13.0 - 2025-01-15
+
+### Added
+* [[853]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/853) Add light and dark paths for submenu icon
+* [[854]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/854) Add icon to create command
+* [[897]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/897) Add and default .NET 8.0 to `createHttpFunction` target framework
+
+### Changed
+* [[849]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/849) Remove `onCommand` activation events
+* [[914]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/914) Upgrade utils to v2.5.6
+* [[921]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/921) Upgrade packages for additional telemetry updates
+
 ## 0.12.2 - 2023-06-28
 
 ### Added
