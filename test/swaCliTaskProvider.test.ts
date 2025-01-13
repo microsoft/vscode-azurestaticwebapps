@@ -37,7 +37,7 @@ function verifyTaskForkWorkspace(testCase: ITestCase, task: Task) {
     }
 }
 
-suite.only('SWA task provider', async () => {
+suite('SWA task provider', async () => {
     const taskProvider = new SwaTaskProvider();
 
 

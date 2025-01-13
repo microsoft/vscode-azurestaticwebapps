@@ -17,7 +17,8 @@ export async function run(): Promise<void> {
             mochaJunitReporterReporterOptions: {
                 mochaFile: path.resolve(__dirname, '..', '..', 'test-results.xml')
             }
-        }
+        },
+        timeout: 10000
     };
 
     addEnvVarsToMochaOptions(options);
