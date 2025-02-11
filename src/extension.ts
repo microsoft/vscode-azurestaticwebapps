@@ -6,8 +6,8 @@
 'use strict';
 
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { callWithTelemetryAndErrorHandling, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
-import { apiUtils, AzExtResourceType } from "@microsoft/vscode-azureresources-api";
+import { callWithTelemetryAndErrorHandling, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables, TreeElementStateManager } from '@microsoft/vscode-azext-utils';
+import { apiUtils, AzExtResourceType, getAzureResourcesExtensionApi } from "@microsoft/vscode-azureresources-api";
 import * as vscode from 'vscode';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';
@@ -18,9 +18,8 @@ import { registerCommands } from './commands/registerCommands';
 import { githubAuthProviderId, githubScopes, pwaChrome, shell, swa } from './constants';
 import { StaticWebAppDebugProvider } from './debug/StaticWebAppDebugProvider';
 import { ext } from './extensionVariables';
-import { getResourceGroupsApi } from './getExtensionApi';
 import { RemoteRepoApi } from './RemoteRepoApi';
-import { StaticWebAppResolver } from './StaticWebAppResolver';
+import { StaticWebAppsBranchDataProvider } from './tree/v2/StaticWebAppsBranchDataProvider';
 
 export async function activate(context: vscode.ExtensionContext, perfStats: { loadStartTime: number; loadEndTime: number }, ignoreBundle?: boolean): Promise<apiUtils.AzureExtensionApiProvider> {
     // the entry point for vscode.dev is this activate, not main.js, so we need to instantiate perfStats here
@@ -52,8 +51,13 @@ export async function activate(context: vscode.ExtensionContext, perfStats: { lo
         context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider(swa, new StaticWebAppDebugProvider(), vscode.DebugConfigurationProviderTriggerKind.Initial));
         context.subscriptions.push(vscode.tasks.registerTaskProvider(shell, new SwaTaskProvider()));
 
-        ext.rgApi = await getResourceGroupsApi();
-        ext.rgApi.registerApplicationResourceResolver(AzExtResourceType.StaticWebApps, new StaticWebAppResolver());
+        // ext.rgApi = await getResourceGroupsApi();
+        // ext.rgApi.registerApplicationResourceResolver(AzExtResourceType.StaticWebApps, new StaticWebAppResolver());
+
+        ext.state = new TreeElementStateManager();
+        ext.rgApiV2 = await getAzureResourcesExtensionApi(context, '2.0.0');
+        ext.branchDataProvider = new StaticWebAppsBranchDataProvider();
+        ext.rgApiV2.resources.registerAzureResourceBranchDataProvider(AzExtResourceType.StaticWebApps, ext.branchDataProvider);
 
         ext.remoteRepoApi = new RemoteRepoApi();
         registerSwaCliTaskEvents();
