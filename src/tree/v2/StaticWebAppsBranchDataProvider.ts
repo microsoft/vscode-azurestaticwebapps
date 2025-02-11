@@ -62,8 +62,7 @@ export class StaticWebAppsBranchDataProvider extends vscode.Disposable implement
     }
 
     async getTreeItem(element: TreeElementBase): Promise<vscode.TreeItem> {
-        const ti = await element.getTreeItem();
-        return ti;
+        return await element.getTreeItem();
     }
 
     refresh(element?: TreeElementBase): void {

@@ -95,9 +95,6 @@ export class StaticWebAppItem {
         return `${owner}/${name}`;
     }
 
-    /**
-     * @throws Can throw an id parsing error if an improperly formed static web app resource id is encountered
-     */
     get resourceGroup(): string {
         return getResourceGroupFromId(this.id);
     }
