@@ -12,6 +12,7 @@ import { onlyGitHubSupported } from "../../constants";
 import { createWebSiteClient } from "../../utils/azureClients";
 import { getRepoFullname } from "../../utils/gitUtils";
 import { treeUtils } from "../../utils/treeUtils";
+import { StaticWebAppsItem } from "./StaticWebAppsBranchDataProvider";
 
 export interface StaticWebAppModel extends StaticSiteARMResource {
     id: string;
@@ -19,7 +20,7 @@ export interface StaticWebAppModel extends StaticSiteARMResource {
     resourceGroup: string;
 }
 
-export class StaticWebAppItem {
+export class StaticWebAppItem implements StaticWebAppsItem {
     static readonly contextValue: string = 'staticWebAppItem';
     static readonly contextValueRegExp: RegExp = new RegExp(StaticWebAppItem.contextValue);
     // Todo: childTypeLabel?
@@ -33,7 +34,7 @@ export class StaticWebAppItem {
         readonly subscription: AzureSubscription,
         private _staticWebApp: StaticWebAppModel,
     ) {
-        this.id = nonNullValueAndProp(this._staticWebApp, 'id');
+        this.id = nonNullProp(this._staticWebApp, 'id');
         this.name = nonNullProp(this._staticWebApp, 'name');
 
         if (this._staticWebApp.repositoryUrl) {

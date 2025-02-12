@@ -29,19 +29,31 @@ import { openYAMLConfigFile } from './openYAMLConfigFile';
 import { viewProperties } from './viewProperties';
 
 export function registerCommands(): void {
+    // static web app
     registerCommandWithTreeNodeUnwrapping('staticWebApps.createStaticWebApp', createStaticWebApp);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteEnvironment', deleteEnvironment);
+
+    // other
+    registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
+    registerCommandWithTreeNodeUnwrapping('staticWebApps.browse', browse);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.openInPortal', openInPortal);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.viewProperties', viewProperties);
+
+    // functions
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
-    registerCommandWithTreeNodeUnwrapping('staticWebApps.browse', browse);
+    registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
+
+    // github
     registerCommandWithTreeNodeUnwrapping('staticWebApps.showActions', showActions);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.action.rerun', rerunAction);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.action.cancel', cancelAction);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.cloneRepo', cloneRepo);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.openGitHubRepo', openGitHubRepo);
+    registerCommandWithTreeNodeUnwrapping('staticWebApps.openGitHubLog', openGitHubLog);
+
+    // app settings
     registerCommandWithTreeNodeUnwrapping('staticWebApps.appSettings.add', async (context: IActionContext, node?: AzExtParentTreeItem) => await createChildNode(context, new RegExp(AppSettingsTreeItem.contextValue), node));
     registerCommandWithTreeNodeUnwrapping('staticWebApps.appSettings.delete', async (context: IActionContext, node?: AzExtTreeItem) => await deleteNode(context, new RegExp(AppSettingTreeItem.contextValue), node));
     registerCommandWithTreeNodeUnwrapping('staticWebApps.appSettings.edit', editAppSetting);
@@ -49,11 +61,12 @@ export function registerCommands(): void {
     registerCommandWithTreeNodeUnwrapping('staticWebApps.appSettings.download', downloadAppSettings);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.appSettings.upload', uploadAppSettings);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.toggleAppSettingVisibility', async (context: IActionContext, node?: AppSettingTreeItem) => { await nonNullValue(node).toggleValueVisibility(context); }, 250);
-    registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
-    registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
+
+    // config
     registerCommandWithTreeNodeUnwrapping('staticWebApps.openYAMLConfigFile', openYAMLConfigFile);
     registerCommand('staticWebApps.createSwaConfigFile', createSwaConfigFile);
-    registerCommandWithTreeNodeUnwrapping('staticWebApps.openGitHubLog', openGitHubLog);
+
+    // cli
     registerCommand('staticWebApps.installOrUpdateStaticWebAppsCli', installOrUpdateSwaCli);
     registerCommand('staticWebApps.uninstallStaticWebAppsCli', uninstallSwaCli);
 
