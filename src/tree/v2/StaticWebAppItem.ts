@@ -3,15 +3,16 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { StaticSiteARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
-import { getResourceGroupFromId } from "@microsoft/vscode-azext-azureutils";
-import { callWithTelemetryAndErrorHandling, createContextValue, createSubscriptionContext, nonNullProp, nonNullValueAndProp, TreeElementBase, type IActionContext } from "@microsoft/vscode-azext-utils";
+import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
+import { getResourceGroupFromId, uiUtils } from "@microsoft/vscode-azext-azureutils";
+import { callWithTelemetryAndErrorHandling, createContextValue, createSubscriptionContext, ISubscriptionContext, nonNullProp, nonNullValueAndProp, type IActionContext } from "@microsoft/vscode-azext-utils";
 import { type AzureSubscription, type ViewPropertiesModel } from "@microsoft/vscode-azureresources-api";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 import { onlyGitHubSupported } from "../../constants";
 import { createWebSiteClient } from "../../utils/azureClients";
 import { getRepoFullname } from "../../utils/gitUtils";
 import { treeUtils } from "../../utils/treeUtils";
+import { EnvironmentItem } from "./EnvironmentItem";
 import { StaticWebAppsItem } from "./StaticWebAppsBranchDataProvider";
 
 export interface StaticWebAppModel extends StaticSiteARMResource {
@@ -56,13 +57,16 @@ export class StaticWebAppItem implements StaticWebAppsItem {
         };
     }
 
-    async getChildren(): Promise<TreeElementBase[]> {
-        const result = await callWithTelemetryAndErrorHandling('staticWebAppItem.getChildren', async (_context: IActionContext) => {
-            // Todo: Implement later
-            return undefined;
+    async getChildren(): Promise<EnvironmentItem[]> {
+        const children: EnvironmentItem[] | undefined = await callWithTelemetryAndErrorHandling('staticWebAppItem.getChildren', async (context: IActionContext) => {
+            const subscriptionContext: ISubscriptionContext = createSubscriptionContext(this.subscription);
+            const client: WebSiteManagementClient = await createWebSiteClient([context, subscriptionContext]);
+            const staticSiteBuilds: StaticSiteBuildARMResource[] = await uiUtils.listAllIterator(client.staticSites.listStaticSiteBuilds(this.resourceGroup, this.name));
+            return Promise.all(staticSiteBuilds.map(async (ssb) => await EnvironmentItem.createEnvironmentItem(context, this.subscription, this.staticWebApp, ssb)));
         });
 
-        return result ?? [];
+        // Todo: If no result, add error item or invalid item
+        return children ?? [];
     }
 
     static async Get(context: IActionContext, subscription: AzureSubscription, resourceGroup: string, name: string): Promise<StaticWebAppModel> {

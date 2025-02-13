@@ -202,6 +202,5 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
 
         this.gitHubConfigGroupTreeItems = await WorkflowGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
-
     }
 }
