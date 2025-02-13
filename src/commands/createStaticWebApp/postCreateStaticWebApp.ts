@@ -15,7 +15,6 @@ import { ResolvedStaticWebAppTreeItem } from "../../tree/StaticWebAppTreeItem";
 import { delay } from "../../utils/delay";
 import { getRepoFullname } from "../../utils/gitUtils";
 import { localize } from "../../utils/localize";
-import { browse } from "../browse";
 import { checkActionStatus } from "../github/actionCommands";
 import { createOctokitClient } from "../github/createOctokitClient";
 
@@ -75,7 +74,8 @@ export async function postCreateStaticWebApp(swaNode: ResolvedStaticWebAppTreeIt
                 const msgItem: MessageItem = success ? browseWebsite : showActionsMsg;
                 void window.showInformationMessage(deploymentMsg, msgItem).then(async input => {
                     if (input === browseWebsite) {
-                        await browse(context, realSwaNode);
+                        // mwf self note: Removed due to replacing browse with v2
+                        // await browse(context, realSwaNode);
                     } else if (input === showActionsMsg) {
                         await openUrl(nonNullValue(deployActionNode).data.html_url);
                     }

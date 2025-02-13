@@ -119,6 +119,10 @@ export class EnvironmentItem implements StaticWebAppsItem {
         // this.gitHubConfigGroupTreeItems = await WorkflowGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
     }
 
+    get browseUrl(): string {
+        return `https://${this.staticSiteBuild.hostname}`;
+    }
+
     get contextValue(): string {
         const values: string[] = [EnvironmentItem.contextValue];
         return createContextValue(values);
@@ -135,6 +139,5 @@ export class EnvironmentItem implements StaticWebAppsItem {
     }
 }
 
-// Todo: Browse
 // Todo: Compare children implementation
 // Todo: Delete implementation

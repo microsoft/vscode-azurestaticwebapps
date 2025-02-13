@@ -5,12 +5,13 @@
 
 import { StaticSiteARMResource, StaticSiteBuildARMResource, WebSiteManagementClient } from "@azure/arm-appservice";
 import { getResourceGroupFromId, uiUtils } from "@microsoft/vscode-azext-azureutils";
-import { callWithTelemetryAndErrorHandling, createContextValue, createSubscriptionContext, ISubscriptionContext, nonNullProp, nonNullValueAndProp, type IActionContext } from "@microsoft/vscode-azext-utils";
+import { callWithTelemetryAndErrorHandling, createContextValue, createGenericElement, createSubscriptionContext, createUniversallyUniqueContextValue, ISubscriptionContext, nonNullProp, nonNullValueAndProp, TreeElementBase, type IActionContext } from "@microsoft/vscode-azext-utils";
 import { type AzureSubscription, type ViewPropertiesModel } from "@microsoft/vscode-azureresources-api";
-import { TreeItem, TreeItemCollapsibleState } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
 import { onlyGitHubSupported } from "../../constants";
 import { createWebSiteClient } from "../../utils/azureClients";
 import { getRepoFullname } from "../../utils/gitUtils";
+import { localize } from "../../utils/localize";
 import { treeUtils } from "../../utils/treeUtils";
 import { EnvironmentItem } from "./EnvironmentItem";
 import { StaticWebAppsItem } from "./StaticWebAppsBranchDataProvider";
@@ -24,7 +25,6 @@ export interface StaticWebAppModel extends StaticSiteARMResource {
 export class StaticWebAppItem implements StaticWebAppsItem {
     static readonly contextValue: string = 'staticWebAppItem';
     static readonly contextValueRegExp: RegExp = new RegExp(StaticWebAppItem.contextValue);
-    // Todo: childTypeLabel?
 
     id: string;
     name: string;
@@ -57,7 +57,7 @@ export class StaticWebAppItem implements StaticWebAppsItem {
         };
     }
 
-    async getChildren(): Promise<EnvironmentItem[]> {
+    async getChildren(): Promise<TreeElementBase[]> {
         const children: EnvironmentItem[] | undefined = await callWithTelemetryAndErrorHandling('staticWebAppItem.getChildren', async (context: IActionContext) => {
             const subscriptionContext: ISubscriptionContext = createSubscriptionContext(this.subscription);
             const client: WebSiteManagementClient = await createWebSiteClient([context, subscriptionContext]);
@@ -65,8 +65,14 @@ export class StaticWebAppItem implements StaticWebAppsItem {
             return Promise.all(staticSiteBuilds.map(async (ssb) => await EnvironmentItem.createEnvironmentItem(context, this.subscription, this.staticWebApp, ssb)));
         });
 
-        // Todo: If no result, add error item or invalid item
-        return children ?? [];
+        return children ?? [
+            createGenericElement({
+                label: localize('failedToListStaticSiteBuilds', 'Failed to list static site builds.'),
+                contextValue: createUniversallyUniqueContextValue(['invalidTreeItem']),
+                description: localize('invalid', 'Invalid'),
+                iconPath: new ThemeIcon('warning'),
+            }),
+        ];
     }
 
     static async Get(context: IActionContext, subscription: AzureSubscription, resourceGroup: string, name: string): Promise<StaticWebAppModel> {
@@ -88,6 +94,10 @@ export class StaticWebAppItem implements StaticWebAppsItem {
     viewProperties: ViewPropertiesModel = {
         label: nonNullValueAndProp(this.staticWebApp, 'name'),
         data: this.staticWebApp,
+    }
+
+    get browseUrl(): string {
+        return `https://${this.staticWebApp.defaultHostname}`;
     }
 
     get contextValue(): string {

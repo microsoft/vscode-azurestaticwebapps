@@ -261,7 +261,7 @@
                 },
                 {
                     "command": "staticWebApps.browse",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /azureStatic(WebApp|Environment)/",
+                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /staticWebAppItem/i || viewItem =~ /environmentItem/i",
                     "group": "1@1"
                 },
                 {

@@ -3,19 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from '@microsoft/vscode-azext-utils';
-import { swaFilter } from '../constants';
-import { ext } from '../extensionVariables';
-import { EnvironmentTreeItem } from '../tree/EnvironmentTreeItem';
-import { ResolvedStaticWebAppTreeItem } from '../tree/StaticWebAppTreeItem';
+import { IActionContext, openUrl } from '@microsoft/vscode-azext-utils';
+import { EnvironmentItem } from '../tree/v2/EnvironmentItem';
+import { StaticWebAppItem } from '../tree/v2/StaticWebAppItem';
+import { pickEnvironment } from '../utils/pickItem/pickEnvironment';
 
-export async function browse(context: IActionContext, node?: ResolvedStaticWebAppTreeItem | EnvironmentTreeItem): Promise<void> {
-    if (!node) {
-        node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
-            filter: swaFilter,
-            expectedChildContextValue: EnvironmentTreeItem.contextValue,
-        });
-    }
-
-    await node.browse();
+export async function browse(context: IActionContext, item?: StaticWebAppItem | EnvironmentItem | { browseUrl: string }): Promise<void> {
+    item ??= await pickEnvironment(context);
+    await openUrl(item.browseUrl);
 }

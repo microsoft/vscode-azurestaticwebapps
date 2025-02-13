@@ -40,6 +40,6 @@ export async function pickStaticWebApp(context: IActionContext, options?: PickIt
     return await runQuickPickWizard(context, {
         promptSteps,
         title: options?.title,
-        showLoadingPrompt: options?.showLoadingPrompt
+        showLoadingPrompt: options?.showLoadingPrompt,
     });
 }
