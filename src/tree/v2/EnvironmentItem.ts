@@ -34,7 +34,7 @@ export class EnvironmentItem implements StaticWebAppsItem {
     localProjectPath: Uri | undefined;
 
     // Cached children
-    actionsTreeItem!: ActionsItem;
+    actionsTreeItem?: ActionsItem;
     // gitHubConfigGroupTreeItems!: WorkflowGroupTreeItem[];
     // appSettingsTreeItem?: AppSettingsTreeItem;
     // functionsTreeItem?: FunctionsTreeItem;
@@ -77,7 +77,11 @@ export class EnvironmentItem implements StaticWebAppsItem {
     }
 
     async getChildren(): Promise<TreeElementBase[]> {
-        return [this.actionsTreeItem];
+        const children: TreeElementBase[] = [];
+        if (this.actionsTreeItem) {
+            children.push(this.actionsTreeItem);
+        }
+        return children;
     }
 
     public static async createEnvironmentItem(context: IActionContext, subscription: AzureSubscription, swa: StaticWebAppModel, ssb: StaticSiteBuildARMResource): Promise<EnvironmentItem> {
