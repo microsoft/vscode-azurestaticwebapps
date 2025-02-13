@@ -36,21 +36,21 @@ export function registerCommands(): void {
     registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteEnvironment', deleteEnvironment);
 
     // other
-    registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });
-    registerCommandWithTreeNodeUnwrapping('staticWebApps.browse', browse);
+    registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });  // v2
+    registerCommandWithTreeNodeUnwrapping('staticWebApps.browse', browse);  // v2
     registerCommandWithTreeNodeUnwrapping('staticWebApps.openInPortal', openInPortal);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.viewProperties', viewProperties);
 
     // functions
     registerCommand('staticWebApps.createHttpFunction', createHttpFunction);
-    registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });
+    registerCommand('staticWebApps.showFunctionsDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AAacf3z'); });  // v2
 
     // github
     registerCommandWithTreeNodeUnwrapping('staticWebApps.showActions', showActions);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.action.rerun', rerunAction);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.action.cancel', cancelAction);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.cloneRepo', cloneRepo);
-    registerCommandWithTreeNodeUnwrapping('staticWebApps.openGitHubRepo', openGitHubRepo);
+    registerCommandWithTreeNodeUnwrapping('staticWebApps.openGitHubRepo', openGitHubRepo);  // v2
     registerCommandWithTreeNodeUnwrapping('staticWebApps.openGitHubLog', openGitHubLog);
 
     // app settings

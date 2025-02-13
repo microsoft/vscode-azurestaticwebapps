@@ -4,17 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IActionContext, openUrl } from '@microsoft/vscode-azext-utils';
-import { swaFilter } from '../../constants';
-import { ext } from '../../extensionVariables';
-import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
+import { EnvironmentItem } from '../../tree/v2/EnvironmentItem';
+import { pickEnvironment } from '../../utils/pickItem/pickEnvironment';
 
-export async function openGitHubRepo(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
-    if (!node) {
-        node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
-            filter: swaFilter,
-            expectedChildContextValue: EnvironmentTreeItem.contextValue
-        });
-    }
-
-    await openUrl(`${node.parent.repositoryUrl}/tree/${node.branch}`);
+export async function openGitHubRepo(context: IActionContext, item?: EnvironmentItem | { gitHubUrl: string }): Promise<void> {
+    item ??= await pickEnvironment(context);
+    await openUrl(item.gitHubUrl);
 }

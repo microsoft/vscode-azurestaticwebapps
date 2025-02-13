@@ -266,7 +266,7 @@
                 },
                 {
                     "command": "staticWebApps.openGitHubRepo",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem == azureStaticEnvironment",
+                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /environmentItem/i",
                     "group": "1@2"
                 },
                 {

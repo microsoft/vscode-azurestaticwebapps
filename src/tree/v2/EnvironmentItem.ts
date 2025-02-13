@@ -123,6 +123,10 @@ export class EnvironmentItem implements StaticWebAppsItem {
         return `https://${this.staticSiteBuild.hostname}`;
     }
 
+    get gitHubUrl(): string {
+        return `${this.repositoryUrl}/tree/${this.branch}`;
+    }
+
     get contextValue(): string {
         const values: string[] = [EnvironmentItem.contextValue];
         return createContextValue(values);

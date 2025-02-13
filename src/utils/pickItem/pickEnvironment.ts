@@ -11,7 +11,6 @@
 import { AzureResourceQuickPickWizardContext, ContextValueQuickPickStep, runQuickPickWizard, type AzureWizardPromptStep, type IActionContext, type QuickPickWizardContext } from "@microsoft/vscode-azext-utils";
 import { ext } from "../../extensionVariables";
 import { EnvironmentItem } from "../../tree/v2/EnvironmentItem";
-import { StaticWebAppItem } from "../../tree/v2/StaticWebAppItem";
 import { localize } from "../localize";
 import { PickItemOptions } from "./PIckItemOptions";
 import { getPickStaticWebAppSteps } from "./pickStaticWebApp";
@@ -25,7 +24,7 @@ export function getPickEnvironmentStep(): AzureWizardPromptStep<AzureResourceQui
     });
 }
 
-export async function pickEnvironment(context: IActionContext, options?: PickItemOptions): Promise<StaticWebAppItem> {
+export async function pickEnvironment(context: IActionContext, options?: PickItemOptions): Promise<EnvironmentItem> {
     const promptSteps: AzureWizardPromptStep<QuickPickWizardContext>[] = [
         ...getPickStaticWebAppSteps(),
         getPickEnvironmentStep(),
