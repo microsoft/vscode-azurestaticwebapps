@@ -10,7 +10,7 @@ import { createResourceClient } from "../../utils/azureClients";
 import { localize } from "../../utils/localize";
 import { StaticWebAppDeleteContext } from "./StaticWebAppDeleteContext";
 
-export class DeleteResourceGroupStep extends AzureWizardExecuteStep<StaticWebAppDeleteContext> {
+export class ResourceGroupDeleteStep extends AzureWizardExecuteStep<StaticWebAppDeleteContext> {
     public priority: number = 250;
 
     public async execute(context: StaticWebAppDeleteContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
