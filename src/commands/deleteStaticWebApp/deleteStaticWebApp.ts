@@ -8,14 +8,14 @@ import { ext } from '../../extensionVariables';
 import { StaticWebAppItem } from '../../tree/v2/StaticWebAppItem';
 import { createActivityContext } from '../../utils/activityUtils';
 import { localize } from '../../utils/localize';
+import { pickStaticWebApp } from '../../utils/pickItem/pickStaticWebApp';
 import { DeleteResourceGroupStep } from './DeleteResourceGroupStep';
 import { StaticWebAppDeleteConfirmStep } from './StaticWebAppDeleteConfirmStep';
 import { StaticWebAppDeleteContext } from './StaticWebAppDeleteContext';
 import { StaticWebAppDeleteStep } from './StaticWebAppDeleteStep';
 
-export async function deleteStaticWebApp(context: IActionContext, node?: StaticWebAppItem): Promise<void> {
-    // Todo: Add pick tree item logic for StaticWebAppItem which should be optional
-    const item = node as StaticWebAppItem;
+export async function deleteStaticWebApp(context: IActionContext, item?: StaticWebAppItem): Promise<void> {
+    item ??= await pickStaticWebApp(context);
 
     const subscriptionContext: ISubscriptionContext = createSubscriptionContext(item.subscription);
     const wizardContext: StaticWebAppDeleteContext = {
