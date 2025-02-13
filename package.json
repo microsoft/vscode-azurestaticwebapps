@@ -286,7 +286,7 @@
                 },
                 {
                     "command": "staticWebApps.deleteStaticWebApp",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /azureStaticWebApp/",
+                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /staticWebAppItem/",
                     "group": "3@2"
                 },
                 {

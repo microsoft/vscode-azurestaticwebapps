@@ -8,20 +8,21 @@ import { AzureWizardExecuteStep, nonNullProp } from "@microsoft/vscode-azext-uti
 import { Progress } from "vscode";
 import { createResourceClient } from "../../utils/azureClients";
 import { localize } from "../../utils/localize";
-import { IDeleteWizardContext } from "./IDeleteWizardContext";
+import { StaticWebAppDeleteContext } from "./StaticWebAppDeleteContext";
 
-export class DeleteResourceGroupStep extends AzureWizardExecuteStep<IDeleteWizardContext> {
+export class DeleteResourceGroupStep extends AzureWizardExecuteStep<StaticWebAppDeleteContext> {
     public priority: number = 250;
 
-    public async execute(context: IDeleteWizardContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
+    public async execute(context: StaticWebAppDeleteContext, progress: Progress<{ message?: string | undefined; increment?: number | undefined }>): Promise<void> {
         const resourceGroupName = nonNullProp(context, 'resourceGroupToDelete');
-        const message = localize('deleteResourceGroup', 'Deleting resource group "{0}"...', resourceGroupName);
+        const message = localize('deleteResourceGroup', 'Deleting resource group...');
         progress.report({ message });
-        const resourceClient: ResourceManagementClient = await createResourceClient([context, context.subscription]);
+
+        const resourceClient: ResourceManagementClient = await createResourceClient(context);
         await resourceClient.resourceGroups.beginDeleteAndWait(resourceGroupName);
     }
 
-    public shouldExecute(context: IDeleteWizardContext): boolean {
+    public shouldExecute(context: StaticWebAppDeleteContext): boolean {
         return !!context.resourceGroupToDelete;
     }
 }

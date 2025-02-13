@@ -6,38 +6,35 @@
 import { WebSiteManagementClient } from "@azure/arm-appservice";
 import { GenericResourceExpanded, ResourceManagementClient } from "@azure/arm-resources";
 import { uiUtils } from "@microsoft/vscode-azext-azureutils";
-import { AzureWizardExecuteStep, nonNullProp } from "@microsoft/vscode-azext-utils";
+import { AzureWizardExecuteStep } from "@microsoft/vscode-azext-utils";
 import { Progress } from "vscode";
 import { ext } from "../../extensionVariables";
 import { createResourceClient, createWebSiteClient } from "../../utils/azureClients";
 import { localize } from "../../utils/localize";
-import { IDeleteWizardContext } from "./IDeleteWizardContext";
+import { StaticWebAppDeleteContext } from "./StaticWebAppDeleteContext";
 
-export class StaticWebAppDeleteStep extends AzureWizardExecuteStep<IDeleteWizardContext> {
+export class StaticWebAppDeleteStep extends AzureWizardExecuteStep<StaticWebAppDeleteContext> {
     public priority: number = 100;
 
-    public async execute(context: IDeleteWizardContext, progress: Progress<{ message?: string; increment?: number }>): Promise<void> {
+    public async execute(context: StaticWebAppDeleteContext, progress: Progress<{ message?: string; increment?: number }>): Promise<void> {
+        progress.report({ message: localize('deletingSwa', 'Deleting static web app...') });
 
-        const swaNode = nonNullProp(context, 'node');
+        const resourceClient: ResourceManagementClient = await createResourceClient(context);
+        const resources: GenericResourceExpanded[] = await uiUtils.listAllIterator(resourceClient.resources.listByResourceGroup(context.staticWebApp.resourceGroup));
 
-        const message = localize('deleteSwa', 'Deleting static web app "{0}"...', swaNode.name);
-        progress.report({ message });
+        const client: WebSiteManagementClient = await createWebSiteClient(context);
+        await client.staticSites.beginDeleteStaticSiteAndWait(context.staticWebApp.resourceGroup, context.staticWebApp.name);
 
-        const resourceClient: ResourceManagementClient = await createResourceClient([context, context.subscription]);
-        const resources: GenericResourceExpanded[] = await uiUtils.listAllIterator(resourceClient.resources.listByResourceGroup(swaNode.resourceGroup));
-
-        const client: WebSiteManagementClient = await createWebSiteClient([context, context.subscription]);
-        await client.staticSites.beginDeleteStaticSiteAndWait(swaNode.resourceGroup, swaNode.name);
-        const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', swaNode.name);
+        const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted static web app "{0}".', context.staticWebApp.name);
         ext.outputChannel.appendLog(deleteSucceeded);
 
         // if there is only one resource in the resource group, delete it as well
         if (resources.length === 1) {
-            context.resourceGroupToDelete = swaNode.resourceGroup;
+            context.resourceGroupToDelete = context.staticWebApp.resourceGroup;
         }
     }
 
-    public shouldExecute(_wizardContext: IDeleteWizardContext): boolean {
-        return true;
+    public shouldExecute(context: StaticWebAppDeleteContext): boolean {
+        return !!context.staticWebApp;
     }
 }

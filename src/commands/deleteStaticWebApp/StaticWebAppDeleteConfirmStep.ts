@@ -5,11 +5,11 @@
 
 import { AzureWizardPromptStep, DialogResponses, nonNullValueAndProp } from '@microsoft/vscode-azext-utils';
 import { localize } from '../../utils/localize';
-import { IDeleteWizardContext } from './IDeleteWizardContext';
+import { StaticWebAppDeleteContext } from './StaticWebAppDeleteContext';
 
-export class ConfirmDeleteStep extends AzureWizardPromptStep<IDeleteWizardContext> {
-    public async prompt(context: IDeleteWizardContext): Promise<void> {
-        const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete static web app "{0}"?', nonNullValueAndProp(context.node, 'name'));
+export class StaticWebAppDeleteConfirmStep extends AzureWizardPromptStep<StaticWebAppDeleteContext> {
+    public async prompt(context: StaticWebAppDeleteContext): Promise<void> {
+        const confirmMessage: string = localize('deleteConfirmation', 'Are you sure you want to delete static web app "{0}"?', nonNullValueAndProp(context.staticWebApp, 'name'));
         await context.ui.showWarningMessage(confirmMessage, { modal: true }, DialogResponses.deleteResponse);
     }
 

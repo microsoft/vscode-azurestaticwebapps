@@ -18,7 +18,7 @@ import { createStaticWebApp, createStaticWebAppAdvanced } from './createStaticWe
 import { createSwaConfigFile } from './createSwaConfigFile';
 import { deleteEnvironment } from './deleteEnvironment';
 import { deleteNode } from './deleteNode';
-import { deleteStaticWebApp } from './deleteStaticWebApp/deleteStaticWebApp';
+import { deleteStaticWebApp } from "./deleteStaticWebApp/deleteStaticWebApp";
 import { cancelAction, rerunAction } from './github/actionCommands';
 import { cloneRepo } from './github/cloneRepo';
 import { openGitHubLog } from './github/jobLogs/openGitHubLog';
@@ -32,7 +32,7 @@ export function registerCommands(): void {
     // static web app
     registerCommandWithTreeNodeUnwrapping('staticWebApps.createStaticWebApp', createStaticWebApp);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
-    registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);
+    registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);  // v2
     registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteEnvironment', deleteEnvironment);
 
     // other

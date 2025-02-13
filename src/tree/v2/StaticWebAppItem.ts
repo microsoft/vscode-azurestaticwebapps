@@ -105,6 +105,5 @@ export class StaticWebAppItem implements StaticWebAppsItem {
     }
 }
 
-// Todo: Delete tree item impl
 // Todo: Compare children impl
 // Todo: Browse
