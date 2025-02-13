@@ -3,12 +3,11 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import type { ExecuteActivityContext, ISubscriptionActionContext } from "@microsoft/vscode-azext-utils";
-import { AzureSubscription } from "@microsoft/vscode-azureresources-api";
+import type { ExecuteActivityContext } from "@microsoft/vscode-azext-utils";
 import { StaticWebAppModel } from "../../tree/v2/StaticWebAppItem";
+import { StaticWebAppContext } from "../StaticWebAppContext";
 
-export interface StaticWebAppDeleteContext extends ISubscriptionActionContext, ExecuteActivityContext {
-    subscription: AzureSubscription;
+export interface StaticWebAppDeleteContext extends StaticWebAppContext, ExecuteActivityContext {
     resourceGroupToDelete?: string;
-    staticWebApp: StaticWebAppModel;
+    staticWebApp: StaticWebAppModel; // Require the existing static web app to be provided upfront
 }
