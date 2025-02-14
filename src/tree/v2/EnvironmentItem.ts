@@ -34,7 +34,7 @@ export class EnvironmentItem implements StaticWebAppsItem {
     localProjectPath: Uri | undefined;
 
     // Cached children
-    actionsTreeItem?: ActionsItem;
+    private actionsTreeItem?: ActionsItem;
     // gitHubConfigGroupTreeItems!: WorkflowGroupTreeItem[];
     // appSettingsTreeItem?: AppSettingsTreeItem;
     // functionsTreeItem?: FunctionsTreeItem;
@@ -42,18 +42,18 @@ export class EnvironmentItem implements StaticWebAppsItem {
     constructor(
         readonly subscription: AzureSubscription,
         readonly staticWebApp: StaticWebAppModel,
-        private staticSiteBuild: StaticSiteBuildARMResource,
+        private _staticSiteBuild: StaticSiteBuildARMResource,
     ) {
-        this.id = `${nonNullProp(staticWebApp, 'id')}/environments`;
+        this.id = `${staticWebApp.id}/environments/${_staticSiteBuild.name}`;
 
-        if (staticSiteBuild.sourceBranch) {
+        if (_staticSiteBuild.sourceBranch) {
             this.repositoryUrl = nonNullProp(staticWebApp, 'repositoryUrl');
-            this.branch = staticSiteBuild.sourceBranch;
+            this.branch = _staticSiteBuild.sourceBranch;
         } else {
             throw new Error(onlyGitHubSupported);
         }
 
-        this.isProduction = staticSiteBuild.buildId === 'default';
+        this.isProduction = _staticSiteBuild.buildId === 'default';
 
         // StaticSiteBuild source branch is formatted as GitHubAccount:branch name for non-production builds
         // split the : because branch names cannot contain colons
@@ -68,7 +68,7 @@ export class EnvironmentItem implements StaticWebAppsItem {
     getTreeItem(): TreeItem {
         return {
             id: this.id,
-            label: this.isProduction ? productionEnvironmentName : `${this.staticSiteBuild.pullRequestTitle}`,
+            label: this.label,
             description: this.description,
             contextValue: this.contextValue,
             iconPath: treeUtils.getIconPath('Azure-Static-Apps-Environment'),
@@ -96,7 +96,7 @@ export class EnvironmentItem implements StaticWebAppsItem {
         const client: WebSiteManagementClient = await createWebSiteClient([context, subscriptionContext]);
 
         const buildId: string = nonNullProp(this.staticSiteBuild, 'buildId');
-        this.staticSiteBuild = await client.staticSites.getStaticSiteBuild(this.staticWebApp.resourceGroup, this.staticWebApp.name, buildId);
+        this._staticSiteBuild = await client.staticSites.getStaticSiteBuild(this.staticWebApp.resourceGroup, this.staticWebApp.name, buildId);
         this.localProjectPath = getSingleRootFsPath();
         this.actionsTreeItem = new ActionsItem(this.id, ext.prefix, this.repositoryUrl, this.branch);
 
@@ -117,6 +117,10 @@ export class EnvironmentItem implements StaticWebAppsItem {
 
         this.inWorkspace = this.staticWebApp.repositoryUrl === remote && this.branch === branch;
         // this.gitHubConfigGroupTreeItems = await WorkflowGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
+    }
+
+    get label(): string {
+        return this.isProduction ? productionEnvironmentName : `${this.staticSiteBuild.pullRequestTitle}`;
     }
 
     get browseUrl(): string {
@@ -140,6 +144,10 @@ export class EnvironmentItem implements StaticWebAppsItem {
 
         const linkedTag: string = localize('linkedTag', '{0} (linked)', this.branch);
         return this.inWorkspace ? linkedTag : this.branch;
+    }
+
+    get staticSiteBuild(): StaticSiteBuildARMResource {
+        return this._staticSiteBuild;
     }
 }
 

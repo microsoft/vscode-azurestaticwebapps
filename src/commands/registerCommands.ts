@@ -16,7 +16,7 @@ import { createChildNode } from './createChildNode';
 import { createHttpFunction } from './createHttpFunction';
 import { createStaticWebApp, createStaticWebAppAdvanced } from './createStaticWebApp/createStaticWebApp';
 import { createSwaConfigFile } from './createSwaConfigFile';
-import { deleteEnvironment } from './deleteEnvironment';
+import { deleteEnvironment } from './deleteEnvironment/deleteEnvironment';
 import { deleteNode } from './deleteNode';
 import { deleteStaticWebApp } from "./deleteStaticWebApp/deleteStaticWebApp";
 import { cancelAction, rerunAction } from './github/actionCommands';
@@ -33,7 +33,7 @@ export function registerCommands(): void {
     registerCommandWithTreeNodeUnwrapping('staticWebApps.createStaticWebApp', createStaticWebApp);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.createStaticWebAppAdvanced', createStaticWebAppAdvanced);
     registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteStaticWebApp', deleteStaticWebApp);  // v2
-    registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteEnvironment', deleteEnvironment);
+    registerCommandWithTreeNodeUnwrapping('staticWebApps.deleteEnvironment', deleteEnvironment);  // v2
 
     // other
     registerCommand('staticWebApps.showDocumentation', async (_context: IActionContext) => { await openUrl('https://aka.ms/AA92xai'); });  // v2
