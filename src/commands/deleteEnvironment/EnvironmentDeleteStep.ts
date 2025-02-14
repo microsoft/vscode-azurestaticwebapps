@@ -24,7 +24,7 @@ export class EnvironmentDeleteStep extends AzureWizardExecuteStep<EnvironmentDel
         const client: WebSiteManagementClient = await createWebSiteClient(context);
         await client.staticSites.beginDeleteStaticSiteBuildAndWait(resourceGroupName, appName, buildId);
 
-        const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted environment "{0}".', context.staticSiteBuild.name);
+        const deleteSucceeded: string = localize('deleteSucceeded', 'Successfully deleted environment "{0}".', context.environmentName);
         ext.outputChannel.appendLog(deleteSucceeded);
 
         ext.state.notifyChildrenChanged(nonNullValueAndProp(context.staticWebApp, 'id'));
