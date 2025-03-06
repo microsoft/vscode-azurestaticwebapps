@@ -32,8 +32,8 @@ const testCases: ITestCase[] = [
 function verifyTaskForkWorkspace(testCase: ITestCase, task: Task) {
     const execution = task.execution as ShellExecution;
     if (testCase.hasDabConfig) {
-        const message = `Expected --data-api-location argument to${testCase.hasDabConfig ? '' : ' NOT'} be present in task shell execution. Found args: ${execution.args.join(' ')}`;
-        assert.strictEqual(execution.args.includes('--data-api-location'), testCase.hasDabConfig, message);
+        const message = `Expected --data-api-location argument to${testCase.hasDabConfig ? '' : ' NOT'} be present in task shell execution. Found args: ${execution.args?.join(' ')}`;
+        assert.strictEqual(execution.args?.includes('--data-api-location'), testCase.hasDabConfig, message);
     }
 }
 
