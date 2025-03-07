@@ -4,7 +4,7 @@
 
 ### Changed
 * [[940](https://github.com/microsoft/vscode-azurestaticwebapps/pull/940)] Automatically collect subscription and resource information for telemetry. [How to disable telemetry reporting](https://code.visualstudio.com/docs/supporting/FAQ#_how-to-disable-telemetry-reporting)
-* [[939](https://github.com/microsoft/vscode-azurestaticwebapps/pull/939)] Require a minimum version of VS Code 1.95.0 (October 2024)
+* [[939](https://github.com/microsoft/vscode-azurestaticwebapps/pull/939)] Require VS Code version 1.95.0 (October 2024) or greater
 
 ## 0.13.0 - 2025-01-15
 
