@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.13.1 - 2025-03-10
+## 0.13.1 - 2025-03-13
 
 ### Changed
 * [[940](https://github.com/microsoft/vscode-azurestaticwebapps/pull/940)] Automatically collect subscription and resource information for telemetry. [How to disable telemetry reporting](https://code.visualstudio.com/docs/supporting/FAQ#_how-to-disable-telemetry-reporting)
