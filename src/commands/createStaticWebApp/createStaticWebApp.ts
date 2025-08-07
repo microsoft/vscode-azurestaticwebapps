@@ -125,9 +125,11 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
     if (!context.advancedCreation) {
         wizardContext.sku = SkuListStep.getSkus()[0];
-        executeSteps.push(new ResourceGroupCreateStep());
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        executeSteps.push(new ResourceGroupCreateStep() as any);
     } else {
-        promptSteps.push(new ResourceGroupListStep());
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        promptSteps.push(new ResourceGroupListStep() as any);
     }
 
     promptSteps.push(new StaticWebAppNameStep(), new SkuListStep());
@@ -152,14 +154,16 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     const webProvider: string = 'Microsoft.Web';
 
     LocationListStep.setLocationSubset(wizardContext, Promise.resolve(locations), webProvider);
-    LocationListStep.addStep(wizardContext, promptSteps, {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+    LocationListStep.addStep(wizardContext, promptSteps as any, {
         placeHolder: localize('selectLocation', 'Select a region for Azure Functions API and staging environments'),
         noPicksMessage: localize('noRegions', 'No available regions.')
     });
 
     promptSteps.push(new BuildPresetListStep(), new AppLocationStep(), new ApiLocationStep(), new OutputLocationStep());
 
-    executeSteps.push(new VerifyProvidersStep([webProvider]));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+    executeSteps.push(new VerifyProvidersStep([webProvider]) as any);
     executeSteps.push(new StaticWebAppCreateStep());
 
     const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
