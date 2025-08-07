@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable, Event, Uri } from "vscode";
-import { APIState, PublishEvent, Repository } from "./git";
-import { Metadata, PostCommitCommandsProvider } from "./rrapi";
+import  { type Disposable, type Event, type Uri } from "vscode";
+import  { type APIState, type PublishEvent, type Repository } from "./git";
+import  { type Metadata, type PostCommitCommandsProvider } from "./rrapi";
 
 export interface IGit {
     readonly repositories: Repository[];

@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceManagementClient } from "@azure/arm-resources";
+import  { type ResourceManagementClient } from "@azure/arm-resources";
 import { AzureWizardExecuteStep, nonNullProp } from "@microsoft/vscode-azext-utils";
-import { Progress } from "vscode";
+import  { type Progress } from "vscode";
 import { createResourceClient } from "../../utils/azureClients";
 import { localize } from "../../utils/localize";
-import { IDeleteWizardContext } from "./IDeleteWizardContext";
+import  { type IDeleteWizardContext } from "./IDeleteWizardContext";
 
 export class DeleteResourceGroupStep extends AzureWizardExecuteStep<IDeleteWizardContext> {
     public priority: number = 250;

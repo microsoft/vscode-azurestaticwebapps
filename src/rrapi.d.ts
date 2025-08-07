@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationToken, Command, Disposable, Uri } from 'vscode';
-import { IGit } from './IGit';
-import { Ref, Repository } from './git';
+import  { type CancellationToken, type Command, type Disposable, type Uri } from 'vscode';
+import  { type IGit } from './IGit';
+import  { type Ref, type Repository } from './git';
 
 export interface InputBox {
     value: string;

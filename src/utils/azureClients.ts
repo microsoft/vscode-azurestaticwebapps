@@ -3,9 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebSiteManagementClient } from '@azure/arm-appservice';
-import type { ResourceManagementClient } from '@azure/arm-resources';
-import { AzExtClientContext, createAzureClient, parseClientContext } from '@microsoft/vscode-azext-azureutils';
+import  { type WebSiteManagementClient } from '@azure/arm-appservice';
+import  { type ResourceManagementClient } from '@azure/arm-resources';
+import  { type AzExtClientContext} from '@microsoft/vscode-azext-azureutils';
+import { createAzureClient, parseClientContext } from '@microsoft/vscode-azext-azureutils';
 
 // Lazy-load @azure packages to improve startup performance.
 // NOTE: The client is the only import that matters, the rest of the types disappear when compiled to JavaScript

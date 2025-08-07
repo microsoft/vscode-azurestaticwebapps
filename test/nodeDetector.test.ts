@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { Uri } from "vscode";
-import { DetectorResults, NodeConstants, NodeDetector } from '../extension.bundle';
+import  { type Uri } from "vscode";
+import  { type DetectorResults} from '../extension.bundle';
+import { NodeConstants, NodeDetector } from '../extension.bundle';
 import { getWorkspaceUri } from './testUtils';
 
 interface ITestCase {

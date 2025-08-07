@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConfigurationTarget, Uri, workspace, WorkspaceConfiguration } from "vscode";
+import  { type Uri, type WorkspaceConfiguration } from "vscode";
+import { ConfigurationTarget, workspace } from "vscode";
 import { ext } from "../extensionVariables";
 
 /**

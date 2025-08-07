@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtTreeItem, IActionContext } from '@microsoft/vscode-azext-utils';
+import  { type AzExtTreeItem, type IActionContext } from '@microsoft/vscode-azext-utils';
 import { commands } from 'vscode';
-import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
+import  { type ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { isResolvedStaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';

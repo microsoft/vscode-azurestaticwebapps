@@ -9,7 +9,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { ShellExecution, Task, workspace } from 'vscode';
+import  { type ShellExecution, type Task} from 'vscode';
+import { workspace } from 'vscode';
 import { SwaTaskProvider } from '../extension.bundle';
 import { getWorkspaceUri } from './testUtils';
 

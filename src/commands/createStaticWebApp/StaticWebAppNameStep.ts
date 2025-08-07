@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ResourceGroupListStep, resourceGroupNamingRules } from "@microsoft/vscode-azext-azureutils";
-import { AzureNameStep, IAzureNamingRules, nonNullProp } from "@microsoft/vscode-azext-utils";
+import  { type IAzureNamingRules} from "@microsoft/vscode-azext-utils";
+import { AzureNameStep, nonNullProp } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import { localize } from "../../utils/localize";
-import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import  { type IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export const staticWebAppNamingRules: IAzureNamingRules = {
     minLength: 1,

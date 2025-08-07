@@ -3,17 +3,19 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, UserCancelledError } from "@microsoft/vscode-azext-utils";
-import { AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
+import  { type IActionContext} from "@microsoft/vscode-azext-utils";
+import { UserCancelledError } from "@microsoft/vscode-azext-utils";
+import  { type AzureHostExtensionApi } from "@microsoft/vscode-azext-utils/hostapi";
 import { apiUtils } from '@microsoft/vscode-azureresources-api';
-import { Extension, commands, extensions } from "vscode";
-import { IGit } from "./IGit";
+import  { type Extension} from "vscode";
+import { commands, extensions } from "vscode";
+import  { type IGit } from "./IGit";
 import { remoteRepositoriesId } from "./constants";
 import { ext } from "./extensionVariables";
-import { GitExtension } from "./git";
+import  { type GitExtension } from "./git";
 import { localize } from "./utils/localize";
 import { getWorkspaceSetting } from "./utils/settingsUtils";
-import { AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
+import  { type AzureFunctionsExtensionApi } from "./vscode-azurefunctions.api";
 
 /**
  * @param installMessage Override default message shown if extension is not installed.

@@ -3,16 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
-import { Octokit } from "@octokit/rest";
-import { OctokitResponse } from "@octokit/types";
+import  { type AzExtTreeItem, type IActionContext, type TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem } from "@microsoft/vscode-azext-utils";
+import  { type Octokit } from "@octokit/rest";
+import  { type OctokitResponse } from "@octokit/types";
 import { ThemeIcon } from "vscode";
 import { createOctokitClient } from "../commands/github/createOctokitClient";
-import { ActionsListWorkflowRunsForRepoResponseData } from "../gitHubTypings";
+import  { type ActionsListWorkflowRunsForRepoResponseData } from "../gitHubTypings";
 import { getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { ActionTreeItem } from './ActionTreeItem';
-import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
+import  { type EnvironmentTreeItem } from "./EnvironmentTreeItem";
 
 export class ActionsTreeItem extends AzExtParentTreeItem {
 

@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse, WebSiteManagementClient } from '@azure/arm-appservice';
-import { AppSettingsClientProvider, IAppSettingsClient } from '@microsoft/vscode-azext-azureappsettings';
-import { IActionContext } from '@microsoft/vscode-azext-utils';
-import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
+import  { type StaticSitesCreateOrUpdateStaticSiteFunctionAppSettingsResponse, type WebSiteManagementClient } from '@azure/arm-appservice';
+import  { type AppSettingsClientProvider, type IAppSettingsClient } from '@microsoft/vscode-azext-azureappsettings';
+import  { type IActionContext } from '@microsoft/vscode-azext-utils';
+import  { type EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
 import { createWebSiteClient } from '../../utils/azureClients';
 
 export class SwaAppSettingsClientProvider implements AppSettingsClientProvider {

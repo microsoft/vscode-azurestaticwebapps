@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
-import { Endpoints } from "@octokit/types";
+import  { type RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
+import  { type Endpoints } from "@octokit/types";
 
 export type OrgForAuthenticatedUserData = Endpoints["GET /user"]["response"]["data"];
 export type ListOrgsForUserData = Endpoints["GET /user/orgs"]["response"]["data"][0];

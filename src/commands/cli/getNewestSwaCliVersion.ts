@@ -3,8 +3,9 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { AzExtPipelineResponse, sendRequestWithTimeout } from "@microsoft/vscode-azext-azureutils";
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import  { type AzExtPipelineResponse} from "@microsoft/vscode-azext-azureutils";
+import { sendRequestWithTimeout } from "@microsoft/vscode-azext-azureutils";
+import  { type IActionContext } from "@microsoft/vscode-azext-utils";
 import { swaCliPackageName } from "../../constants";
 import { localize } from "../../utils/localize";
 

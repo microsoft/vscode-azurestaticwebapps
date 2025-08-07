@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { DebugConfiguration, workspace } from 'vscode';
+import  { type DebugConfiguration} from 'vscode';
+import { workspace } from 'vscode';
 import { StaticWebAppDebugProvider } from '../extension.bundle';
 import { getWorkspaceUri } from './testUtils';
 

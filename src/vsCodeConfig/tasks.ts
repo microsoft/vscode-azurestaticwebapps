@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ShellExecution, ShellExecutionOptions, Task, TaskDefinition, workspace, WorkspaceConfiguration, WorkspaceFolder } from "vscode";
+import  { type ShellExecutionOptions, type TaskDefinition, type WorkspaceConfiguration, type WorkspaceFolder } from "vscode";
+import { ShellExecution, Task, workspace } from "vscode";
 import { shell, swa, swaWatchProblemMatcher } from "../constants";
 
 const tasksKey: string = 'tasks';

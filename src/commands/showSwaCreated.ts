@@ -3,11 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { callWithTelemetryAndErrorHandling, IActionContext } from "@microsoft/vscode-azext-utils";
-import { MessageItem, window } from "vscode";
+import  { type IActionContext } from "@microsoft/vscode-azext-utils";
+import { callWithTelemetryAndErrorHandling } from "@microsoft/vscode-azext-utils";
+import  { type MessageItem} from "vscode";
+import { window } from "vscode";
 import { showActionsMsg } from "../constants";
 import { ext } from "../extensionVariables";
-import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
+import  { type ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { localize } from "../utils/localize";
 import { showActions } from "./github/showActions";
 import { openYAMLConfigFile } from "./openYAMLConfigFile";

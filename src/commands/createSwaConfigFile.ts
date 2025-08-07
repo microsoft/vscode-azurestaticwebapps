@@ -3,9 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtFsExtra, IActionContext } from '@microsoft/vscode-azext-utils';
-import { MessageItem, window } from 'vscode';
-import { URI, Utils } from 'vscode-uri';
+import  { type IActionContext } from '@microsoft/vscode-azext-utils';
+import { AzExtFsExtra } from '@microsoft/vscode-azext-utils';
+import  { type MessageItem} from 'vscode';
+import { window } from 'vscode';
+import  { type URI} from 'vscode-uri';
+import { Utils } from 'vscode-uri';
 import { configFileName } from '../constants';
 import { localize } from '../utils/localize';
 import { selectWorkspaceFolder } from '../utils/workspaceUtils';

@@ -8,7 +8,7 @@ import { angularOutputLocation, appArtifactSubpathSetting, outputSubpathSetting 
 import { localize } from "../../utils/localize";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { validateLocationYaml } from "../../utils/yamlUtils";
-import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import  { type IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 import { addLocationTelemetry } from "./addLocationTelemetry";
 
 export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {

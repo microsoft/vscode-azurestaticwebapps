@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import * as path from 'path';
-import { Uri, workspace, WorkspaceFolder } from "vscode";
+import  { type Uri, type WorkspaceFolder } from "vscode";
+import { workspace } from "vscode";
 
 export function getWorkspaceUri(testWorkspaceName: string): Uri {
     let workspaceUri: Uri | undefined = undefined;

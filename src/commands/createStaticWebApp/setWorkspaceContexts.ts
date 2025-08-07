@@ -3,12 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from "@microsoft/vscode-azext-utils";
-import { WorkspaceFolder } from 'vscode';
-import { getGitWorkspaceState, GitWorkspaceState, remoteShortnameExists, VerifiedGitWorkspaceState, verifyGitWorkspaceForCreation, warnIfNotOnDefaultBranch } from "../../utils/gitUtils";
+import  { type IActionContext } from "@microsoft/vscode-azext-utils";
+import  { type WorkspaceFolder } from 'vscode';
+import  { type GitWorkspaceState, type VerifiedGitWorkspaceState} from "../../utils/gitUtils";
+import { getGitWorkspaceState, remoteShortnameExists, verifyGitWorkspaceForCreation, warnIfNotOnDefaultBranch } from "../../utils/gitUtils";
 import { localize } from '../../utils/localize';
 import { GitHubOrgListStep } from './GitHubOrgListStep';
-import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import  { type IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 
 export async function setGitWorkspaceContexts(context: IActionContext & Partial<IStaticWebAppWizardContext>, folder: WorkspaceFolder): Promise<void> {
     const gitWorkspaceState: GitWorkspaceState = await getGitWorkspaceState(context, folder.uri);

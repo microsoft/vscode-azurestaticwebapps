@@ -3,12 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeItemIconPath } from '@microsoft/vscode-azext-utils';
+import  { type TreeItemIconPath } from '@microsoft/vscode-azext-utils';
 import * as dayjs from 'dayjs';
 // eslint-disable-next-line import/no-internal-modules
 import * as relativeTime from 'dayjs/plugin/relativeTime';
 import { ThemeColor, ThemeIcon } from 'vscode';
-import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData, ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
+import  { type ActionsGetJobForWorkflowRunResponseData, type ActionsGetWorkflowRunResponseData, type ActionWorkflowStepData} from "../gitHubTypings";
+import { Conclusion, Status } from "../gitHubTypings";
 import { localize } from "./localize";
 
 dayjs.extend(relativeTime);

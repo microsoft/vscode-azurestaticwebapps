@@ -3,9 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { callWithTelemetryAndErrorHandling, DialogResponses, IActionContext, openUrl } from '@microsoft/vscode-azext-utils';
+import  { type IActionContext} from '@microsoft/vscode-azext-utils';
+import { callWithTelemetryAndErrorHandling, DialogResponses, openUrl } from '@microsoft/vscode-azext-utils';
 import * as semver from 'semver';
-import { MessageItem } from 'vscode';
+import  { type MessageItem } from 'vscode';
 import { installSwaCliUrl } from '../../constants';
 import { localize } from '../../utils/localize';
 import { getInstalledSwaCliVersion } from './getInstalledSwaCliVersion';

@@ -5,8 +5,10 @@
 
 import { createTestActionContext } from '@microsoft/vscode-azext-dev';
 import * as assert from 'assert';
-import { Position, Range, TextDocument, TextDocumentContentProvider, Uri, workspace } from 'vscode';
-import { BuildConfig, tryGetSelection } from "../extension.bundle";
+import  { type TextDocument, type TextDocumentContentProvider} from 'vscode';
+import { Position, Range, Uri, workspace } from 'vscode';
+import  { type BuildConfig} from "../extension.bundle";
+import { tryGetSelection } from "../extension.bundle";
 
 interface ISelectBuildConfigTestCase {
     workflowIndex: number;

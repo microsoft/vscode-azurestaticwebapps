@@ -1,6 +1,7 @@
-import { StaticSiteARMResource } from "@azure/arm-appservice";
-import { callWithTelemetryAndErrorHandling, IActionContext, ISubscriptionContext, nonNullProp } from "@microsoft/vscode-azext-utils";
-import { AppResource, AppResourceResolver, ResolvedAppResourceBase } from "@microsoft/vscode-azext-utils/hostapi";
+import  { type StaticSiteARMResource } from "@azure/arm-appservice";
+import  { type IActionContext, type ISubscriptionContext} from "@microsoft/vscode-azext-utils";
+import { callWithTelemetryAndErrorHandling, nonNullProp } from "@microsoft/vscode-azext-utils";
+import  { type AppResource, type AppResourceResolver, type ResolvedAppResourceBase } from "@microsoft/vscode-azext-utils/hostapi";
 import { StaticWebAppTreeItem } from "./tree/StaticWebAppTreeItem";
 import { createWebSiteClient } from "./utils/azureClients";
 import { getResourceGroupFromId } from "./utils/azureUtils";

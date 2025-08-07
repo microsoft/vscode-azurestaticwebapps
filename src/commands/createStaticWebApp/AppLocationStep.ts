@@ -8,7 +8,7 @@ import { appSubpathSetting, defaultAppLocation } from "../../constants";
 import { localize } from "../../utils/localize";
 import { getWorkspaceSetting } from "../../utils/settingsUtils";
 import { validateLocationYaml } from "../../utils/yamlUtils";
-import { IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
+import  { type IStaticWebAppWizardContext } from "./IStaticWebAppWizardContext";
 import { addLocationTelemetry } from "./addLocationTelemetry";
 
 export class AppLocationStep extends AzureWizardPromptStep<IStaticWebAppWizardContext> {

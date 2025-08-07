@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 // adopted from https://github.com/microsoft/vscode-pull-request-github/blob/main/src/api/api1.ts
-import { AzureExtensionApi, createApiProvider } from '@microsoft/vscode-azext-utils';
-import { apiUtils } from '@microsoft/vscode-azureresources-api';
+import  { type AzureExtensionApi} from '@microsoft/vscode-azext-utils';
+import { createApiProvider } from '@microsoft/vscode-azext-utils';
+import  { type apiUtils } from '@microsoft/vscode-azureresources-api';
 import * as vscode from 'vscode';
-import { IGit } from './IGit';
+import  { type IGit } from './IGit';
 import { revealTreeItem } from './commands/api/revealTreeItem';
-import { APIState, PublishEvent } from './git';
-import { PostCommitCommandsProvider, RemoteRepository } from './rrapi';
+import  { type APIState, type PublishEvent } from './git';
+import  { type PostCommitCommandsProvider, type RemoteRepository } from './rrapi';
 
 export class RemoteRepoApi implements apiUtils.AzureExtensionApiProvider, IGit, vscode.Disposable {
     private static _handlePool: number = 0;

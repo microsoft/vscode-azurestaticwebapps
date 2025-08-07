@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 // copied from https://github.com/microsoft/vscode/blob/master/extensions/git/src/api/git.d.ts
-import { Disposable, Event, ProviderResult, Uri } from 'vscode';
-import { IGit } from './IGit';
+import  { type Disposable, type Event, type ProviderResult, type Uri } from 'vscode';
+import  { type IGit } from './IGit';
 export { ProviderResult } from 'vscode';
 
 export interface Git {

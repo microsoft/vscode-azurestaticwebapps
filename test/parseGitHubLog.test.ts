@@ -5,7 +5,8 @@
 
 import * as assert from 'assert';
 import { FoldingRange } from 'vscode';
-import { createFoldingRanges, LogState, parseGitHubLog } from '../extension.bundle';
+import  { type LogState} from '../extension.bundle';
+import { createFoldingRanges, parseGitHubLog } from '../extension.bundle';
 
 suite('Parse response from GitHub downloadJobLogsForWorkflowRun API', () => {
     test('01 - Parse the entire job log', (() => {

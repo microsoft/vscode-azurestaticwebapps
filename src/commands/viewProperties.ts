@@ -3,8 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext, nonNullProp, nonNullValue, openReadOnlyJson } from '@microsoft/vscode-azext-utils';
-import { IAzureResourceTreeItem } from '../tree/IAzureResourceTreeItem';
+import  { type IActionContext} from '@microsoft/vscode-azext-utils';
+import { nonNullProp, nonNullValue, openReadOnlyJson } from '@microsoft/vscode-azext-utils';
+import  { type IAzureResourceTreeItem } from '../tree/IAzureResourceTreeItem';
 import { localize } from '../utils/localize';
 
 export async function viewProperties(_context: IActionContext, treeItem?: IAzureResourceTreeItem): Promise<void> {

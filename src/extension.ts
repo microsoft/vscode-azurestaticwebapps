@@ -6,8 +6,10 @@
 'use strict';
 
 import { registerAzureUtilsExtensionVariables } from '@microsoft/vscode-azext-azureutils';
-import { callWithTelemetryAndErrorHandling, createAzExtOutputChannel, createExperimentationService, IActionContext, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
-import { apiUtils, AzExtResourceType } from "@microsoft/vscode-azureresources-api";
+import  { type IActionContext} from '@microsoft/vscode-azext-utils';
+import { callWithTelemetryAndErrorHandling, createAzExtOutputChannel, createExperimentationService, registerUIExtensionVariables } from '@microsoft/vscode-azext-utils';
+import  { type apiUtils} from "@microsoft/vscode-azureresources-api";
+import { AzExtResourceType } from "@microsoft/vscode-azureresources-api";
 import * as vscode from 'vscode';
 import { SwaTaskProvider } from './cli/SwaCliTaskProvider';
 import { registerSwaCliTaskEvents } from './commands/cli/swaCliTask';

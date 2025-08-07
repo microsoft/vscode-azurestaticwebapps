@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IActionContext } from "@microsoft/vscode-azext-utils";
+import  { type IActionContext } from "@microsoft/vscode-azext-utils";
 import * as path from 'path';
 import { workspace } from 'vscode';
 import { apiSubpathSetting, defaultApiLocation } from '../constants';
 import { getFunctionsApi } from '../getExtensionApi';
 import { localize } from '../utils/localize';
 import { getWorkspaceSetting } from '../utils/settingsUtils';
-import { AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
+import  { type AzureFunctionsExtensionApi } from '../vscode-azurefunctions.api';
 import { promptForApiFolder, tryGetApiLocations } from './createStaticWebApp/tryGetApiLocations';
 
 export async function createHttpFunction(context: IActionContext): Promise<void> {
