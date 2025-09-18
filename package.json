@@ -496,10 +496,10 @@
     "dependencies": {
         "@azure/arm-appservice": "^11.0.0",
         "@azure/arm-resources": "^5.0.0",
-        "@microsoft/vscode-azext-azureappsettings": "^0.2.10",
-        "@microsoft/vscode-azext-azureutils": "^3.5.1",
-        "@microsoft/vscode-azext-utils": "^3.4.1",
-        "@microsoft/vscode-azureresources-api": "^2.6.0",
+        "@microsoft/vscode-azext-azureappsettings": "^0.2.11",
+        "@microsoft/vscode-azext-azureutils": "^3.5.2",
+        "@microsoft/vscode-azext-utils": "^3.4.2",
+        "@microsoft/vscode-azureresources-api": "^2.6.2",
         "@octokit/rest": "^18.5.2",
         "buffer": "^6.0.3",
         "dayjs": "^1.11.0",
@@ -511,8 +511,5 @@
     },
     "extensionDependencies": [
         "ms-azuretools.vscode-azureresourcegroups"
-    ],
-    "enabledApiProposals": [
-        "authenticationChallenges"
     ]
 }
