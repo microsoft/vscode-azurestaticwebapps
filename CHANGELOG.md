@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.13.2 - 2025-09-25
+
+### Changed
+* [[972](https://github.com/microsoft/vscode-azurestaticwebapps/pull/972)] Changes were made to support the upcoming multi-factor authentication requirements for Azure
+
 ## 0.13.1 - 2025-03-13
 
 ### Changed
