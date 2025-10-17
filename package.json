@@ -500,7 +500,7 @@
         "@microsoft/vscode-azext-azureutils": "^3.5.2",
         "@microsoft/vscode-azext-utils": "^3.5.1",
         "@microsoft/vscode-azureresources-api": "^2.6.3",
-        "@octokit/rest": "^18.5.2",
+        "@octokit/rest": "^22.0.0",
         "buffer": "^6.0.3",
         "dayjs": "^1.11.0",
         "git-url-parse": "^13.1.0",
