@@ -18,11 +18,13 @@ export async function createTreeItemsWithErrorHandling<TSource>(
             const item: AzExtTreeItem | undefined = await createTreeItem(source);
             if (item) {
                 // Verify at least the following properties can be accessed without an error
+                /* eslint-disable @typescript-eslint/no-unused-expressions */
                 item.contextValue;
                 item.description;
                 item.label;
                 item.iconPath;
                 item.id;
+                /* eslint-enable @typescript-eslint/no-unused-expressions */
 
                 treeItems.push(item);
             }

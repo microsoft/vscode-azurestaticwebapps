@@ -16,8 +16,10 @@ export type ActionWorkflowStepData = {
     conclusion: string | null;
     name: string;
     number: number;
+    /* eslint-disable @typescript-eslint/naming-convention */
     started_at?: string | null | undefined;
     completed_at?: string | null | undefined;
+    /* eslint-enable @typescript-eslint/naming-convention */
 };
 
 export type ActionsGetWorkflowRunResponseData = Endpoints["GET /repos/{owner}/{repo}/actions/runs/{run_id}"]["response"]["data"];

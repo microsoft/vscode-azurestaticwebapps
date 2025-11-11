@@ -20,10 +20,12 @@ export async function parseYamlFile(context: IActionContext, yamlFilePath: strin
 
     if (buildDeployStep) {
         return {
+            /* eslint-disable @typescript-eslint/naming-convention */
             app_location: buildDeployStep.with?.app_location,
             api_location: buildDeployStep.with?.api_location,
             output_location: buildDeployStep.with?.output_location,
             app_artifact_location: buildDeployStep.with?.app_artifact_location
+            /* eslint-enable @typescript-eslint/naming-convention */
         };
     }
 
@@ -61,7 +63,7 @@ export function validateLocationYaml(value: string, buildConfig: BuildConfig): s
     try {
         parse(yamlString);
         return;
-    } catch (e) {
+    } catch {
         return `Invalid YAML syntax: ${yamlString}`;
     }
 }

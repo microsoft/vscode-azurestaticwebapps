@@ -19,7 +19,7 @@ export class ActionsTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = 'azureStaticActions';
     public readonly contextValue: string = ActionsTreeItem.contextValue;
     public readonly childTypeLabel: string = localize('action', 'action');
-    public parent!: EnvironmentTreeItem;
+    public declare parent: EnvironmentTreeItem;
 
     constructor(parent: EnvironmentTreeItem) {
         super(parent);

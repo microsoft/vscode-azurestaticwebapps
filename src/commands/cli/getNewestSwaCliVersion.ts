@@ -9,6 +9,7 @@ import { swaCliPackageName } from "../../constants";
 import { localize } from "../../utils/localize";
 
 interface IPackageMetadata {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     "dist-tags": {
         [tag: string]: string;
         latest: string;
@@ -21,10 +22,10 @@ export async function getNewestSwaCliVersion(context: IActionContext): Promise<s
             method: 'GET',
             url: `https://registry.npmjs.org/${swaCliPackageName}`
         }, 15000, undefined);
-         
+
         const packageMetadata: IPackageMetadata = <IPackageMetadata>response.parsedBody;
         return packageMetadata["dist-tags"].latest;
-    } catch (error) {
+    } catch {
         throw new Error(localize('noLatestTag', 'Failed to retrieve then latest version of the Azure Static Web Apps CLI.'));
     }
 }

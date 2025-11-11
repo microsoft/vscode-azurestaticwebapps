@@ -15,10 +15,10 @@ import { ActionsTreeItem } from "./ActionsTreeItem";
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
 
-export class ActionTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
+export class ActionTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem<ActionsGetWorkflowRunResponseData> {
     public static contextValueCompleted: string = 'azureStaticActionCompleted';
     public static contextValueInProgress: string = 'azureStaticActionInProgress';
-    public parent!: ActionsTreeItem;
+    public declare parent: ActionsTreeItem;
     public childTypeLabel: string = localize('job', 'job');
     public data: ActionsGetWorkflowRunResponseData;
 
@@ -54,6 +54,7 @@ export class ActionTreeItem extends AzExtParentTreeItem implements IAzureResourc
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const { owner, name } = getRepoFullname(this.parent.repositoryUrl);
         const octokitClient: Octokit = await createOctokitClient(context);
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const response: OctokitResponse<ActionsListJobsForWorkflowRunResponseData> = await octokitClient.actions.listJobsForWorkflowRun({ owner: owner, repo: name, run_id: this.data.id });
 
         return await this.createTreeItemsWithErrorHandling(
@@ -71,6 +72,7 @@ export class ActionTreeItem extends AzExtParentTreeItem implements IAzureResourc
     public async refreshImpl(context: IActionContext): Promise<void> {
         const { owner, name } = getRepoFullname(this.parent.repositoryUrl);
         const octokitClient: Octokit = await createOctokitClient(context);
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const response: OctokitResponse<ActionsGetWorkflowRunResponseData> = await octokitClient.actions.getWorkflowRun({ owner: owner, repo: name, run_id: this.data.id });
         this.data = response.data;
     }
