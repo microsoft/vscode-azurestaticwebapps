@@ -8,6 +8,7 @@ import * as cp from 'child_process';
 import * as os from 'os';
 import { localize } from './localize';
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace cpUtils {
     export async function executeCommand(outputChannel: IAzExtOutputChannel | undefined, workingDirectory: string | undefined, command: string, ...args: string[]): Promise<string> {
         const result: ICommandResult = await tryExecuteCommand(outputChannel, workingDirectory, command, ...args);

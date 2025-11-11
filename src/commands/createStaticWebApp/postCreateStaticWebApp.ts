@@ -39,6 +39,7 @@ export async function postCreateStaticWebApp(swaNode: ResolvedStaticWebAppTreeIt
                     const filteredTreeItems: ActionTreeItem[] = actionTreeItems.filter(ti => { return ti.data.status !== Status.Completed; }); // only looking at on-going or queued jobs
 
                     const promises: Promise<void>[] = filteredTreeItems.map(async ti => {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
                         const workflow: ActionsGetWorkflowResponseData = (await octokitClient.actions.getWorkflow({ owner, repo: name, workflow_id: ti.data.workflow_id })).data;
                         // example of defaultHostname: 'black-bay-07228711e.azurestaticapps.net'
                         // example of workflow path: '.github/workflows/azure-static-web-apps-black-bay-07228711e.yml'
@@ -50,7 +51,7 @@ export async function postCreateStaticWebApp(swaNode: ResolvedStaticWebAppTreeIt
 
                     // the map will create an array of promises that will get resolved in parallel here
                     await Promise.all(promises);
-                } catch (err) {
+                } catch {
                     // ignore and retry
                 }
 

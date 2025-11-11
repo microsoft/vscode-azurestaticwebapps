@@ -73,7 +73,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
                     const detectorResult = await detector.detect(folder.uri);
                     // comma separated list of all frameworks detected in this project
-                    context.telemetry.properties.detectedFrameworks = `(${detectorResult?.frameworks.map(fi => fi.framework).join('), (')})` ?? 'N/A';
+                    context.telemetry.properties.detectedFrameworks = detectorResult ? `(${detectorResult.frameworks.map(fi => fi.framework).join('), (')})` : 'N/A';
                     context.telemetry.properties.rootHasSrcFolder = (await AzExtFsExtra.pathExists(Uri.joinPath(folder.uri, NodeConstants.srcFolderName))).toString();
 
                     const subfolderDetectorResults: DetectorResults[] = [];

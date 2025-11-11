@@ -5,7 +5,7 @@
 
 // adapted from Oryx's C# implementation
 // https://github.com/microsoft/Oryx/blob/main/src/Detector/Node/NodeConstants.cs
-
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace NodeConstants {
     export const PlatformName = "nodejs";
     export const NpmToolName = "npm";

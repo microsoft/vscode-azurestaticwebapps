@@ -69,6 +69,7 @@ export interface Remote {
 }
 
 export const enum Status {
+    /* eslint-disable @typescript-eslint/naming-convention */
     INDEX_MODIFIED,
     INDEX_ADDED,
     INDEX_DELETED,
@@ -88,6 +89,7 @@ export const enum Status {
     BOTH_ADDED,
     BOTH_DELETED,
     BOTH_MODIFIED
+    /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 export interface Change {

@@ -7,7 +7,7 @@ import { IActionContext, nonNullProp, nonNullValue, openReadOnlyJson } from '@mi
 import { IAzureResourceTreeItem } from '../tree/IAzureResourceTreeItem';
 import { localize } from '../utils/localize';
 
-export async function viewProperties(_context: IActionContext, treeItem?: IAzureResourceTreeItem): Promise<void> {
+export async function viewProperties(_context: IActionContext, treeItem?: IAzureResourceTreeItem<unknown>): Promise<void> {
     const node = nonNullValue(treeItem);
 
     if (!node.data) {

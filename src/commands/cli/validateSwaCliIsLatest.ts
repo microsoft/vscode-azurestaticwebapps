@@ -72,7 +72,7 @@ export async function hasNpm(): Promise<boolean> {
     try {
         await cpUtils.executeCommand(undefined, undefined, 'npm', '--version');
         return true;
-    } catch (e) {
+    } catch {
         return false;
     }
 }

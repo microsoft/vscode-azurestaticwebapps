@@ -116,7 +116,7 @@ export class NodeDetector {
             const yamlFile = await AzExtFsExtra.readFile(yamlFileUri);
             parse(yamlFile);
             return true;
-        } catch (err) {
+        } catch {
             return false;
         }
     }
@@ -179,7 +179,7 @@ export class NodeDetector {
                 //Default Client for Lerna is npm.
                 npmClientName = NodeConstants.NpmToolName;
             }
-        } catch (err) {
+        } catch {
             console.error(`Exception caught while trying to deserialize ${NodeConstants.LernaJsonFileName}`);
         }
         return npmClientName;

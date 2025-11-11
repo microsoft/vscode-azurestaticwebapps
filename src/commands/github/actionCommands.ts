@@ -29,6 +29,7 @@ export async function rerunAction(context: IActionContext, node?: ActionTreeItem
 
     const client: Octokit = await createOctokitClient(context);
     const owner = nonNullProp(node.data.repository, 'owner');
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     await client.actions.reRunWorkflow({ owner: owner.login, repo: node.data.repository.name, run_id: node.data.id });
     await node.refresh(context); // need to refresh to update the data
     await checkActionStatus(context, node);
@@ -48,6 +49,7 @@ export async function cancelAction(context: IActionContext, node?: ActionTreeIte
 
     const client: Octokit = await createOctokitClient(context);
     const owner = nonNullProp(node.data.repository, 'owner');
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     await client.actions.cancelWorkflowRun({ owner: owner.login, repo: node.data.repository.name, run_id: node.data.id });
     await node.refresh(context); // need to refresh to update the data
     await checkActionStatus(context, node);
@@ -61,6 +63,7 @@ export async function checkActionStatus(context: IActionContext, node: ActionTre
 
     const pollingOperation: () => Promise<boolean> = async () => {
 
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         workflowRun = (await client.actions.getWorkflowRun({ owner: owner.login, repo: node.data.repository.name, run_id: node.data.id })).data;
         if (ensureStatus(workflowRun) === Status.Completed) {
             if (!initialCreate) {
