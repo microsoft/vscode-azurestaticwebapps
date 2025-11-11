@@ -69,7 +69,7 @@ export async function tryGetReposGetResponseData(context: IActionContext, origin
 
 export function hasAdminAccessToRepo(repoData?: ReposGetResponseData): boolean {
     // to create a workflow, the user needs admin access so if it's not true, it will fail
-    return !!repoData?.permissions?.admin
+    return !!repoData?.permissions?.admin;
 }
 
 export async function tryGetRepoDataForCreation(context: IActionContext, localProjectPath?: Uri): Promise<ReposGetResponseData | undefined> {

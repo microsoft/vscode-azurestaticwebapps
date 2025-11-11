@@ -22,7 +22,7 @@ export class OutputLocationStep extends AzureWizardPromptStep<IStaticWebAppWizar
             learnMoreLink: 'https://aka.ms/SwaOutLoc',
             validateInput: (value: string): string | undefined => {
                 if (value === angularOutputLocation) {
-                    return localize('fillProjectName', 'Fill in the name of your Angular project.')
+                    return localize('fillProjectName', 'Fill in the name of your Angular project.');
                 }
                 return validateLocationYaml(value, 'output_location');
             }

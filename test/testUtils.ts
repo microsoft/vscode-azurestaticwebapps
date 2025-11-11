@@ -17,5 +17,5 @@ export function getWorkspaceUri(testWorkspaceName: string): Uri {
         }
     }
 
-    throw new Error(`Unable to find workspace "${testWorkspaceName}""`)
+    throw new Error(`Unable to find workspace "${testWorkspaceName}""`);
 }

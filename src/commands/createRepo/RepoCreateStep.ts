@@ -41,7 +41,7 @@ export class RepoCreateStep extends AzureWizardExecuteStep<IStaticWebAppWizardCo
         const remoteName: string = nonNullProp(context, 'newRemoteShortname');
 
         try {
-            await repo.addRemote(remoteName, gitHubRepoRes.clone_url)
+            await repo.addRemote(remoteName, gitHubRepoRes.clone_url);
             const branch: Branch = await repo.getBranch('HEAD');
             const pushingBranch: string = localize('pushingBranch', 'Pushing local branch "{0}" to GitHub repository "{1}"...', branch.name, context.newRepoName);
             ext.outputChannel.appendLog(pushingBranch);

@@ -27,7 +27,7 @@ export const openExistingProject = 'openExistingProject';
 export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'Only Static Web Apps linked to GitHub are supported at this time.');
 
 export const isStartGroup = (t: string): boolean => /##\[group\]/.test(t);
-export const isEndGroup = (t: string): boolean => /##\[endgroup\]/.test(t)
+export const isEndGroup = (t: string): boolean => /##\[endgroup\]/.test(t);
 
 export const githubAuthProviderId: string = 'github';
 // same scopes as the GitHub extension so we won't have to prompt for auth again

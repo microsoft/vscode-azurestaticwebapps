@@ -51,7 +51,7 @@ suite('SWA task provider', async () => {
 
                 tasks.forEach((task) => {
                     verifyTaskForkWorkspace(testCase, task);
-                })
+                });
             }
         });
     }

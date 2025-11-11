@@ -31,7 +31,7 @@ export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobFo
                 colorId = 'testing.iconSkipped';
                 break;
             case Conclusion.Success:
-                id = 'pass'
+                id = 'pass';
                 colorId = 'testing.iconPassed';
                 break;
         }

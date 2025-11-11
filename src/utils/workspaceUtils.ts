@@ -90,7 +90,7 @@ export async function showNoWorkspacePrompt(context: IActionContext): Promise<vo
         await cloneRepo(context, '');
         context.telemetry.properties.noWorkspaceResult = 'cloneProject';
     } else if (result === openExistingProjectMsg) {
-        await openFolder(context)
+        await openFolder(context);
         context.telemetry.properties.noWorkspaceResult = openExistingProject;
     } else if (result === openRemoteProjectMsg) {
         await commands.executeCommand('remoteHub.openRepository');
