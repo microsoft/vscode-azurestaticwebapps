@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { DebugConfiguration, workspace } from 'vscode';
-import { StaticWebAppDebugProvider } from '../extension.bundle';
+import { StaticWebAppDebugProvider } from '../src/debug/StaticWebAppDebugProvider';
 import { getWorkspaceUri } from './testUtils';
 
 interface ITestCase {

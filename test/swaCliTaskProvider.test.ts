@@ -10,7 +10,7 @@
 
 import * as assert from 'assert';
 import { ShellExecution, Task, workspace } from 'vscode';
-import { SwaTaskProvider } from '../extension.bundle';
+import { SwaTaskProvider } from '../src/cli/SwaCliTaskProvider';
 import { getWorkspaceUri } from './testUtils';
 
 interface ITestCase {
