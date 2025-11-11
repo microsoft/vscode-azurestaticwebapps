@@ -3,10 +3,11 @@
  *  Licensed under the MIT License. See LICENSE.md in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createTestActionContext } from '@microsoft/vscode-azext-dev';
+import { createTestActionContext } from '@microsoft/vscode-azext-utils';
 import * as assert from 'assert';
 import { Position, Range, TextDocument, TextDocumentContentProvider, Uri, workspace } from 'vscode';
-import { BuildConfig, tryGetSelection } from "../extension.bundle";
+import { tryGetSelection } from '../src/commands/openYAMLConfigFile';
+import { BuildConfig } from '../src/tree/WorkflowGroupTreeItem';
 
 interface ISelectBuildConfigTestCase {
     workflowIndex: number;
