@@ -33,7 +33,7 @@ export class StaticWebAppDebugProvider implements DebugConfigurationProvider {
 
             const appFolders = await detectAppFoldersInWorkspace(context, folder);
             context.telemetry.measurements.appCount = appFolders.length;
-            const foundPresets: IBuildPreset[] = []
+            const foundPresets: IBuildPreset[] = [];
             appFolders.forEach((appFolder) => {
                 const buildPreset = buildPresets.find((preset) => appFolder.frameworks.find((info) => info.framework === preset.displayName));
 

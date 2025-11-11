@@ -21,7 +21,7 @@ export async function getNewestSwaCliVersion(context: IActionContext): Promise<s
             method: 'GET',
             url: `https://registry.npmjs.org/${swaCliPackageName}`
         }, 15000, undefined);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+         
         const packageMetadata: IPackageMetadata = <IPackageMetadata>response.parsedBody;
         return packageMetadata["dist-tags"].latest;
     } catch (error) {

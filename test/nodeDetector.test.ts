@@ -148,7 +148,7 @@ suite('Node detector', () => {
                 isYarnLockFileValidYamlFormat: false,
             }
         }
-    ]
+    ];
 
     for (const t of testCases) {
         test(t.workspaceFolder, async () => {

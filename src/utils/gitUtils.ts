@@ -76,7 +76,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const gitApi: IGit = await getGitApi();
         try {
             if (gitApi.init) {
-                repo = await gitApi.init(uri)
+                repo = await gitApi.init(uri);
             }
         } catch (err) {
             handleGitError(err);
@@ -113,7 +113,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         }
 
         if (await getApiExport(remoteRepositoriesId)) {
-            buttons.push(openRemoteProjectMsg)
+            buttons.push(openRemoteProjectMsg);
         }
 
         const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, ...buttons);
@@ -133,7 +133,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     }
 
     const verifiedRepo: Repository = nonNullValue(repo ?? undefined);
-    return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo }
+    return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo };
 }
 
 export async function tryGetRemote(uri?: Uri): Promise<string | undefined> {
@@ -195,7 +195,7 @@ export async function tryGetLocalBranch(): Promise<string | undefined> {
 }
 
 export async function warnIfNotOnDefaultBranch(context: IActionContext, gitState: VerifiedGitWorkspaceState): Promise<void> {
-    const defaultBranch: string | undefined = await tryGetDefaultBranch(context, gitState)
+    const defaultBranch: string | undefined = await tryGetDefaultBranch(context, gitState);
     context.telemetry.properties.defaultBranch = defaultBranch;
     context.telemetry.properties.notOnDefault = 'false';
     const { repo } = gitState;
@@ -228,7 +228,7 @@ export async function gitPull(repo: Repository): Promise<void> {
         try {
             await repo.pull();
         } catch (error) {
-            handleGitError(error)
+            handleGitError(error);
         }
     });
 }
@@ -237,7 +237,7 @@ async function tryGetDefaultBranch(context: IActionContext, gitState: VerifiedGi
     let defaultBranches: string[];
 
     if (gitState.remoteRepo) {
-        defaultBranches = [gitState.remoteRepo.default_branch]
+        defaultBranches = [gitState.remoteRepo.default_branch];
         context.telemetry.properties.defaultBranchSource = 'remoteConfig';
     } else {
         context.telemetry.properties.defaultBranchSource = 'defaultConfig';

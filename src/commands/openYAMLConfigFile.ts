@@ -116,9 +116,9 @@ export async function tryGetSelection(context: IActionContext, configDocument: T
                     return configDocument.validateRange(new Range(startPosition, endPosition));
                 }
             } else if ('items' in yamlNode) {
-                yamlNodes.push(...yamlNode.items)
+                yamlNodes.push(...yamlNode.items);
             } else if ('value' in yamlNode && typeof yamlNode.value === 'object') {
-                yamlNodes.push(yamlNode.value as YamlNode)
+                yamlNodes.push(yamlNode.value as YamlNode);
             }
 
             yamlNode = yamlNodes.pop();

@@ -33,7 +33,7 @@ export async function openGitHubLogContent(node: JobTreeItem | StepTreeItem, con
 
 export class GitHubLogContent {
     private _content: string;
-    private _foldingRanges: FoldingRange[]
+    private _foldingRanges: FoldingRange[];
 
     constructor(content: string, foldingRanges: FoldingRange[]) {
         this._content = content;
