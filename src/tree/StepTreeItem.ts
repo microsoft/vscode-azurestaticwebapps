@@ -9,10 +9,10 @@ import { getActionDescription, getActionIconPath } from '../utils/actionUtils';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { JobTreeItem } from './JobTreeItem';
 
-export class StepTreeItem extends AzExtTreeItem implements IAzureResourceTreeItem {
+export class StepTreeItem extends AzExtTreeItem implements IAzureResourceTreeItem<ActionWorkflowStepData> {
     public static contextValue: string = 'azureStaticStep';
     public readonly contextValue: string = StepTreeItem.contextValue;
-    public parent!: JobTreeItem;
+    public declare parent: JobTreeItem;
     public data: ActionWorkflowStepData;
 
     constructor(parent: JobTreeItem, data: ActionWorkflowStepData) {

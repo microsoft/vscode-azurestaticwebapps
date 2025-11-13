@@ -5,8 +5,8 @@
 
 import { AzExtTreeItem } from "@microsoft/vscode-azext-utils";
 
-export interface IAzureResourceTreeItem extends AzExtTreeItem {
-    data: {} | undefined;
+export interface IAzureResourceTreeItem<T> extends AzExtTreeItem {
+    data: T | undefined;
 
     /**
      * Implement this to execute any async code when data is undefined

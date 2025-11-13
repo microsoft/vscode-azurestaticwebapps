@@ -73,11 +73,11 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
 
                     const detectorResult = await detector.detect(folder.uri);
                     // comma separated list of all frameworks detected in this project
-                    context.telemetry.properties.detectedFrameworks = `(${detectorResult?.frameworks.map(fi => fi.framework).join('), (')})` ?? 'N/A';
+                    context.telemetry.properties.detectedFrameworks = detectorResult ? `(${detectorResult.frameworks.map(fi => fi.framework).join('), (')})` : 'N/A';
                     context.telemetry.properties.rootHasSrcFolder = (await AzExtFsExtra.pathExists(Uri.joinPath(folder.uri, NodeConstants.srcFolderName))).toString();
 
                     const subfolderDetectorResults: DetectorResults[] = [];
-                    const subWithSrcFolder: string[] = []
+                    const subWithSrcFolder: string[] = [];
                     const subfolders = await getSubFolders(context, folder.uri);
                     for (const subfolder of subfolders) {
                         const subResult = await detector.detect(subfolder);
@@ -157,7 +157,7 @@ export async function createStaticWebApp(context: IActionContext & Partial<ICrea
     executeSteps.push(new VerifyProvidersStep([webProvider]));
     executeSteps.push(new StaticWebAppCreateStep());
 
-    const wizard: AzureWizard<IStaticWebAppWizardContext> = new AzureWizard(wizardContext, {
+    const wizard = new AzureWizard<IStaticWebAppWizardContext>(wizardContext, {
         title,
         promptSteps,
         executeSteps,

@@ -5,6 +5,7 @@
 
 import { IActionContext } from '@microsoft/vscode-azext-utils';
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace telemetryUtils {
     export async function runWithDurationTelemetry<T>(context: IActionContext, prefix: string, callback: () => Promise<T>): Promise<T> {
         const start = Date.now();

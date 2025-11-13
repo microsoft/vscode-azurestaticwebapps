@@ -14,7 +14,7 @@ export async function getInstalledSwaCliVersion(workingDirectory?: string): Prom
         // --no-install makes command exit with non-zero exit code if the CLI is not found
         const output: string = await cpUtils.executeCommand(undefined, workingDirectory, 'npx', '--global', '--no-install', 'swa', '--version');
         return semver.clean(output);
-    } catch (e) {
+    } catch {
         return null;
     }
 }

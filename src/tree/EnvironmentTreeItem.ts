@@ -28,11 +28,11 @@ import { JobTreeItem } from "./JobTreeItem";
 import { StepTreeItem } from "./StepTreeItem";
 import { WorkflowGroupTreeItem } from "./WorkflowGroupTreeItem";
 
-export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
+export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem<StaticSiteBuildARMResource> {
     public static contextValue: string = 'azureStaticEnvironment';
     public readonly contextValue: string = EnvironmentTreeItem.contextValue;
 
-    public parent!: AzExtParentTreeItem & ResolvedAppResourceTreeItem<ResolvedStaticWebApp>;
+    public declare parent: AzExtParentTreeItem & ResolvedAppResourceTreeItem<ResolvedStaticWebApp>;
     public data: StaticSiteBuildARMResource;
 
     public actionsTreeItem!: ActionsTreeItem;

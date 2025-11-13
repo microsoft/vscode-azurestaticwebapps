@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtFsExtra, IActionContext, nonNullValue, UserCancelledError } from "@microsoft/vscode-azext-utils";
-import * as gitUrlParse from 'git-url-parse';
+import gitUrlParse from 'git-url-parse';
 import { commands, env, MessageItem, ProgressLocation, ProgressOptions, UIKind, Uri, window, workspace } from 'vscode';
 import { Utils } from "vscode-uri";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
@@ -76,7 +76,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         const gitApi: IGit = await getGitApi();
         try {
             if (gitApi.init) {
-                repo = await gitApi.init(uri)
+                repo = await gitApi.init(uri);
             }
         } catch (err) {
             handleGitError(err);
@@ -113,7 +113,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
         }
 
         if (await getApiExport(remoteRepositoriesId)) {
-            buttons.push(openRemoteProjectMsg)
+            buttons.push(openRemoteProjectMsg);
         }
 
         const result: MessageItem | undefined = await window.showInformationMessage(forkSuccess, ...buttons);
@@ -133,7 +133,7 @@ export async function verifyGitWorkspaceForCreation(context: IActionContext, git
     }
 
     const verifiedRepo: Repository = nonNullValue(repo ?? undefined);
-    return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo }
+    return { ...gitWorkspaceState, dirty: false, repo: verifiedRepo };
 }
 
 export async function tryGetRemote(uri?: Uri): Promise<string | undefined> {
@@ -159,7 +159,7 @@ export async function remoteShortnameExists(uri: Uri, remoteName: string): Promi
 
     try {
         remoteExists = !!repo?.state.remotes.some(r => { return r.name === remoteName; });
-    } catch (error) {
+    } catch {
         // ignore the error and assume there is no origin
     }
 
@@ -195,7 +195,7 @@ export async function tryGetLocalBranch(): Promise<string | undefined> {
 }
 
 export async function warnIfNotOnDefaultBranch(context: IActionContext, gitState: VerifiedGitWorkspaceState): Promise<void> {
-    const defaultBranch: string | undefined = await tryGetDefaultBranch(context, gitState)
+    const defaultBranch: string | undefined = await tryGetDefaultBranch(context, gitState);
     context.telemetry.properties.defaultBranch = defaultBranch;
     context.telemetry.properties.notOnDefault = 'false';
     const { repo } = gitState;
@@ -228,7 +228,7 @@ export async function gitPull(repo: Repository): Promise<void> {
         try {
             await repo.pull();
         } catch (error) {
-            handleGitError(error)
+            handleGitError(error);
         }
     });
 }
@@ -237,7 +237,7 @@ async function tryGetDefaultBranch(context: IActionContext, gitState: VerifiedGi
     let defaultBranches: string[];
 
     if (gitState.remoteRepo) {
-        defaultBranches = [gitState.remoteRepo.default_branch]
+        defaultBranches = [gitState.remoteRepo.default_branch];
         context.telemetry.properties.defaultBranchSource = 'remoteConfig';
     } else {
         context.telemetry.properties.defaultBranchSource = 'defaultConfig';
@@ -248,12 +248,12 @@ async function tryGetDefaultBranch(context: IActionContext, gitState: VerifiedGi
             // don't use handleGitError because we're handling the errors differently here
             defaultBranches.unshift(await gitState.repo.getConfig('init.defaultBranch'));
             context.telemetry.properties.defaultBranchSource = 'localConfig';
-        } catch (err) {
+        } catch {
             // if no local config setting is found, try global
             try {
                 defaultBranches.unshift(await gitState.repo.getGlobalConfig('init.defaultBranch'));
                 context.telemetry.properties.defaultBranchSource = 'globalConfig';
-            } catch (err) {
+            } catch {
                 // VS Code's git API doesn't fail gracefully if no config is found, so swallow the error
             }
         }
@@ -262,6 +262,7 @@ async function tryGetDefaultBranch(context: IActionContext, gitState: VerifiedGi
     context.telemetry.properties.foundLocalBranch = 'false';
 
     // order matters here because we want the remote/setting, main, then master respectively so use indexing
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < defaultBranches.length; i++) {
         if (gitState.repo.state.refs.some(lBranch => lBranch.name === defaultBranches[i])) {
             context.telemetry.properties.foundLocalBranch = 'true';

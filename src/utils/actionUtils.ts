@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TreeItemIconPath } from '@microsoft/vscode-azext-utils';
-import * as dayjs from 'dayjs';
-// eslint-disable-next-line import/no-internal-modules
-import * as relativeTime from 'dayjs/plugin/relativeTime';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { ThemeColor, ThemeIcon } from 'vscode';
 import { ActionsGetJobForWorkflowRunResponseData, ActionsGetWorkflowRunResponseData, ActionWorkflowStepData, Conclusion, Status } from "../gitHubTypings";
 import { localize } from "./localize";
@@ -31,7 +30,7 @@ export function getActionIconPath(data: ActionWorkflowStepData | ActionsGetJobFo
                 colorId = 'testing.iconSkipped';
                 break;
             case Conclusion.Success:
-                id = 'pass'
+                id = 'pass';
                 colorId = 'testing.iconPassed';
                 break;
         }

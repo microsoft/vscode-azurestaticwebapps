@@ -14,10 +14,10 @@ import { ActionTreeItem } from './ActionTreeItem';
 import { IAzureResourceTreeItem } from './IAzureResourceTreeItem';
 import { StepTreeItem } from './StepTreeItem';
 
-export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem {
+export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem<ActionsGetJobForWorkflowRunResponseData> {
     public static contextValue: string = 'azureStaticJob';
     public readonly contextValue: string = JobTreeItem.contextValue;
-    public parent!: ActionTreeItem;
+    public declare parent: ActionTreeItem;
     public childTypeLabel: string = localize('step', 'step');
     public data: ActionsGetJobForWorkflowRunResponseData;
 
@@ -67,6 +67,7 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
     public async refreshImpl(context: IActionContext): Promise<void> {
         const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
         const octokitClient: Octokit = await createOctokitClient(context);
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         this.data = <ActionsGetJobForWorkflowRunResponseData>(await octokitClient.actions.getJobForWorkflowRun({ job_id: this.data.id, owner: owner, repo: name })).data;
     }
 
@@ -77,6 +78,7 @@ export class JobTreeItem extends AzExtParentTreeItem implements IAzureResourceTr
     public async getRawJobLog(context: IActionContext): Promise<string> {
         const { owner, name } = getRepoFullname(this.parent.parent.repositoryUrl);
         const octokitClient: Octokit = await createOctokitClient(context);
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         return <string>(await octokitClient.actions.downloadJobLogsForWorkflowRun({ owner, repo: name, job_id: this.data.id, mediaType: { format: 'json' } })).data;
     }
 

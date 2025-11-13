@@ -116,7 +116,7 @@ export class NodeDetector {
             const yamlFile = await AzExtFsExtra.readFile(yamlFileUri);
             parse(yamlFile);
             return true;
-        } catch (err) {
+        } catch {
             return false;
         }
     }
@@ -144,7 +144,7 @@ export class NodeDetector {
             const devDependencies = packageJson.devDependencies;
             for (const framework of Object.keys(NodeConstants.DevDependencyFrameworkKeyWordToName)) {
                 if (devDependencies[framework]) {
-                    detectedFrameworkResult.push({ framework: NodeConstants.DevDependencyFrameworkKeyWordToName[framework as keyof typeof NodeConstants.DevDependencyFrameworkKeyWordToName], version: devDependencies[framework] })
+                    detectedFrameworkResult.push({ framework: NodeConstants.DevDependencyFrameworkKeyWordToName[framework as keyof typeof NodeConstants.DevDependencyFrameworkKeyWordToName], version: devDependencies[framework] });
                 }
             }
         }
@@ -153,7 +153,7 @@ export class NodeDetector {
             const dependencies = packageJson.dependencies;
             for (const framework of Object.keys(NodeConstants.DependencyFrameworkKeyWordToName)) {
                 if (dependencies[framework]) {
-                    detectedFrameworkResult.push({ framework: NodeConstants.DependencyFrameworkKeyWordToName[framework as keyof typeof NodeConstants.DependencyFrameworkKeyWordToName], version: dependencies[framework] })
+                    detectedFrameworkResult.push({ framework: NodeConstants.DependencyFrameworkKeyWordToName[framework as keyof typeof NodeConstants.DependencyFrameworkKeyWordToName], version: dependencies[framework] });
                 }
             }
         }
@@ -179,7 +179,7 @@ export class NodeDetector {
                 //Default Client for Lerna is npm.
                 npmClientName = NodeConstants.NpmToolName;
             }
-        } catch (err) {
+        } catch {
             console.error(`Exception caught while trying to deserialize ${NodeConstants.LernaJsonFileName}`);
         }
         return npmClientName;

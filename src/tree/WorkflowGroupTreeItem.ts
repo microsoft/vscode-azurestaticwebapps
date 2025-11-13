@@ -7,7 +7,6 @@ import { AzExtFsExtra, AzExtParentTreeItem, AzExtTreeItem, GenericTreeItem, IAct
 import { basename, join } from "path";
 import { FileType, Range, ThemeIcon, workspace } from "vscode";
 import { URI, Utils } from "vscode-uri";
-// eslint-disable-next-line import/no-internal-modules
 import { YAMLSyntaxError } from "yaml/util";
 import { localize } from "../utils/localize";
 import { parseYamlFile } from "../utils/yamlUtils";
@@ -18,10 +17,12 @@ import { WorkflowTreeItem } from "./WorkflowTreeItem";
 export type BuildConfig = 'app_location' | 'api_location' | 'output_location' | 'app_artifact_location';
 
 export type BuildConfigs = {
+    /* eslint-disable @typescript-eslint/naming-convention */
     'app_location'?: string,
     'api_location'?: string,
     'output_location'?: string,
     'app_artifact_location'?: string
+    /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 function getRangeFromError(error: YAMLSyntaxError): Range {
@@ -45,7 +46,7 @@ function getYamlErrorMessage(error: unknown): string {
 export class WorkflowGroupTreeItem extends AzExtParentTreeItem {
     public static contextValue: string = 'azureStaticWorkflowGroup';
     public contextValue: string = WorkflowGroupTreeItem.contextValue;
-    public parent!: EnvironmentTreeItem;
+    public declare parent: EnvironmentTreeItem;
     public yamlFilePath: string;
     public buildConfigs: BuildConfigs | undefined;
     public parseYamlError: unknown;
@@ -116,7 +117,9 @@ export class WorkflowGroupTreeItem extends AzExtParentTreeItem {
 
         for (const buildConfig in this.buildConfigs) {
             const value: string | undefined = <string | undefined>this.buildConfigs[buildConfig as keyof BuildConfigs];
-            value !== undefined && treeItems.push(new WorkflowTreeItem(this, <BuildConfig>buildConfig, value));
+            if (value !== undefined) {
+                treeItems.push(new WorkflowTreeItem(this, <BuildConfig>buildConfig, value));
+            }
         }
 
         return treeItems;

@@ -53,7 +53,7 @@ export async function validateStaticWebAppsCliIsLatest(): Promise<void> {
                 let result: vscode.MessageItem;
 
                 do {
-                    result = await context.ui.showWarningMessage(message, update, DialogResponses.learnMore, DialogResponses.dontWarnAgain)
+                    result = await context.ui.showWarningMessage(message, update, DialogResponses.learnMore, DialogResponses.dontWarnAgain);
                     if (result === DialogResponses.learnMore) {
                         await openUrl(installSwaCliUrl);
                     } else if (result === update) {
@@ -72,7 +72,7 @@ export async function hasNpm(): Promise<boolean> {
     try {
         await cpUtils.executeCommand(undefined, undefined, 'npm', '--version');
         return true;
-    } catch (e) {
+    } catch {
         return false;
     }
 }

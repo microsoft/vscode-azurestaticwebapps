@@ -13,7 +13,7 @@ export const staticWebAppNamingRules: IAzureNamingRules = {
     minLength: 1,
     maxLength: 40,
     // only accepts alphanumeric and "-"
-    invalidCharsRegExp: /[^a-zA-Z0-9\-]/
+    invalidCharsRegExp: /[^a-zA-Z0-9-]/
 };
 
 export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardContext> {
@@ -73,7 +73,7 @@ export class StaticWebAppNameStep extends AzureNameStep<IStaticWebAppWizardConte
             await context.client.staticSites.getStaticSite(rgName, name);
             return false;
 
-        } catch (error) {
+        } catch {
             // if an error is thrown, it means the SWA name is available
             return true;
         }

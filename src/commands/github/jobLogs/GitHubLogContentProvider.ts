@@ -11,13 +11,13 @@ import { StepTreeItem } from "../../../tree/StepTreeItem";
 
 export const contentScheme: string = 'github-action-log';
 
-let _cachedContentProvider: GitHubLogContentProvider | undefined;
+let cachedContentProvider: GitHubLogContentProvider | undefined;
 function getContentProvider(): GitHubLogContentProvider {
-    if (!_cachedContentProvider) {
-        _cachedContentProvider = new GitHubLogContentProvider();
-        ext.context.subscriptions.push(workspace.registerTextDocumentContentProvider(contentScheme, _cachedContentProvider));
+    if (!cachedContentProvider) {
+        cachedContentProvider = new GitHubLogContentProvider();
+        ext.context.subscriptions.push(workspace.registerTextDocumentContentProvider(contentScheme, cachedContentProvider));
     }
-    return _cachedContentProvider;
+    return cachedContentProvider;
 }
 
 export function getGitHubLogFoldingRanges(document: TextDocument): FoldingRange[] {
@@ -33,7 +33,7 @@ export async function openGitHubLogContent(node: JobTreeItem | StepTreeItem, con
 
 export class GitHubLogContent {
     private _content: string;
-    private _foldingRanges: FoldingRange[]
+    private _foldingRanges: FoldingRange[];
 
     constructor(content: string, foldingRanges: FoldingRange[]) {
         this._content = content;
@@ -55,7 +55,7 @@ class GitHubLogContentProvider implements TextDocumentContentProvider {
 
     public async openGitHubLogContent(node: JobTreeItem | StepTreeItem, content: string, foldingRanges: FoldingRange[]): Promise<GitHubLogContent> {
         // Remove special characters which may prove troublesome when parsing the uri. We'll allow the same set as `encodeUriComponent`
-        const removeSpecialCharRegExp: RegExp = /[^a-z0-9\-\_\.\!\~\*\'\(\)]/gi;
+        const removeSpecialCharRegExp: RegExp = /[^a-z0-9\-_.!~*'()]/gi;
         // the job id is a unique number identifier, but step id is a non-unique integer so include job id as well
         const id: string = (node instanceof JobTreeItem ? node.id : `${node.parent.id}_${node.id}`).replace(removeSpecialCharRegExp, '_');
         const fileName = node.label.replace(removeSpecialCharRegExp, '_');

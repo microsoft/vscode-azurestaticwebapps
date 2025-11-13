@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { DebugConfiguration, workspace } from 'vscode';
-import { StaticWebAppDebugProvider } from '../extension.bundle';
+import { StaticWebAppDebugProvider } from '../src/debug/StaticWebAppDebugProvider';
 import { getWorkspaceUri } from './testUtils';
 
 interface ITestCase {
@@ -24,6 +24,7 @@ const testCases: ITestCase[] = [
                 "type": "pwa-chrome",
                 "url": "http://localhost:4280",
                 "preLaunchTask": "swa: start react-basic",
+                // eslint-disable-next-line no-template-curly-in-string
                 "webRoot": "${workspaceFolder}/"
             }
         ]
@@ -38,6 +39,7 @@ const testCases: ITestCase[] = [
                 "type": "pwa-chrome",
                 "url": "http://localhost:4280",
                 "preLaunchTask": "swa: start angular-basic",
+                // eslint-disable-next-line no-template-curly-in-string
                 "webRoot": "${workspaceFolder}/"
             }
         ]
@@ -52,6 +54,7 @@ const testCases: ITestCase[] = [
                 "type": "pwa-chrome",
                 "url": "http://localhost:4280",
                 "preLaunchTask": "swa: start app",
+                // eslint-disable-next-line no-template-curly-in-string
                 "webRoot": "${workspaceFolder}/"
             }
         ]

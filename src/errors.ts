@@ -67,7 +67,7 @@ export class GitError extends Error {
                 this.message = localize('missing user info', "Make sure you configure your 'user.name' and 'user.email' in git.");
                 break;
             default:
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, no-case-declarations
+                // eslint-disable-next-line no-case-declarations
                 const hint = (err.stderr || err.message || String(err))
                     .replace(/^error: /mi, '')
                     .replace(/^> husky.*$/mi, '')

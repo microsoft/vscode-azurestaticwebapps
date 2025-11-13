@@ -5,7 +5,8 @@
 
 import * as assert from 'assert';
 import { Uri } from "vscode";
-import { DetectorResults, NodeConstants, NodeDetector } from '../extension.bundle';
+import { NodeConstants } from '../src/detectors/node/nodeConstants';
+import { DetectorResults, NodeDetector } from '../src/detectors/node/NodeDetector';
 import { getWorkspaceUri } from './testUtils';
 
 interface ITestCase {
@@ -148,7 +149,7 @@ suite('Node detector', () => {
                 isYarnLockFileValidYamlFormat: false,
             }
         }
-    ]
+    ];
 
     for (const t of testCases) {
         test(t.workspaceFolder, async () => {
