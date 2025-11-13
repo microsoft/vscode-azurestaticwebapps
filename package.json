@@ -457,7 +457,7 @@
         "test": "vscode-test"
     },
     "devDependencies": {
-        "@microsoft/vscode-azext-eng": "file:../vscode-azuretools/eng/microsoft-vscode-azext-eng-1.0.0-alpha.1.tgz",
+        "@microsoft/vscode-azext-eng": "1.0.0-alpha.1",
         "@octokit/types": "^16.0.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
