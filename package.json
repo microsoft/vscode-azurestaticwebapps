@@ -464,6 +464,11 @@
         "@types/node": "22.x",
         "@types/semver": "^7.3.8",
         "@types/vscode": "1.104.0",
+        "@vscode/test-cli": "*",
+        "@vscode/test-electron": "*",
+        "@vscode/vsce": "*",
+        "esbuild": "*",
+        "esbuild-plugin-copy": "*",
         "fs-extra": "^8.1.0"
     },
     "dependencies": {
