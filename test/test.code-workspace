@@ -1,28 +1,28 @@
 {
     "folders": [
         {
-            "path": "./testProject/angular-basic"
+            "path": "./testProjects/angular-basic"
         },
         {
-            "path": "./testProject/nextjs-starter"
+            "path": "./testProjects/nextjs-starter"
         },
         {
-            "path": "./testProject/nuxtjs-starter"
+            "path": "./testProjects/nuxtjs-starter"
         },
         {
-            "path": "./testProject/react-basic"
+            "path": "./testProjects/react-basic"
         },
         {
-            "path": "./testProject/svelte-basic"
+            "path": "./testProjects/svelte-basic"
         },
         {
-            "path": "./testProject/vanilla-basic"
+            "path": "./testProjects/vanilla-basic"
         },
         {
-            "path": "./testProject/vue-basic"
+            "path": "./testProjects/vue-basic"
         },
         {
-            "path": "./testProject/react-basic-dab"
+            "path": "./testProjects/react-basic-dab"
         }
     ]
 }

@@ -27,6 +27,6 @@
         "node_modules",
         ".vscode-test",
         "gulpfile.ts",
-        "test/testProject"
+        "test/testProjects"
     ]
 }
