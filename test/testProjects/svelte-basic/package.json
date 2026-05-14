@@ -13,7 +13,7 @@
     "rollup": "^4.59.0",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-svelte": "^7.2.3",
-    "svelte": "^5.53.7"
+    "svelte": "^5.55.7"
   },
   "dependencies": {
     "sirv-cli": "^0.4.4"
