@@ -38,7 +38,9 @@ export async function activate(context: vscode.ExtensionContext, perfStats: { lo
     await callWithTelemetryAndErrorHandling('staticWebApps.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
         activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
-        void validateStaticWebAppsCliIsLatest();
+        if (!process.env.VSCODE_RUNNING_TESTS) {
+            void validateStaticWebAppsCliIsLatest();
+        }
 
         /**
          * By passing `createIfNone: false`, a numbered badge will show up on the accounts activity bar icon.
