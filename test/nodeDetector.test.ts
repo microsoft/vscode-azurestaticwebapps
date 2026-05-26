@@ -112,7 +112,7 @@ suite('Node detector', () => {
                 frameworks: [
                     {
                         framework: NodeConstants.DevDependencyFrameworkKeyWordToName["svelte"],
-                        version: "^5.53.7",
+                        version: "^5.55.7",
                     },
                 ],
                 hasLernaJsonFile: false,
