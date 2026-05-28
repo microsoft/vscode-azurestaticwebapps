@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AzExtParentTreeItem, AzExtTreeItem, InvalidTreeItem } from "@microsoft/vscode-azext-utils";
-import { isNullOrUndefined } from "util";
 import { localize } from "./localize";
 
 export async function createTreeItemsWithErrorHandling<TSource>(
@@ -47,13 +46,13 @@ export async function createTreeItemsWithErrorHandling<TSource>(
                     contextValue: invalidContextValue,
                     data: source
                 }));
-            } else if (!isNullOrUndefined(error)) {
+            } else if (error !== null && error !== undefined) {
                 lastUnknownItemError = error;
             }
         }
     }));
 
-    if (!isNullOrUndefined(lastUnknownItemError)) {
+    if (lastUnknownItemError !== null && lastUnknownItemError !== undefined) {
         // Display a generic error if there are any unknown items. Only the last error will be displayed
         const label: string = localize('cantShowItems', 'Some items could not be displayed');
         treeItems.push(new InvalidTreeItem(parent, lastUnknownItemError, {
