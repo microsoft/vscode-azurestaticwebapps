@@ -457,7 +457,7 @@
         "test": "vscode-test"
     },
     "devDependencies": {
-        "@microsoft/vscode-azext-eng": "1.0.0-alpha.10",
+        "@microsoft/vscode-azext-eng": "1.1.0-alpha.1",
         "@octokit/types": "^16.0.0",
         "@types/fs-extra": "^8.1.1",
         "@types/git-url-parse": "^9.0.0",
@@ -469,7 +469,8 @@
         "@vscode/vsce": "*",
         "esbuild": "*",
         "esbuild-plugin-copy": "*",
-        "fs-extra": "^8.1.0"
+        "fs-extra": "^8.1.0",
+        "tsx": "*"
     },
     "dependencies": {
         "@azure/arm-appservice": "^11.0.0",

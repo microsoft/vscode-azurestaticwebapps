@@ -58,7 +58,7 @@ export async function tryGetStaticWebAppsCliConfig(workspaceFolder: Uri): Promis
         try {
             return JSON.parse(await AzExtFsExtra.readFile(Uri.joinPath(workspaceFolder, swaCliConfigFileName))) as StaticWebAppsCliConfigFile;
         } catch (e) {
-            throw new Error(localize('failedReadSwaCliConfig', 'Error reading swa-cli.config.json file: {0}', parseError(e).message));
+            throw new Error(localize('failedReadSwaCliConfig', 'Error reading swa-cli.config.json file: {0}', parseError(e).message), { cause: e });
         }
     }
 

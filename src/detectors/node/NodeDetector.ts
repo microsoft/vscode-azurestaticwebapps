@@ -43,11 +43,8 @@ export type DetectorResults = {
 
 export class NodeDetector {
     public async detect(uri: Uri): Promise<DetectorResults | undefined> {
-        let isNodeApp = false;
+        let isNodeApp: boolean;
         let hasLernaJsonFile = false;
-        let hasLageConfigJSFile = false;
-        let hasYarnrcYmlFile = false;
-        let isYarnLockFileValidYamlFormat = false;
         const appDirectory = '';
         let lernaNpmClient = '';
 
@@ -55,16 +52,16 @@ export class NodeDetector {
             await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.PackageLockJsonFileName)) ||
             await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.YarnLockFileName)));
 
-        hasYarnrcYmlFile = await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.YarnrcYmlName));
+        const hasYarnrcYmlFile = await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.YarnrcYmlName));
         const yarnLockUri: Uri = Uri.joinPath(uri, NodeConstants.YarnLockFileName);
-        isYarnLockFileValidYamlFormat = await AzExtFsExtra.pathExists(yarnLockUri) && await this.isYarnLockFileYamlFile(yarnLockUri);
+        const isYarnLockFileValidYamlFormat = await AzExtFsExtra.pathExists(yarnLockUri) && await this.isYarnLockFileYamlFile(yarnLockUri);
 
         if (await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.LernaJsonFileName))) {
             hasLernaJsonFile = true;
             lernaNpmClient = await this.getLearnJsonNpmClient(uri);
         }
 
-        hasLageConfigJSFile = await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.LageConfigJSFileName));
+        const hasLageConfigJSFile = await AzExtFsExtra.pathExists(Uri.joinPath(uri, NodeConstants.LageConfigJSFileName));
 
         // Copying the logic currently running in Kudu:
         if (!isNodeApp) {
