@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, AzExtTreeItem, InvalidTreeItem } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, InvalidTreeItem, isNullOrUndefined } from "@microsoft/vscode-azext-utils";
 import { localize } from "./localize";
 
 export async function createTreeItemsWithErrorHandling<TSource>(
@@ -46,13 +46,13 @@ export async function createTreeItemsWithErrorHandling<TSource>(
                     contextValue: invalidContextValue,
                     data: source
                 }));
-            } else if (error !== null && error !== undefined) {
+            } else if (!isNullOrUndefined(error)) {
                 lastUnknownItemError = error;
             }
         }
     }));
 
-    if (lastUnknownItemError !== null && lastUnknownItemError !== undefined) {
+    if (!isNullOrUndefined(lastUnknownItemError)) {
         // Display a generic error if there are any unknown items. Only the last error will be displayed
         const label: string = localize('cantShowItems', 'Some items could not be displayed');
         treeItems.push(new InvalidTreeItem(parent, lastUnknownItemError, {
