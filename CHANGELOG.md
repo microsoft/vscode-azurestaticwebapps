@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.13.3 - 2026-05-28
+
+### Engineering
+
+* [[1051]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1051) Update azext-utils to ^4.1.0 and use azext-utils isNullOrUndefined utility
+* [[1052]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1052) Roll back enhanced-resolve
+
 ## 0.13.2 - 2025-09-25
 
 ### Changed
