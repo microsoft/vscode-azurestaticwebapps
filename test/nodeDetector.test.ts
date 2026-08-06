@@ -23,12 +23,12 @@ suite('Node detector', () => {
             workspaceFolder: 'angular-basic',
             expectedResult: {
                 platform: "nodejs",
-                platformVersion: undefined,
+                platformVersion: ">=22",
                 appDirectory: "",
                 frameworks: [
                     {
                         framework: NodeConstants.DevDependencyFrameworkKeyWordToName["@angular/cli"],
-                        version: "~11.2.2",
+                        version: "^22.1.3",
                     },
                     {
                         framework: NodeConstants.DevDependencyFrameworkKeyWordToName["typescript"],
@@ -46,12 +46,12 @@ suite('Node detector', () => {
             workspaceFolder: 'nextjs-starter',
             expectedResult: {
                 platform: "nodejs",
-                platformVersion: undefined,
+                platformVersion: ">=22",
                 appDirectory: "",
                 frameworks: [
                     {
                         framework: NodeConstants.DependencyFrameworkKeyWordToName["next"],
-                        version: "^10.0.7",
+                        version: "^16.3.0",
                     },
                     {
                         framework: NodeConstants.DependencyFrameworkKeyWordToName["react"],
@@ -69,12 +69,12 @@ suite('Node detector', () => {
             workspaceFolder: 'nuxtjs-starter',
             expectedResult: {
                 platform: "nodejs",
-                platformVersion: undefined,
+                platformVersion: ">=22",
                 appDirectory: "",
                 frameworks: [
                     {
                         framework: NodeConstants.DependencyFrameworkKeyWordToName["nuxt"],
-                        version: "^2.15.7",
+                        version: "^4.5.2",
                     },
                 ],
                 hasLernaJsonFile: false,
@@ -88,7 +88,7 @@ suite('Node detector', () => {
             workspaceFolder: 'react-basic',
             expectedResult: {
                 platform: "nodejs",
-                platformVersion: undefined,
+                platformVersion: ">=22",
                 appDirectory: "",
                 frameworks: [
                     {
@@ -107,7 +107,7 @@ suite('Node detector', () => {
             workspaceFolder: 'svelte-basic',
             expectedResult: {
                 platform: "nodejs",
-                platformVersion: undefined,
+                platformVersion: ">=22",
                 appDirectory: "",
                 frameworks: [
                     {
@@ -130,7 +130,7 @@ suite('Node detector', () => {
             workspaceFolder: 'vue-basic',
             expectedResult: {
                 platform: "nodejs",
-                platformVersion: undefined,
+                platformVersion: ">=22",
                 appDirectory: "",
                 frameworks: [
                     {
@@ -139,7 +139,7 @@ suite('Node detector', () => {
                     },
                     {
                         framework: NodeConstants.DependencyFrameworkKeyWordToName["vue"],
-                        version: "^2.6.11",
+                        version: "^3.5.41",
                     },
                 ],
                 hasLernaJsonFile: false,
