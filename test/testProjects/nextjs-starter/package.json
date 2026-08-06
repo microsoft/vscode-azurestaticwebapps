@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "isomorphic-unfetch": "^3.0.0",
-    "next": "^10.0.7",
+    "next": "^16.3.0",
     "react": "^17.0.2",
     "react-dom": "16.13.1"
   },
   "devDependencies": {
-    "serve": "^11.3.2"
+    "serve": "^14.2.6"
   }
 }
