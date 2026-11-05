@@ -8,6 +8,7 @@ import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { ActionsTreeItem } from '../../tree/ActionsTreeItem';
+import { getGitHubRepositoryUrl } from '../../utils/gitUtils';
 
 export async function showActions(context: IActionContext, node?: ResolvedStaticWebApp | ActionsTreeItem): Promise<void> {
     if (!node) {
@@ -16,5 +17,6 @@ export async function showActions(context: IActionContext, node?: ResolvedStatic
         }) as ResolvedStaticWebApp;
     }
 
-    await openUrl(`${node.repositoryUrl}/actions`);
+    const repositoryUrl = getGitHubRepositoryUrl(node.repositoryUrl);
+    await openUrl(`${repositoryUrl}/actions`);
 }

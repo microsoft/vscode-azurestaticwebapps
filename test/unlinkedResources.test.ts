@@ -14,6 +14,7 @@ import { commands, ExtensionContext, extensions } from 'vscode';
 import { SwaAppSettingsClient, SwaAppSettingsClientProvider } from '../src/commands/appSettings/AppSettingsClient';
 import { cloneRepo } from '../src/commands/github/cloneRepo';
 import { openGitHubRepo } from '../src/commands/github/openGitHubRepo';
+import { showActions } from '../src/commands/github/showActions';
 import { openYAMLConfigFile } from '../src/commands/openYAMLConfigFile';
 import { onlyGitHubSupported, productionEnvironmentName } from '../src/constants';
 import { ext } from '../src/extensionVariables';
@@ -235,6 +236,7 @@ suite('Unlinked Static Web App resources', () => {
         const resource = await createResource();
         const environment = await createEnvironment();
         await assert.rejects(cloneRepo(context, resource), { message: onlyGitHubSupported });
+        await assert.rejects(showActions(context, resource), { message: onlyGitHubSupported });
         await assert.rejects(openGitHubRepo(context, environment), { message: onlyGitHubSupported });
         await assert.rejects(openYAMLConfigFile(context, resource), { message: onlyGitHubSupported });
         await assert.rejects(openYAMLConfigFile(context, environment), { message: onlyGitHubSupported });
@@ -247,6 +249,7 @@ suite('Unlinked Static Web App resources', () => {
             assert.strictEqual(isGitHubRepositoryUrl(url), false);
             assert.throws(() => getGitHubRepositoryUrl(url), { message: onlyGitHubSupported });
             await assert.rejects(cloneRepo(await createTestActionContext(), resource), { message: onlyGitHubSupported });
+            await assert.rejects(showActions(await createTestActionContext(), resource), { message: onlyGitHubSupported });
         });
     }
 
