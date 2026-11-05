@@ -1,5 +1,12 @@
 # Change Log
 
+## Unreleased
+
+### Fixed
+* Load Static Web Apps and environments without a GitHub repository connection, retaining Azure resource functionality and hiding unavailable GitHub actions.
+* Handle null branch and deployment status metadata when rendering unlinked environments.
+* Use valid menu conditions to hide Clone Repository and GitHub workflow commands for resources without a GitHub connection.
+
 ## 0.13.3 - 2026-05-28
 
 ### Engineering

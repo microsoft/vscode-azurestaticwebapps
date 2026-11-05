@@ -10,12 +10,12 @@ import { ResolvedAppResourceTreeItem } from "@microsoft/vscode-azext-utils/hosta
 import { ProgressLocation, ThemeIcon, Uri, window } from "vscode";
 import { ResolvedStaticWebApp } from "../StaticWebAppResolver";
 import { SwaAppSettingsClientProvider } from "../commands/appSettings/AppSettingsClient";
-import { onlyGitHubSupported, productionEnvironmentName } from "../constants";
+import { productionEnvironmentName } from "../constants";
 import { ext } from "../extensionVariables";
 import { createWebSiteClient } from "../utils/azureClients";
 import { matchContextValue } from "../utils/contextUtils";
 import { tryGetRepoDataForCreation } from "../utils/gitHubUtils";
-import { tryGetLocalBranch } from "../utils/gitUtils";
+import { isGitHubRepositoryUrl, tryGetLocalBranch } from "../utils/gitUtils";
 import { localize } from "../utils/localize";
 import { treeUtils } from "../utils/treeUtils";
 import { getSingleRootFsPath } from "../utils/workspaceUtils";
@@ -30,25 +30,27 @@ import { WorkflowGroupTreeItem } from "./WorkflowGroupTreeItem";
 
 export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureResourceTreeItem<StaticSiteBuildARMResource> {
     public static contextValue: string = 'azureStaticEnvironment';
-    public readonly contextValue: string = EnvironmentTreeItem.contextValue;
+    public get contextValue(): string {
+        return isGitHubRepositoryUrl(this.repositoryUrl) && this.branch ? EnvironmentTreeItem.contextValue : `${EnvironmentTreeItem.contextValue};noGitHub`;
+    }
 
     public declare parent: AzExtParentTreeItem & ResolvedAppResourceTreeItem<ResolvedStaticWebApp>;
     public data: StaticSiteBuildARMResource;
 
-    public actionsTreeItem!: ActionsTreeItem;
-    public gitHubConfigGroupTreeItems!: WorkflowGroupTreeItem[];
+    public actionsTreeItem?: ActionsTreeItem;
+    public gitHubConfigGroupTreeItems: WorkflowGroupTreeItem[] = [];
     public appSettingsTreeItem?: AppSettingsTreeItem;
     public functionsTreeItem?: FunctionsTreeItem;
 
     public name: string;
     public label: string;
-    public repositoryUrl: string;
-    public branch: string;
+    public repositoryUrl: string | undefined;
+    public branch: string | undefined;
     public buildId: string;
     public localProjectPath: Uri | undefined;
 
     public isProduction: boolean;
-    public inWorkspace!: boolean;
+    public inWorkspace: boolean = false;
 
     constructor(parent: AzExtParentTreeItem, env: StaticSiteBuildARMResource) {
         super(parent);
@@ -58,13 +60,9 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.id = nonNullProp(this.data, 'id');
         this.buildId = nonNullProp(this.data, 'buildId');
 
-        this.repositoryUrl = this.parent.repositoryUrl;
+        this.repositoryUrl = this.parent.repositoryUrl ?? undefined;
 
-        if (this.data.sourceBranch) {
-            this.branch = this.data.sourceBranch;
-        } else {
-            throw new Error(onlyGitHubSupported);
-        }
+        this.branch = this.data.sourceBranch ?? undefined;
 
         this.isProduction = this.buildId === 'default';
 
@@ -72,12 +70,12 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         // split the : because branch names cannot contain colons
         if (!this.isProduction) {
             const colon: string = ':';
-            if (this.branch.includes(colon)) {
+            if (this.branch?.includes(colon)) {
                 this.branch = this.branch.split(colon)[1];
             }
         }
 
-        this.label = this.isProduction ? productionEnvironmentName : `${this.data.pullRequestTitle}`;
+        this.label = this.isProduction ? productionEnvironmentName : this.data.pullRequestTitle || this.buildId;
     }
 
     public static async createEnvironmentTreeItem(context: IActionContext, parent: AzExtParentTreeItem, env: StaticSiteBuildARMResource): Promise<EnvironmentTreeItem> {
@@ -88,13 +86,12 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     }
 
     public get description(): string | undefined {
-        if (this.data.status !== 'Ready') {
+        if (this.data.status && this.data.status !== 'Ready') {
             // if the environment isn't ready, the status has priority over displaying its linked
-            return localize('statusTag', '{0} ({1})', this.branch, this.data.status);
+            return this.branch ? localize('statusTag', '{0} ({1})', this.branch, this.data.status) : this.data.status;
         }
 
-        const linkedTag: string = localize('linkedTag', '{0} (linked)', this.branch);
-        return this.inWorkspace ? linkedTag : this.branch;
+        return this.inWorkspace && this.branch ? localize('linkedTag', '{0} (linked)', this.branch) : this.branch;
     }
 
     public get iconPath(): TreeItemIconPath {
@@ -102,7 +99,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
-        const children: AzExtTreeItem[] = [this.actionsTreeItem];
+        const children: AzExtTreeItem[] = this.actionsTreeItem ? [this.actionsTreeItem] : [];
         if (!this.functionsTreeItem || !this.appSettingsTreeItem) {
             context.telemetry.properties.hasFunctions = 'false';
             children.push(new GenericTreeItem(this, {
@@ -184,7 +181,7 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
         this.data = await client.staticSites.getStaticSiteBuild(this.parent.resourceGroup, this.parent.name, this.buildId);
         this.localProjectPath = getSingleRootFsPath();
 
-        this.actionsTreeItem = new ActionsTreeItem(this);
+        this.actionsTreeItem = isGitHubRepositoryUrl(this.repositoryUrl) && this.branch ? new ActionsTreeItem(this) : undefined;
         try {
             await client.staticSites.listStaticSiteBuildFunctionAppSettings(this.parent.resourceGroup, this.parent.name, this.buildId);
             this.appSettingsTreeItem = new AppSettingsTreeItem(this, new SwaAppSettingsClientProvider(this), ext.prefix, {
@@ -197,11 +194,14 @@ export class EnvironmentTreeItem extends AzExtParentTreeItem implements IAzureRe
             this.functionsTreeItem = undefined;
         }
 
-        const remote: string | undefined = (await tryGetRepoDataForCreation(context, this.localProjectPath))?.html_url;
-        const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
-        this.inWorkspace = this.parent.repositoryUrl === remote && this.branch === branch;
+        this.inWorkspace = false;
+        this.gitHubConfigGroupTreeItems = [];
+        if (this.actionsTreeItem) {
+            const remote: string | undefined = (await tryGetRepoDataForCreation(context, this.localProjectPath))?.html_url;
+            const branch: string | undefined = remote ? await tryGetLocalBranch() : undefined;
+            this.inWorkspace = !!remote && !!branch && this.repositoryUrl === remote && this.branch === branch;
 
-        this.gitHubConfigGroupTreeItems = await WorkflowGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
-
+            this.gitHubConfigGroupTreeItems = await WorkflowGroupTreeItem.createGitHubConfigGroupTreeItems(context, this);
+        }
     }
 }

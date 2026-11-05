@@ -12,12 +12,12 @@ import { ConfirmDeleteStep } from "../commands/deleteStaticWebApp/ConfirmDeleteS
 import { DeleteResourceGroupStep } from "../commands/deleteStaticWebApp/DeleteResourceGroupStep";
 import { IDeleteWizardContext } from "../commands/deleteStaticWebApp/IDeleteWizardContext";
 import { StaticWebAppDeleteStep } from "../commands/deleteStaticWebApp/StaticWebAppDeleteStep";
-import { onlyGitHubSupported, productionEnvironmentName } from '../constants';
+import { productionEnvironmentName } from '../constants';
 import { createActivityContext } from "../utils/activityUtils";
 import { createWebSiteClient } from "../utils/azureClients";
 import { getResourceGroupFromId } from "../utils/azureUtils";
 import { createTreeItemsWithErrorHandling } from "../utils/createTreeItemsWithErrorHandling";
-import { getRepoFullname } from '../utils/gitUtils';
+import { getRepoFullname, isGitHubRepositoryUrl } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { treeUtils } from "../utils/treeUtils";
 import { EnvironmentTreeItem } from './EnvironmentTreeItem';
@@ -36,8 +36,8 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
     public name: string;
     public resourceGroup: string;
     public label: string;
-    public repositoryUrl: string;
-    public branch: string;
+    public repositoryUrl: string | undefined;
+    public branch: string | undefined;
     public defaultHostname: string;
 
     public contextValuesToAdd?: string[] = [];
@@ -45,7 +45,7 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
     private readonly _subscription: ISubscriptionContext;
     readonly viewProperties;
 
-    constructor(context: IActionContext, subscription: ISubscriptionContext, ss: StaticSiteARMResource & AppResource) {
+    constructor(_context: IActionContext, subscription: ISubscriptionContext, ss: StaticSiteARMResource & AppResource) {
         this.data = ss;
         this.name = nonNullProp(this.data, 'name');
         this.resourceGroup = getResourceGroupFromId(ss.id);
@@ -59,18 +59,20 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
 
         this.contextValuesToAdd?.push(StaticWebAppTreeItem.contextValue);
 
-        if (this.data.repositoryUrl) {
-            this.repositoryUrl = this.data.repositoryUrl;
-        } else {
-            context.errorHandling.suppressDisplay = true;
-            throw new Error(onlyGitHubSupported);
+        this.repositoryUrl = this.data.repositoryUrl ?? undefined;
+        if (!isGitHubRepositoryUrl(this.repositoryUrl)) {
+            this.contextValuesToAdd?.push('noGitHub');
         }
 
-        this.branch = nonNullProp(this.data, 'branch');
+        this.branch = this.data.branch ?? undefined;
         this.defaultHostname = nonNullProp(this.data, 'defaultHostname');
     }
 
     public get description(): string | undefined {
+        if (!this.repositoryUrl) {
+            return undefined;
+        }
+
         const { owner, name } = getRepoFullname(this.repositoryUrl);
         return `${owner}/${name}`;
     }

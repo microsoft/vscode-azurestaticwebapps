@@ -9,6 +9,7 @@ import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { isResolvedStaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
+import { getGitHubRepositoryUrl } from '../../utils/gitUtils';
 
 export async function cloneRepo(context: IActionContext, resource?: string | ResolvedStaticWebApp): Promise<void> {
 
@@ -20,7 +21,7 @@ export async function cloneRepo(context: IActionContext, resource?: string | Res
 
     let repoUrl: string;
     if (isResolvedStaticWebAppTreeItem(resource)) {
-        repoUrl = resource.repositoryUrl;
+        repoUrl = getGitHubRepositoryUrl(resource.repositoryUrl);
     } else {
         repoUrl = resource;
     }

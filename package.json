@@ -275,12 +275,12 @@
                 },
                 {
                     "command": "staticWebApps.cloneRepo",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /azureStaticWebApp/",
+                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /azureStaticWebApp/ && !(viewItem =~ /noGitHub/)",
                     "group": "1@2"
                 },
                 {
                     "command": "staticWebApps.openYAMLConfigFile",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /azureStatic(WebApp|Environment)/",
+                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /azureStatic(WebApp|Environment)/ && !(viewItem =~ /noGitHub/)",
                     "group": "3@1"
                 },
                 {
@@ -290,7 +290,7 @@
                 },
                 {
                     "command": "staticWebApps.deleteEnvironment",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem == azureStaticEnvironment",
+                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /^azureStaticEnvironment(;|$)/",
                     "group": "3@2"
                 },
                 {
