@@ -13,7 +13,7 @@ export async function browse(context: IActionContext, node?: ResolvedStaticWebAp
     if (!node) {
         node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>(context, {
             filter: swaFilter,
-            expectedChildContextValue: EnvironmentTreeItem.contextValue,
+            expectedChildContextValue: /^azureStaticEnvironment(;|$)/,
         });
     }
 

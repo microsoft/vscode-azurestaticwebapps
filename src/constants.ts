@@ -24,7 +24,7 @@ export const showActionsMsg: MessageItem = { title: localize('openActions', 'Ope
 
 export const openExistingProject = 'openExistingProject';
 
-export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'Only Static Web Apps linked to GitHub are supported at this time.');
+export const onlyGitHubSupported: string = localize('onlyGitHubSupported', 'This operation requires a Static Web App linked to a GitHub repository.');
 
 export const isStartGroup = (t: string): boolean => /##\[group\]/.test(t);
 export const isEndGroup = (t: string): boolean => /##\[endgroup\]/.test(t);

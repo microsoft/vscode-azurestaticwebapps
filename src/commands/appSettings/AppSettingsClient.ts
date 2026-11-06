@@ -34,7 +34,7 @@ export class SwaAppSettingsClient implements IAppSettingsClient {
     constructor(node: EnvironmentTreeItem, client: WebSiteManagementClient) {
         this._client = client;
         this._parentName = node.parent.name;
-        this.fullName = `${this._parentName}/${node.branch}`;
+        this.fullName = `${this._parentName}/${node.branch || node.label}`;
         this._resourceGroup = node.parent.resourceGroup;
 
         this._prId = node.buildId;

@@ -13,8 +13,8 @@ import { getResourceGroupFromId } from "./utils/azureUtils";
 export interface ResolvedStaticWebApp extends ResolvedAppResourceBase {
     resourceGroup: string;
     name: string;
-    repositoryUrl: string;
-    branch: string;
+    repositoryUrl: string | undefined;
+    branch: string | undefined;
     defaultHostname: string;
     data: StaticSiteARMResource;
     browse: () => Promise<void>;

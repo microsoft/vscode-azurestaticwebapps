@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
+import { AzExtParentTreeItem, AzExtTreeItem, IActionContext, nonNullProp, TreeItemIconPath } from "@microsoft/vscode-azext-utils";
 import { Octokit } from "@octokit/rest";
 import { OctokitResponse } from "@octokit/types";
 import { ThemeIcon } from "vscode";
 import { createOctokitClient } from "../commands/github/createOctokitClient";
 import { ActionsListWorkflowRunsForRepoResponseData } from "../gitHubTypings";
-import { getRepoFullname } from '../utils/gitUtils';
+import { getGitHubRepositoryUrl, getRepoFullname } from '../utils/gitUtils';
 import { localize } from "../utils/localize";
 import { ActionTreeItem } from './ActionTreeItem';
 import { EnvironmentTreeItem } from "./EnvironmentTreeItem";
@@ -38,12 +38,12 @@ export class ActionsTreeItem extends AzExtParentTreeItem {
     }
 
     public get repositoryUrl(): string {
-        return this.parent.parent.repositoryUrl;
+        return getGitHubRepositoryUrl(this.parent.repositoryUrl);
     }
 
     public async loadMoreChildrenImpl(_clearCache: boolean, context: IActionContext): Promise<AzExtTreeItem[]> {
         const { owner, name } = getRepoFullname(this.repositoryUrl);
-        const branch: string = this.parent.branch;
+        const branch: string = nonNullProp(this.parent, 'branch');
 
         const octokitClient: Octokit = await createOctokitClient(context);
         const response: OctokitResponse<ActionsListWorkflowRunsForRepoResponseData> = await octokitClient.actions.listWorkflowRunsForRepo({ owner: owner, repo: name });

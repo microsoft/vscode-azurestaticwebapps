@@ -9,7 +9,7 @@ import { commands, env, MessageItem, ProgressLocation, ProgressOptions, UIKind, 
 import { Utils } from "vscode-uri";
 import { IStaticWebAppWizardContext } from "../commands/createStaticWebApp/IStaticWebAppWizardContext";
 import { cloneRepo } from '../commands/github/cloneRepo';
-import { defaultGitignoreContents, gitignoreFileName, openRemoteProjectMsg, remoteRepositoriesId } from '../constants';
+import { defaultGitignoreContents, gitignoreFileName, onlyGitHubSupported, openRemoteProjectMsg, remoteRepositoriesId } from '../constants';
 import { handleGitError } from '../errors';
 import { ext } from "../extensionVariables";
 import { getApiExport, getGitApi } from "../getExtensionApi";
@@ -149,6 +149,18 @@ export async function tryGetRemote(uri?: Uri): Promise<string | undefined> {
 export function getRepoFullname(gitUrl: string): { owner: string; name: string } {
     const parsedUrl: gitUrlParse.GitUrl = gitUrlParse(gitUrl);
     return { owner: parsedUrl.owner, name: parsedUrl.name };
+}
+
+export function isGitHubRepositoryUrl(repositoryUrl: string | undefined): repositoryUrl is string {
+    return !!repositoryUrl && gitUrlParse(repositoryUrl).resource.toLowerCase() === 'github.com';
+}
+
+export function getGitHubRepositoryUrl(repositoryUrl: string | undefined): string {
+    if (!isGitHubRepositoryUrl(repositoryUrl)) {
+        throw new Error(onlyGitHubSupported);
+    }
+
+    return repositoryUrl;
 }
 
 
