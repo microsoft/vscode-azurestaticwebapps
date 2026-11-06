@@ -111,11 +111,74 @@ suite('Unlinked Static Web App resources', () => {
         }
     });
 
-    test('Hides Clone Repository on resources without a GitHub connection', () => {
+    test('Gates Clone Repository on repository availability, not GitHub support', () => {
         const manifest: { contributes: { menus: Record<string, { command: string; when: string }[]> } } =
             JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8'));
         const cloneMenu = manifest.contributes.menus['view/item/context'].find(item => item.command === 'staticWebApps.cloneRepo');
-        assert.ok(cloneMenu?.when.includes('!(viewItem =~ /noGitHub/)'));
+        assert.ok(cloneMenu);
+        assert.ok(cloneMenu.when.includes('!(viewItem =~ /noRepository/)'));
+        assert.ok(!cloneMenu.when.includes('noGitHub'));
+        const workflowMenu = manifest.contributes.menus['view/item/context'].find(item => item.command === 'staticWebApps.openYAMLConfigFile');
+        assert.ok(workflowMenu?.when.includes('!(viewItem =~ /noGitHub/)'));
+    });
+
+    for (const url of [undefined, '', null]) {
+        test(`Rejects resource and picker cloning without a repository URL (${url})`, async () => {
+            const resource = await createResource(url as string | undefined);
+            assert.ok(resource.contextValuesToAdd?.includes('noRepository'));
+            const commandMock = mock.method(commands, 'executeCommand', async () => undefined);
+            const originalRgApi = ext.rgApi;
+            ext.rgApi = { pickAppResource: async () => resource } as unknown as typeof ext.rgApi;
+            try {
+                const context = await createTestActionContext();
+                const error = { message: 'This Static Web App is not linked to a repository to clone.' };
+                await assert.rejects(cloneRepo(context, resource), error);
+                await assert.rejects(cloneRepo(context), error);
+                assert.strictEqual(commandMock.mock.callCount(), 0);
+            } finally {
+                ext.rgApi = originalRgApi;
+                commandMock.mock.restore();
+            }
+        });
+    }
+
+    for (const url of [repositoryUrl, 'https://dev.azure.com/org/project/_git/repo', 'https://gitlab.com/test/app']) {
+        test(`Clones repository URLs from resources and the picker: ${url}`, async () => {
+            const resource = await createResource(url, 'main');
+            assert.ok(!resource.contextValuesToAdd?.includes('noRepository'));
+            assert.strictEqual(resource.contextValuesToAdd?.includes('noGitHub'), !isGitHubRepositoryUrl(url));
+            const commandMock = mock.method(commands, 'executeCommand', async () => undefined);
+            const originalRgApi = ext.rgApi;
+            ext.rgApi = { pickAppResource: async () => resource } as unknown as typeof ext.rgApi;
+            try {
+                const context = await createTestActionContext();
+                await cloneRepo(context, resource);
+                await cloneRepo(context);
+                assert.deepStrictEqual(commandMock.mock.calls.map(call => call.arguments), [
+                    ['git.clone', url],
+                    ['git.clone', url]
+                ]);
+            } finally {
+                ext.rgApi = originalRgApi;
+                commandMock.mock.restore();
+            }
+        });
+    }
+
+    test('Preserves explicit URL cloning and the empty-string Git clone prompt', async () => {
+        const commandMock = mock.method(commands, 'executeCommand', async () => undefined);
+        try {
+            const context = await createTestActionContext();
+            const url = 'https://dev.azure.com/org/project/_git/repo';
+            await cloneRepo(context, url);
+            await cloneRepo(context, '');
+            assert.deepStrictEqual(commandMock.mock.calls.map(call => call.arguments), [
+                ['git.clone', url],
+                ['git.clone', '']
+            ]);
+        } finally {
+            commandMock.mock.restore();
+        }
     });
 
     test('Loads production without a source branch', async () => {
@@ -235,7 +298,6 @@ suite('Unlinked Static Web App resources', () => {
         const context = await createTestActionContext();
         const resource = await createResource();
         const environment = await createEnvironment();
-        await assert.rejects(cloneRepo(context, resource), { message: onlyGitHubSupported });
         await assert.rejects(showActions(context, resource), { message: onlyGitHubSupported });
         await assert.rejects(openGitHubRepo(context, environment), { message: onlyGitHubSupported });
         await assert.rejects(openYAMLConfigFile(context, resource), { message: onlyGitHubSupported });
@@ -248,8 +310,10 @@ suite('Unlinked Static Web App resources', () => {
             assert.ok(resource.contextValuesToAdd?.includes('noGitHub'));
             assert.strictEqual(isGitHubRepositoryUrl(url), false);
             assert.throws(() => getGitHubRepositoryUrl(url), { message: onlyGitHubSupported });
-            await assert.rejects(cloneRepo(await createTestActionContext(), resource), { message: onlyGitHubSupported });
             await assert.rejects(showActions(await createTestActionContext(), resource), { message: onlyGitHubSupported });
+            const environment = await createEnvironment(url);
+            await assert.rejects(openGitHubRepo(await createTestActionContext(), environment), { message: onlyGitHubSupported });
+            await assert.rejects(openYAMLConfigFile(await createTestActionContext(), resource), { message: onlyGitHubSupported });
         });
     }
 

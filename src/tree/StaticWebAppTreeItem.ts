@@ -60,6 +60,9 @@ export class StaticWebAppTreeItem implements ResolvedStaticWebApp {
         this.contextValuesToAdd?.push(StaticWebAppTreeItem.contextValue);
 
         this.repositoryUrl = this.data.repositoryUrl ?? undefined;
+        if (!this.repositoryUrl) {
+            this.contextValuesToAdd?.push('noRepository');
+        }
         if (!isGitHubRepositoryUrl(this.repositoryUrl)) {
             this.contextValuesToAdd?.push('noGitHub');
         }

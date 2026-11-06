@@ -275,7 +275,7 @@
                 },
                 {
                     "command": "staticWebApps.cloneRepo",
-                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /azureStaticWebApp/ && !(viewItem =~ /noGitHub/)",
+                    "when": "view =~ /(azureResourceGroups|azureFocusView)/ && viewItem =~ /azureStaticWebApp/ && !(viewItem =~ /noRepository/)",
                     "group": "1@2"
                 },
                 {
