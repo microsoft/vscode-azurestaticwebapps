@@ -3,15 +3,15 @@
 ## 0.13.4 - 2026-11-09
 
 ### Fixed
-* [[1091]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1091) Load Static Web Apps and environments without a GitHub repository connection, retaining Azure resource functionality and hiding unavailable GitHub actions.
-* [[1091]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1091) Handle missing branch and deployment status metadata when rendering unlinked environments.
-* [[1091]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1091) Hide Clone Repository for resources without a repository while preserving cloning for Azure DevOps and other non-GitHub repositories.
+* [[792]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/792) Load Static Web Apps and environments without a GitHub repository connection, retaining Azure resource functionality and hiding unavailable GitHub actions.
+* [[792]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/792) Handle missing branch and deployment status metadata when rendering unlinked environments.
+* [[792]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/792) Hide Clone Repository for resources without a repository while preserving cloning for Azure DevOps and other non-GitHub repositories.
 
 ### Engineering
-* Update dependency lockfiles with security and maintenance fixes, including [Azure Identity and MSAL Node](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1093).
-* [[1084]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1084) Pin external GitHub Actions to commit SHAs.
-* [[1089]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1089) Restrict workflow token permissions to the minimum required.
-* [[1057]](https://github.com/microsoft/vscode-azurestaticwebapps/pull/1057) Update shared build pipeline feed configuration.
+* [[1095]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/1095) Update dependency lockfiles with security and maintenance fixes, including Azure Identity and MSAL Node.
+* [[1097]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/1097) Pin external GitHub Actions to commit SHAs.
+* [[1096]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/1096) Restrict workflow token permissions to the minimum required.
+* [[1056]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/1056) Update shared build pipeline feed configuration.
 
 ## 0.13.3 - 2026-05-28
 
