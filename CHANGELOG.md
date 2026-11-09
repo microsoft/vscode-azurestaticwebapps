@@ -1,12 +1,17 @@
 # Change Log
 
-## Unreleased
+## 0.13.4 - 2026-11-09
 
 ### Fixed
-* Load Static Web Apps and environments without a GitHub repository connection, retaining Azure resource functionality and hiding unavailable GitHub actions.
-* Handle null branch and deployment status metadata when rendering unlinked environments.
-* Use valid menu conditions to hide Clone Repository for resources without a repository and GitHub workflow commands for resources without a GitHub connection.
-* Preserve resource and picker cloning for Azure DevOps and other non-GitHub repositories.
+* [[792]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/792) Load Static Web Apps and environments without a GitHub repository connection, retaining Azure resource functionality and hiding unavailable GitHub actions.
+* [[792]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/792) Handle missing branch and deployment status metadata when rendering unlinked environments.
+* [[792]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/792) Hide Clone Repository for resources without a repository while preserving cloning for Azure DevOps and other non-GitHub repositories.
+
+### Engineering
+* [[1095]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/1095) Update dependency lockfiles with security and maintenance fixes, including Azure Identity and MSAL Node.
+* [[1097]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/1097) Pin external GitHub Actions to commit SHAs.
+* [[1096]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/1096) Restrict workflow token permissions to the minimum required.
+* [[1056]](https://github.com/microsoft/vscode-azurestaticwebapps/issues/1056) Update shared build pipeline feed configuration.
 
 ## 0.13.3 - 2026-05-28
 
