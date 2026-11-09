@@ -26,16 +26,17 @@ export async function postCreateStaticWebApp(swaNode: ResolvedStaticWebAppTreeIt
             return;
         }
         const productionEnv: EnvironmentTreeItem | undefined = <EnvironmentTreeItem | undefined>(await realSwaNode.loadAllChildren(context)).find((ti) => { return ti instanceof EnvironmentTreeItem && ti.label === productionEnvironmentName; });
-        if (productionEnv) {
+        if (productionEnv?.actionsTreeItem) {
+            const actionsTreeItem = productionEnv.actionsTreeItem;
             const octokitClient: Octokit = await createOctokitClient(context);
-            const { owner, name } = getRepoFullname(productionEnv.repositoryUrl);
+            const { owner, name } = getRepoFullname(actionsTreeItem.repositoryUrl);
             let deployActionNode: ActionTreeItem | undefined;
             const maxTime: number = Date.now() + 30 * 1000; // it can take a little for the action to queue in GitHub, wait for 30 seconds
 
             while (!deployActionNode) {
                 try {
-                    await productionEnv.actionsTreeItem.refresh(context);
-                    const actionTreeItems: ActionTreeItem[] = <ActionTreeItem[]>(await productionEnv.actionsTreeItem.loadAllChildren(context));
+                    await actionsTreeItem.refresh(context);
+                    const actionTreeItems: ActionTreeItem[] = <ActionTreeItem[]>(await actionsTreeItem.loadAllChildren(context));
                     const filteredTreeItems: ActionTreeItem[] = actionTreeItems.filter(ti => { return ti.data.status !== Status.Completed; }); // only looking at on-going or queued jobs
 
                     const promises: Promise<void>[] = filteredTreeItems.map(async ti => {

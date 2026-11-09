@@ -14,6 +14,7 @@ import { ext } from "../extensionVariables";
 import { EnvironmentTreeItem } from "../tree/EnvironmentTreeItem";
 import { isResolvedStaticWebAppTreeItem } from "../tree/StaticWebAppTreeItem";
 import { BuildConfig, WorkflowGroupTreeItem } from '../tree/WorkflowGroupTreeItem';
+import { getGitHubRepositoryUrl } from '../utils/gitUtils';
 import { localize } from '../utils/localize';
 
 type YamlTreeItem = ResolvedStaticWebApp | EnvironmentTreeItem | WorkflowGroupTreeItem;
@@ -24,6 +25,13 @@ export async function openYAMLConfigFile(context: IActionContext, node?: YamlTre
             filter: swaFilter,
             expectedChildContextValue: EnvironmentTreeItem.contextValue
         });
+    }
+
+    if (!(node instanceof WorkflowGroupTreeItem)) {
+        getGitHubRepositoryUrl(node.repositoryUrl);
+        if (!node.branch) {
+            throw new Error(localize('noSourceBranch', 'This operation requires a Static Web App environment with a source branch.'));
+        }
     }
 
     let yamlFileUri: Uri | undefined;

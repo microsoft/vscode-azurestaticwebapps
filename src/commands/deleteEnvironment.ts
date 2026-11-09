@@ -13,7 +13,7 @@ export async function deleteEnvironment(context: IActionContext, node?: Environm
     if (!node) {
         node = await ext.rgApi.pickAppResource<EnvironmentTreeItem>({ ...context, suppressCreatePick: true }, {
             filter: swaFilter,
-            expectedChildContextValue: EnvironmentTreeItem.contextValue
+            expectedChildContextValue: /^azureStaticEnvironment(;|$)/
         });
     }
 

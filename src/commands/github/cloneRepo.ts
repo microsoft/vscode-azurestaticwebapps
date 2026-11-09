@@ -9,6 +9,7 @@ import { ResolvedStaticWebApp } from '../../StaticWebAppResolver';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { isResolvedStaticWebAppTreeItem } from '../../tree/StaticWebAppTreeItem';
+import { localize } from '../../utils/localize';
 
 export async function cloneRepo(context: IActionContext, resource?: string | ResolvedStaticWebApp): Promise<void> {
 
@@ -20,6 +21,9 @@ export async function cloneRepo(context: IActionContext, resource?: string | Res
 
     let repoUrl: string;
     if (isResolvedStaticWebAppTreeItem(resource)) {
+        if (!resource.repositoryUrl) {
+            throw new Error(localize('noRepositoryToClone', 'This Static Web App is not linked to a repository to clone.'));
+        }
         repoUrl = resource.repositoryUrl;
     } else {
         repoUrl = resource;

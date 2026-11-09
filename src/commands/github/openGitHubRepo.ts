@@ -7,6 +7,7 @@ import { IActionContext, openUrl } from '@microsoft/vscode-azext-utils';
 import { swaFilter } from '../../constants';
 import { ext } from '../../extensionVariables';
 import { EnvironmentTreeItem } from '../../tree/EnvironmentTreeItem';
+import { getGitHubRepositoryUrl } from '../../utils/gitUtils';
 
 export async function openGitHubRepo(context: IActionContext, node?: EnvironmentTreeItem): Promise<void> {
     if (!node) {
@@ -16,5 +17,6 @@ export async function openGitHubRepo(context: IActionContext, node?: Environment
         });
     }
 
-    await openUrl(`${node.parent.repositoryUrl}/tree/${node.branch}`);
+    const repositoryUrl = getGitHubRepositoryUrl(node.repositoryUrl);
+    await openUrl(node.branch ? `${repositoryUrl}/tree/${node.branch}` : repositoryUrl);
 }
