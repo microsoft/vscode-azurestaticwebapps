@@ -7,6 +7,10 @@
         "lib": [
             "es2022"
         ],
+        "types": [
+            "node",
+            "mocha"
+        ],
         "strict": true,
         "sourceMap": true,
         "rootDir": ".",
@@ -15,11 +19,10 @@
         "noImplicitReturns": true,
         "strictNullChecks": true,
         "noUnusedParameters": true,
-        "baseUrl": "./",
         "paths": {
             "*": [
-                "node_modules/vscode/*",
-                "*"
+                "./node_modules/vscode/*",
+                "./*"
             ]
         }
     },
